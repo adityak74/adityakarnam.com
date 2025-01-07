@@ -1,7 +1,4 @@
-Passionate software developer dedicated to crafting innovative products that make a difference.
-Combining cutting-edge research in AI and machine learning with practical software engineering to push the boundaries of technology.
-
-### Articles
+# Articles
 
 - #### [Beyond Sequential: Why Rust’s Threading Model Changed How I Think About Concurrent Programming](https://levelup.gitconnected.com/beyond-sequential-why-rusts-threading-model-changed-how-i-think-about-concurrent-programming-475b11e8cafe?source=rss-68177ac3c0be------2)
 - #### [Building a Rust Command Line Interface to Chat with Llama 3.2](https://levelup.gitconnected.com/building-a-rust-command-line-interface-to-chat-with-llama-3-2-c23380a5329e?source=rss-68177ac3c0be------2)

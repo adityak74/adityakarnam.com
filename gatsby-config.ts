@@ -8,14 +8,14 @@ const config: GatsbyConfig = {
     // You can overwrite values here that are used for the SEO component
     // You can also add new values here to query them like usual
     // See all options: https://github.com/LekoArts/gatsby-themes/blob/main/themes/gatsby-theme-minimal-blog/gatsby-config.mjs
-    siteTitle: `Minimal Blog`,
-    siteTitleAlt: `Minimal Blog - Gatsby Theme`,
-    siteHeadline: `Minimal Blog - Gatsby Theme from @lekoarts`,
-    siteUrl: `https://minimal-blog.lekoarts.de`,
-    siteDescription: `Typography driven, feature-rich blogging theme with minimal aesthetics. Includes tags/categories support and extensive features for code blocks such as live preview, line numbers, and line highlighting.`,
+    siteTitle: `Aditya Karnam`,
+    siteTitleAlt: `Aditya Karnam - Personal Blog`,
+    siteHeadline: `Personal blog of Aditya Karnam - a software engineer, writer, and creator.`,
+    siteUrl: `https://adityakarnam.com`,
+    siteDescription: `Personal blog of Aditya Karnam - a software engineer, writer, and creator.`,
     siteImage: `/banner.jpg`,
     siteLanguage: `en`,
-    author: `@lekoarts_de`,
+    author: `@aditya_karnam`,
   },
   trailingSlash: `always`,
   plugins: [
@@ -25,22 +25,30 @@ const config: GatsbyConfig = {
       options: {
         navigation: [
           {
-            title: `Blog`,
-            slug: `/blog`,
-          },
-          {
-            title: `About`,
-            slug: `/about`,
+            title: `Spotlight`,
+            slug: `/spotlight`,
           },
         ],
         externalLinks: [
+          {
+            name: `LinkedIn`,
+            url: `https://www.linkedin.com/in/adityakarnamgrao/`,
+          },
           {
             name: `Twitter`,
             url: `https://twitter.com/aditya_karnam`,
           },
           {
+            name: `GitHub`,
+            url: `https://github.com/adityak74`,
+          },
+          {
+            name: `Google Scholar`,
+            url: `https://scholar.google.com/citations?user=WujCeDkAAAAJ&hl=en`,
+          },
+          {
             name: `Homepage`,
-            url: `https://www.lekoarts.de?utm_source=minimal-blog&utm_medium=Starter`,
+            url: `https://www.adityakarnam.com`,
           },
         ],
       },
@@ -54,9 +62,9 @@ const config: GatsbyConfig = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `minimal-blog - @lekoarts/gatsby-theme-minimal-blog`,
-        short_name: `minimal-blog`,
-        description: `Typography driven, feature-rich blogging theme with minimal aesthetics. Includes tags/categories support and extensive features for code blocks such as live preview, line numbers, and code highlighting.`,
+        name: `Aditya Karnam - Personal Blog`,
+        short_name: `adityakarnam-blog`,
+        description: `Personal blog of Aditya Karnam - a software engineer, writer, and creator.`,
         start_url: `/`,
         background_color: `#fff`,
         // This will impact how browsers show your PWA/website
@@ -73,57 +81,6 @@ const config: GatsbyConfig = {
             src: `/android-chrome-512x512.png`,
             sizes: `512x512`,
             type: `image/png`,
-          },
-        ],
-      },
-    },
-    {
-      resolve: `gatsby-plugin-feed`,
-      options: {
-        query: `
-          {
-            site {
-              siteMetadata {
-                title: siteTitle
-                description: siteDescription
-                siteUrl
-                site_url: siteUrl
-              }
-            }
-          }
-        `,
-        feeds: [
-          {
-            serialize: ({
-              query: { site, allPost },
-            }: {
-              query: { allPost: IAllPost; site: { siteMetadata: ISiteMetadata } }
-            }) =>
-              allPost.nodes.map((post) => {
-                const url = site.siteMetadata.siteUrl + post.slug
-                const content = `<p>${post.excerpt}</p><div style="margin-top: 50px; font-style: italic;"><strong><a href="${url}">Keep reading</a>.</strong></div><br /> <br />`
-
-                return {
-                  title: post.title,
-                  date: post.date,
-                  excerpt: post.excerpt,
-                  url,
-                  guid: url,
-                  custom_elements: [{ "content:encoded": content }],
-                }
-              }),
-            query: `{
-  allPost(sort: {date: DESC}) {
-    nodes {
-      title
-      date(formatString: "MMMM D, YYYY")
-      excerpt
-      slug
-    }
-  }
-}`,
-            output: `rss.xml`,
-            title: `Minimal Blog - @lekoarts/gatsby-theme-minimal-blog`,
           },
         ],
       },
