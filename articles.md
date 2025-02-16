@@ -1,5 +1,8 @@
 # Articles
 
+- #### [Building Custom Tools With Model Context Protocol](https://dzone.com/articles/building-custom-tools-model-context-protocol)
+- #### [Predicting Diabetes Types: A Deep Learning Approach](https://dzone.com/articles/predicting-diabetes-types-deep-learning)
+- #### [Building an AI-Powered Cold Email System With CrewAI](https://dzone.com/articles/building-ai-powered-cold-email-system-with-crewai)
 - #### [Beyond Sequential: Why Rust’s Threading Model Changed How I Think About Concurrent Programming](https://levelup.gitconnected.com/beyond-sequential-why-rusts-threading-model-changed-how-i-think-about-concurrent-programming-475b11e8cafe?source=rss-68177ac3c0be------2)
 - #### [Building a Rust Command Line Interface to Chat with Llama 3.2](https://levelup.gitconnected.com/building-a-rust-command-line-interface-to-chat-with-llama-3-2-c23380a5329e?source=rss-68177ac3c0be------2)
 - #### [Building an AI-Powered Cold Email System with CrewAI](https://levelup.gitconnected.com/building-an-ai-powered-cold-email-system-with-crewai-18925ab2d7fb?source=rss-68177ac3c0be------2)
