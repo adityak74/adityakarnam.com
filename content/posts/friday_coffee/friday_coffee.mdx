@@ -1,0 +1,95 @@
+---
+title: "Friday Coffee OR BEER!"
+date: 2025-04-11
+slug: "/friday-coffee-or-beer"
+canonicalUrl: "https://adityakarnam.com/friday-coffee-or-beer/"
+---
+
+Hey folks! Welcome to another edition of our Friday ritual where we decide between caffeine or hops (let's be real, sometimes both are necessary). Today was all about diving into Streamlit testing, and I've got thoughts to share over whichever beverage you're choosing this evening.
+
+## Streamlit Testing Adventures
+
+So I spent today adding Streamlit tests to a couple of apps at work, and I'm pleasantly surprised at how straightforward it was. If you're not familiar with Streamlit, it's this awesome Python library that lets you create data apps with minimal effort. The cool thing is you don't need any front-end experience – just Python skills and you're good to go.
+
+The testing process turned out to be easier than I expected, though there were a few tricky bits I thought worth sharing over our Friday beverage of choice.
+
+## The Docker Path Dilemma
+
+The most challenging part wasn't anything complex - just dealing with file paths! When using the `App.from_file` method, I quickly discovered that paths differ when testing locally versus in our Docker environment:
+
+```python
+# This works locally
+at = AppTest.from_file("app.py")
+
+# But in Docker, you might need something like
+at = AppTest.from_file("/app/src/streamlit/app.py")
+```
+
+This is one of those "well, duh" moments that still manages to eat up 20 minutes of your life.
+
+## Exploring the Element Tree
+
+One cool discovery was how Streamlit's testing framework makes app content accessible. Most rendered content lives in attributes of the app test object:
+
+```python
+at = AppTest.from_file("app.py")
+at.run()
+
+# Check rendered markdown content
+assert "Expected text" in at.markdown[0].value
+
+# Check title content
+assert at.title[0].value == "My App Title"
+
+# For text content, check the text attribute
+assert at.text[0].value == "Some text here"
+```
+
+The Element lists in the app test object were super useful - things like `at.markdown`, `at.title`, and other attributes are all Element lists that hold the rendered content. I could easily access and assert against them.
+
+## Timeout Troubles
+
+If your app processes a lot of data or has complex visualizations, you'll definitely need to increase the default timeout. I learned this the hard way:
+
+```python
+# The default 3-second timeout was way too short
+at = AppTest.from_function(
+    my_app_function,
+    default_timeout=100,  # Bumped this up to 100 seconds
+    args=None,
+    kwargs=None
+)
+```
+
+According to the docs, the `AppTest.from_function` method has this signature:
+
+```python
+AppTest.from_function(cls, script, *, default_timeout=3, args=None, kwargs=None)
+```
+
+Even when mocking app components, you still need a few milliseconds for the app to render before you can start making assertions against the element tree.
+
+## What's New in Streamlit Land
+
+While I was working on tests, I noticed that Streamlit has been rolling out some pretty sweet updates recently. The latest release introduced advanced theming options that let you customize your app's appearance without needing CSS – changing fonts, colors, and roundness with simple config options. This made my testing both easier and more fun because I could quickly toggle between different looks to make sure our functionality was solid across designs.
+
+They've also added some nice quality-of-life features like a new badge element and a terminal command to create all the local files needed for a new Streamlit app. Not directly related to my testing, but definitely going to use both next week.
+
+## Beer Thoughts
+
+After figuring out the path issue and getting all tests passing, I'm definitely leaning toward the BEER side of our Friday tradition. There's something about solving a testing problem that makes a cold one taste just that much better.
+
+## What's Next?
+
+Next week I'll be implementing some of those new Streamlit features into our app. I'm particularly excited about trying out the ability to freeze columns with column configuration to keep them visible during horizontal scrolling – our users have been asking for this for ages!
+
+So what's your pick today – coffee or beer? Drop a comment and let me know what you're working on and which beverage is fueling your Friday.
+
+Cheers!
+
+---
+
+## References
+
+- [Streamlit App Testing Documentation](https://docs.streamlit.io/develop/api-reference/app-testing)
+- [AppTest from_function API Reference](https://docs.streamlit.io/develop/api-reference/app-testing/st.testing.v1.apptest#apptestfrom_function)
