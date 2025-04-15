@@ -13,7 +13,7 @@ const config: GatsbyConfig = {
     siteHeadline: `Personal blog of Aditya Karnam - a software engineer, writer, and creator.`,
     siteUrl: `https://adityakarnam.com`,
     siteDescription: `Personal blog of Aditya Karnam - a software engineer, writer, and creator.`,
-    siteImage: `/banner.jpg`,
+    siteImage: `/banner-aditya.png`,
     siteLanguage: `en`,
     author: `@aditya_karnam`,
   },
