@@ -9,10 +9,10 @@ const config: GatsbyConfig = {
     // You can also add new values here to query them like usual
     // See all options: https://github.com/LekoArts/gatsby-themes/blob/main/themes/gatsby-theme-minimal-blog/gatsby-config.mjs
     siteTitle: `Aditya Karnam`,
-    siteTitleAlt: `Aditya Karnam - Personal Blog`,
+    siteTitleAlt: `Aditya Karnam - AI Researcher | LLM Expert | Software Engineer | Python & Rust`,
     siteHeadline: `Personal blog of Aditya Karnam - a software engineer, writer, and creator.`,
     siteUrl: `https://adityakarnam.com`,
-    siteDescription: `Personal blog of Aditya Karnam - a software engineer, writer, and creator.`,
+    siteDescription: `Software engineer Aditya Karnam shares expert insights on Python, PostgreSQL database sharding, system design, and software development best practices. Learn from real-world experience.`,
     siteImage: `/banner-aditya.png`,
     siteLanguage: `en`,
     author: `@aditya_karnam`,

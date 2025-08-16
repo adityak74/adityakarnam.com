@@ -1,3 +1,14 @@
 User-agent: *
 
 sitemap: https://adityakarnam.com/sitemap-index.xml
+
+# Block common non-content files
+Disallow: /admin/
+Disallow: /private/
+Disallow: *.pdf$
+Disallow: /search?
+
+# Allow all CSS and JS files
+Allow: /css/
+Allow: /js/
+Allow: /images/

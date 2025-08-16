@@ -5,6 +5,23 @@ import React from "react";
 
 export const onRenderBody = ({ setHeadComponents }) => {
   setHeadComponents([
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+      key="viewport"
+    />,
+    <link
+      rel="alternate"
+      hrefLang="en"
+      href="https://adityakarnam.com/"
+      key="hreflang-en"
+    />,
+    <link
+      rel="alternate"
+      hrefLang="x-default"
+      href="https://adityakarnam.com/"
+      key="hreflang-x-default"
+    />,
     <script
       key="cronitor-rum-script"
       async
