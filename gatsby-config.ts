@@ -21,7 +21,6 @@ const config: GatsbyConfig = {
   plugins: [
     {
       resolve: `@lekoarts/gatsby-theme-minimal-blog`,
-      // See the theme's README for all available options
       options: {
         navigation: [
           {
@@ -58,6 +57,14 @@ const config: GatsbyConfig = {
       },
     },
     {
+      resolve: `gatsby-plugin-sharp`,
+      options: {},
+    },
+    {
+      resolve: `gatsby-transformer-sharp`,
+      options: {},
+    },
+    {
       resolve: `gatsby-plugin-sitemap`,
       options: {
         output: `/`,
@@ -71,9 +78,6 @@ const config: GatsbyConfig = {
         description: `Personal blog of Aditya Karnam - a software engineer, writer, and creator.`,
         start_url: `/`,
         background_color: `#fff`,
-        // This will impact how browsers show your PWA/website
-        // https://css-tricks.com/meta-theme-color-and-trickery/
-        // theme_color: `#6B46C1`,
         display: `standalone`,
         icons: [
           {
@@ -89,8 +93,26 @@ const config: GatsbyConfig = {
         ],
       },
     },
-    // You can remove this plugin if you don't need it
-    shouldAnalyseBundle && {
+    {
+      resolve: `gatsby-transformer-remark`,
+      options: {
+        plugins: [
+          {
+            resolve: `gatsby-remark-images`,
+            options: {
+              maxWidth: 800,
+              linkImagesToOriginal: false,
+              showCaptions: true,
+              quality: 80,
+              withWebp: true,
+              loading: "lazy",
+            },
+          },
+        ],
+      },
+    },
+    // Only include statoscope when ANALYSE_BUNDLE is set (not in production)
+    process.env.ANALYSE_BUNDLE && {
       resolve: `gatsby-plugin-webpack-statoscope`,
       options: {
         saveReportTo: `${__dirname}/public/.statoscope/_bundle.html`,

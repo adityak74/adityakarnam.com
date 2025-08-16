@@ -24,8 +24,9 @@ export const onRenderBody = ({ setHeadComponents }) => {
     />,
     <script
       key="cronitor-rum-script"
-      async
       src="https://rum.cronitor.io/script.js"
+      async
+      defer
     />,
     <script
       key="cronitor-rum-config"
