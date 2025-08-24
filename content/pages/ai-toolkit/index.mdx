@@ -1,0 +1,280 @@
+---
+title: AI Toolkit
+slug: "/ai-toolkit"
+---
+
+<div style={{ 
+  fontFamily: "system-ui, -apple-system, sans-serif",
+  backgroundColor: "#1b202b",
+  minHeight: "100vh",
+  color: "#ffffff",
+  padding: "2rem 0"
+}}>
+  <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 1rem" }}>
+    {/* Header */}
+    <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+      <h1 style={{
+        fontSize: "3rem",
+        fontWeight: "700",
+        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        WebkitBackgroundClip: "text",
+        WebkitTextFillColor: "transparent",
+        marginBottom: "1rem"
+      }}>
+        🚀 AI Toolkit
+      </h1>
+      <p style={{
+        fontSize: "1.2rem",
+        color: "#a0aec0",
+        maxWidth: "600px",
+        margin: "0 auto",
+        lineHeight: "1.6"
+      }}>
+        A collection of intelligent tools to supercharge your AI workflows and boost productivity.
+      </p>
+    </div>
+
+    {/* Tools Grid */}
+    <div style={{
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
+      gap: "2rem",
+      marginBottom: "3rem"
+    }}>
+
+      {/* Intelligent Prompt Composer Card */}
+      <div style={{
+        backgroundColor: "#1b202b",
+        borderRadius: "16px",
+        padding: "2rem",
+        border: "1px solid #4a5568",
+        boxShadow: "0 10px 25px rgba(0, 0, 0, 0.3)",
+        transition: "transform 0.3s ease, box-shadow 0.3s ease",
+        cursor: "pointer"
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = "translateY(-5px)";
+        e.currentTarget.style.boxShadow = "0 20px 40px rgba(0, 0, 0, 0.4)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = "0 10px 25px rgba(0, 0, 0, 0.3)";
+      }}
+      onClick={() => window.open('/intelligent-prompt-composer', '_blank')}
+      >
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          marginBottom: "1rem"
+        }}>
+          <div style={{
+            fontSize: "2.5rem",
+            marginRight: "0.75rem"
+          }}>
+            🧠
+          </div>
+          <h3 style={{
+            fontSize: "1.5rem",
+            fontWeight: "600",
+            color: "#ffffff",
+            margin: 0
+          }}>
+            Intelligent Prompt Composer
+          </h3>
+        </div>
+
+        <p style={{
+          color: "#cbd5e0",
+          fontSize: "1rem",
+          lineHeight: "1.6",
+          marginBottom: "1.5rem"
+        }}>
+          Transform simple prompts into powerful, structured conversations. Get 10x better results from ChatGPT, Claude, Perplexity, and any AI platform.
+        </p>
+
+        <div style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "0.5rem",
+          marginBottom: "1.5rem"
+        }}>
+          <span style={{
+            background: "#667eea",
+            color: "white",
+            padding: "0.25rem 0.75rem",
+            borderRadius: "12px",
+            fontSize: "0.8rem",
+            fontWeight: "500"
+          }}>
+            Multi-Platform
+          </span>
+          <span style={{
+            background: "#48bb78",
+            color: "white",
+            padding: "0.25rem 0.75rem",
+            borderRadius: "12px",
+            fontSize: "0.8rem",
+            fontWeight: "500"
+          }}>
+            Quick Presets
+          </span>
+          <span style={{
+            background: "#ed8936",
+            color: "white",
+            padding: "0.25rem 0.75rem",
+            borderRadius: "12px",
+            fontSize: "0.8rem",
+            fontWeight: "500"
+          }}>
+            Smart Enhancement
+          </span>
+        </div>
+
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between"
+        }}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            color: "#a0aec0",
+            fontSize: "0.9rem"
+          }}>
+            <span>⚡</span>
+            <span>Free to Use</span>
+          </div>
+          <div style={{
+            background: "#4299e1",
+            color: "white",
+            padding: "0.5rem 1rem",
+            borderRadius: "8px",
+            fontSize: "0.9rem",
+            fontWeight: "500",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem"
+          }}>
+            Try Now →
+          </div>
+        </div>
+      </div>
+
+      {/* Coming Soon Card */}
+      <div style={{
+        backgroundColor: "#1b202b",
+        borderRadius: "16px",
+        padding: "2rem",
+        border: "1px solid #4a5568",
+        boxShadow: "0 10px 25px rgba(0, 0, 0, 0.3)",
+        opacity: "0.7"
+      }}>
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          marginBottom: "1rem"
+        }}>
+          <div style={{
+            fontSize: "2.5rem",
+            marginRight: "0.75rem"
+          }}>
+            🔮
+          </div>
+          <h3 style={{
+            fontSize: "1.5rem",
+            fontWeight: "600",
+            color: "#ffffff",
+            margin: 0
+          }}>
+            More Tools Coming Soon
+          </h3>
+        </div>
+
+        <p style={{
+          color: "#cbd5e0",
+          fontSize: "1rem",
+          lineHeight: "1.6",
+          marginBottom: "1.5rem"
+        }}>
+          We're working on exciting new AI tools to enhance your productivity. Stay tuned for updates!
+        </p>
+
+        <div style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "0.5rem",
+          marginBottom: "1.5rem"
+        }}>
+          <span style={{
+            background: "#805ad5",
+            color: "white",
+            padding: "0.25rem 0.75rem",
+            borderRadius: "12px",
+            fontSize: "0.8rem",
+            fontWeight: "500"
+          }}>
+            AI Image Generator
+          </span>
+          <span style={{
+            background: "#38b2ac",
+            color: "white",
+            padding: "0.25rem 0.75rem",
+            borderRadius: "12px",
+            fontSize: "0.8rem",
+            fontWeight: "500"
+          }}>
+            Code Reviewer
+          </span>
+          <span style={{
+            background: "#f56565",
+            color: "white",
+            padding: "0.25rem 0.75rem",
+            borderRadius: "12px",
+            fontSize: "0.8rem",
+            fontWeight: "500"
+          }}>
+            Content Optimizer
+          </span>
+        </div>
+
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}>
+          <div style={{
+            background: "#718096",
+            color: "white",
+            padding: "0.5rem 1rem",
+            borderRadius: "8px",
+            fontSize: "0.9rem",
+            fontWeight: "500"
+          }}>
+            Coming Soon
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    {/* Footer */}
+    <div style={{
+      textAlign: "center",
+      paddingTop: "2rem",
+      borderTop: "1px solid #4a5568"
+    }}>
+      <p style={{
+        color: "#a0aec0",
+        fontSize: "0.9rem",
+        margin: 0
+      }}>
+        Have suggestions for new tools? <a href="mailto:contact@adityakarnam.com" style={{
+          color: "#4299e1",
+          textDecoration: "none"
+        }}>Let me know!</a>
+      </p>
+    </div>
+
+  </div>
+</div>

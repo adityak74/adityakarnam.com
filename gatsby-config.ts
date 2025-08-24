@@ -27,6 +27,10 @@ const config: GatsbyConfig = {
             title: `Spotlight`,
             slug: `/spotlight`,
           },
+          {
+            title: `AI Toolkit`,
+            slug: `/ai-toolkit`,
+          },
         ],
         externalLinks: [
           {
