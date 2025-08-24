@@ -159,7 +159,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
             lineHeight: "1.2",
           }}
         >
-          🚀 Generic Prompt Composer
+          🧠 Intelligent Prompt Composer
         </h1>
         <p
           style={{
@@ -169,7 +169,8 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
             lineHeight: "1.6",
           }}
         >
-          Enhance your prompts for ChatGPT, Claude, Perplexity & more
+          Supercharge your AI conversations with ChatGPT, Claude, Perplexity &
+          more
         </p>
       </div>
 
