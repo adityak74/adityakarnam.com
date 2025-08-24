@@ -144,7 +144,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
       className="max-w-4xl mx-auto"
       style={{
         fontFamily: "system-ui, -apple-system, sans-serif",
-        backgroundColor: "#212121",
+        backgroundColor: "#1b202b",
         minHeight: "100vh",
         color: "#ffffff",
       }}
