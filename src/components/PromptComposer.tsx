@@ -313,17 +313,17 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
         <div
           style={{
             padding: "1.5rem",
-            backgroundColor: "#f8fafc",
+            backgroundColor: "#343a46",
             borderRadius: "16px",
             marginBottom: "2rem",
-            border: "1px solid #e2e8f0",
+            border: "1px solid #4a5568",
           }}
         >
           <h3
             style={{
               fontSize: "1rem",
               fontWeight: "600",
-              color: "#374151",
+              color: "#ffffff",
               marginBottom: "1.5rem",
               textAlign: "center",
             }}
@@ -345,7 +345,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                   display: "block",
                   fontWeight: "600",
                   marginBottom: "0.5rem",
-                  color: "#374151",
+                  color: "#e2e8f0",
                   fontSize: "0.9rem",
                 }}
               >
@@ -359,15 +359,16 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                 placeholder="e.g., Senior Product Manager"
                 style={{
                   width: "100%",
-                  border: "2px solid #e5e7eb",
+                  border: "2px solid #4a5568",
                   borderRadius: "10px",
                   padding: "0.75rem",
                   fontSize: "0.9rem",
-                  backgroundColor: "white",
+                  backgroundColor: "#2d3748",
+                  color: "#ffffff",
                   outline: "none",
                 }}
                 onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
-                onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
+                onBlur={(e) => (e.target.style.borderColor = "#4a5568")}
               />
               <datalist id="role-suggestions">
                 {roleExamples.map((example) => (
@@ -616,7 +617,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                       style={{
                         width: "20px",
                         height: "20px",
-                        backgroundColor: "white",
+                        backgroundColor: "#f1f5f9",
                         borderRadius: "50%",
                         position: "absolute",
                         top: "4px",
@@ -684,7 +685,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                       style={{
                         width: "20px",
                         height: "20px",
-                        backgroundColor: "white",
+                        backgroundColor: "#f1f5f9",
                         borderRadius: "50%",
                         position: "absolute",
                         top: "4px",
