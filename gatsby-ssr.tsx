@@ -1,10 +1,22 @@
 import * as React from "react";
 import LazyVideo from "./src/components/LazyVideo";
+import PromptComposer from "./src/components/PromptComposer";
+import PromptGrader from "./src/components/PromptGrader";
+import TweetThreadGenerator from "./src/components/TweetThreadGenerator";
 
 export const wrapRootElement = ({ element }) => {
   const { MDXProvider } = require("@mdx-js/react");
   return (
-    <MDXProvider components={{ LazyVideo }}>{element}</MDXProvider>
+    <MDXProvider
+      components={{
+        LazyVideo,
+        PromptComposer,
+        PromptGrader,
+        TweetThreadGenerator,
+      }}
+    >
+      {element}
+    </MDXProvider>
   );
 };
 

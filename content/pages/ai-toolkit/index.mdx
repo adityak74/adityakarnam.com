@@ -280,6 +280,125 @@ slug: "/ai-toolkit"
         </div>
       </div>
 
+      {/* Tweet Thread Generator Card */}
+      <div style={{
+        backgroundColor: "#2f2f2f",
+        borderRadius: "16px",
+        padding: "2rem",
+        border: "1px solid #4a5568",
+        boxShadow: "0 10px 25px rgba(0, 0, 0, 0.3)",
+        cursor: "pointer",
+        transition: "all 0.3s ease"
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = "translateY(-5px)";
+        e.currentTarget.style.boxShadow = "0 20px 40px rgba(0, 0, 0, 0.4)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = "0 10px 25px rgba(0, 0, 0, 0.3)";
+      }}
+      onClick={() => window.open('/ai-toolkit/tweet-thread-generator', '_blank')}
+      >
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          marginBottom: "1rem"
+        }}>
+          <div style={{
+            fontSize: "2.5rem",
+            marginRight: "0.75rem"
+          }}>
+            🐦
+          </div>
+          <h3 style={{
+            fontSize: "1.5rem",
+            fontWeight: "600",
+            color: "#ffffff",
+            margin: 0
+          }}>
+            Tweet Thread Generator
+          </h3>
+        </div>
+
+        <p style={{
+          color: "#cbd5e0",
+          fontSize: "1rem",
+          lineHeight: "1.6",
+          marginBottom: "1.5rem"
+        }}>
+          Transform any topic into engaging Twitter threads that capture attention and drive meaningful conversations. Perfect for building your audience.
+        </p>
+
+        <div style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "0.5rem",
+          marginBottom: "1.5rem"
+        }}>
+          <span style={{
+            background: "#1da1f2",
+            color: "white",
+            padding: "0.25rem 0.75rem",
+            borderRadius: "12px",
+            fontSize: "0.8rem",
+            fontWeight: "500"
+          }}>
+            Multiple Threads
+          </span>
+          <span style={{
+            background: "#48bb78",
+            color: "white",
+            padding: "0.25rem 0.75rem",
+            borderRadius: "12px",
+            fontSize: "0.8rem",
+            fontWeight: "500"
+          }}>
+            Smart Presets
+          </span>
+          <span style={{
+            background: "#ed8936",
+            color: "white",
+            padding: "0.25rem 0.75rem",
+            borderRadius: "12px",
+            fontSize: "0.8rem",
+            fontWeight: "500"
+          }}>
+            Character Count
+          </span>
+        </div>
+
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between"
+        }}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            color: "#a0aec0",
+            fontSize: "0.9rem"
+          }}>
+            <span>⚡</span>
+            <span>Free to Use</span>
+          </div>
+          <div style={{
+            background: "#4299e1",
+            color: "white",
+            padding: "0.5rem 1rem",
+            borderRadius: "8px",
+            fontSize: "0.9rem",
+            fontWeight: "500",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem"
+          }}>
+            Try Now →
+          </div>
+        </div>
+      </div>
+
     </div>
 
     {/* Footer */}

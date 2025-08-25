@@ -1,5 +1,8 @@
 import * as React from "react";
 import LazyVideo from "./src/components/LazyVideo";
+import PromptComposer from "./src/components/PromptComposer";
+import PromptGrader from "./src/components/PromptGrader";
+import TweetThreadGenerator from "./src/components/TweetThreadGenerator";
 
 // Global MDX components mapping for MDXProvider wrapping at runtime
 export const wrapRootElement = ({ element }) => {
@@ -9,6 +12,9 @@ export const wrapRootElement = ({ element }) => {
     <MDXProvider
       components={{
         LazyVideo,
+        PromptComposer,
+        PromptGrader,
+        TweetThreadGenerator,
       }}
     >
       {element}
