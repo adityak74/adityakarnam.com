@@ -9,7 +9,7 @@ const PromptComposer: React.FC = () => {
   const [tone, setTone] = useState("Formal");
   const [format, setFormat] = useState("Markdown table");
   const [verbosity, setVerbosity] = useState("Balanced");
-  const [thinking, setThinking] = useState("Careful / Stepwise");
+  const [thinking, setThinking] = useState("Think Moderate / Careful");
   const [be100xSpecific, setBe100xSpecific] = useState(false);
   const [laserFocused, setLaserFocused] = useState(false);
 
@@ -42,7 +42,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
       tone: "Concise",
       format: "Code block",
       verbosity: "Balanced",
-      thinking: "Careful / Stepwise",
+      thinking: "Think Moderate / Careful",
       be100xSpecific: true,
       laserFocused: true,
       color: "#3b82f6",
@@ -54,7 +54,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
       tone: "Academic",
       format: "Bulleted list",
       verbosity: "Verbose",
-      thinking: "Analytical / Structured",
+      thinking: "Think Hard / Deep Analysis",
       be100xSpecific: true,
       laserFocused: false,
       color: "#8b5cf6",
@@ -66,7 +66,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
       tone: "Formal",
       format: "Markdown table",
       verbosity: "Balanced",
-      thinking: "Analytical / Structured",
+      thinking: "Think Moderate / Careful",
       be100xSpecific: true,
       laserFocused: true,
       color: "#10b981",
@@ -523,11 +523,11 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                 onFocus={(e) => (e.target.style.borderColor = "#10a37f")}
                 onBlur={(e) => (e.target.style.borderColor = "#404040")}
               >
-                <option>Shallow / Fast</option>
-                <option>Careful / Stepwise</option>
-                <option>Skeptical / Adversarial</option>
+                <option>Think Little / Fast</option>
+                <option>Think Moderate / Careful</option>
+                <option>Think Hard / Deep Analysis</option>
                 <option>Creative / Divergent</option>
-                <option>Analytical / Structured</option>
+                <option>Skeptical / Adversarial</option>
               </select>
             </div>
 
