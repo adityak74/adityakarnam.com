@@ -20,6 +20,40 @@ const TweetThreadGenerator: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [apiKey, setApiKey] = useState("");
   const [showApiKeyInput, setShowApiKeyInput] = useState(false);
+  const [selectedModel, setSelectedModel] = useState("openai/gpt-oss-20b:free");
+
+  const modelOptions = [
+    {
+      id: "openai/gpt-oss-20b:free",
+      name: "OpenAI GPT OSS 20B (Free)",
+      description: "Default free model",
+    },
+    {
+      id: "deepseek/deepseek-r1-0528:free",
+      name: "DeepSeek R1 (Free)",
+      description: "Advanced reasoning model",
+    },
+    {
+      id: "deepseek/deepseek-chat-v3-0324:free",
+      name: "DeepSeek Chat V3 (Free)",
+      description: "Latest chat model",
+    },
+    {
+      id: "z-ai/glm-4.5-air:free",
+      name: "GLM 4.5 Air (Free)",
+      description: "Lightweight efficient model",
+    },
+    {
+      id: "moonshotai/kimi-k2:free",
+      name: "Moonshot Kimi K2 (Free)",
+      description: "Creative content model",
+    },
+    {
+      id: "meta-llama/llama-3.3-70b-instruct:free",
+      name: "Llama 3.3 70B (Free)",
+      description: "Meta's instruction model",
+    },
+  ];
 
   const threadLengthOptions = [
     "3-5 tweets",
@@ -145,7 +179,7 @@ Your JSON array:`;
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "openai/gpt-oss-20b:free",
+            model: selectedModel,
             messages: [
               {
                 role: "system",
@@ -358,9 +392,22 @@ Your JSON array:`;
             marginBottom: showApiKeyInput ? "1rem" : "0",
           }}
         >
-          <h3 style={{ margin: 0, fontSize: "1.1rem" }}>
-            🔑 API Configuration
-          </h3>
+          <div>
+            <h3 style={{ margin: 0, fontSize: "1.1rem" }}>
+              🔑 API Configuration
+            </h3>
+            <p
+              style={{
+                margin: "0.25rem 0 0 0",
+                fontSize: "0.8rem",
+                color: "#a0aec0",
+              }}
+            >
+              Using:{" "}
+              {modelOptions.find((m) => m.id === selectedModel)?.name ||
+                selectedModel}
+            </p>
+          </div>
           <button
             onClick={() => setShowApiKeyInput(!showApiKeyInput)}
             style={{
@@ -556,6 +603,50 @@ Your JSON array:`;
                 minHeight: "80px",
               }}
             />
+          </div>
+
+          {/* Model Selection */}
+          <div style={{ marginBottom: "1.5rem" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontSize: "1rem",
+                fontWeight: "500",
+                color: "#e2e8f0",
+              }}
+            >
+              AI Model
+            </label>
+            <select
+              value={selectedModel}
+              onChange={(e) => setSelectedModel(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "1rem",
+                borderRadius: "8px",
+                border: "1px solid #4a5568",
+                backgroundColor: "#1a202c",
+                color: "#ffffff",
+                fontSize: "1rem",
+              }}
+            >
+              {modelOptions.map((model) => (
+                <option key={model.id} value={model.id}>
+                  {model.name} - {model.description}
+                </option>
+              ))}
+            </select>
+            <p
+              style={{
+                fontSize: "0.8rem",
+                color: "#a0aec0",
+                marginTop: "0.5rem",
+                margin: "0.5rem 0 0 0",
+              }}
+            >
+              All models are completely free via OpenRouter
+            </p>
           </div>
 
           {/* Configuration Grid */}
