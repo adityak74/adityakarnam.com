@@ -161,15 +161,26 @@ slug: "/ai-toolkit"
         </div>
       </div>
 
-      {/* Coming Soon Card */}
+      {/* Prompt Grader & Rewriter Card */}
       <div style={{
-        backgroundColor: "#1b202b",
+        backgroundColor: "#2f2f2f",
         borderRadius: "16px",
         padding: "2rem",
         border: "1px solid #4a5568",
         boxShadow: "0 10px 25px rgba(0, 0, 0, 0.3)",
-        opacity: "0.7"
-      }}>
+        cursor: "pointer",
+        transition: "all 0.3s ease"
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = "translateY(-5px)";
+        e.currentTarget.style.boxShadow = "0 20px 40px rgba(0, 0, 0, 0.4)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = "0 10px 25px rgba(0, 0, 0, 0.3)";
+      }}
+      onClick={() => window.open('/ai-toolkit/prompt-grader', '_blank')}
+      >
         <div style={{
           display: "flex",
           alignItems: "center",
@@ -179,7 +190,7 @@ slug: "/ai-toolkit"
             fontSize: "2.5rem",
             marginRight: "0.75rem"
           }}>
-            🔮
+            �
           </div>
           <h3 style={{
             fontSize: "1.5rem",
@@ -187,7 +198,7 @@ slug: "/ai-toolkit"
             color: "#ffffff",
             margin: 0
           }}>
-            More Tools Coming Soon
+            Prompt Grader & Rewriter
           </h3>
         </div>
 
@@ -197,7 +208,7 @@ slug: "/ai-toolkit"
           lineHeight: "1.6",
           marginBottom: "1.5rem"
         }}>
-          We're working on exciting new AI tools to enhance your productivity. Stay tuned for updates!
+          Analyze, score, and transform your prompts into high-performing instructions. Get detailed feedback and professional rewrites instantly.
         </p>
 
         <div style={{
@@ -207,51 +218,64 @@ slug: "/ai-toolkit"
           marginBottom: "1.5rem"
         }}>
           <span style={{
-            background: "#805ad5",
+            background: "#667eea",
             color: "white",
             padding: "0.25rem 0.75rem",
             borderRadius: "12px",
             fontSize: "0.8rem",
             fontWeight: "500"
           }}>
-            AI Image Generator
+            Score 0-100
           </span>
           <span style={{
-            background: "#38b2ac",
+            background: "#48bb78",
             color: "white",
             padding: "0.25rem 0.75rem",
             borderRadius: "12px",
             fontSize: "0.8rem",
             fontWeight: "500"
           }}>
-            Code Reviewer
+            3 Rewrites
           </span>
           <span style={{
-            background: "#f56565",
+            background: "#ed8936",
             color: "white",
             padding: "0.25rem 0.75rem",
             borderRadius: "12px",
             fontSize: "0.8rem",
             fontWeight: "500"
           }}>
-            Content Optimizer
+            JSON Support
           </span>
         </div>
 
         <div style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "center"
+          justifyContent: "space-between"
         }}>
           <div style={{
-            background: "#718096",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            color: "#a0aec0",
+            fontSize: "0.9rem"
+          }}>
+            <span>⚡</span>
+            <span>Free to Use</span>
+          </div>
+          <div style={{
+            background: "#4299e1",
             color: "white",
             padding: "0.5rem 1rem",
             borderRadius: "8px",
             fontSize: "0.9rem",
-            fontWeight: "500"
+            fontWeight: "500",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem"
           }}>
-            Coming Soon
+            Try Now →
           </div>
         </div>
       </div>
