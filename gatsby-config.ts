@@ -50,6 +50,10 @@ const config: GatsbyConfig = {
             url: `https://github.com/adityak74`,
           },
           {
+            name: `Medium`,
+            url: `https://medium.com/@adityakarnam`,
+          },
+          {
             name: `Google Scholar`,
             url: `https://scholar.google.com/citations?user=WujCeDkAAAAJ&hl=en`,
           },
