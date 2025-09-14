@@ -1,0 +1,202 @@
+---
+title: "The Hidden Problem With MLX: Why Your Apple Silicon LLM Isn't Reproducible"
+date: 2025-09-15
+slug: "/mlx-non-determinism-apple-silicon"
+canonicalUrl: "https://adityakarnam.com/mlx-non-determinism-apple-silicon/"
+keywords:
+  [
+    mlx,
+    apple silicon,
+    machine learning,
+    non-determinism,
+    llm inference,
+    metal,
+    batch invariance,
+    reproducibility,
+    floating point,
+    gpu kernels,
+  ]
+---
+
+<MindockCTA />
+
+_Discover why large language models on Apple Silicon produce different outputs for identical inputs, and what this means for ML reproducibility._
+
+Large language models on Apple Silicon using MLX have a dirty secret: they're not reproducible. Even with temperature set to zero and identical inputs, you might get different outputs between runs. This isn't a bug—it's a fundamental issue with how Metal performs matrix operations.
+
+Recently, Thinking Machines published groundbreaking research revealing why LLM inference on CUDA GPUs is nondeterministic. Their findings challenged the common "concurrency + floating-point" explanation, identifying batch invariance failures in GPU kernels as the real culprit. Inspired by their work, I investigated whether Apple Silicon suffers from the same issues.
+
+The answer? Yes—with some surprising platform-specific twists.
+
+## The Batch Invariance Problem
+
+Modern GPU kernels, including Metal on Apple Silicon, optimize for performance by using different computational strategies based on matrix dimensions. These strategies produce numerically different results even for mathematically identical operations.
+
+Here's a simple test demonstrating the problem:
+
+```python
+import mlx.core as mx
+
+# Test batch invariance
+B, D = 2048, 4096
+a = mx.linspace(-1000, 1000, B * D).reshape(B, D)
+b = mx.linspace(-1000, 1000, D * D).reshape(D, D)
+
+# Process one row
+out1 = mx.matmul(a[:1], b)
+
+# Process all rows, take first
+out2 = mx.matmul(a, b)[:1]
+
+print(f"Difference: {mx.abs(out1 - out2).max().item()}")
+```
+
+On my M2 MacBook Pro, this produces a difference of approximately **1449**—a massive discrepancy for what should be identical computations.
+
+## Quantifying the Impact
+
+I conducted extensive testing across different matrix sizes to understand the scope of this problem:
+
+| Matrix Size | Absolute Error | Relative Error |
+| ----------- | -------------- | -------------- |
+| 512×512     | ~145           | 1.6e-5         |
+| 1024×1024   | ~519           | 1.0e-4         |
+| 2048×2048   | ~1324          | 2.0e-4         |
+| 4096×4096   | ~1771          | 8.9e-4         |
+
+The pattern is clear: **errors grow with matrix size and compound through neural network layers**.
+
+## The Catastrophic Accumulation Effect
+
+What makes this particularly dangerous for LLMs is exponential error accumulation. Testing 100 sequential matrix operations reveals:
+
+- **After 20 operations**: 1e5 difference
+- **After 40 operations**: 1e15 difference
+- **After 60 operations**: 1e25 difference
+- **After 80 operations**: Complete numerical breakdown (NaN)
+
+While individual operations show manageable relative errors, the exponential growth means deep networks will inevitably produce different outputs based on batch size variations.
+
+## Platform-Specific Behavior: The dtype Dimension
+
+Unlike CUDA, MLX exhibits dramatically different behavior across data types—a unique characteristic of Apple's Metal implementation:
+
+### bfloat16: Inconsistent but Sometimes Perfect
+
+- Sometimes perfect with random values
+- Catastrophic with extreme values (up to 1% relative error)
+- Excellent with rapid batch size changes
+
+### float32: The Reliable Middle Ground
+
+- Consistent small errors across all scenarios
+- Better stability with extreme values
+- Most predictable behavior
+
+### float16: The Danger Zone
+
+- Catastrophically unstable with large value ranges
+- Often produces NaN with extreme values
+- Should be avoided for numerical stability
+
+## The CPU Baseline: Proof of Concept
+
+For comparison, I tested NumPy on CPU with identical operations:
+
+- **NumPy (CPU)**: 0.00 difference (perfect batch invariance)
+- **MLX (Metal)**: 142.0 difference
+
+This proves that perfect batch invariance is achievable—it's an implementation choice in GPU kernels, not a fundamental mathematical limitation.
+
+## Real-World Implications
+
+### Critical Impact Scenarios
+
+**Research Reproducibility**: Cannot guarantee identical results across experiments, compromising scientific validity.
+
+**Production Systems**: Load variations cause output variations, making behavior unpredictable in deployment.
+
+**Debugging Workflows**: Inconsistent outputs complicate error tracking and model validation.
+
+**Regulatory Compliance**: Industries requiring deterministic outputs face compliance challenges.
+
+### Manageable Impact Scenarios
+
+**Creative Applications**: Output variation might be acceptable or even beneficial for diverse content generation.
+
+**Short Sequences**: Limited layer depth means minimal error accumulation.
+
+**Small Models**: Fewer parameters and layers reduce cumulative numerical drift.
+
+## Technical Deep Dive: Why This Happens
+
+Metal kernels optimize performance through several strategies:
+
+1. **Dynamic Tiling Patterns**: Different matrix sizes trigger different tile configurations for optimal memory access
+2. **Adaptive Reduction Orders**: Summation sequences vary based on parallelization strategy
+3. **Variable Parallelization**: Thread allocation changes with batch size, affecting computation order
+
+Each strategy is locally optimal for performance but produces slightly different numerical results due to the non-associative nature of floating-point arithmetic.
+
+## Mitigation Strategies
+
+### Immediate Solutions
+
+**Accept the Limitation**: Document nondeterministic behavior for users and adjust expectations accordingly.
+
+**Switch to Ollama**: For applications requiring determinism, use Ollama instead of MLX-based inference.
+
+**Maintain Consistent Batch Sizes**: When using MLX, keep fixed batch sizes throughout your pipeline.
+
+**Consider CPU Inference**: For critical applications, use NumPy-based CPU inference.
+
+**Implement Checkpointing**: Save model states at regular intervals to enable consistent resumption.
+
+### Code Example: Batch Size Consistency
+
+```python
+def consistent_inference(model, inputs, batch_size=32):
+    """Ensure consistent batch processing"""
+    results = []
+    for i in range(0, len(inputs), batch_size):
+        batch = inputs[i:i + batch_size]
+        # Pad to consistent size if needed
+        if len(batch) < batch_size:
+            batch = pad_batch(batch, batch_size)
+        results.extend(model(batch)[:len(batch)])
+    return results
+```
+
+### Future Solutions
+
+The ultimate solution requires **batch-invariant kernel implementation**:
+
+1. **Fixed Reduction Strategies**: Consistent summation order regardless of batch size
+2. **Deterministic Tiling**: Predictable memory access patterns across matrix dimensions
+3. **Performance Trade-offs**: Accepting some performance cost for reproducibility
+
+## Industry-Wide Challenge
+
+This investigation confirms that nondeterministic LLM inference isn't specific to any single platform—it's an **industry-wide challenge** affecting CUDA, Metal, and likely other GPU implementations. The specific manifestations vary (MLX's dtype-dependent behavior is unique), but the core problem remains universal.
+
+The encouraging news is that this is a **solvable engineering problem**. CPU implementations achieve perfect batch invariance daily, and Thinking Machines has demonstrated batch-invariant kernels for CUDA. The question is whether platform vendors will prioritize determinism alongside performance optimization.
+
+## Conclusion
+
+MLX on Apple Silicon exhibits fundamental batch invariance issues in floating-point models, but this investigation reveals that **quantization provides a practical path to determinism**. The trade-off is clear: precision vs. predictability.
+
+While MLX's floating-point implementations suffer from dtype-dependent nondeterminism, quantized integer models (Q4_K_M, Q8_0) achieve perfect reproducibility. This isn't a platform limitation—it's a mathematical reality of floating-point arithmetic vs. integer operations.
+
+For developers using MLX today, the solution depends on your priorities. If you need maximum model quality, accept the nondeterminism and design robust systems around it. If you need reproducibility, switch to quantized models and accept the precision trade-off.
+
+For the broader ML community, this research reframes the challenge from "impossible" to "choose your trade-offs." Every inference framework faces the same fundamental choice between floating-point precision and integer determinism.
+
+The good news is we don't have to accept that our models are never quite the same twice. We just need to decide whether perfect reproducibility is worth the precision cost—and choose our arithmetic accordingly.
+
+### Reference
+
+1. Experiment Repo. https://github.com/adityak74/mlx-determinism-test
+
+2. He, Horace and Thinking Machines Lab, "Defeating Nondeterminism in LLM Inference",
+   Thinking Machines Lab: Connectionism, Sep 2025.
+   https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/
