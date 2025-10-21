@@ -1,0 +1,51 @@
+name: Build and Deploy
+
+# Trigger on PR merge to main/master branch
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Gatsby Site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Gatsby site
+        run: npm run build
+        env:
+          CI: true
+          NODE_ENV: production
+
+      - name: Build success notification
+        if: success() && github.event_name == 'push'
+        run: |
+          echo "✅ Build successful! Cloudflare Pages will automatically deploy this build."
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+
+      - name: Upload build artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gatsby-build
+          path: public/
+          retention-days: 7
