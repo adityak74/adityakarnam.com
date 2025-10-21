@@ -1,6 +1,5 @@
 import React from "react";
 import { FaLinkedin, FaTwitter, FaGithub } from "react-icons/fa";
-import MindockCTA from "./MindockCTA";
 
 const HeroSection: React.FC = () => {
   return (
@@ -136,10 +135,7 @@ const HeroSection: React.FC = () => {
               alignItems: "center",
             }}
           >
-            {/* Mindock CTA Component */}
-            <MindockCTA />
-
-            {/* Existing AI Toolkit CTA - Secondary */}
+            {/* AI Toolkit CTA */}
             <a
               href="/ai-toolkit"
               style={{
