@@ -10,9 +10,9 @@ const config: GatsbyConfig = {
     // See all options: https://github.com/LekoArts/gatsby-themes/blob/main/themes/gatsby-theme-minimal-blog/gatsby-config.mjs
     siteTitle: `Aditya Karnam`,
     siteTitleAlt: `Aditya Karnam - AI Researcher | LLM Expert | Software Engineer | Python & Rust`,
-    siteHeadline: `Personal blog of Aditya Karnam - a software engineer, writer, and creator.`,
+    siteHeadline: `Aditya Karnam — AI researcher and software engineer exploring LLMs, agentic AI, and intelligent systems.`,
     siteUrl: `https://adityakarnam.com`,
-    siteDescription: `Software engineer Aditya Karnam shares expert insights on Python, PostgreSQL database sharding, system design, and software development best practices. Learn from real-world experience.`,
+    siteDescription: `AI researcher and software engineer Aditya Karnam explores the frontiers of artificial intelligence — from LLMs and agentic AI to brain-computer interfaces and next-generation reasoning systems.`,
     siteImage: `/banner-aditya.png`,
     siteLanguage: `en`,
     author: `@aditya_karnam`,
@@ -81,9 +81,9 @@ const config: GatsbyConfig = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `Aditya Karnam - Personal Blog`,
-        short_name: `adityakarnam-blog`,
-        description: `Personal blog of Aditya Karnam - a software engineer, writer, and creator.`,
+        name: `Aditya Karnam - AI Research & Insights`,
+        short_name: `adityakarnam`,
+        description: `AI research, tools, and insights by Aditya Karnam — software engineer and AI researcher exploring LLMs, agentic AI, and intelligent systems.`,
         start_url: `/`,
         background_color: `#fff`,
         display: `standalone`,

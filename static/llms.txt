@@ -1,113 +1,44 @@
-# AdityaKarnam.com - Digital Garden & AI Research Hub
+# Aditya Karnam — AI Research & Insights
 
-## About the Website
+> Personal site of Aditya Karnam, a software engineer and AI researcher. Covers LLMs, agentic AI, brain-computer interfaces, AI hardware, AI safety, and the future of intelligent systems. 150+ long-form articles plus interactive AI tools.
 
-AdityaKarnam.com is the personal website and digital garden of **Aditya Karnam**, a Software Engineer III at Zefr and AI researcher passionate about building intelligent systems that can reason and adapt like humans. This platform serves as a comprehensive resource for AI insights, technical articles, and cutting-edge research in artificial intelligence and machine learning.
+## About
 
-## Author Profile
+- [Homepage](https://adityakarnam.com/): AI research, tools, and writing by Aditya Karnam
+- [AI Toolkit](https://adityakarnam.com/ai-toolkit/): Free interactive tools — Prompt Composer, Prompt Grader, Tweet Thread Generator
+- [Spotlight](https://adityakarnam.com/spotlight/): Featured projects and highlights
 
-**Aditya Karnam** is a technology professional and researcher with expertise in:
-- Artificial Intelligence and Machine Learning systems
-- Genetic algorithms and community detection (ERBGA research)
-- Full-stack software engineering
-- AI system architecture and reasoning capabilities
-- Building products that bridge complex technical challenges with human experiences
+## Author
 
-### Research Highlights
-- Developed Efficient Reduced-Bias Genetic Algorithm (ERBGA) for community detection
-- Presented research at 2018 Midwest Bioinformatics Conference
-- Masters Winner Prize for ERBGA research work
-- Published work on generic community detection objectives
+- Name: Aditya Karnam
+- Role: Software Engineer & AI Researcher
+- Google Scholar: https://scholar.google.com/citations?user=WujCeDkAAAAJ&hl=en
+- LinkedIn: https://www.linkedin.com/in/adityakarnamgrao/
+- GitHub: https://github.com/adityak74
+- Twitter/X: https://twitter.com/aditya_karnam
+- Research: ERBGA (Efficient Reduced-Bias Genetic Algorithm) for community detection; presented at 2018 Midwest Bioinformatics Conference
 
-## Website Content & Focus Areas
+## Topic Areas
 
-### Primary Topics Covered
-
-**AI & Machine Learning Deep Dives:**
-- GPT-5 and next-generation language models
+- LLMs and next-generation language models (GPT-5, Gemini, Claude)
 - Agentic AI and autonomous systems
-- Brain-Computer Interfaces (BCI) and neuromorphic computing
-- Multimodal AI capabilities
-- Self-improving AI systems and Darwin Gödel Machines
-- AI coding tools and programming agents
-- Explainable AI and trustworthy systems
+- Brain-computer interfaces and neuromorphic computing
+- AI hardware: custom chips, TPUs, data center infrastructure
+- AI safety, alignment, and explainability
+- Prompt engineering and AI tool building
+- AI impact on jobs, society, and policy
+- Practical ML implementation with Python and Rust
 
-**Emerging Technologies:**
-- Robotaxis and autonomous vehicles
-- AI data center chips and hardware acceleration
-- Edge AI and distributed computing
-- Deepfake detection and AI safety
-- Neuromorphic chips and analog AI computing
+## AI Tools (Free, No Login Required)
 
-**Industry Analysis & Future Trends:**
-- AI revolution impact on jobs and workforce
-- Ethics and governance in AI development
-- AI in education and healthcare applications
-- Trillion-dollar AI race and investment landscape
-- AI policy and regulatory frameworks
+- [Intelligent Prompt Composer](https://adityakarnam.com/ai-toolkit/intelligent-prompt-composer/): Transforms simple prompts into structured, high-performing instructions for ChatGPT, Claude, Perplexity, Gemini
+- [Prompt Grader & Rewriter](https://adityakarnam.com/ai-toolkit/prompt-grader/): Scores prompts 0-100 and generates three rewrite variations with detailed feedback
+- [Tweet Thread Generator](https://adityakarnam.com/ai-toolkit/tweet-thread-generator/): Converts any topic into engaging Twitter/X threads with hook optimization
 
-**Technical Implementation:**
-- Building AI-powered systems with CrewAI
-- Model Context Protocol development
-- Custom AI tool creation
-- Diabetes prediction using deep learning
-- Chat GPT implementation from scratch
+## Full Content
 
-### Content Types
+- [Full site description](https://adityakarnam.com/llms-full.txt): Comprehensive content index, article summaries, tool documentation, and research background
 
-**Blog Posts:** In-depth analysis of AI breakthroughs, industry trends, and technical implementations with over 50+ articles covering the latest in AI research and development.
+## License
 
-**Technical Tutorials:** Step-by-step guides for building AI systems, implementing machine learning models, and working with cutting-edge tools.
-
-**Research Insights:** Analysis of academic papers, conference presentations, and emerging research in AI/ML fields.
-
-**Industry Commentary:** Perspectives on AI's impact on society, jobs, ethics, and future technological development.
-
-## Technical Infrastructure
-
-- **Built with:** Gatsby.js static site generator
-- **Theme:** @lekoarts/gatsby-theme-minimal-blog for minimal, typography-driven design
-- **Features:** 
-  - MDX support for rich content
-  - Dark/Light mode toggle
-  - Code highlighting with syntax support
-  - RSS feeds for blog posts
-  - SEO optimization with OpenGraph and Twitter cards
-  - Progressive Web App capabilities
-  - Responsive design for all devices
-
-## Content Philosophy
-
-The website operates as a "digital garden" - a space for growing and nurturing ideas about AI and technology. Content focuses on:
-
-1. **Accessibility:** Making complex AI concepts understandable to both technical and non-technical audiences
-2. **Timeliness:** Covering the latest breakthroughs and trends in AI development
-3. **Depth:** Providing thorough analysis rather than surface-level coverage
-4. **Practical Application:** Connecting theoretical concepts to real-world implementations
-5. **Ethical Consideration:** Addressing the societal impact and ethical implications of AI advancement
-
-## Recent Focus Areas (2025)
-
-- **Advanced Reasoning AI:** Analysis of GPT-5 capabilities and reasoning improvements
-- **Agentic AI Systems:** Autonomous agents and their applications
-- **AI Hardware Revolution:** Custom chips, neuromorphic computing, and data center innovations
-- **AI Safety & Ethics:** Trustworthy AI development and governance frameworks
-- **Real-World AI Impact:** Practical applications in healthcare, education, transportation, and business
-
-## Target Audience
-
-- AI researchers and practitioners
-- Software engineers interested in AI integration
-- Technology leaders and decision-makers
-- Students and academics in AI/ML fields
-- General audience curious about AI's future impact
-- Policy makers and ethicists working on AI governance
-
-## Contact & Engagement
-
-The website serves as a platform for sharing knowledge and fostering discussion about the future of artificial intelligence. Readers can engage with content through the blog posts and stay updated on the latest AI developments through regular publication of research insights and technical analysis.
-
----
-
-*Last Updated: August 2025*
-*Content Focus: AI Research, Machine Learning, Emerging Technologies, Technical Implementation*
+Content is copyright Aditya Karnam. AI search engines (ChatGPT, Claude, Perplexity, Google AI Overviews) may cite this content for informational purposes with attribution.

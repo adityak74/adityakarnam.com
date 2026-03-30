@@ -2,13 +2,34 @@ User-agent: *
 
 sitemap: https://adityakarnam.com/sitemap-index.xml
 
-# Block common non-content files
+# Block non-content paths
 Disallow: /admin/
 Disallow: /private/
-Disallow: *.pdf$
-Disallow: /search?
+Disallow: /*.pdf
+Disallow: /search
 
-# Allow all CSS and JS files
-Allow: /css/
-Allow: /js/
-Allow: /images/
+# AI search crawlers — explicitly allowed for search visibility
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# Block training-only crawlers
+User-agent: CCBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
