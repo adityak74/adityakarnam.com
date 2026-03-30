@@ -41,6 +41,49 @@ export const onRenderBody = ({ setHeadComponents }) => {
       key="hreflang-x-default"
     />,
     <script
+      key="json-ld-person"
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Person",
+          name: "Aditya Karnam",
+          url: "https://adityakarnam.com",
+          jobTitle: "Software Engineer & AI Researcher",
+          description:
+            "AI researcher and software engineer exploring LLMs, agentic AI, brain-computer interfaces, and next-generation reasoning systems.",
+          sameAs: [
+            "https://twitter.com/aditya_karnam",
+            "https://www.linkedin.com/in/adityakarnamgrao/",
+            "https://github.com/adityak74",
+            "https://medium.com/@adityakarnam",
+            "https://scholar.google.com/citations?user=WujCeDkAAAAJ&hl=en",
+            "https://dzone.com/users/5236541/adityakarnam.html",
+          ],
+        }),
+      }}
+    />,
+    <script
+      key="json-ld-website"
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Aditya Karnam",
+          url: "https://adityakarnam.com",
+          description:
+            "AI researcher and software engineer Aditya Karnam explores the frontiers of artificial intelligence — from LLMs and agentic AI to brain-computer interfaces and next-generation reasoning systems.",
+          author: {
+            "@type": "Person",
+            name: "Aditya Karnam",
+            url: "https://adityakarnam.com",
+          },
+          inLanguage: "en",
+        }),
+      }}
+    />,
+    <script
       key="cronitor-rum-script"
       src="https://rum.cronitor.io/script.js"
       async
