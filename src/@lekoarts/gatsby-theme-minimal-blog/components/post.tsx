@@ -13,6 +13,7 @@ export type MBPostProps = {
     slug: string
     title: string
     date: string
+    dateISO?: string
     tags?: {
       name: string
       slug: string
@@ -82,7 +83,7 @@ export const Head: HeadFC<MBPostProps> = ({ data: { post } }) => {
     "@type": "BlogPosting",
     headline: post.title,
     description,
-    datePublished: post.date,
+    datePublished: post.dateISO || post.date,
     url: canonicalUrl,
     author: {
       "@type": "Person",
