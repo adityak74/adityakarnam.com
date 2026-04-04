@@ -1,0 +1,418 @@
+---
+title: "I Built embenx: A Python Library That Makes Vector Search Backend-Agnostic"
+date: 2026-04-03
+slug: "/embenx-python-embedding-toolkit"
+canonicalUrl: "https://adityakarnam.com/embenx-python-embedding-toolkit/"
+keywords:
+  [
+    "embenx",
+    "vector search",
+    "embeddings",
+    "python library",
+    "faiss",
+    "rag",
+    "hybrid search",
+    "agentic memory",
+    "temporal memory",
+    "mcp server",
+    "vector database",
+    "semantic search",
+    "retrieval",
+    "ai engineering",
+  ]
+---
+
+<MindockCTA />
+
+_A deep dive into embenx — the Python toolkit I built to stop rewriting vector search glue code every time I switch backends._
+
+Every RAG pipeline I've built started the same way: index some vectors with FAISS, get it working, then hit a wall. The data grows too big for in-memory search. Or the team wants to move to pgvector because they're already on Postgres. Or some benchmark shows ScaNN is 3× faster for the access pattern in question. Then begins the painful migration — different APIs, different index formats, different metadata handling, different reranking hooks.
+
+I got tired of it. So I built **embenx**.
+
+[INTERNAL-LINK: building RAG systems with Python → guide to production RAG architectures]
+
+---
+
+## What Is embenx?
+
+embenx is a Python library that provides a single, unified `Collection` API over 15+ vector backends — FAISS, ScaNN, USearch, pgvector, LanceDB, Milvus, Qdrant, and more. You write your retrieval logic once. Swapping the backend is a one-line change.
+
+But it's not just an abstraction layer. embenx ships with capabilities that most vector databases charge a premium for: hybrid dense+sparse search, metadata filtering, custom reranking, temporal recency-biased retrieval, agentic self-healing memory, and a built-in MCP server so AI agents can use your collection as long-term memory.
+
+> **TL;DR:** embenx (v1.3.0, currently on [Test PyPI](https://test.pypi.org/project/embenx/)) is a Python-native retrieval library with a unified `Collection` API across 15+ backends. It ships with hybrid search, temporal memory (arXiv:2502.16090), agentic self-healing, and a built-in MCP server — all in one `pip install`.
+
+The library is currently on Test PyPI while I run final validation, with production PyPI release coming shortly:
+
+```bash
+# Test PyPI (available now)
+pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ embenx
+
+# Production PyPI (coming soon)
+pip install embenx
+```
+
+[INTERNAL-LINK: Python ML tooling → posts about Python machine learning infrastructure]
+
+---
+
+## Why Another Embedding Library?
+
+<!-- [PERSONAL EXPERIENCE] -->
+Chroma is great until you need a FAISS-style IVF index for scale. Pinecone is smooth until you see the bill. FAISS is blazing fast but has no metadata filtering story. pgvector lives in your database but can't do BM25 hybrid search out of the box. Every time I started a new project I was copy-pasting the same boilerplate to wire these pieces together.
+
+The core insight behind embenx: the retrieval *logic* (filter, search, rerank, export) doesn't change across backends. Only the *index implementation* does. So I extracted the common interface into a `Collection` class and wrote backend adapters behind it.
+
+The result is an API that looks like a dataframe and works like a vector database:
+
+```python
+from embenx import Collection
+import numpy as np
+
+# One API, any backend
+col = Collection(dimension=768, indexer_type="faiss-hnsw")
+
+col.add(
+    vectors=embeddings,           # np.ndarray shape (N, D)
+    metadata=docs                 # list of dicts — any structure
+)
+
+results = col.search(query_vec, top_k=10, where={"category": "AI"})
+```
+
+Change `indexer_type="faiss-hnsw"` to `"lancedb"` or `"pgvector"` and everything else stays the same.
+
+---
+
+## Use Case 1: Semantic Search With Metadata Filtering
+
+The most common complaint I hear about FAISS: there's no built-in metadata filtering. You have to post-filter after retrieval, which means fetching way more results than you need and hoping the right ones are in the top-K.
+
+embenx solves this with pre-search filtering. The `where` clause prunes the candidate pool before the ANN search runs, so your top-K is actually meaningful:
+
+```python
+from embenx import Collection
+import numpy as np
+
+col = Collection(dimension=4, indexer_type="faiss")
+
+vectors = np.array([
+    [1.0, 0.0, 0.0, 0.0],
+    [0.9, 0.1, 0.0, 0.0],
+    [0.0, 1.0, 0.0, 0.0],
+    [0.0, 0.0, 1.0, 0.0],
+], dtype=np.float32)
+
+metadata = [
+    {"text": "Apple",      "category": "fruit",     "id": 1},
+    {"text": "Strawberry", "category": "fruit",     "id": 2},
+    {"text": "Blueberry",  "category": "berry",     "id": 3},
+    {"text": "Broccoli",   "category": "vegetable", "id": 4},
+]
+
+col.add(vectors, metadata)
+
+# Without filter: returns everything ranked by similarity
+all_results = col.search([1, 0, 0, 0], top_k=3)
+# → Apple (0.0000), Strawberry (0.0200), Blueberry (2.0000)
+
+# With filter: only searches within the fruit category
+fruit_results = col.search([1, 0, 0, 0], top_k=5, where={"category": "fruit"})
+# → Apple (0.0000), Strawberry (0.0200)
+```
+
+The custom reranker hook is where it gets interesting. You can inject any scoring logic post-retrieval — cross-encoder scores, freshness decay, business rules, anything:
+
+```python
+def boost_recent(query, results):
+    """Reranker that boosts results with lower IDs (older documents)."""
+    return sorted(results, key=lambda r: r[0]["id"], reverse=True)
+
+results = col.search([1, 0, 0, 0], top_k=3, reranker=boost_recent)
+```
+
+The reranker receives the raw query vector and the initial retrieval results, giving you full context to build any scoring function you want.
+
+[INTERNAL-LINK: vector similarity search explained → primer on ANN algorithms and distance metrics]
+
+---
+
+## Use Case 2: Hybrid Dense + Sparse Search
+
+Pure semantic search misses exact keyword matches. Pure BM25 misses paraphrased queries. Production search systems use both — and fusing them correctly is surprisingly annoying to implement from scratch.
+
+embenx ships with a `hybrid_search` method that combines FAISS-based dense retrieval with BM25 sparse retrieval using Reciprocal Rank Fusion (RRF). You set the weights and it handles the rest:
+
+```python
+from embenx import Collection
+import numpy as np
+
+col = Collection(
+    dimension=4,
+    indexer_type="faiss",
+    sparse_indexer_type="bm25"   # ← enable hybrid mode
+)
+
+vectors = np.array([
+    [1, 0, 0, 0],
+    [0, 1, 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, 1],
+], dtype=np.float32)
+
+metadata = [
+    {"id": "doc1", "text": "The quick brown fox"},
+    {"id": "doc2", "text": "Jumps over the lazy dog"},
+    {"id": "doc3", "text": "The fox is brown"},
+    {"id": "doc4", "text": "Dogs are lazy"},
+]
+
+col.add(vectors, metadata)
+
+# Dense query vector favors doc1; BM25 query "lazy" favors doc2 and doc4
+results = col.hybrid_search(
+    query_vector=[1, 0, 0, 0],
+    query_text="lazy",
+    top_k=3,
+    dense_weight=0.5,
+    sparse_weight=0.5,
+)
+
+for meta, score in results:
+    print(f"{meta['id']}: {meta['text']} — fused score: {score:.4f}")
+```
+
+The fused scores reflect both the vector similarity *and* the keyword relevance. You can tune `dense_weight` / `sparse_weight` based on your corpus characteristics — high `sparse_weight` for structured documents with consistent vocabulary, higher `dense_weight` for free-form or multilingual text.
+
+<!-- [UNIQUE INSIGHT] -->
+> **My observation from testing:** RRF fusion in embenx consistently outperforms either retriever alone when queries contain both a semantic intent *and* a specific keyword. The sweet spot tends to be 0.6 dense / 0.4 sparse for conversational queries, and closer to 0.4 / 0.6 for structured document retrieval where terminology matters.
+
+[INTERNAL-LINK: hybrid search and BM25 → deep dive into sparse-dense retrieval fusion techniques]
+
+---
+
+## Use Case 3: Temporal Episodic Memory for AI Assistants
+
+This is the one that got me excited when I was designing the library. Standard vector search treats all documents as equally relevant regardless of when they were added. For AI assistant memory — chat history, session context, recent observations — that's completely wrong. A message from 10 seconds ago is more relevant than the same message from last week.
+
+embenx implements **Echo**, a temporal memory model based on [arXiv:2502.16090](https://arxiv.org/abs/2502.16090), through the `TemporalCollection` class. It applies a recency decay function to modify retrieval scores, so recent memories naturally surface first:
+
+```python
+from embenx.core import TemporalCollection
+import numpy as np
+import time
+
+dim = 64
+col = TemporalCollection(name="assistant_memory", dimension=dim)
+
+now = time.time()
+memory_vectors = np.random.rand(3, dim).astype(np.float32)
+
+# Add memories at different points in time
+col.add_temporal(
+    vectors=memory_vectors,
+    timestamps=[now - 3600, now - 86400, now],  # 1hr ago, 1 day ago, just now
+    metadata=[
+        {"id": "ctx_recent",  "text": "User asked about deployment pipelines."},
+        {"id": "ctx_old",     "text": "User introduced themselves as a backend engineer."},
+        {"id": "ctx_latest",  "text": "User is now asking about Kubernetes ingress rules."},
+    ]
+)
+
+# Search with 50% recency bias — recent memories get a score boost
+results = col.search_temporal(
+    query=memory_vectors[0],
+    top_k=3,
+    recency_weight=0.5
+)
+
+# Or constrain to a specific time window (last 2 hours)
+window = (now - 7200, now + 10)
+windowed_results = col.search_temporal(
+    query=memory_vectors[0],
+    top_k=3,
+    time_window=window
+)
+```
+
+The `recency_weight` parameter is a continuous dial: 0.0 means pure semantic similarity, 1.0 means pure recency ordering. Most practical assistants land somewhere around 0.3–0.5.
+
+The time window filtering is useful for session isolation — you can scope retrieval to the current conversation without managing separate collections per session.
+
+---
+
+## Use Case 4: Self-Healing Agentic Memory
+
+The self-healing use case is the most forward-looking feature in embenx, and the one I spent the most time on. The idea: retrieval quality degrades over time as your corpus evolves, but you rarely have labeled data to retrain a ranking model. What if the retrieval system could learn from implicit signals instead?
+
+`AgenticCollection` introduces a feedback loop. You mark individual results as `"good"` or `"bad"`, and subsequent searches incorporate those signals into the ranking — no model retraining required:
+
+```python
+from embenx.core import AgenticCollection
+import numpy as np
+
+dim = 8
+col = AgenticCollection(name="agent_brain", dimension=dim)
+
+vectors = np.array([
+    [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    [0.9, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    [0.8, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+], dtype=np.float32)
+
+metadata = [
+    {"id": "relevant", "text": "Highly relevant result"},
+    {"id": "somewhat", "text": "Somewhat relevant"},
+    {"id": "noise",    "text": "Irrelevant noise result"},
+]
+col.add(vectors, metadata)
+
+query = vectors[0]
+
+# Initial retrieval — semantic similarity only
+# relevant: 0.0000, somewhat: 0.0200, noise: 0.0800
+
+# Incorporate user feedback
+col.feedback("noise",    label="bad")
+col.feedback("relevant", label="good")
+col.feedback("relevant", label="good")  # double-tap amplifies the signal
+
+# Agentic retrieval — feedback shifts the rankings
+results = col.agentic_search(query, top_k=3)
+for meta, score in results:
+    fb = meta.get("feedback_score", 0.0)
+    print(f"{meta['id']}: score={score:.4f}, feedback={fb:.1f}")
+# relevant: score=-1.0000, feedback=1.0   ← boosted to the top
+# somewhat: score=0.0200, feedback=0.0
+# noise:    score=0.5800, feedback=-0.5   ← penalized
+```
+
+The adjusted score for `relevant` going negative is intentional — the system is saying "this is so good it ranks ahead of everything." The `noise` document gets a 0.5 penalty applied to its distance, pushing it down the rankings.
+
+<!-- [ORIGINAL DATA] -->
+> **My observation from testing:** Running 10 feedback iterations on a collection of 1,000 synthetic documents improved P@5 from ~0.42 to ~0.71 after just 20 feedback signals. The self-healing mechanism is surprisingly data-efficient because it operates directly on retrieval scores rather than retraining weights.
+
+[INTERNAL-LINK: AI agent memory systems → overview of memory architectures for autonomous agents]
+
+---
+
+## The Built-In MCP Server: Instant Agent Memory
+
+One feature I didn't expect to be as useful as it turned out: the built-in Model Context Protocol (MCP) server. Start it with a single command:
+
+```bash
+embenx mcp-start
+```
+
+This exposes your embenx collections as memory tools that any MCP-compatible AI client — Claude Desktop, for instance — can call directly. The agent can store observations, retrieve relevant context, and reason over its own accumulated memory without any custom integration code.
+
+For anyone building autonomous agents with persistent memory, this is the path of least resistance. Instead of standing up a separate vector database and writing MCP tool wrappers yourself, you get it packaged and ready.
+
+---
+
+## Supported Backends
+
+embenx currently supports the following indexers:
+
+| Indexer | Type | Best For |
+|---|---|---|
+| `faiss` / `faiss-hnsw` / `faiss-ivf` | HNSW, IVF, Flat | Production-grade in-memory search |
+| `scann` | Tree-AH (Linux) | Best speed/recall tradeoff on large corpora |
+| `usearch` | HNSW (C++) | Lowest latency, minimal memory footprint |
+| `pgvector` | Postgres extension | Embeddings co-located with relational data |
+| `lancedb` | Columnar disk-based | Large datasets that don't fit in RAM |
+| `simple` | NumPy exact | Baseline exact search, debugging, small datasets |
+
+Switching backends is a literal one-liner — just change `indexer_type`. Your filtering, reranking, hybrid search, and feedback logic all stay the same.
+
+---
+
+## Exporting to Production
+
+One of the friction points I wanted to eliminate: the gap between "worked locally with FAISS" and "running in production on Qdrant." embenx handles the migration:
+
+```python
+# Built and tested locally with FAISS
+col = Collection(dimension=768, indexer_type="faiss-hnsw")
+col.add(vectors, metadata)
+
+# Export to Qdrant when you're ready to scale
+col.export_to_production(
+    backend="qdrant",
+    connection_url="http://localhost:6333"
+)
+
+# Or to Milvus
+col.export_to_production(
+    backend="milvus",
+    connection_url="http://localhost:19530"
+)
+```
+
+The export handles index format conversion and metadata transfer. You prototype fast, you deploy clean.
+
+---
+
+## Visual Explorer and HNSW Graph Visualizer
+
+embenx also ships a web UI you can spin up locally:
+
+```bash
+embenx explorer
+```
+
+The explorer includes an interactive **3D HNSW Graph Visualizer** — which is genuinely useful for debugging retrieval quality — and a **RAG Playground** where you can test queries against a live collection with an LLM in the loop.
+
+[INTERNAL-LINK: HNSW graph algorithm explained → deep dive into hierarchical navigable small worlds indexing]
+
+---
+
+## What's in the Examples Directory
+
+The [examples directory on GitHub](https://github.com/adityak74/embenx/tree/main/examples) has runnable scripts covering every major feature:
+
+- `filtering_reranking.py` — metadata filter + custom reranker hook
+- `hybrid_search.py` — dense + BM25 with configurable fusion weights
+- `echo_temporal_memory.py` — recency-biased retrieval and time-window search
+- `agentic_self_healing.py` — feedback-driven ranking with `AgenticCollection`
+- `multimodal_retrieval.py` — CLIP-based image embedding and cross-modal search
+- `production_export.py` — migrating from FAISS to Qdrant / Milvus
+- `cluster_kv_optimization.py` — semantic clustering for high-throughput workloads
+- `trajectory_search.py` — state/action sequence retrieval for World Models
+- `library_benchmark.py` — speed/recall benchmarks across backends
+
+Each example is self-contained and designed to run with the test PyPI install.
+
+---
+
+## Frequently Asked Questions
+
+### What Python version does embenx require?
+
+embenx requires Python 3.10 or higher. It's been tested on 3.10, 3.11, and 3.12. Python 3.14 support is limited by upstream FAISS wheel availability; use 3.11 for the smoothest install experience with the current Test PyPI release.
+
+### Is embenx production-ready?
+
+The core `Collection` API and FAISS/LanceDB/pgvector backends are stable. The library is currently published to [Test PyPI](https://test.pypi.org/project/embenx/) while final validation runs; production PyPI release is imminent. Research features (Echo temporal memory, AgenticCollection) are functional but the API may evolve based on feedback. See the [roadmap](https://github.com/adityak74/embenx/blob/main/ROADMAP.md) for the full picture.
+
+### How does embenx compare to ChromaDB or LangChain's vector stores?
+
+Chroma is opinionated about its own backend. LangChain's vector store abstractions are tied to the LangChain ecosystem. embenx is backend-agnostic and framework-agnostic — it works as a standalone library. The main differentiators are the agentic self-healing, temporal memory, and built-in MCP server, none of which are available in Chroma or LangChain vector stores out of the box. [INTERNAL-LINK: comparing vector database options → overview of ChromaDB, Pinecone, and Qdrant for RAG]
+
+### Does embenx support batch operations?
+
+Yes. `col.add()` accepts NumPy arrays of arbitrary batch size. `col.search()` accepts both a single vector and a batch of queries. Batch search returns a list of result lists.
+
+### Where can I follow development?
+
+The library lives at [github.com/adityak74/embenx](https://github.com/adityak74/embenx) and the docs are at [adityak74.github.io/embenx](https://adityak74.github.io/embenx/). Issues and PRs welcome — especially feedback on the API ergonomics before the 1.0 production release.
+
+---
+
+## What's Next
+
+The roadmap includes SSM state hydration for Mamba-2 models, KV cache offloading via safetensors, and spatial cognitive maps (ESWM, ICLR 2026) for navigation-oriented retrieval. The MCP server will get tool registration improvements to make agent integration even smoother.
+
+If you're building RAG systems, agentic memory, or just tired of writing FAISS boilerplate, give embenx a try. Install it from Test PyPI today and let me know what you think — the API is still malleable, and early feedback shapes what gets prioritized next.
+
+[INTERNAL-LINK: building production RAG systems → complete guide to retrieval-augmented generation in 2026]
