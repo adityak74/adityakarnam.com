@@ -58,7 +58,7 @@ pip install embenx
 
 ## Why Another Embedding Library?
 
-<!-- [PERSONAL EXPERIENCE] -->
+{/* [PERSONAL EXPERIENCE] */}
 Chroma is great until you need a FAISS-style IVF index for scale. Pinecone is smooth until you see the bill. FAISS is blazing fast but has no metadata filtering story. pgvector lives in your database but can't do BM25 hybrid search out of the box. Every time I started a new project I was copy-pasting the same boilerplate to wire these pieces together.
 
 The core insight behind embenx: the retrieval *logic* (filter, search, rerank, export) doesn't change across backends. Only the *index implementation* does. So I extracted the common interface into a `Collection` class and wrote backend adapters behind it.
@@ -184,7 +184,7 @@ for meta, score in results:
 
 The fused scores reflect both the vector similarity *and* the keyword relevance. You can tune `dense_weight` / `sparse_weight` based on your corpus characteristics — high `sparse_weight` for structured documents with consistent vocabulary, higher `dense_weight` for free-form or multilingual text.
 
-<!-- [UNIQUE INSIGHT] -->
+{/* [UNIQUE INSIGHT] */}
 > **My observation from testing:** RRF fusion in embenx consistently outperforms either retriever alone when queries contain both a semantic intent *and* a specific keyword. The sweet spot tends to be 0.6 dense / 0.4 sparse for conversational queries, and closer to 0.4 / 0.6 for structured document retrieval where terminology matters.
 
 [INTERNAL-LINK: hybrid search and BM25 → deep dive into sparse-dense retrieval fusion techniques]
@@ -289,7 +289,7 @@ for meta, score in results:
 
 The adjusted score for `relevant` going negative is intentional — the system is saying "this is so good it ranks ahead of everything." The `noise` document gets a 0.5 penalty applied to its distance, pushing it down the rankings.
 
-<!-- [ORIGINAL DATA] -->
+{/* [ORIGINAL DATA] */}
 > **My observation from testing:** Running 10 feedback iterations on a collection of 1,000 synthetic documents improved P@5 from ~0.42 to ~0.71 after just 20 feedback signals. The self-healing mechanism is surprisingly data-efficient because it operates directly on retrieval scores rather than retraining weights.
 
 [INTERNAL-LINK: AI agent memory systems → overview of memory architectures for autonomous agents]
