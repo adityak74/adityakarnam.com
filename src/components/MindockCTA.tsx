@@ -7,17 +7,15 @@ const MindockCTA = () => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: "1rem",
-        padding: "2rem",
-        backgroundColor: "rgba(47, 47, 47, 0.5)",
-        borderRadius: "16px",
-        border: "1px solid #404040",
-        backdropFilter: "blur(10px)",
+        gap: "0.875rem",
+        padding: "1.75rem 2rem",
+        backgroundColor: "rgba(37, 99, 235, 0.05)",
+        borderRadius: "10px",
+        border: "1px solid rgba(37, 99, 235, 0.15)",
         marginTop: "2rem",
         marginBottom: "2rem",
       }}
     >
-      {/* Mindock CTA - Primary */}
       <a
         href="https://mindock.app/"
         target="_blank"
@@ -25,60 +23,53 @@ const MindockCTA = () => {
         style={{
           display: "inline-flex",
           alignItems: "center",
-          gap: "0.75rem",
-          backgroundColor: "#667eea",
+          gap: "0.625rem",
+          backgroundColor: "#2563EB",
           color: "#ffffff",
-          padding: "1.25rem 2.5rem",
-          borderRadius: "12px",
+          padding: "0.875rem 2rem",
+          borderRadius: "8px",
           textDecoration: "none",
           fontWeight: "600",
-          fontSize: "1.2rem",
-          transition: "all 0.3s ease",
-          position: "relative",
-          overflow: "hidden",
-          boxShadow: "0 8px 25px rgba(102, 126, 234, 0.3)",
+          fontSize: "1rem",
+          transition: "background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease",
+          boxShadow: "0 2px 8px rgba(37, 99, 235, 0.25)",
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = "#5a67d8";
-          e.currentTarget.style.transform = "translateY(-3px)";
-          e.currentTarget.style.boxShadow =
-            "0 15px 35px rgba(102, 126, 234, 0.4)";
+          e.currentTarget.style.backgroundColor = "#1D4ED8";
+          e.currentTarget.style.transform = "translateY(-2px)";
+          e.currentTarget.style.boxShadow = "0 6px 16px rgba(37, 99, 235, 0.35)";
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = "#667eea";
+          e.currentTarget.style.backgroundColor = "#2563EB";
           e.currentTarget.style.transform = "translateY(0)";
-          e.currentTarget.style.boxShadow =
-            "0 8px 25px rgba(102, 126, 234, 0.3)";
+          e.currentTarget.style.boxShadow = "0 2px 8px rgba(37, 99, 235, 0.25)";
         }}
       >
-        🧠 Join Mindock Waitlist - AI-Native Notes
+        Join Mindock Waitlist
         <span
           style={{
-            fontSize: "0.9rem",
-            backgroundColor: "rgba(255, 255, 255, 0.2)",
-            padding: "0.2rem 0.6rem",
-            borderRadius: "6px",
+            fontSize: "0.75rem",
+            backgroundColor: "rgba(255, 255, 255, 0.18)",
+            padding: "0.15rem 0.5rem",
+            borderRadius: "4px",
             fontWeight: "500",
+            letterSpacing: "0.03em",
           }}
         >
-          PRIVATE & FREE
+          FREE
         </span>
       </a>
-
-      {/* Mindock Description */}
       <p
         style={{
-          fontSize: "0.95rem",
-          color: "#a0aec0",
+          fontSize: "0.875rem",
+          color: "#6B7280",
           textAlign: "center",
-          marginTop: "0.5rem",
-          marginBottom: "0",
-          maxWidth: "500px",
-          lineHeight: "1.4",
+          margin: "0",
+          maxWidth: "480px",
+          lineHeight: "1.5",
         }}
       >
-        Think through first principles with AI. The first truly private,
-        offline notes app. Open source & free forever.
+        Think through first principles with AI — private, offline notes. Open source &amp; free forever.
       </p>
     </div>
   );

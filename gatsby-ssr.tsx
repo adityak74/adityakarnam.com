@@ -28,6 +28,13 @@ export const onRenderBody = ({ setHeadComponents }) => {
       content="width=device-width, initial-scale=1.0"
       key="viewport"
     />,
+    <link rel="preconnect" href="https://fonts.googleapis.com" key="fonts-preconnect" />,
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" key="fonts-gstatic-preconnect" />,
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+      key="google-fonts"
+    />,
     <link
       rel="alternate"
       hrefLang="en"

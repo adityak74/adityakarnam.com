@@ -40,12 +40,32 @@ const Post: React.FC<React.PropsWithChildren<PageProps<MBPostProps>>> = ({ data:
     <Heading as="h1" variant="styles.h1">
       {post.title}
     </Heading>
-    <p sx={{ color: `secondary`, mt: 3, a: { color: `secondary` }, fontSize: [1, 1, 2] }}>
+    <p sx={{ color: `secondary`, mt: 3, a: { color: `secondary` }, fontSize: [1, 1, 2], display: `flex`, alignItems: `center`, flexWrap: `wrap`, gap: `0.5rem` }}>
+      {post.tags?.some((t) => t.name === `autoblog`) && (
+        <span sx={{
+          fontSize: `0.7rem`,
+          fontWeight: `600`,
+          letterSpacing: `0.07em`,
+          textTransform: `uppercase`,
+          color: `#8B949E`,
+          backgroundColor: (t: any) => t.colors?.modes?.dark ? `rgba(255,255,255,0.06)` : `rgba(0,0,0,0.05)`,
+          bg: `muted`,
+          border: `1px solid`,
+          borderColor: `divide`,
+          px: `0.5rem`,
+          py: `0.15rem`,
+          borderRadius: `4px`,
+          fontFamily: `monospace`,
+          lineHeight: `1.6`,
+        }}>
+          AI Generated
+        </span>
+      )}
       <time>{post.date}</time>
       {post.tags && (
         <React.Fragment>
           {` — `}
-          <ItemTags tags={post.tags} />
+          <ItemTags tags={post.tags.filter((t) => t.name !== `autoblog`)} />
         </React.Fragment>
       )}
       {post.timeToRead && ` — `}
