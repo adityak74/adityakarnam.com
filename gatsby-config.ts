@@ -34,10 +34,6 @@ const config: GatsbyConfig = {
         ],
         externalLinks: [
           {
-            name: `Dzone`,
-            url: `https://dzone.com/users/5236541/adityakarnam.html`,
-          },
-          {
             name: `LinkedIn`,
             url: `https://www.linkedin.com/in/adityakarnamgrao/`,
           },
