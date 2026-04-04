@@ -1,122 +1,67 @@
 import React from "react";
-import { FaLinkedin, FaTwitter, FaGithub } from "react-icons/fa";
+import { useColorMode } from "theme-ui";
+import { FaLinkedin, FaTwitter, FaGithub, FaArrowRight, FaTools, FaBrain, FaGithub as FaGithubIcon, FaExternalLinkAlt } from "react-icons/fa";
 
 const HeroSection: React.FC = () => {
+  const [colorMode] = useColorMode();
+  const isDark = colorMode === "dark";
+
+  const colors = {
+    bg: "transparent",
+    text: isDark ? "#C9D1D9" : "#111827",
+    heading: isDark ? "#F0F6FC" : "#111827",
+    secondary: isDark ? "#8B949E" : "#6B7280",
+    primary: isDark ? "#58A6FF" : "#2563EB",
+    divide: isDark ? "#21262D" : "#E5E7EB",
+    cardBg: isDark ? "#161B22" : "#F8FAFC",
+    cardBorder: isDark ? "#21262D" : "#E5E7EB",
+    mutedBg: isDark ? "#0D1117" : "#F3F4F6",
+  };
+
   return (
-    <div
-      style={{
-        fontFamily: "system-ui, -apple-system, sans-serif",
-        backgroundColor: "#1b202b",
-        minHeight: "80vh",
-        color: "#ffffff",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      {/* Background gradient overlay */}
+    <div style={{ color: colors.text }}>
+      {/* Hero content */}
       <div
         style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background:
-            "linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)",
-          pointerEvents: "none",
-        }}
-      />
-
-      {/* Animated background elements */}
-      <div
-        style={{
-          position: "absolute",
-          top: "10%",
-          right: "10%",
-          width: "200px",
-          height: "200px",
-          borderRadius: "50%",
-          background:
-            "radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%)",
-          animation: "float 6s ease-in-out infinite",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          bottom: "20%",
-          left: "5%",
-          width: "150px",
-          height: "150px",
-          borderRadius: "50%",
-          background:
-            "radial-gradient(circle, rgba(118, 75, 162, 0.08) 0%, transparent 70%)",
-          animation: "float 8s ease-in-out infinite reverse",
-        }}
-      />
-
-      <div
-        style={{
-          maxWidth: "1200px",
-          margin: "0 auto",
-          padding: "4rem 2rem",
-          position: "relative",
-          zIndex: 1,
+          paddingTop: "3rem",
+          paddingBottom: "4rem",
         }}
       >
-        {/* Main Hero Content */}
-        <div
-          style={{
-            textAlign: "center",
-            marginBottom: "4rem",
-            maxWidth: "800px",
-            margin: "0 auto",
-          }}
-        >
+        {/* Name + role */}
+        <div style={{ marginBottom: "3rem" }}>
           <h1
             style={{
-              fontSize: "3.5rem",
+              fontSize: "clamp(2rem, 5vw, 3rem)",
               fontWeight: "700",
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              marginBottom: "1.5rem",
-              lineHeight: "1.1",
-              letterSpacing: "-0.02em",
+              color: colors.heading,
+              marginBottom: "0.75rem",
+              lineHeight: "1.15",
+              letterSpacing: "-0.03em",
             }}
           >
-            Hey there, I'm Aditya 👋
+            Hi, I'm Aditya Karnam
           </h1>
-
-          <div
-            style={{
-              fontSize: "1.4rem",
-              color: "#e2e8f0",
-              fontWeight: "600",
-              marginBottom: "2rem",
-              lineHeight: "1.4",
-            }}
-          >
-            <span
-              style={{
-                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              Software Engineer
-            </span>{" "}
-            building AI systems that think beyond the prompt.
-          </div>
 
           <p
             style={{
-              fontSize: "1.1rem",
-              color: "#a0aec0",
-              lineHeight: "1.7",
-              marginBottom: "3rem",
-              maxWidth: "700px",
-              margin: "0 auto 3rem",
+              fontSize: "clamp(1.1rem, 2.5vw, 1.35rem)",
+              color: colors.secondary,
+              fontWeight: "500",
+              marginBottom: "1.5rem",
+              lineHeight: "1.4",
+            }}
+          >
+            <span style={{ color: colors.primary }}>Software Engineer</span>
+            {" "}building AI systems that think beyond the prompt.
+          </p>
+
+          <p
+            style={{
+              fontSize: "1rem",
+              color: colors.secondary,
+              lineHeight: "1.75",
+              maxWidth: "580px",
+              marginBottom: "2rem",
             }}
           >
             I'm obsessed with creating AI tools that don't just follow
@@ -125,390 +70,328 @@ const HeroSection: React.FC = () => {
             help millions of users harness AI more effectively.
           </p>
 
-          {/* CTA Buttons */}
-          <div
+          {/* Currently building — embenx */}
+          <a
+            href="https://adityak74.github.io/embenx/"
+            target="_blank"
+            rel="noopener noreferrer"
             style={{
-              marginBottom: "4rem",
               display: "flex",
-              flexDirection: "column",
+              alignItems: "flex-start",
               gap: "1rem",
-              alignItems: "center",
+              padding: "1rem 1.25rem",
+              backgroundColor: isDark ? "#0D1117" : "#F8FAFC",
+              border: `1px solid ${isDark ? "#21262D" : "#E5E7EB"}`,
+              borderLeft: `3px solid ${colors.primary}`,
+              borderRadius: "8px",
+              textDecoration: "none",
+              color: "inherit",
+              marginBottom: "2rem",
+              transition: "border-color 0.15s ease, transform 0.15s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = colors.primary;
+              e.currentTarget.style.transform = "translateY(-1px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = isDark ? "#21262D" : "#E5E7EB";
+              e.currentTarget.style.borderLeftColor = colors.primary;
+              e.currentTarget.style.transform = "translateY(0)";
             }}
           >
-            {/* AI Toolkit CTA */}
-            <a
-              href="/ai-toolkit"
-              style={{
-                display: "inline-block",
-                backgroundColor: "transparent",
-                border: "2px solid #667eea",
-                color: "#667eea",
-                padding: "1rem 2rem",
-                borderRadius: "12px",
-                textDecoration: "none",
-                fontWeight: "600",
-                fontSize: "1.1rem",
-                transition: "all 0.3s ease",
-                position: "relative",
-                overflow: "hidden",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#667eea";
-                e.currentTarget.style.color = "#ffffff";
-                e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow =
-                  "0 10px 25px rgba(102, 126, 234, 0.3)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.color = "#667eea";
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-            >
-              🚀 Explore AI Toolkit
-            </a>
-          </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.375rem", flexWrap: "wrap" }}>
+                <span
+                  style={{
+                    fontSize: "0.7rem",
+                    fontWeight: "600",
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    color: colors.primary,
+                    backgroundColor: isDark ? "rgba(88, 166, 255, 0.1)" : "rgba(37, 99, 235, 0.08)",
+                    padding: "0.15rem 0.5rem",
+                    borderRadius: "4px",
+                  }}
+                >
+                  Currently Building
+                </span>
+                <span style={{ fontSize: "0.95rem", fontWeight: "700", color: colors.heading }}>
+                  embenx
+                </span>
+              </div>
+              <p style={{ fontSize: "0.875rem", color: colors.secondary, margin: "0 0 0.5rem", lineHeight: "1.55" }}>
+                Universal embedding retrieval toolkit &amp; agentic memory layer — unified API for 15+ vector backends with MCP support for Claude and autonomous agents.
+              </p>
+              <code
+                style={{
+                  fontSize: "0.8rem",
+                  fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                  color: colors.primary,
+                  backgroundColor: isDark ? "rgba(88, 166, 255, 0.08)" : "rgba(37, 99, 235, 0.06)",
+                  padding: "0.15rem 0.5rem",
+                  borderRadius: "4px",
+                }}
+              >
+                pip install embenx
+              </code>
+            </div>
+            <div style={{ display: "flex", gap: "0.5rem", flexShrink: 0, alignItems: "center", paddingTop: "2px" }}>
+              <a
+                href="https://github.com/adityak74/embenx"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                title="GitHub"
+                style={{
+                  color: colors.secondary,
+                  fontSize: "1rem",
+                  display: "flex",
+                  alignItems: "center",
+                  transition: "color 0.15s ease",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = colors.heading; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = colors.secondary; }}
+              >
+                {React.createElement(FaGithubIcon)}
+              </a>
+              {React.createElement(FaExternalLinkAlt, { style: { color: colors.secondary, fontSize: "0.75rem" } })}
+            </div>
+          </a>
+
+          {/* CTA */}
+          <a
+            href="/ai-toolkit"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              backgroundColor: colors.primary,
+              color: "#ffffff",
+              padding: "0.75rem 1.5rem",
+              borderRadius: "8px",
+              textDecoration: "none",
+              fontWeight: "600",
+              fontSize: "0.95rem",
+              transition: "opacity 0.15s ease, transform 0.15s ease",
+              boxShadow: isDark
+                ? "0 2px 8px rgba(88, 166, 255, 0.2)"
+                : "0 2px 8px rgba(37, 99, 235, 0.2)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = "0.88";
+              e.currentTarget.style.transform = "translateY(-1px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = "1";
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
+            Explore AI Toolkit
+            {React.createElement(FaArrowRight, { style: { fontSize: "0.8rem" } })}
+          </a>
         </div>
 
-        {/* What I'm Building Section */}
+        {/* Divider */}
+        <hr
+          style={{
+            border: "none",
+            borderTop: `1px solid ${colors.divide}`,
+            margin: "0 0 2.5rem 0",
+          }}
+        />
+
+        {/* Feature cards */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
-            gap: "2rem",
-            marginBottom: "3rem",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: "1rem",
+            marginBottom: "2.5rem",
           }}
         >
-          {/* AI Toolkit Card */}
           <div
             style={{
-              backgroundColor: "#2f2f2f",
-              borderRadius: "16px",
-              padding: "2rem",
-              border: "1px solid #404040",
-              boxShadow:
-                "0 10px 25px rgba(0, 0, 0, 0.3), 0 6px 12px rgba(0, 0, 0, 0.2)",
-              backdropFilter: "blur(10px)",
-              position: "relative",
-              overflow: "hidden",
-              transition: "transform 0.3s ease, box-shadow 0.3s ease",
+              backgroundColor: colors.cardBg,
+              borderRadius: "8px",
+              padding: "1.5rem",
+              border: `1px solid ${colors.cardBorder}`,
+              borderLeft: `3px solid ${colors.primary}`,
+              transition: "transform 0.15s ease",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-5px)";
-              e.currentTarget.style.boxShadow =
-                "0 20px 40px rgba(0, 0, 0, 0.4), 0 10px 20px rgba(0, 0, 0, 0.3)";
+              e.currentTarget.style.transform = "translateY(-2px)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow =
-                "0 10px 25px rgba(0, 0, 0, 0.3), 0 6px 12px rgba(0, 0, 0, 0.2)";
             }}
           >
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                height: "4px",
-                background: "linear-gradient(90deg, #667eea 0%, #764ba2 100%)",
-              }}
-            />
-
             <h3
               style={{
-                fontSize: "1.4rem",
-                fontWeight: "700",
-                color: "#ffffff",
-                marginBottom: "1rem",
+                fontSize: "1rem",
+                fontWeight: "600",
+                color: colors.heading,
+                marginBottom: "0.625rem",
                 display: "flex",
                 alignItems: "center",
                 gap: "0.5rem",
               }}
             >
-              🛠️ AI Toolkit
+              {React.createElement(FaTools, { style: { color: colors.primary, fontSize: "0.9rem" } })}
+              AI Toolkit
             </h3>
-
             <p
               style={{
-                color: "#a0aec0",
-                lineHeight: "1.6",
-                marginBottom: "0",
+                color: colors.secondary,
+                lineHeight: "1.65",
+                fontSize: "0.9rem",
+                margin: 0,
               }}
             >
               Interactive tools that bridge the gap between "I have an idea" and
               "I have the perfect prompt." From dynamic prompt composers to
-              reasoning mode toggles, I'm turning prompt engineering from
-              guesswork into a craft.
+              reasoning mode toggles, turning prompt engineering from guesswork
+              into a craft.
             </p>
           </div>
 
-          {/* Intelligent Systems Card */}
           <div
             style={{
-              backgroundColor: "#2f2f2f",
-              borderRadius: "16px",
-              padding: "2rem",
-              border: "1px solid #404040",
-              boxShadow:
-                "0 10px 25px rgba(0, 0, 0, 0.3), 0 6px 12px rgba(0, 0, 0, 0.2)",
-              backdropFilter: "blur(10px)",
-              position: "relative",
-              overflow: "hidden",
-              transition: "transform 0.3s ease, box-shadow 0.3s ease",
+              backgroundColor: colors.cardBg,
+              borderRadius: "8px",
+              padding: "1.5rem",
+              border: `1px solid ${colors.cardBorder}`,
+              borderLeft: `3px solid ${colors.primary}`,
+              transition: "transform 0.15s ease",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-5px)";
-              e.currentTarget.style.boxShadow =
-                "0 20px 40px rgba(0, 0, 0, 0.4), 0 10px 20px rgba(0, 0, 0, 0.3)";
+              e.currentTarget.style.transform = "translateY(-2px)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow =
-                "0 10px 25px rgba(0, 0, 0, 0.3), 0 6px 12px rgba(0, 0, 0, 0.2)";
             }}
           >
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                height: "4px",
-                background: "linear-gradient(90deg, #764ba2 0%, #667eea 100%)",
-              }}
-            />
-
             <h3
               style={{
-                fontSize: "1.4rem",
-                fontWeight: "700",
-                color: "#ffffff",
-                marginBottom: "1rem",
+                fontSize: "1rem",
+                fontWeight: "600",
+                color: colors.heading,
+                marginBottom: "0.625rem",
                 display: "flex",
                 alignItems: "center",
                 gap: "0.5rem",
               }}
             >
-              🧠 Intelligent Systems
+              {React.createElement(FaBrain, { style: { color: colors.primary, fontSize: "0.9rem" } })}
+              Intelligent Systems
             </h3>
-
             <p
               style={{
-                color: "#a0aec0",
-                lineHeight: "1.6",
-                marginBottom: "0",
+                color: colors.secondary,
+                lineHeight: "1.65",
+                fontSize: "0.9rem",
+                margin: 0,
               }}
             >
-              I architect ML pipelines that process massive datasets while
-              maintaining human-like reasoning capabilities. Think
-              recommendation engines that understand nuance, not just numbers.
+              ML pipelines that process massive datasets while maintaining
+              human-like reasoning. Recommendation engines that understand
+              nuance, not just numbers.
             </p>
           </div>
         </div>
 
-        {/* Current Focus */}
+        {/* Currently exploring */}
         <div
           style={{
-            textAlign: "center",
-            padding: "2rem",
-            backgroundColor: "rgba(47, 47, 47, 0.5)",
-            borderRadius: "12px",
-            border: "1px solid #404040",
-            backdropFilter: "blur(10px)",
-            marginBottom: "3rem",
+            padding: "1rem 1.25rem",
+            backgroundColor: isDark ? "rgba(88, 166, 255, 0.06)" : "rgba(37, 99, 235, 0.04)",
+            borderRadius: "6px",
+            border: `1px solid ${isDark ? "rgba(88, 166, 255, 0.15)" : "rgba(37, 99, 235, 0.12)"}`,
+            marginBottom: "2.5rem",
           }}
         >
           <p
             style={{
-              fontSize: "1rem",
-              color: "#e2e8f0",
-              fontStyle: "italic",
-              marginBottom: "0",
+              fontSize: "0.9rem",
+              color: colors.secondary,
+              margin: 0,
               lineHeight: "1.6",
             }}
           >
-            <span style={{ color: "#667eea", fontWeight: "600" }}>
+            <span style={{ color: colors.primary, fontWeight: "600" }}>
               Currently exploring:
             </span>{" "}
-            How to make AI systems more interpretable without sacrificing
-            performance.
+            How to make AI systems more interpretable without sacrificing performance.
           </p>
         </div>
 
-        {/* Contact CTA */}
-        <div style={{ textAlign: "center" }}>
-          <hr
-            style={{
-              border: "none",
-              height: "1px",
-              background:
-                "linear-gradient(90deg, transparent 0%, #404040 50%, transparent 100%)",
-              margin: "2rem 0",
-            }}
-          />
+        {/* Contact */}
+        <hr
+          style={{
+            border: "none",
+            borderTop: `1px solid ${colors.divide}`,
+            margin: "0 0 2rem 0",
+          }}
+        />
 
-          <p
-            style={{
-              fontSize: "1.1rem",
-              color: "#e2e8f0",
-              fontWeight: "600",
-              marginBottom: "1rem",
-            }}
-          >
-            <span style={{ color: "#667eea" }}>
-              Building something interesting?
-            </span>{" "}
-            Let's connect — I love talking about the intersection of great UX
-            and powerful AI systems.
-          </p>
+        <p
+          style={{
+            fontSize: "0.95rem",
+            color: colors.secondary,
+            marginBottom: "1.25rem",
+            lineHeight: "1.6",
+          }}
+        >
+          <span style={{ color: colors.heading, fontWeight: "600" }}>
+            Building something interesting?
+          </span>{" "}
+          Let's connect — I love talking about the intersection of great UX and powerful AI.
+        </p>
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              gap: "1rem",
-              flexWrap: "wrap",
-            }}
-          >
+        <div
+          style={{
+            display: "flex",
+            gap: "0.75rem",
+          }}
+        >
+          {[
+            { icon: FaTwitter, url: "https://twitter.com/aditya_karnam", label: "Twitter", hoverColor: "#1DA1F2" },
+            { icon: FaGithub, url: "https://github.com/adityak74", label: "GitHub", hoverColor: isDark ? "#F0F6FC" : "#111827" },
+            { icon: FaLinkedin, url: "https://www.linkedin.com/in/adityakarnamgrao/", label: "LinkedIn", hoverColor: "#0077B5" },
+          ].map(({ icon, url, label, hoverColor }) => (
             <a
-              href="https://twitter.com/adityak74"
+              key={label}
+              href={url}
               target="_blank"
               rel="noopener noreferrer"
+              title={label}
               style={{
-                color: "#a0aec0",
-                textDecoration: "none",
-                fontSize: "1.5rem",
-                padding: "1rem",
-                borderRadius: "12px",
-                backgroundColor: "rgba(255, 255, 255, 0.05)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                transition: "all 0.3s ease",
+                color: colors.secondary,
+                fontSize: "1.2rem",
+                padding: "0.625rem",
+                borderRadius: "6px",
+                backgroundColor: colors.cardBg,
+                border: `1px solid ${colors.cardBorder}`,
+                transition: "color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                width: "60px",
-                height: "60px",
+                width: "44px",
+                height: "44px",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor =
-                  "rgba(29, 161, 242, 0.1)";
-                e.currentTarget.style.borderColor = "#1da1f2";
-                e.currentTarget.style.color = "#1da1f2";
-                e.currentTarget.style.transform = "translateY(-3px)";
-                e.currentTarget.style.boxShadow =
-                  "0 10px 20px rgba(29, 161, 242, 0.2)";
+                e.currentTarget.style.color = hoverColor;
+                e.currentTarget.style.borderColor = hoverColor;
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor =
-                  "rgba(255, 255, 255, 0.05)";
-                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
-                e.currentTarget.style.color = "#a0aec0";
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "none";
+                e.currentTarget.style.color = colors.secondary;
+                e.currentTarget.style.borderColor = colors.cardBorder;
               }}
-              title="Twitter"
             >
-              {React.createElement(FaTwitter)}
+              {React.createElement(icon)}
             </a>
-
-            <a
-              href="https://github.com/adityak74"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                color: "#a0aec0",
-                textDecoration: "none",
-                fontSize: "1.5rem",
-                padding: "1rem",
-                borderRadius: "12px",
-                backgroundColor: "rgba(255, 255, 255, 0.05)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                transition: "all 0.3s ease",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "60px",
-                height: "60px",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor =
-                  "rgba(255, 255, 255, 0.1)";
-                e.currentTarget.style.borderColor = "#ffffff";
-                e.currentTarget.style.color = "#ffffff";
-                e.currentTarget.style.transform = "translateY(-3px)";
-                e.currentTarget.style.boxShadow =
-                  "0 10px 20px rgba(255, 255, 255, 0.1)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor =
-                  "rgba(255, 255, 255, 0.05)";
-                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
-                e.currentTarget.style.color = "#a0aec0";
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-              title="GitHub"
-            >
-              {React.createElement(FaGithub)}
-            </a>
-
-            <a
-              href="https://www.linkedin.com/in/adityakarnamgrao/"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                color: "#a0aec0",
-                textDecoration: "none",
-                fontSize: "1.5rem",
-                padding: "1rem",
-                borderRadius: "12px",
-                backgroundColor: "rgba(255, 255, 255, 0.05)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                transition: "all 0.3s ease",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "60px",
-                height: "60px",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor =
-                  "rgba(0, 119, 181, 0.1)";
-                e.currentTarget.style.borderColor = "#0077b5";
-                e.currentTarget.style.color = "#0077b5";
-                e.currentTarget.style.transform = "translateY(-3px)";
-                e.currentTarget.style.boxShadow =
-                  "0 10px 20px rgba(0, 119, 181, 0.2)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor =
-                  "rgba(255, 255, 255, 0.05)";
-                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
-                e.currentTarget.style.color = "#a0aec0";
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-              title="LinkedIn"
-            >
-              {React.createElement(FaLinkedin)}
-            </a>
-          </div>
+          ))}
         </div>
       </div>
-
-      {/* Inject keyframes styles */}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-          @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-          }
-        `,
-        }}
-      />
     </div>
   );
 };

@@ -34,10 +34,16 @@ const Header = ({ children }: HeaderProps) => {
           variant: `dividers.bottom`,
           alignItems: `center`,
           justifyContent: `space-between`,
-          mt: 3,
+          mt: `12px`,
+          pt: `10px`,
           color: `secondary`,
-          a: { color: `secondary`, ":hover": { color: `heading` } },
+          a: {
+            color: `secondary`,
+            ":hover": { color: `primary` },
+            transition: `color 0.2s ease`,
+          },
           flexFlow: `wrap`,
+          gap: 2,
         }}
       >
         <Navigation nav={nav} />
