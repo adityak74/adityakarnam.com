@@ -2,7 +2,6 @@ import * as React from "react";
 import LazyVideo from "../../../components/LazyVideo";
 import PromptComposer from "../../../components/PromptComposer";
 import PromptGrader from "../../../components/PromptGrader";
-import MindockCTA from "../../../components/MindockCTA";
 
 // This file allows MDX in the minimal-blog theme to use components directly
 // by mapping the MDX component name.
@@ -13,7 +12,6 @@ export const components = {
   LazyVideo,
   PromptComposer,
   PromptGrader,
-  MindockCTA,
 };
 
 export default components;

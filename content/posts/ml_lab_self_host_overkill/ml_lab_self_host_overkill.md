@@ -23,7 +23,6 @@ keywords:
   ]
 ---
 
-<MindockCTA />
 
 _Or: What happens when you give a software engineer a 64GB Mac Mini and too much free time_
 

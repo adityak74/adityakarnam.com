@@ -6,7 +6,6 @@ import Layout from "@lekoarts/gatsby-theme-minimal-blog/src/components/layout"
 import ItemTags from "@lekoarts/gatsby-theme-minimal-blog/src/components/item-tags"
 import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
 import PostFooter from "@lekoarts/gatsby-theme-minimal-blog/src/components/post-footer"
-import PostHeader from "./post-header"
 
 export type MBPostProps = {
   post: {
@@ -71,7 +70,6 @@ const Post: React.FC<React.PropsWithChildren<PageProps<MBPostProps>>> = ({ data:
       {post.timeToRead && ` — `}
       {post.timeToRead && <span>{post.timeToRead} min read</span>}
     </p>
-    <PostHeader post={post} />
     <section
       sx={{
         my: 5,
