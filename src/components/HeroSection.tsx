@@ -51,7 +51,7 @@ const HeroSection: React.FC = () => {
               lineHeight: "1.4",
             }}
           >
-            <span style={{ color: colors.primary }}>Software Engineer</span>
+            <span style={{ color: colors.primary }}>Senior Software Engineer</span>
             {" "}building AI systems that think beyond the prompt.
           </p>
 
