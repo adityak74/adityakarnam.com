@@ -80,7 +80,7 @@ Change `indexer_type="faiss-hnsw"` to `"lancedb"` or `"pgvector"` and everything
 
 ---
 
-## Use Case 1: Semantic Search With Metadata Filtering
+## How Does Metadata Filtering Work in embenx?
 
 The most common complaint I hear about FAISS: there's no built-in metadata filtering. You have to post-filter after retrieval, which means fetching way more results than you need and hoping the right ones are in the top-K.
 
@@ -131,7 +131,7 @@ The reranker receives the raw query vector and the initial retrieval results, gi
 
 ---
 
-## Use Case 2: Hybrid Dense + Sparse Search
+## Why Is Hybrid Search a Game Changer?
 
 Pure semantic search misses exact keyword matches. Pure BM25 misses paraphrased queries. Production search systems use both — and fusing them correctly is surprisingly annoying to implement from scratch.
 
@@ -288,7 +288,7 @@ The adjusted score for `relevant` going negative is intentional — the system i
 
 ---
 
-## The Built-In MCP Server: Instant Agent Memory
+## Why Use the Built-In MCP Server?
 
 One feature I didn't expect to be as useful as it turned out: the built-in Model Context Protocol (MCP) server. Start it with a single command:
 
@@ -302,7 +302,7 @@ For anyone building autonomous agents with persistent memory, this is the path o
 
 ---
 
-## Supported Backends
+## Which Backends Are Supported?
 
 embenx currently supports the following indexers:
 
@@ -319,7 +319,7 @@ Switching backends is a literal one-liner — just change `indexer_type`. Your f
 
 ---
 
-## Exporting to Production
+## How to Export embenx to Production?
 
 One of the friction points I wanted to eliminate: the gap between \"worked locally with FAISS\" and \"running in production on Qdrant.\" embenx handles the migration:
 
@@ -345,7 +345,7 @@ The export handles index format conversion and metadata transfer. You prototype 
 
 ---
 
-## Visual Explorer and HNSW Graph Visualizer
+## What Tools Are Included in the Visual Explorer?
 
 embenx also ships a web UI you can spin up locally:
 
@@ -357,7 +357,7 @@ The explorer includes an interactive **3D HNSW Graph Visualizer** — which is g
 
 ---
 
-## What's in the Examples Directory
+## What Can You Find in the Examples Directory?
 
 The [examples directory on GitHub](https://github.com/adityak74/embenx/tree/main/examples) has runnable scripts covering every major feature:
 
@@ -399,7 +399,7 @@ The library lives at [github.com/adityak74/embenx](https://github.com/adityak74/
 
 ---
 
-## What's Next
+## What's Next?
 
 The roadmap includes SSM state hydration for Mamba-2 models, KV cache offloading via safetensors, and spatial cognitive maps (ESWM, ICLR 2026) for navigation-oriented retrieval. The MCP server will get tool registration improvements to make agent integration even smoother.
 
