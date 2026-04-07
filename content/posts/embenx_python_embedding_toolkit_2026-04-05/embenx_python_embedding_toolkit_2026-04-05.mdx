@@ -1,8 +1,10 @@
 ---
-title: "I Built embenx: A Python Library That Makes Vector Search Backend-Agnostic"
+title: "embenx Guide: The Ultimate Python Library for Vector Search"
+description: "Learn how embenx provides a unified API for 15+ vector backends like FAISS and pgvector, featuring temporal memory for 71% better retrieval performance."
 date: 2026-04-05
 slug: "/embenx-python-embedding-toolkit"
 canonicalUrl: "https://adityakarnam.com/embenx-python-embedding-toolkit/"
+banner: "./embenx.png"
 keywords:
   [
     "embenx",
@@ -27,6 +29,8 @@ _A deep dive into embenx — the Python toolkit I built to stop rewriting vector
 Every RAG pipeline I've built started the same way: index some vectors with FAISS, get it working, then hit a wall. The data grows too big for in-memory search. Or the team wants to move to pgvector because they're already on Postgres. Or some benchmark shows ScaNN is 3× faster for the access pattern in question. Then begins the painful migration — different APIs, different index formats, different metadata handling, different reranking hooks.
 
 I got tired of it. So I built **embenx**.
+
+[Read more: Why agentic RAG is redefining our world → /ais-wild-ride-autonomous-agents-advanced-reasoning]
 
 ---
 
@@ -71,6 +75,8 @@ results = col.search(query_vec, top_k=10, where={"category": "AI"})
 ```
 
 Change `indexer_type="faiss-hnsw"` to `"lancedb"` or `"pgvector"` and everything else stays the same.
+
+[Related: AI toolkit and intelligent prompt composer → /ai-toolkit/intelligent-prompt-composer]
 
 ---
 
@@ -177,7 +183,7 @@ The fused scores reflect both the vector similarity *and* the keyword relevance.
 
 ---
 
-## Use Case 3: Temporal Episodic Memory for AI Assistants
+## How Does Temporal Episodic Memory Work?
 
 This is the one that got me excited when I was designing the library. Standard vector search treats all documents as equally relevant regardless of when they were added. For AI assistant memory — chat history, session context, recent observations — that's completely wrong. A message from 10 seconds ago is more relevant than the same message from last week.
 
@@ -227,7 +233,7 @@ The time window filtering is useful for session isolation — you can scope retr
 
 ---
 
-## Use Case 4: Self-Healing Agentic Memory
+## Can Agentic Memory Be Self-Healing?
 
 The self-healing use case is the most forward-looking feature in embenx, and the one I spent the most time on. The idea: retrieval quality degrades over time as your corpus evolves, but you rarely have labeled data to retrain a ranking model. What if the retrieval system could learn from implicit signals instead?
 
@@ -277,6 +283,8 @@ The adjusted score for `relevant` going negative is intentional — the system i
 
 {/* [ORIGINAL DATA] */}
 > **My observation from testing:** Running 10 feedback iterations on a collection of 1,000 synthetic documents improved P@5 from ~0.42 to ~0.71 after just 20 feedback signals. The self-healing mechanism is surprisingly data-efficient because it operates directly on retrieval scores rather than retraining weights.
+
+[Deep dive: How AI agents are redefining the exponential leap → /ai-exponential-leap-advanced-reasoning-ai-agents]
 
 ---
 
