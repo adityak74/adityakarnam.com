@@ -226,7 +226,7 @@ const HeroSection: React.FC = () => {
               </p>
               <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
                 <a
-                  href="/box-breathing.html"
+                  href="/box-breathing/"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
