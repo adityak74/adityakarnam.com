@@ -210,9 +210,16 @@ const HeroSection: React.FC = () => {
                 >
                   Also Building
                 </span>
-                <span style={{ fontSize: "0.95rem", fontWeight: "700", color: colors.heading }}>
-                  cc-creativity-skills
-                </span>
+                <img
+                  src="/cc-creativity.png"
+                  alt="cc-creativity-skills"
+                  style={{
+                    height: "28px",
+                    width: "auto",
+                    display: "block",
+                    imageRendering: "pixelated",
+                  }}
+                />
               </div>
               <p style={{ fontSize: "0.875rem", color: colors.secondary, margin: "0 0 0.5rem", lineHeight: "1.55" }}>
                 A collection of Claude Code skills that unlock creative AI generation — from interactive art to generative experiences. ⭐ Give it a star if you find it useful!
