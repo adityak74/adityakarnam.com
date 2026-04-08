@@ -115,9 +115,16 @@ const HeroSection: React.FC = () => {
                 >
                   Currently Building
                 </span>
-                <span style={{ fontSize: "0.95rem", fontWeight: "700", color: colors.heading }}>
-                  embenx
-                </span>
+                <img
+                  src="/embenx.png"
+                  alt="embenx"
+                  style={{
+                    height: "28px",
+                    width: "auto",
+                    display: "block",
+                    imageRendering: "pixelated",
+                  }}
+                />
               </div>
               <p style={{ fontSize: "0.875rem", color: colors.secondary, margin: "0 0 0.5rem", lineHeight: "1.55" }}>
                 Universal embedding retrieval toolkit &amp; agentic memory layer — unified API for 15+ vector backends with MCP support for Claude and autonomous agents.
