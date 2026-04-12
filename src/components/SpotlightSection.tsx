@@ -100,8 +100,57 @@ const SpotlightSection: React.FC = () => {
             margin: 0,
           }}
         >
-          Research achievements, publications, and technical contributions at the
-          intersection of AI, software engineering, and innovative problem-solving.
+          Research, writing, and technical contributions at the intersection of
+          applied ML, systems engineering, and rigorous problem-solving.
+        </p>
+      </div>
+
+      {/* Bio paragraphs */}
+      <div style={{ marginBottom: "2.5rem" }}>
+        <p
+          style={{
+            fontSize: "1rem",
+            color: colors.secondary,
+            maxWidth: "560px",
+            lineHeight: "1.65",
+            marginBottom: "1rem",
+          }}
+        >
+          I'm a senior engineer specializing in AI systems — Python services,
+          agent pipelines, and the infrastructure that makes LLM applications
+          reliable at scale. My background spans distributed systems, ML
+          tooling, and applied research, with a track record of taking complex
+          AI ideas from prototype to production.
+        </p>
+        <p
+          style={{
+            fontSize: "1rem",
+            color: colors.secondary,
+            maxWidth: "560px",
+            lineHeight: "1.65",
+            marginBottom: "1rem",
+          }}
+        >
+          On the research side, I work on interpretable AI, LLM evaluation, and
+          techniques for reducing technical debt in ML codebases. My published
+          work on genetic algorithms for community detection reflects a longer
+          interest in systems that produce understandable, auditable outputs — a
+          concern that has only become more relevant as LLMs move into critical
+          workflows.
+        </p>
+        <p
+          style={{
+            fontSize: "1rem",
+            color: colors.secondary,
+            maxWidth: "560px",
+            lineHeight: "1.65",
+            margin: 0,
+          }}
+        >
+          The throughline is impact: tools and systems that help teams ship
+          faster, debug more confidently, and maintain AI-driven products
+          without heroics. I care about work that scales beyond the person who
+          built it.
         </p>
       </div>
 

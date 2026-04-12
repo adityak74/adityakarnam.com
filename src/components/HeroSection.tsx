@@ -47,13 +47,51 @@ const HeroSection: React.FC = () => {
               fontSize: "clamp(1.1rem, 2.5vw, 1.35rem)",
               color: colors.secondary,
               fontWeight: "500",
-              marginBottom: "1.5rem",
+              marginBottom: "0.75rem",
               lineHeight: "1.4",
             }}
           >
-            <span style={{ color: colors.primary }}>Senior Software Engineer</span>
-            {" "}building AI systems that think beyond the prompt.
+            <span style={{ color: colors.primary }}>Senior AI Systems Engineer</span>
+            {" "}| LLM / Agent Platforms | Research‑Driven Tools for High‑Impact Teams
           </p>
+
+          <ul
+            style={{
+              listStyle: "none",
+              padding: 0,
+              margin: "0 0 1.5rem 0",
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.375rem",
+            }}
+          >
+            <li
+              style={{
+                fontSize: "0.95rem",
+                color: colors.secondary,
+                lineHeight: "1.6",
+                display: "flex",
+                alignItems: "flex-start",
+                gap: "0.5rem",
+              }}
+            >
+              <span style={{ color: colors.primary, flexShrink: 0 }}>▸</span>
+              Building AI‑first systems for research‑driven and product teams.
+            </li>
+            <li
+              style={{
+                fontSize: "0.95rem",
+                color: colors.secondary,
+                lineHeight: "1.6",
+                display: "flex",
+                alignItems: "flex-start",
+                gap: "0.5rem",
+              }}
+            >
+              <span style={{ color: colors.primary, flexShrink: 0 }}>▸</span>
+              Focus on agents, reasoning, and tooling that reduce manual work and improve robustness.
+            </li>
+          </ul>
 
           <p
             style={{
@@ -64,10 +102,12 @@ const HeroSection: React.FC = () => {
               marginBottom: "2rem",
             }}
           >
-            I'm obsessed with creating AI tools that don't just follow
-            instructions—they understand context, adapt to edge cases, and make
-            complex workflows feel effortless. Currently shipping products that
-            help millions of users harness AI more effectively.
+            I design and ship production-grade AI systems — agent pipelines, LLM
+            tooling, and memory layers — that teams use to move faster and with
+            greater confidence. My work sits at the junction of software
+            engineering rigor and applied ML research, with a focus on systems
+            that are interpretable, maintainable, and actually useful in
+            production.
           </p>
 
           {/* Currently building — embenx */}
@@ -127,7 +167,7 @@ const HeroSection: React.FC = () => {
                 />
               </div>
               <p style={{ fontSize: "0.875rem", color: colors.secondary, margin: "0 0 0.5rem", lineHeight: "1.55" }}>
-                Universal embedding retrieval toolkit &amp; agentic memory layer — unified API for 15+ vector backends with MCP support for Claude and autonomous agents.
+                Most agent systems are brittle at retrieval: each vector backend has its own API, and switching costs are high. embenx solves this with a unified embedding retrieval layer — a single API across 15+ vector backends with MCP support for Claude and autonomous agents. Teams replacing scattered retrieval code with embenx typically eliminate hundreds of lines of glue code and a full class of integration bugs.
               </p>
               <code
                 style={{
@@ -222,7 +262,7 @@ const HeroSection: React.FC = () => {
                 />
               </div>
               <p style={{ fontSize: "0.875rem", color: colors.secondary, margin: "0 0 0.5rem", lineHeight: "1.55" }}>
-                A collection of Claude Code skills that unlock creative AI generation — from interactive art to generative experiences. ⭐ Give it a star if you find it useful!
+                Claude Code's built-in skills don't cover creative or interactive generation workflows. This library adds those: a growing set of composable skills for generative art, interactive experiences, and creative tooling. Reduces from-scratch prompting time for teams building AI-driven creative features.
               </p>
               <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
                 <a
@@ -248,7 +288,24 @@ const HeroSection: React.FC = () => {
               </div>
             </div>
             <div style={{ display: "flex", gap: "0.5rem", flexShrink: 0, alignItems: "center", paddingTop: "2px" }}>
-              {React.createElement(FaGithubIcon, { style: { color: colors.secondary, fontSize: "1rem" } })}
+              <a
+                href="https://github.com/adityak74/cc-creativity-skills"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                title="GitHub"
+                style={{
+                  color: colors.secondary,
+                  fontSize: "1rem",
+                  display: "flex",
+                  alignItems: "center",
+                  transition: "color 0.15s ease",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = colors.heading; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = colors.secondary; }}
+              >
+                {React.createElement(FaGithubIcon)}
+              </a>
               {React.createElement(FaExternalLinkAlt, { style: { color: colors.secondary, fontSize: "0.75rem" } })}
             </div>
           </a>
@@ -342,10 +399,10 @@ const HeroSection: React.FC = () => {
                 margin: 0,
               }}
             >
-              Interactive tools that bridge the gap between "I have an idea" and
-              "I have the perfect prompt." From dynamic prompt composers to
-              reasoning mode toggles, turning prompt engineering from guesswork
-              into a craft.
+              Prompt engineering without structure is guesswork. This toolkit
+              provides interactive composers, reasoning toggles, and graders that
+              turn ad-hoc prompting into a repeatable, auditable process —
+              reducing iteration cycles for teams building with LLMs.
             </p>
           </div>
 
@@ -387,9 +444,9 @@ const HeroSection: React.FC = () => {
                 margin: 0,
               }}
             >
-              ML pipelines that process massive datasets while maintaining
-              human-like reasoning. Recommendation engines that understand
-              nuance, not just numbers.
+              Agent pipelines and retrieval systems designed for real workloads —
+              robust to edge cases, observable at runtime, and built to be
+              maintained by a team, not just their original author.
             </p>
           </div>
         </div>
@@ -415,7 +472,7 @@ const HeroSection: React.FC = () => {
             <span style={{ color: colors.primary, fontWeight: "600" }}>
               Currently exploring:
             </span>{" "}
-            How to make AI systems more interpretable without sacrificing performance.
+            Structured reasoning traces and evaluation frameworks that let teams audit agent behavior without slowing down production systems.
           </p>
         </div>
 
@@ -439,7 +496,7 @@ const HeroSection: React.FC = () => {
           <span style={{ color: colors.heading, fontWeight: "600" }}>
             Building something interesting?
           </span>{" "}
-          Let's connect — I love talking about the intersection of great UX and powerful AI.
+          Let's connect — I'm always happy to talk agents, LLM systems design, or research-adjacent engineering challenges.
         </p>
 
         <div

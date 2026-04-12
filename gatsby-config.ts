@@ -9,10 +9,10 @@ const config: GatsbyConfig = {
     // You can also add new values here to query them like usual
     // See all options: https://github.com/LekoArts/gatsby-themes/blob/main/themes/gatsby-theme-minimal-blog/gatsby-config.mjs
     siteTitle: `Aditya Karnam`,
-    siteTitleAlt: `Aditya Karnam - AI Researcher | LLM Expert | Senior Software Engineer | Python & Rust`,
-    siteHeadline: `Aditya Karnam — AI researcher and software engineer exploring LLMs, agentic AI, and intelligent systems.`,
+    siteTitleAlt: `Aditya Karnam - Senior AI Systems Engineer | LLM & Agent Platforms | Research-Driven AI Tools`,
+    siteHeadline: `Aditya Karnam — Senior AI Systems Engineer building agent platforms, reasoning systems, and research-driven tools for high-impact teams.`,
     siteUrl: `https://adityakarnam.com`,
-    siteDescription: `AI researcher and software engineer Aditya Karnam explores the frontiers of artificial intelligence — from LLMs and agentic AI to brain-computer interfaces and next-generation reasoning systems.`,
+    siteDescription: `Senior AI Systems Engineer Aditya Karnam designs and ships agent platforms, LLM tooling, and interpretable AI systems — reducing manual work and improving robustness for research-driven and product teams.`,
     siteImage: `/banner-aditya.png`,
     siteLanguage: `en`,
     author: `@aditya_karnam`,
