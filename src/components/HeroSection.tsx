@@ -355,15 +355,16 @@ const HeroSection: React.FC = () => {
                 >
                   Also Building
                 </span>
-                <span
+                <img
+                  src="/leanlearn_logo.png"
+                  alt="leanlearn"
                   style={{
-                    fontSize: "0.95rem",
-                    fontWeight: "600",
-                    color: colors.heading,
+                    height: "28px",
+                    width: "auto",
+                    display: "block",
+                    imageRendering: "pixelated",
                   }}
-                >
-                  leanlearn
-                </span>
+                />
               </div>
               <p style={{ fontSize: "0.875rem", color: colors.secondary, margin: "0 0 0.5rem", lineHeight: "1.55" }}>
                 A modern, high-performance LMS built for speed and simplicity. Leverages a Cloudflare-native stack (Pages, D1, Workers, React Router v7) — edge-hosted courses with real-time progress tracking, automated certificate generation, and Google OAuth. Built lean so learners get fast and teams can ship without infrastructure overhead.
