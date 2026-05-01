@@ -1,0 +1,700 @@
+---
+title: Awesome Agentic Memory
+slug: "/awesome-agentic-memory"
+---
+
+<div style={{
+  fontFamily: "system-ui, -apple-system, sans-serif",
+  backgroundColor: "#0d1117",
+  minHeight: "100vh",
+  color: "#e6edf3",
+  padding: "2rem 0"
+}}>
+  <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 1.5rem" }}>
+
+    {/* Hero */}
+    <div style={{ textAlign: "center", marginBottom: "4rem" }}>
+      <div style={{ marginBottom: "1rem", display: "flex", justifyContent: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+        <img src="https://awesome.re/badge-flat2.svg" alt="Awesome" style={{ height: "20px" }} />
+        <img src="https://img.shields.io/github/stars/aviskaar/awesome-agentic-memory?style=flat-square&color=gold&label=Stars" alt="Stars" style={{ height: "20px" }} />
+        <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square" alt="PRs Welcome" style={{ height: "20px" }} />
+        <img src="https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg?style=flat-square" alt="CC0" style={{ height: "20px" }} />
+      </div>
+      <h1 style={{
+        fontSize: "clamp(2rem, 5vw, 3.5rem)",
+        fontWeight: "800",
+        background: "linear-gradient(135deg, #58a6ff 0%, #bc8cff 50%, #3fb950 100%)",
+        WebkitBackgroundClip: "text",
+        WebkitTextFillColor: "transparent",
+        marginBottom: "1.25rem",
+        lineHeight: 1.15
+      }}>
+        🧠 Awesome Agentic Memory
+      </h1>
+      <p style={{
+        fontSize: "1.15rem",
+        color: "#8b949e",
+        maxWidth: "680px",
+        margin: "0 auto 2rem",
+        lineHeight: "1.7"
+      }}>
+        The most comprehensive curated list of memory systems, plugins, frameworks, databases, and research for AI agents — across every domain.
+      </p>
+      <p style={{
+        fontSize: "1rem",
+        color: "#58a6ff",
+        fontStyle: "italic"
+      }}>
+        If your agent forgets everything after a session, this list is your cure.
+      </p>
+
+      {/* Nav pills */}
+      <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "0.5rem", marginTop: "2rem" }}>
+        {[
+          ["#frameworks", "Memory Frameworks"],
+          ["#mcp-servers", "MCP Servers"],
+          ["#agent-frameworks", "Agent Frameworks"],
+          ["#vector-dbs", "Vector DBs"],
+          ["#knowledge-graphs", "Knowledge Graphs"],
+          ["#featured", "Featured Projects"],
+          ["#research", "Research"],
+        ].map(([href, label]) => (
+          <a key={href} href={href} style={{
+            background: "#161b22",
+            border: "1px solid #30363d",
+            color: "#58a6ff",
+            padding: "0.35rem 0.85rem",
+            borderRadius: "20px",
+            fontSize: "0.85rem",
+            textDecoration: "none",
+            transition: "border-color 0.2s"
+          }}>
+            {label}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    {/* Why It Matters */}
+    <div style={{
+      background: "linear-gradient(135deg, #0d2137 0%, #1a1f35 100%)",
+      border: "1px solid #1f6feb",
+      borderRadius: "12px",
+      padding: "2rem",
+      marginBottom: "3rem"
+    }}>
+      <h2 style={{ fontSize: "1.5rem", fontWeight: "700", color: "#58a6ff", marginBottom: "1rem" }}>
+        🧠 Why Agentic Memory Matters
+      </h2>
+      <p style={{ color: "#8b949e", lineHeight: "1.7", marginBottom: "1rem" }}>
+        Without memory, every AI agent interaction starts from zero. With the right memory layer, agents can:
+      </p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
+        {[
+          ["👤", "Remember users", "across sessions, building personalized context over time"],
+          ["📚", "Accumulate knowledge", "from past tasks, errors, and successes"],
+          ["⏳", "Reason over time", "understand how facts have changed"],
+          ["🤝", "Coordinate", "in multi-agent systems with shared working memory"],
+          ["📈", "Scale", "to production without ballooning token costs"],
+        ].map(([icon, title, desc]) => (
+          <div key={title} style={{ background: "#0d1117", borderRadius: "8px", padding: "1rem", border: "1px solid #21262d" }}>
+            <div style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>{icon}</div>
+            <div style={{ fontWeight: "600", color: "#e6edf3", marginBottom: "0.25rem" }}>{title}</div>
+            <div style={{ fontSize: "0.85rem", color: "#8b949e" }}>{desc}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Comparison Table */}
+    <div style={{ marginBottom: "3rem" }}>
+      <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#e6edf3", marginBottom: "1.25rem" }}>
+        📊 Framework Comparison
+      </h2>
+      <div style={{ overflowX: "auto" }}>
+        <table style={{
+          width: "100%",
+          borderCollapse: "collapse",
+          fontSize: "0.88rem",
+          background: "#161b22",
+          borderRadius: "12px",
+          overflow: "hidden",
+          border: "1px solid #30363d"
+        }}>
+          <thead>
+            <tr style={{ background: "#21262d" }}>
+              {["Framework", "Stars", "Memory Types", "Backend", "MCP", "Use Case"].map(h => (
+                <th key={h} style={{ padding: "0.75rem 1rem", textAlign: "left", color: "#8b949e", fontWeight: "600", borderBottom: "1px solid #30363d" }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              ["mem0", "~48k", "semantic + episodic + KG", "multi-store", "✅", "Universal drop-in", "https://github.com/mem0ai/mem0"],
+              ["Letta", "~15k", "virtual context + core + archival", "Letta server", "✅", "Long-running stateful agents", "https://github.com/letta-ai/letta"],
+              ["Graphiti (Zep)", "~24k", "temporal knowledge graph", "Neo4j/FalkorDB", "✅", "Real-time temporal memory", "https://github.com/getzep/graphiti"],
+              ["Cognee", "~3k", "vector + graph + KV", "multi-backend", "✅", "6-line memory setup", "https://github.com/topoteretes/cognee"],
+              ["LangMem", "bundled", "semantic + episodic + procedural", "LangGraph Store", "✅", "LangChain/LangGraph agents", "https://github.com/langchain-ai/langmem"],
+              ["Supermemory", "growing", "vector + full-text", "cloud/local", "✅", "Universal cross-LLM memory", "https://github.com/supermemoryai/supermemory"],
+              ["OMEGA", "growing", "structured + semantic", "SQLite", "✅ (25 tools)", "Coding agents", "https://github.com/omega-memory/omega-memory"],
+              ["A-MEM", "growing", "Zettelkasten + dynamic", "ChromaDB", "❌", "Interconnected knowledge nets", "https://github.com/agiresearch/A-mem"],
+              ["claude-mem", "growing", "conversation + semantic", "SQLite", "✅ (Claude Code)", "Claude Code sessions", "https://github.com/thedotmack/claude-mem"],
+              ["Embenx", "growing", "vector + hybrid + KG", "20+ backends", "✅", "Agentic memory layer / knowledge base gen", "https://github.com/adityak74/embenx"],
+            ].map(([name, stars, types, backend, mcp, usecase, url], i) => (
+              <tr key={name} style={{ borderBottom: "1px solid #21262d", background: i % 2 === 0 ? "#161b22" : "#0d1117" }}>
+                <td style={{ padding: "0.75rem 1rem" }}>
+                  <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: "#58a6ff", textDecoration: "none", fontWeight: "600" }}>{name}</a>
+                </td>
+                <td style={{ padding: "0.75rem 1rem", color: "#f0c530" }}>{stars}</td>
+                <td style={{ padding: "0.75rem 1rem", color: "#8b949e" }}>{types}</td>
+                <td style={{ padding: "0.75rem 1rem", color: "#8b949e" }}>{backend}</td>
+                <td style={{ padding: "0.75rem 1rem", color: mcp.startsWith("✅") ? "#3fb950" : "#f85149" }}>{mcp}</td>
+                <td style={{ padding: "0.75rem 1rem", color: "#8b949e" }}>{usecase}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {/* Memory Frameworks */}
+    <div id="frameworks" style={{ marginBottom: "3rem" }}>
+      <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#e6edf3", marginBottom: "0.5rem" }}>
+        🗄️ Memory Frameworks & Libraries
+      </h2>
+      <p style={{ color: "#8b949e", marginBottom: "1.5rem" }}>Production-grade open-source libraries for adding persistent memory to AI agents.</p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: "1.25rem" }}>
+        {[
+          {
+            name: "mem0",
+            icon: "🧠",
+            stars: "~48k ⭐",
+            tagline: "Universal memory layer combining vector search, knowledge graphs, and key-value storage.",
+            highlight: "14M+ downloads · $24M Series A · AWS chose it as their exclusive memory provider",
+            tags: ["Semantic", "Episodic", "Knowledge Graph"],
+            tagColors: ["#1f6feb", "#388bfd", "#bc8cff"],
+            url: "https://github.com/mem0ai/mem0",
+            docs: "https://docs.mem0.ai",
+            code: `from mem0 import Memory\nm = Memory()\nm.add("I prefer TypeScript", user_id="alice")\nresults = m.search("preferences", user_id="alice")`
+          },
+          {
+            name: "Letta (formerly MemGPT)",
+            icon: "💾",
+            stars: "~15k ⭐",
+            tagline: "OS-inspired virtual memory management for LLMs. Agents maintain core, archival, and recall memory.",
+            highlight: "MemGPT paper: LLMs as Operating Systems · .af portable agent format",
+            tags: ["Core Memory", "Archival", "Recall"],
+            tagColors: ["#388bfd", "#3fb950", "#f0c530"],
+            url: "https://github.com/letta-ai/letta",
+            docs: "https://arxiv.org/abs/2310.08560",
+            code: `from letta import create_client\nclient = create_client()\nagent = client.create_agent(name="my_agent")\n# Agent remembers across sessions automatically`
+          },
+          {
+            name: "Graphiti (by Zep)",
+            icon: "🕸️",
+            stars: "~24k ⭐",
+            tagline: "Temporal knowledge graph engine where every fact has a validity window.",
+            highlight: "Outperforms MemGPT on DMR benchmark · Sub-200ms retrieval · 20k stars in <12 months",
+            tags: ["Temporal KG", "Neo4j", "MCP 1.0"],
+            tagColors: ["#bc8cff", "#1f6feb", "#3fb950"],
+            url: "https://github.com/getzep/graphiti",
+            docs: "https://arxiv.org/abs/2501.13956",
+            code: `from graphiti_core import Graphiti\ng = Graphiti(uri, user, password)\nawait g.add_episode(name="pref",\n  episode_body="Alice prefers TypeScript")`
+          },
+          {
+            name: "Cognee",
+            icon: "⚙️",
+            stars: "~3k ⭐",
+            tagline: "ECL pipeline combining vector + graph search. Memory in 6 lines of code.",
+            highlight: "$7.5M seed backed by OpenAI and FAIR founders · GitHub Secure Open Source Graduate",
+            tags: ["Vector", "Graph", "6-line setup"],
+            tagColors: ["#388bfd", "#bc8cff", "#3fb950"],
+            url: "https://github.com/topoteretes/cognee",
+            docs: "https://docs.cognee.ai",
+            code: `import cognee\nawait cognee.add("Alice joined in 2023")\nawait cognee.cognify()\nresults = await cognee.search("About Alice")`
+          },
+          {
+            name: "A-MEM (Agentic Memory)",
+            icon: "🗂️",
+            stars: "Growing ⭐",
+            tagline: "Dynamic memory using Zettelkasten principles — creates interconnected knowledge networks.",
+            highlight: "NeurIPS 2025 · Agents dynamically index, link, and evolve memory structures",
+            tags: ["Zettelkasten", "NeurIPS 2025", "ChromaDB"],
+            tagColors: ["#f0c530", "#bc8cff", "#388bfd"],
+            url: "https://github.com/agiresearch/A-mem",
+            docs: "https://arxiv.org/abs/2502.12110",
+            code: `# Dynamic Zettelkasten memory\n# Auto-links related concepts\n# Evolves knowledge graph over time`
+          },
+          {
+            name: "Supermemory",
+            icon: "⚡",
+            stars: "Growing ⭐",
+            tagline: "Claims #1 on LongMemEval, LoCoMo, and ConvoMem benchmarks. Extremely fast and scalable.",
+            highlight: "Works across all LLMs · No login required · Open MemoryBench framework",
+            tags: ["LongMemEval #1", "Cross-LLM", "MCP"],
+            tagColors: ["#f0c530", "#388bfd", "#3fb950"],
+            url: "https://github.com/supermemoryai/supermemory",
+            docs: "https://github.com/supermemoryai/supermemory-mcp",
+            code: `# Works with any MCP client\n# Claude Desktop, Cursor, Windsurf\n# No API key required`
+          },
+          {
+            name: "OMEGA Memory",
+            icon: "🔧",
+            stars: "Growing ⭐",
+            tagline: "Persistent memory for AI coding agents. 25 MCP tools. Fully local, zero cloud.",
+            highlight: "95.4% on LongMemEval · SQLite backend · Auto-capture and auto-surface · bge-small embeddings",
+            tags: ["25 MCP Tools", "Local-only", "SQLite"],
+            tagColors: ["#f85149", "#388bfd", "#8b949e"],
+            url: "https://github.com/omega-memory/omega-memory",
+            docs: "https://github.com/omega-memory/omega-memory",
+            code: `# 25 tools: capture, search,\n# consolidation, timeline,\n# auto-surface on session start`
+          },
+          {
+            name: "Hindsight",
+            icon: "👁️",
+            stars: "Growing ⭐",
+            tagline: "Biomimetic 4-network architecture (world facts, experiences, entity summaries, evolving beliefs).",
+            highlight: "91.4% on LongMemEval with open-source 20B model",
+            tags: ["4-Network", "91.4% LongMemEval", "Biomimetic"],
+            tagColors: ["#bc8cff", "#f0c530", "#388bfd"],
+            url: "https://github.com/vectorize-io/hindsight",
+            docs: "https://arxiv.org/abs/2512.12818",
+            code: `# World facts network\n# Experience network\n# Entity summary network\n# Evolving belief network`
+          },
+          {
+            name: "MemOS",
+            icon: "🖥️",
+            stars: "Multiple repos",
+            tagline: "OS-inspired memory management for LLMs. Redis Streams scheduling, multi-modal memory.",
+            highlight: "EMNLP 2025 Oral · Persistent skill memory · Multiple active implementations",
+            tags: ["OS-inspired", "EMNLP 2025", "Multi-modal"],
+            tagColors: ["#388bfd", "#f0c530", "#3fb950"],
+            url: "https://github.com/MemTensor/MemOS",
+            docs: "https://arxiv.org/abs/2505.22101",
+            code: `# MemTensor/MemOS — coding agents\n# BAI-LAB/MemoryOS — EMNLP Oral\n# agiresearch/MemOS — flexible mgmt`
+          },
+          {
+            name: "Memoripy",
+            icon: "🔮",
+            stars: "Growing ⭐",
+            tagline: "Python library with short/long-term storage, semantic clustering, optional memory decay.",
+            highlight: "Supports OpenAI, Azure OpenAI, OpenRouter, Ollama · Graph-based associations",
+            tags: ["Memory Decay", "Semantic Clustering", "Multi-provider"],
+            tagColors: ["#bc8cff", "#388bfd", "#f0c530"],
+            url: "https://github.com/caspianmoon/memoripy",
+            docs: "https://github.com/caspianmoon/memoripy",
+            code: `# Short/long-term storage\n# Memory decay simulation\n# Graph-based associations`
+          },
+        ].map(({ name, icon, stars, tagline, highlight, tags, tagColors, url, code }) => (
+          <div key={name} style={{
+            background: "#161b22",
+            borderRadius: "12px",
+            padding: "1.5rem",
+            border: "1px solid #30363d",
+            display: "flex",
+            flexDirection: "column"
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.75rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                <span style={{ fontSize: "1.75rem" }}>{icon}</span>
+                <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "700", color: "#e6edf3" }}>{name}</h3>
+              </div>
+              <span style={{ fontSize: "0.8rem", color: "#f0c530", whiteSpace: "nowrap" }}>{stars}</span>
+            </div>
+            <p style={{ color: "#8b949e", fontSize: "0.9rem", lineHeight: "1.6", marginBottom: "0.75rem" }}>{tagline}</p>
+            <div style={{ background: "#0d1117", borderRadius: "6px", padding: "0.6rem 0.85rem", marginBottom: "1rem", borderLeft: "3px solid #1f6feb" }}>
+              <p style={{ color: "#58a6ff", fontSize: "0.8rem", margin: 0 }}>{highlight}</p>
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "1rem" }}>
+              {tags.map((tag, i) => (
+                <span key={tag} style={{
+                  background: tagColors[i] + "22",
+                  border: `1px solid ${tagColors[i]}55`,
+                  color: tagColors[i],
+                  padding: "0.2rem 0.6rem",
+                  borderRadius: "12px",
+                  fontSize: "0.75rem",
+                  fontWeight: "500"
+                }}>{tag}</span>
+              ))}
+            </div>
+            <pre style={{
+              background: "#0d1117",
+              borderRadius: "8px",
+              padding: "0.85rem",
+              fontSize: "0.75rem",
+              color: "#8b949e",
+              overflow: "auto",
+              marginBottom: "1rem",
+              flexGrow: 1,
+              border: "1px solid #21262d",
+              lineHeight: "1.5"
+            }}><code>{code}</code></pre>
+            <a href={url} target="_blank" rel="noopener noreferrer" style={{
+              background: "#21262d",
+              color: "#58a6ff",
+              padding: "0.5rem 1rem",
+              borderRadius: "8px",
+              textDecoration: "none",
+              fontSize: "0.85rem",
+              fontWeight: "600",
+              textAlign: "center",
+              border: "1px solid #30363d"
+            }}>
+              View on GitHub →
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* MCP Memory Servers */}
+    <div id="mcp-servers" style={{ marginBottom: "3rem" }}>
+      <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#e6edf3", marginBottom: "0.5rem" }}>
+        🔌 MCP Memory Servers
+      </h2>
+      <p style={{ color: "#8b949e", marginBottom: "1.5rem" }}>
+        <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener noreferrer" style={{ color: "#58a6ff" }}>Model Context Protocol (MCP)</a> has become the standard for plugging memory into AI tools. Every major memory framework now ships an MCP server.
+      </p>
+      <div style={{ overflowX: "auto", marginBottom: "1.5rem" }}>
+        <table style={{
+          width: "100%",
+          borderCollapse: "collapse",
+          fontSize: "0.88rem",
+          background: "#161b22",
+          borderRadius: "12px",
+          overflow: "hidden",
+          border: "1px solid #30363d"
+        }}>
+          <thead>
+            <tr style={{ background: "#21262d" }}>
+              {["Server", "Backend", "Tools", "Works With", "Link"].map(h => (
+                <th key={h} style={{ padding: "0.75rem 1rem", textAlign: "left", color: "#8b949e", fontWeight: "600", borderBottom: "1px solid #30363d" }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              ["Official MCP Memory", "JSON file", "9", "Any MCP client", "https://github.com/modelcontextprotocol/servers/tree/main/src/memory"],
+              ["mem0 MCP", "mem0 cloud/local", "4", "Claude, Cursor, any", "https://github.com/mem0ai/mem0-mcp"],
+              ["claude-mem", "SQLite", "5 hooks", "Claude Code", "https://github.com/thedotmack/claude-mem"],
+              ["OMEGA MCP", "SQLite", "25", "Claude Code, Cursor", "https://github.com/omega-memory/omega-memory"],
+              ["Graphiti MCP", "Neo4j/FalkorDB", "8", "Claude, Cursor", "https://github.com/getzep/graphiti"],
+              ["Supermemory MCP", "cloud", "4", "Any MCP client", "https://github.com/supermemoryai/supermemory-mcp"],
+              ["Redis Agent Memory", "Redis", "6", "Any MCP client", "https://github.com/redis/agent-memory-server"],
+              ["mcp-memory-service", "KG + vector", "12", "Claude, LangGraph", "https://github.com/doobidoo/mcp-memory-service"],
+              ["memory-bank-mcp", "file system", "8", "Cline, Cursor, Claude", "https://github.com/alioshr/memory-bank-mcp"],
+              ["neo4j agent memory", "Neo4j", "6", "Any MCP client", "https://github.com/knowall-ai/mcp-neo4j-agent-memory"],
+              ["kuzu-memory-graph-mcp", "Kuzu", "5", "Any MCP client", "https://github.com/jkear/kuzu-memory-graph-mcp"],
+            ].map(([name, backend, tools, works, url], i) => (
+              <tr key={name} style={{ borderBottom: "1px solid #21262d", background: i % 2 === 0 ? "#161b22" : "#0d1117" }}>
+                <td style={{ padding: "0.75rem 1rem" }}>
+                  <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: "#58a6ff", textDecoration: "none", fontWeight: "600" }}>{name}</a>
+                </td>
+                <td style={{ padding: "0.75rem 1rem", color: "#8b949e" }}>{backend}</td>
+                <td style={{ padding: "0.75rem 1rem", color: "#3fb950", fontWeight: "600" }}>{tools}</td>
+                <td style={{ padding: "0.75rem 1rem", color: "#8b949e" }}>{works}</td>
+                <td style={{ padding: "0.75rem 1rem" }}>
+                  <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: "#58a6ff", fontSize: "0.8rem" }}>GitHub →</a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {/* Agent Frameworks */}
+    <div id="agent-frameworks" style={{ marginBottom: "3rem" }}>
+      <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#e6edf3", marginBottom: "0.5rem" }}>
+        🤖 Agent Frameworks with Memory
+      </h2>
+      <p style={{ color: "#8b949e", marginBottom: "1.5rem" }}>Major agent orchestration frameworks with built-in or native memory support.</p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem" }}>
+        {[
+          { name: "LangChain + LangMem", url: "https://github.com/langchain-ai/langmem", stars: "Bundled", desc: "LangChain's official memory library. Extracts facts, optimizes prompts, maintains long-term memory via LangGraph's Store.", color: "#1f6feb" },
+          { name: "CrewAI", url: "https://github.com/crewAIInc/crewAI", stars: "~50k+", desc: "Role-playing multi-agent framework. Unified Memory class: short-term (ChromaDB), long-term (SQLite), entity, procedural.", color: "#388bfd" },
+          { name: "AutoGPT", url: "https://github.com/Significant-Gravitas/AutoGPT", stars: "~177k", desc: "The original autonomous agent. Goal-driven with Pinecone-backed vector memory and modular memory components.", color: "#f0c530" },
+          { name: "Microsoft AutoGen", url: "https://github.com/microsoft/autogen", stars: "Growing", desc: "Microsoft's framework for agentic AI. Pluggable memory components. Merging with Semantic Kernel into Microsoft Agent Framework.", color: "#0078d4" },
+          { name: "Agno (Phidata)", url: "https://github.com/agno-agi/agno", stars: "~38k", desc: "5000x faster instantiation than LangGraph. Built-in session management, long-term user learning, 100+ integrations.", color: "#3fb950" },
+          { name: "Mastra", url: "https://github.com/mastra-ai/mastra", stars: "YC W25", desc: "TypeScript AI agent framework from the Gatsby team. $13M funding. Memory with libSQL and Postgres. 300k+ weekly npm downloads.", color: "#bc8cff" },
+          { name: "MetaGPT", url: "https://github.com/geekan/MetaGPT", stars: "~50k", desc: "Simulates software development roles. Shared memory across PM, architect, engineer, and QA agents.", color: "#f85149" },
+          { name: "Haystack (deepset)", url: "https://github.com/deepset-ai/haystack", stars: "Active", desc: "Open-source AI orchestration with explicit memory control. InMemoryChatMessageStore + Mem0MemoryStore integration.", color: "#388bfd" },
+          { name: "Flowise", url: "https://github.com/FlowiseAI/Flowise", stars: "Active", desc: "Visual AI agent builder with 100+ integrations. Drag-and-drop conversational agents with built-in memory.", color: "#ed8936" },
+          { name: "Swarms", url: "https://github.com/kyegomez/swarms", stars: "Active", desc: "Enterprise-grade multi-agent orchestration. Agent = LLM + Tools + Memory. Production-ready.", color: "#3fb950" },
+        ].map(({ name, url, stars, desc, color }) => (
+          <div key={name} style={{
+            background: "#161b22",
+            borderRadius: "10px",
+            padding: "1.25rem",
+            border: `1px solid ${color}44`
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+              <a href={url} target="_blank" rel="noopener noreferrer" style={{ color, textDecoration: "none", fontWeight: "700", fontSize: "1rem" }}>{name}</a>
+              <span style={{ color: "#f0c530", fontSize: "0.8rem" }}>{stars}</span>
+            </div>
+            <p style={{ color: "#8b949e", fontSize: "0.85rem", lineHeight: "1.6", margin: 0 }}>{desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Coding Agent Memory */}
+    <div style={{ marginBottom: "3rem" }}>
+      <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#e6edf3", marginBottom: "0.5rem" }}>
+        💻 Coding Agent Memory — Quick Reference
+      </h2>
+      <p style={{ color: "#8b949e", marginBottom: "1.5rem" }}>Every major AI coding tool now has a memory ecosystem.</p>
+      <div style={{ overflowX: "auto" }}>
+        <table style={{
+          width: "100%",
+          borderCollapse: "collapse",
+          fontSize: "0.88rem",
+          background: "#161b22",
+          borderRadius: "12px",
+          overflow: "hidden",
+          border: "1px solid #30363d"
+        }}>
+          <thead>
+            <tr style={{ background: "#21262d" }}>
+              {["Tool", "Built-in Memory File", "MCP Support", "Cross-session", "Native Memory"].map(h => (
+                <th key={h} style={{ padding: "0.75rem 1rem", textAlign: "left", color: "#8b949e", fontWeight: "600", borderBottom: "1px solid #30363d" }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              ["Claude Code", "CLAUDE.md (3-tier)", "✅", "✅ (via plugins)", "✅ Auto-memory"],
+              ["OpenCode", "AGENTS.md", "✅", "✅ (via plugins)", "❌"],
+              ["OpenAI Codex CLI", "AGENTS.md", "✅", "❌ native", "✅ SDK sessions"],
+              ["Gemini CLI", "GEMINI.md", "✅", "✅ (ADK)", "✅ Conductor ext"],
+              ["Kimi CLI", "AGENTS.md", "✅", "✅ sessions", "✅ K2.5 native"],
+              ["Cursor", ".cursor/rules", "✅", "✅ (via MCP)", "❌"],
+              ["Windsurf", "Rules files", "✅", "✅ Cascade Memories", "✅ Auto-memories"],
+              ["Aider", "CONVENTIONS.md", "✅", "❌", "❌"],
+              ["Continue.dev", ".continuerc.json", "✅", "✅ (via MCP)", "❌"],
+              ["Cline", "Custom instructions", "✅", "✅ Memory Bank", "❌"],
+            ].map(([tool, file, mcp, cross, native], i) => (
+              <tr key={tool} style={{ borderBottom: "1px solid #21262d", background: i % 2 === 0 ? "#161b22" : "#0d1117" }}>
+                <td style={{ padding: "0.75rem 1rem", color: "#e6edf3", fontWeight: "600" }}>{tool}</td>
+                <td style={{ padding: "0.75rem 1rem" }}><code style={{ color: "#8b949e", fontSize: "0.8rem", background: "#21262d", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>{file}</code></td>
+                <td style={{ padding: "0.75rem 1rem", color: "#3fb950" }}>{mcp}</td>
+                <td style={{ padding: "0.75rem 1rem", color: cross.startsWith("✅") ? "#3fb950" : "#f85149" }}>{cross}</td>
+                <td style={{ padding: "0.75rem 1rem", color: native.startsWith("✅") ? "#3fb950" : "#f85149" }}>{native}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {/* Vector Databases */}
+    <div id="vector-dbs" style={{ marginBottom: "3rem" }}>
+      <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#e6edf3", marginBottom: "0.5rem" }}>
+        🗃️ Vector Databases
+      </h2>
+      <p style={{ color: "#8b949e", marginBottom: "1.5rem" }}>The storage layer for semantic memory — where embeddings live.</p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1rem" }}>
+        {[
+          { name: "Pinecone", url: "https://github.com/pinecone-io", badge: "Managed", badgeColor: "#1f6feb", desc: "Sub-10ms latency at scale. Built-in embeddings, rerankers. Official MCP server. $130M+ raised." },
+          { name: "Qdrant", url: "https://github.com/qdrant/qdrant", badge: "Rust / ~27k ⭐", badgeColor: "#f0c530", desc: "Sophisticated filtering + vector similarity. Best free tier (1GB forever). HNSW indexing." },
+          { name: "Milvus", url: "https://github.com/milvus-io/milvus", badge: "~32k ⭐", badgeColor: "#3fb950", desc: "GPU-accelerated billion-scale. Multi-vector, hybrid search, sparse+dense. Official MCP plugin." },
+          { name: "ChromaDB", url: "https://github.com/chroma-core/chroma", badge: "Open Source", badgeColor: "#bc8cff", desc: "The developer-friendly default. Local-first, SQLite-backed, rich Python API. Default for many frameworks." },
+          { name: "Weaviate", url: "https://github.com/weaviate/weaviate", badge: "~12k ⭐", badgeColor: "#388bfd", desc: "Graph + vector hybrid. Built-in BM25, OpenAI/Cohere integrations. Multi-tenancy native." },
+          { name: "pgvector", url: "https://github.com/pgvector/pgvector", badge: "PostgreSQL ext", badgeColor: "#f0c530", desc: "Bring vector search to existing Postgres. HNSW + IVFFlat. Zero new infra for Postgres shops." },
+          { name: "LanceDB", url: "https://github.com/lancedb/lancedb", badge: "Rust / Columnar", badgeColor: "#f85149", desc: "Serverless, embedded columnar format. Zero server, works inside Python process. Multi-modal native." },
+          { name: "Faiss", url: "https://github.com/facebookresearch/faiss", badge: "Meta / ~34k ⭐", badgeColor: "#0078d4", desc: "Battle-tested billion-scale similarity search from Meta. GPU support. The backbone of many production systems." },
+        ].map(({ name, url, badge, badgeColor, desc }) => (
+          <div key={name} style={{ background: "#161b22", borderRadius: "10px", padding: "1.25rem", border: "1px solid #30363d" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+              <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: "#e6edf3", textDecoration: "none", fontWeight: "700" }}>{name}</a>
+              <span style={{ background: badgeColor + "33", color: badgeColor, padding: "0.15rem 0.5rem", borderRadius: "8px", fontSize: "0.75rem" }}>{badge}</span>
+            </div>
+            <p style={{ color: "#8b949e", fontSize: "0.85rem", lineHeight: "1.6", margin: 0 }}>{desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Knowledge Graphs */}
+    <div id="knowledge-graphs" style={{ marginBottom: "3rem" }}>
+      <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#e6edf3", marginBottom: "0.5rem" }}>
+        🕸️ Knowledge Graphs
+      </h2>
+      <p style={{ color: "#8b949e", marginBottom: "1.5rem" }}>Structured relational memory backends for multi-hop reasoning.</p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1rem" }}>
+        {[
+          { name: "Neo4j", url: "https://github.com/neo4j/neo4j", badge: "Industry Standard", badgeColor: "#3fb950", desc: "The dominant graph database. Native graph storage, Cypher query language, full-text + vector hybrid search. Enterprise support." },
+          { name: "FalkorDB", url: "https://github.com/FalkorDB/FalkorDB", badge: "Redis-compatible", badgeColor: "#f85149", desc: "Sub-millisecond graph query using sparse adjacency matrices. Redis-compatible. Used by Graphiti (Zep) as primary backend." },
+          { name: "Kuzu", url: "https://github.com/kuzudb/kuzu", badge: "Embedded", badgeColor: "#bc8cff", desc: "High-performance embedded graph DB. In-process, no server needed. Used by kuzu-memory-graph-mcp for sub-3ms recall." },
+          { name: "Amazon Neptune", url: "https://aws.amazon.com/neptune/", badge: "AWS Managed", badgeColor: "#f0c530", desc: "Fully managed graph database on AWS. Supports both property graphs (Gremlin) and RDF (SPARQL). Graphiti-compatible." },
+        ].map(({ name, url, badge, badgeColor, desc }) => (
+          <div key={name} style={{ background: "#161b22", borderRadius: "10px", padding: "1.25rem", border: "1px solid #30363d" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+              <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: "#e6edf3", textDecoration: "none", fontWeight: "700" }}>{name}</a>
+              <span style={{ background: badgeColor + "33", color: badgeColor, padding: "0.15rem 0.5rem", borderRadius: "8px", fontSize: "0.75rem" }}>{badge}</span>
+            </div>
+            <p style={{ color: "#8b949e", fontSize: "0.85rem", lineHeight: "1.6", margin: 0 }}>{desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Featured Projects */}
+    <div id="featured" style={{ marginBottom: "3rem" }}>
+      <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#e6edf3", marginBottom: "0.5rem" }}>
+        ⭐ Featured Projects
+      </h2>
+      <p style={{ color: "#8b949e", marginBottom: "1.5rem" }}>Notable open-source tools built by the community — from knowledge base generation to graph visualization.</p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "1.5rem" }}>
+
+        {/* Embenx */}
+        <div style={{
+          background: "linear-gradient(135deg, #0d2137 0%, #161b22 100%)",
+          borderRadius: "14px",
+          padding: "2rem",
+          border: "1px solid #1f6feb",
+          boxShadow: "0 0 24px rgba(31, 111, 235, 0.15)"
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
+            <span style={{ fontSize: "2rem" }}>🚀</span>
+            <div>
+              <h3 style={{ margin: 0, fontSize: "1.25rem", fontWeight: "700", color: "#58a6ff" }}>Embenx</h3>
+              <span style={{ fontSize: "0.8rem", color: "#3fb950" }}>Agentic Memory Layer · Knowledge Base Generator</span>
+            </div>
+          </div>
+          <p style={{ color: "#8b949e", lineHeight: "1.7", marginBottom: "1rem" }}>
+            Python-native retrieval library and universal agentic memory layer. Sits between raw vector indices and full-blown vector databases. Provides a high-level Collection API with filtering, reranking, quantization, and synthetic data generation across 20+ backends.
+          </p>
+          <div style={{ background: "#0d1117", borderRadius: "8px", padding: "0.75rem 1rem", marginBottom: "1rem", border: "1px solid #21262d" }}>
+            <p style={{ color: "#3fb950", fontSize: "0.82rem", margin: 0, fontWeight: "600" }}>
+              ✨ New: OpenSearch integration · Hybrid search · MCP-native · 20+ vector backends
+            </p>
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "1.25rem" }}>
+            {["Python 3.11+", "MCP Native", "20+ Backends", "Hybrid Search", "Synthetic Data Gen", "Reranking"].map(t => (
+              <span key={t} style={{ background: "#1f6feb22", border: "1px solid #1f6feb55", color: "#58a6ff", padding: "0.2rem 0.6rem", borderRadius: "10px", fontSize: "0.75rem" }}>{t}</span>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: "0.75rem" }}>
+            <a href="https://github.com/adityak74/embenx" target="_blank" rel="noopener noreferrer" style={{ flex: 1, background: "#1f6feb", color: "white", padding: "0.6rem 1rem", borderRadius: "8px", textDecoration: "none", fontSize: "0.9rem", fontWeight: "600", textAlign: "center" }}>
+              GitHub →
+            </a>
+            <a href="https://adityak74.github.io/embenx/" target="_blank" rel="noopener noreferrer" style={{ flex: 1, background: "#21262d", color: "#58a6ff", padding: "0.6rem 1rem", borderRadius: "8px", textDecoration: "none", fontSize: "0.9rem", fontWeight: "600", textAlign: "center", border: "1px solid #30363d" }}>
+              Docs →
+            </a>
+          </div>
+        </div>
+
+        {/* Graphify */}
+        <div style={{
+          background: "linear-gradient(135deg, #1a1a2e 0%, #161b22 100%)",
+          borderRadius: "14px",
+          padding: "2rem",
+          border: "1px solid #bc8cff",
+          boxShadow: "0 0 24px rgba(188, 140, 255, 0.15)"
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
+            <span style={{ fontSize: "2rem" }}>🔮</span>
+            <div>
+              <h3 style={{ margin: 0, fontSize: "1.25rem", fontWeight: "700", color: "#bc8cff" }}>Graphify</h3>
+              <span style={{ fontSize: "0.8rem", color: "#f0c530" }}>Knowledge Graph Builder · Graph Visualization</span>
+            </div>
+          </div>
+          <p style={{ color: "#8b949e", lineHeight: "1.7", marginBottom: "1rem" }}>
+            Open-source tool for building and visualizing knowledge graphs from unstructured data. Transforms raw text, documents, and data sources into structured, navigable graph representations — enabling agents to reason over interconnected knowledge.
+          </p>
+          <div style={{ background: "#0d1117", borderRadius: "8px", padding: "0.75rem 1rem", marginBottom: "1rem", border: "1px solid #21262d" }}>
+            <p style={{ color: "#bc8cff", fontSize: "0.82rem", margin: 0, fontWeight: "600" }}>
+              ✨ Graph extraction · Entity linking · Visual exploration · Agent-ready output
+            </p>
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "1.25rem" }}>
+            {["Knowledge Graph", "Graph Visualization", "Entity Extraction", "Agent-Ready"].map(t => (
+              <span key={t} style={{ background: "#bc8cff22", border: "1px solid #bc8cff55", color: "#bc8cff", padding: "0.2rem 0.6rem", borderRadius: "10px", fontSize: "0.75rem" }}>{t}</span>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: "0.75rem" }}>
+            <a href="https://github.com/safishamsi/graphify" target="_blank" rel="noopener noreferrer" style={{ flex: 1, background: "#bc8cff", color: "#0d1117", padding: "0.6rem 1rem", borderRadius: "8px", textDecoration: "none", fontSize: "0.9rem", fontWeight: "700", textAlign: "center" }}>
+              GitHub →
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {/* Research Papers */}
+    <div id="research" style={{ marginBottom: "3rem" }}>
+      <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#e6edf3", marginBottom: "0.5rem" }}>
+        📄 Key Research Papers
+      </h2>
+      <p style={{ color: "#8b949e", marginBottom: "1.5rem" }}>Foundational and recent papers driving the field forward.</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+        {[
+          { title: "MemGPT: Towards LLMs as Operating Systems", venue: "NeurIPS 2023", url: "https://arxiv.org/abs/2310.08560", desc: "Introduced OS-inspired virtual context management. Foundation for Letta." },
+          { title: "A-MEM: Agentic Memory for LLM Agents", venue: "NeurIPS 2025", url: "https://arxiv.org/abs/2502.12110", desc: "Zettelkasten-inspired dynamic memory organization with interconnected knowledge networks." },
+          { title: "Zep: A Temporal Knowledge Graph Architecture", venue: "2025", url: "https://arxiv.org/abs/2501.13956", desc: "Temporal validity windows for every fact. Outperforms MemGPT on DMR benchmark." },
+          { title: "Hindsight is 20/20", venue: "2025", url: "https://arxiv.org/abs/2512.12818", desc: "4-network biomimetic architecture achieving 91.4% on LongMemEval with 20B open model." },
+          { title: "MemOS: An OS for Memory-Augmented Generation", venue: "EMNLP 2025 Oral", url: "https://arxiv.org/abs/2505.22101", desc: "OS-inspired memory management for LLMs with Redis Streams scheduling and multi-modal memory." },
+        ].map(({ title, venue, url, desc }) => (
+          <div key={title} style={{
+            background: "#161b22",
+            borderRadius: "10px",
+            padding: "1rem 1.25rem",
+            border: "1px solid #30363d",
+            display: "flex",
+            gap: "1rem",
+            alignItems: "flex-start"
+          }}>
+            <span style={{ color: "#f0c530", fontSize: "1.2rem", flexShrink: 0, marginTop: "2px" }}>📑</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", marginBottom: "0.25rem", flexWrap: "wrap" }}>
+                <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: "#58a6ff", textDecoration: "none", fontWeight: "600", fontSize: "0.95rem" }}>{title}</a>
+                <span style={{ background: "#bc8cff33", color: "#bc8cff", padding: "0.1rem 0.5rem", borderRadius: "8px", fontSize: "0.75rem", flexShrink: 0 }}>{venue}</span>
+              </div>
+              <p style={{ color: "#8b949e", fontSize: "0.85rem", margin: 0 }}>{desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Full List CTA */}
+    <div style={{
+      background: "linear-gradient(135deg, #0d2137 0%, #1a1f35 100%)",
+      border: "1px solid #30363d",
+      borderRadius: "14px",
+      padding: "2.5rem",
+      textAlign: "center",
+      marginBottom: "2rem"
+    }}>
+      <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#e6edf3", marginBottom: "0.75rem" }}>
+        🌟 See the Full List
+      </h2>
+      <p style={{ color: "#8b949e", lineHeight: "1.7", maxWidth: "550px", margin: "0 auto 1.5rem" }}>
+        This page covers the highlights. The full awesome list includes RAG frameworks, industry verticals (chip design, pharma, healthcare, space, agriculture, climate), benchmarks, learning resources, and hundreds more tools.
+      </p>
+      <a href="https://github.com/aviskaar/awesome-agentic-memory" target="_blank" rel="noopener noreferrer" style={{
+        display: "inline-block",
+        background: "linear-gradient(135deg, #1f6feb 0%, #bc8cff 100%)",
+        color: "white",
+        padding: "0.85rem 2rem",
+        borderRadius: "10px",
+        textDecoration: "none",
+        fontSize: "1rem",
+        fontWeight: "700"
+      }}>
+        View on GitHub →
+      </a>
+    </div>
+
+    {/* Footer */}
+    <div style={{ textAlign: "center", paddingTop: "2rem", borderTop: "1px solid #21262d" }}>
+      <p style={{ color: "#484f58", fontSize: "0.85rem" }}>
+        Curated with ❤️ · <a href="https://github.com/aviskaar/awesome-agentic-memory/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" style={{ color: "#58a6ff", textDecoration: "none" }}>Contribute a project</a> · Licensed CC0
+      </p>
+    </div>
+
+  </div>
+</div>
