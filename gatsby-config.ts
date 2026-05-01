@@ -31,6 +31,10 @@ const config: GatsbyConfig = {
             title: `AI Toolkit`,
             slug: `/ai-toolkit`,
           },
+          {
+            title: `Agentic Memory`,
+            slug: `/awesome-agentic-memory`,
+          },
         ],
         externalLinks: [
           {
