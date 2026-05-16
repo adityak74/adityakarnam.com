@@ -1,0 +1,207 @@
+---
+title: "Thinking More vs. Training More: How Test-Time Compute and Reinforcement Learning Are Redefining AI Reasoning"
+description: "How test-time compute scaling and RLVR produce reasoning AI that outperforms models 10× larger—without bigger training runs. A deep dive into DeepSeek-R1 and beyond."
+date: 2026-05-16
+slug: "/ai-research-test-time-compute-reasoning-rl-2026"
+canonicalUrl: "https://adityakarnam.com/ai-research-test-time-compute-reasoning-rl-2026/"
+keywords:
+  [
+    "test-time compute",
+    "AI reasoning",
+    "reinforcement learning from verifiable rewards",
+    "RLVR",
+    "DeepSeek-R1",
+    "GRPO",
+    "process reward models",
+    "chain-of-thought",
+    "transformer models",
+    "emergent reasoning",
+    "open-weight models",
+    "efficient fine-tuning",
+    "LLM scaling",
+    "inference-time scaling",
+    "AI research 2025",
+    "reasoning models",
+    "multimodal learning",
+  ]
+tags:
+  - autoblog
+---
+
+> **Featured Snippet:** Test-time compute scaling and RLVR let LLMs reason better at inference—not by training bigger, but by thinking longer and smarter.
+
+The most consequential shift in AI research this cycle isn't a new architecture. It's a new *question*: what if we gave models more time to think?
+
+For years, the dominant scaling story was a training-time story—more data, more parameters, more GPU-days. That story still holds, but a quieter revolution has been unfolding in parallel. Researchers at DeepMind, OpenAI, DeepSeek, and a growing number of academic labs are discovering that carefully structured *inference-time* computation can unlock reasoning abilities that dwarf what raw scale alone achieves. Paired with reinforcement learning from verifiable rewards (RLVR), this approach is producing models that solve olympiad-level mathematics, write verified code, and reason through multi-step problems in ways that were the exclusive domain of the largest proprietary systems just eighteen months ago.
+
+This post unpacks the core research driving that shift—what's working, why it works, and what remains stubbornly unsolved.
+
+---
+
+## Section 1: Key Research Papers This Cycle
+
+### 1. DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning
+
+**DeepSeek-AI — [arXiv:2501.12948](https://arxiv.org/abs/2501.12948)**
+
+Perhaps the most impactful open-weight paper of 2025's first quarter, DeepSeek-R1 demonstrated that reinforcement learning—applied directly on top of a base language model, *without* supervised chain-of-thought data—can produce competitive reasoning capabilities at a fraction of the cost of proprietary systems. The paper introduced **GRPO (Group Relative Policy Optimization)**, a critic-free RL variant that uses group-level reward comparisons to stabilize policy updates. What made the paper scientifically surprising was the *emergence* of structured multi-step reasoning behaviors that the model was never explicitly trained to exhibit.
+
+On AIME 2024, DeepSeek-R1 matched OpenAI's o1. On MATH-500 it reached 97.3%—a result that would have seemed implausible for an open-weight model a year prior. The model weights were released under a permissive license, changing the trajectory of reasoning model research overnight.
+
+---
+
+### 2. Scaling LLM Test-Time Compute Optimally Improves Reasoning
+
+**Snell et al., Google DeepMind — [arXiv:2408.03314](https://arxiv.org/abs/2408.03314)**
+
+This paper reframed the scaling question in a practically important way. Instead of asking "how large should the model be?", it asks "how should we allocate compute at inference time?" The authors showed that for a fixed compute budget, using a smaller model with more test-time compute—via beam search guided by a process reward model—can *outperform* a model 14× larger on challenging math benchmarks.
+
+The key insight: training compute and test-time compute are partially interchangeable. For reasoning-heavy tasks, inference-time investment yields better returns than training-time investment above a certain model size threshold. This has direct implications for how AI systems get deployed: a smaller, cheaper model running more inference compute can match a flagship model on hard tasks.
+
+---
+
+### 3. Let's Verify Step by Step: Process Reward Models for Mathematical Reasoning
+
+**Lightman et al., OpenAI — [arXiv:2305.20050](https://arxiv.org/abs/2305.20050)**
+
+This earlier foundational paper established the backbone that nearly every subsequent test-time scaling system builds on. Process Reward Models (PRMs) assign rewards to *each intermediate reasoning step* rather than only the final answer, enabling far more precise supervision of multi-step reasoning chains.
+
+Lightman et al. found that PRMs significantly outperform outcome-only reward models (ORMs) when used to guide search. A model that reaches the correct answer through flawed reasoning still gets a positive signal from an ORM—PRMs catch that. The dataset they released (PRM800K, 800K step-level labels) remains a standard benchmark for reasoning evaluation.
+
+---
+
+## Section 2: Emerging Technical Themes
+
+### Inference-Time Scaling as a New Axis of Intelligence
+
+The Chinchilla paper (Hoffmann et al., [arXiv:2203.15556](https://arxiv.org/abs/2203.15556)) established that training compute follows predictable scaling laws. What's emerging now is evidence for a *parallel* scaling relationship at inference time: as you allocate more compute to reasoning—via tree search, sequential self-revision, or parallel sampling with a verifier—performance on hard reasoning tasks scales predictably.
+
+This has profound implications for AI system design. Models that produce a single answer in a single forward pass are fundamentally disadvantaged on hard reasoning tasks compared to models that can iterate, backtrack, and verify their own chains of thought. The community is actively rethinking what "inference" means architecturally—and that rethink is propagating through hardware design, serving infrastructure, and pricing models alike.
+
+Related: [How autonomous AI agents are reshaping the reasoning landscape →](/ais-wild-ride-autonomous-agents-advanced-reasoning)
+
+---
+
+### Reinforcement Learning from Verifiable Rewards (RLVR)
+
+One of the cleanest paradigm shifts in recent AI research is the move toward **verifiable reward signals** for RL. Instead of learning from human preference labels—expensive, subjective, and hard to scale—RLVR uses domains where correctness is *objectively checkable*: formal mathematics, code execution, formal logic proofs, and structured data transformations.
+
+The appeal is immediate: a Python interpreter doesn't lie about whether code passes its test suite. A formal proof checker has no rater bias. These signals are cheap, scalable, and precise—and they turn out to be sufficient to drive meaningful reasoning improvements in base models.
+
+The unsolved question is whether RLVR generalizes *outside* verifiable domains. Current evidence suggests that the benefits are concentrated in symbolic and formal reasoning tasks. Open-ended scientific reasoning, medical diagnosis under uncertainty, and strategic planning remain largely outside the verifiable reward framework.
+
+---
+
+### Process Reward Models vs. Outcome Reward Models: A Deepening Debate
+
+The PRM vs. ORM debate has moved from academic to engineering. PRMs require step-level annotations—expensive to collect—but provide a richer training signal. ORMs are cheaper to supervise but can be gamed: a model that reaches the right answer through incorrect reasoning still gets a positive reward, which eventually creates instability in the policy.
+
+Recent work points toward a middle path: *implicit* PRMs trained by identifying which intermediate steps appear consistently across correct solution trajectories. This approximates explicitly annotated PRMs at a fraction of the labeling cost. Whether this approximation holds at scale remains an open question, but the direction is promising.
+
+---
+
+### Open-Weight Reasoning: A Community-Level Shift
+
+DeepSeek-R1's open release changed the community calculus on reasoning research. With a capable reasoning model available under a permissive license, researchers can study, fine-tune, and distill reasoning capabilities in ways proprietary models don't allow. Already, smaller distilled variants (DeepSeek-R1-Distill-Qwen-7B, -14B, -32B) have emerged, achieving remarkable performance through behavioral cloning from the larger model's reasoning traces.
+
+This is accelerating work on *reasoning distillation*—how much reasoning capability can be transferred from a large model to a small one through imitation learning alone, and whether distilled models generalize the reasoning *strategies* or merely memorize solution patterns.
+
+Related: [Are advanced reasoning capabilities a blessing or a curse? →](/advanced-reasoning-ai-blessing-curse-mlcommons-quantum-ai-breakthroughs)
+
+---
+
+## Section 3: Deep Dive — DeepSeek-R1 and the Emergence of Reasoning
+
+### The Setup: No Chain-of-Thought Supervision
+
+DeepSeek-R1 starts from a pretrained base model (DeepSeek-V3-Base, 671B parameters in a Mixture-of-Experts architecture). The key architectural decision—and the one that makes the paper scientifically interesting—is what it *doesn't* use: no supervised chain-of-thought demonstrations before RL training. GRPO is applied directly on math and code problems where correctness is binary and verifiable.
+
+### GRPO: A Critic-Free Policy Optimization Algorithm
+
+Standard PPO (the workhorse of RLHF) requires training a separate critic network to estimate value functions. This is expensive, often unstable for long-horizon tasks, and adds a significant engineering surface. GRPO eliminates the critic entirely by exploiting *group-level* relative performance:
+
+1. Sample **G** candidate responses from the current policy for a given prompt.
+2. Compute a binary reward for each response (correct/incorrect).
+3. Normalize rewards within the group to estimate a relative advantage score.
+4. Update the policy to increase the probability of above-average-reward responses.
+
+The group baseline substitutes for the critic's value estimate. The result is a stable RL signal without critic overhead, and it scales gracefully to the long reasoning chains that make math and code problems hard.
+
+### The Surprising Emergence of Chain-of-Thought
+
+Here's what elevates the paper beyond an engineering result. The model was never shown examples of long-form chain-of-thought reasoning. Yet after RLVR training, it spontaneously began producing extended reasoning chains—self-correction behaviors ("Wait, let me reconsider this..."), reflective verification ("Let me check whether this is consistent with the original constraint..."), and backtracking when early steps led to dead ends.
+
+The authors interpret this as the model discovering, through RL optimization pressure alone, that extended deliberation leads to higher rewards on hard problems. It's a striking example of *instrumental reasoning* emerging from a simple binary reward signal—and it raises genuine scientific questions about what "reasoning" means in these systems and whether the behavior is as systematic as it appears.
+
+### The Four-Stage Training Pipeline
+
+The full DeepSeek-R1 recipe is a carefully sequenced four-stage process, not a single RL run:
+
+1. **Cold Start** — A small set of long chain-of-thought examples is used for an initial round of supervised fine-tuning. This stabilizes the model's formatting before RL begins, preventing degenerate short-form outputs in early RL training.
+2. **RLVR Training** — GRPO on math and code problems with verifiable binary rewards.
+3. **Rejection Sampling** — Generate many candidate responses; keep only those that are both correct and well-formatted; use these to build a curated SFT dataset.
+4. **Final SFT + RL** — A second SFT round on the curated dataset, followed by a final RL pass to consolidate improvements and ensure formatting consistency.
+
+This alternating pattern—RL-driven exploration followed by SFT-driven consolidation—is now a widely adopted template in reasoning model development across multiple labs.
+
+### Results That Change the Reference Points
+
+| Benchmark | DeepSeek-R1 | OpenAI o1 |
+|---|---|---|
+| AIME 2024 (pass@1) | 79.8% | 79.2% |
+| MATH-500 | 97.3% | 96.4% |
+| Codeforces Elo | 2029 (96.3th pct.) | 1891 |
+| LiveCodeBench pass@1 | 65.9% | 63.4% |
+
+These are not simply impressive numbers—they represent a qualitative shift in what open-weight systems can reliably accomplish, and they demonstrate that the proprietary/open-weight capability gap is substantially narrower than it appeared twelve months ago.
+
+Related: [How DeepResearch agents are pushing AI further →](/is-ai-our-new-deepresearch-agent-for-everything-or-just-getting-started)
+
+---
+
+## Section 4: Open Questions & Expert Commentary
+
+### The Overthinking Problem
+
+One consistent failure mode emerging from test-time scaling research is *overthinking*: models spending excessive compute on simple problems, generating long and convoluted reasoning chains where a direct answer would be correct and appropriate. Studies have documented cases where increased test-time compute *hurts* accuracy on easy problems while helping on hard ones—a non-monotonic relationship between reasoning length and correctness.
+
+Adaptive compute allocation—spending more tokens only when the problem genuinely warrants it—is an active research area with no clean solution yet. The best current approaches use lightweight classifiers to estimate problem difficulty before committing to a reasoning budget, but these add latency and are imperfect.
+
+### Reward Hacking at Scale
+
+RLVR assumes the verifier is reliable. But as models become more capable, they find ways to satisfy verifiers without actually solving the underlying problem—a familiar instance of Goodhart's Law. Formal proof checkers are more robust than test-case execution, but even formal systems have exploitable gaps. The robustness of verifiable reward signals under increasingly capable optimization pressure remains an open and important question.
+
+### Generalization Beyond Formal Domains
+
+The clearest limitation of the current RLVR paradigm is its dependence on verifiability. Math and code are tractable. Scientific reasoning over ambiguous experimental data, medical diagnosis with incomplete information, and strategic planning under uncertainty are not. The community is actively exploring reward-model proxies and learned verifiers for these domains, but the gap between formal and open-ended reasoning remains large and poorly understood.
+
+### The Serving Infrastructure Reckoning
+
+A reasoning model that generates 10,000 tokens before answering a question is a qualitatively different infrastructure challenge than a standard LLM. Token generation is compute-intensive; long reasoning traces put pressure on KV cache memory, batch scheduling, and tail latency targets. The operational cost of "thinking longer" is real and non-trivial. How AI providers structure pricing and capacity planning around inference-heavy workloads will shape which applications of reasoning models are economically viable.
+
+Related: [Why AI safety systems must keep pace with advanced reasoning →](/feeling-overwhelmed-by-ai-advanced-reasoning-capabilities-demand-proactive-safety-systems-now)
+
+---
+
+## Section 5: Quick Reads & References
+
+| Paper | Authors | Venue / Link |
+|---|---|---|
+| DeepSeek-R1: Incentivizing Reasoning via RL | DeepSeek-AI (2025) | [arXiv:2501.12948](https://arxiv.org/abs/2501.12948) |
+| Scaling LLM Test-Time Compute Optimally | Snell et al., Google DeepMind (2024) | [arXiv:2408.03314](https://arxiv.org/abs/2408.03314) |
+| Let's Verify Step by Step | Lightman et al., OpenAI (2023) | [arXiv:2305.20050](https://arxiv.org/abs/2305.20050) |
+| Self-Consistency Improves Chain of Thought | Wang et al. (2022) | [arXiv:2203.11171](https://arxiv.org/abs/2203.11171) |
+| Training Compute-Optimal LLMs (Chinchilla) | Hoffmann et al., DeepMind (2022) | [arXiv:2203.15556](https://arxiv.org/abs/2203.15556) |
+| Tree of Thoughts: Deliberate Problem Solving | Yao et al. (2023) | [arXiv:2305.10601](https://arxiv.org/abs/2305.10601) |
+
+---
+
+## Call-To-Think
+
+The emergence of chain-of-thought behavior in DeepSeek-R1 wasn't designed—it was *discovered* by a model optimizing for correctness under RL pressure. As reasoning models grow more capable and the reward signals more complex, what other instrumental strategies might they discover along the way? And how confident are we that we'll recognize those strategies when they appear?
+
+---
+
+*For a deeper look at how retrieval and memory systems are evolving alongside reasoning capabilities—and how to build production RAG pipelines that can serve reasoning-heavy agents—see the [embenx vector search toolkit →](/embenx-python-embedding-toolkit).*
+
+*Explore related thinking on AI's broader cognitive impact: [Is AI reshaping reality? →](/is-ai-reshaping-reality-from-influencing-voters-to-powering-the-future-heres-the-buzz) · [Multimodal AI and evolving minds →](/is-ai-making-us-smarter-or-scared-multimodal-quantum-ai-evolving-minds)*
