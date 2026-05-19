@@ -1,0 +1,221 @@
+---
+title: "How Reasoning Models Are Rewriting the Rules of AI: Test-Time Compute Scaling, Efficient Fine-Tuning, and the Open-Weight Revolution"
+description: "This week in AI research: test-time compute scaling redefines LLM capability, open-weight reasoning models democratize advanced AI, and efficient fine-tuning cuts training costs."
+date: 2026-05-19
+slug: "/ai-research-insights-reasoning-models-test-time-compute-efficient-finetuning-2026"
+canonicalUrl: "https://adityakarnam.com/ai-research-insights-reasoning-models-test-time-compute-efficient-finetuning-2026"
+keywords:
+  [
+    "reasoning models",
+    "test-time compute scaling",
+    "efficient fine-tuning",
+    "open-weight models",
+    "DeepSeek-R1",
+    "reinforcement learning from human feedback",
+    "GRPO",
+    "GaLore",
+    "LoRA",
+    "multimodal learning",
+    "transformer models",
+    "AI alignment",
+    "emergent reasoning",
+    "chain-of-thought",
+    "LLM training"
+  ]
+tags:
+  - ai-research
+  - research-insights
+---
+
+import { Link } from "gatsby"
+
+**Featured snippet:** Reasoning models trained with RL-based compute scaling now rival supervised fine-tuned giants — at a fraction of the inference cost and with fully open weights.
+
+The last eighteen months in AI research feel less like incremental progress and more like a paradigm renegotiation. The field quietly crossed a threshold: rather than always building bigger pretrained models, researchers are discovering that *how a model thinks at inference time* can be just as important as what it learned during training. Test-time compute scaling, open-weight reasoning models, and a new generation of memory-efficient fine-tuning methods are converging into something genuinely disruptive. This edition breaks down the research making it happen.
+
+---
+
+## Section 1: Key Research Papers
+
+### 1. DeepSeek-R1: Incentivizing Reasoning via Reinforcement Learning
+
+**Paper:** DeepSeek-R1 — *DeepSeek-AI* (January 2025) · [arXiv:2501.12948](https://arxiv.org/abs/2501.12948)
+
+DeepSeek-R1 is the clearest public demonstration that reinforcement learning alone — without supervised chain-of-thought distillation — can elicit sophisticated reasoning behavior in a large language model. The team at DeepSeek used **Group Relative Policy Optimization (GRPO)**, a variant of PPO that eliminates the need for a separate value network by estimating the baseline from intra-group reward comparisons. The result is a model that learned to "think out loud" through long internal monologues, developing emergent behaviors like self-verification and hypothesis backtracking.
+
+What makes R1 landmark is the deliberate design choice: the base model was not pretrained with reasoning traces. The RL training curriculum *grew* those traces organically. This challenges the prevailing assumption that chain-of-thought must be distilled from teacher models; it can emerge from reward signal alone, provided the reward structure is well-designed (R1 uses format rewards and accuracy signals rather than human preference labels).
+
+**Implication:** Open-weight reasoning is no longer just a capability of frontier API-gated models. The release of R1 weights has accelerated the ecosystem around reasoning evaluation and fine-tuning on a budget.
+
+[Related: Are AI's advanced reasoning capabilities a superpower or a threat? → /ai-advanced-reasoning-superpower-or-threat]
+
+---
+
+### 2. GaLore: Memory-Efficient LLM Training via Gradient Low-Rank Projection
+
+**Paper:** GaLore — *Zhao et al., ICML 2024* · [arXiv:2403.03507](https://arxiv.org/abs/2403.03507)
+
+LoRA redefined parameter-efficient fine-tuning by freezing the pretrained backbone and training only low-rank weight delta matrices. GaLore takes a different angle: instead of restricting *which parameters* you update, it restricts the *gradient subspace* through which all parameters are updated. The core observation is that gradient matrices during LLM pretraining are empirically low-rank — the slow-changing components dominate, and the high-rank noise can be discarded without meaningful loss in convergence quality.
+
+The practical payoff is striking. GaLore enables **full-parameter pretraining of a 7B model on a single GPU with 24 GB of VRAM** — a setup that would normally require at least 8× A100s using standard AdamW. Memory for the optimizer state (the notorious Adam moment buffers) is reduced by projecting gradients into a periodically updated low-rank subspace, storing only the projected moments.
+
+**Implication:** The barrier to training, not just fine-tuning, frontier-scale models drops significantly. Academic labs and independent researchers can now meaningfully participate in the pretraining game, not just adaptation.
+
+---
+
+### 3. Thinking LLMs: General Instruction Following with Thought Generation
+
+**Paper:** *Thinking LLMs* — *Wu et al., 2024* · [arXiv:2410.10630](https://arxiv.org/abs/2410.10630)
+
+While much of the "reasoning model" discourse centers on math and coding benchmarks, this paper asks a subtler question: can you instill internal deliberation for *general-purpose instruction following* — not just STEM tasks? The approach introduces a training procedure that teaches a model to produce a structured internal "thought" before generating its final response, with the thought conditioned on the instruction but excluded from the output loss during preference optimization.
+
+The results reveal an uncomfortable truth about standard RLHF-trained models: they often produce confident-sounding answers to open-ended prompts without any internal planning. Injecting a thinking phase — even one as simple as "restate the goal, enumerate constraints, draft, refine" — measurably improves quality on instruction-following evaluations like MT-Bench and AlpacaEval without sacrificing response fluency.
+
+**Implication:** The "think before you answer" design pattern is not just a benchmark trick; it generalizes. Expect this to become a standard component of instruction-tuning pipelines.
+
+---
+
+## Section 2: Emerging Technical Themes
+
+### Test-Time Compute as a First-Class Resource
+
+For the past decade, AI scaling intuition ran in one direction: more training compute → better models. Test-time compute was an afterthought, fixed at a forward pass per token. The reasoning model wave has inverted this assumption.
+
+The core insight — popularized by OpenAI's o-series and now validated by DeepSeek-R1, QwQ-32B, and Gemini's extended-thinking modes — is that *allocating more compute at inference time* through iterative self-revision, beam search over reasoning paths, or MCTS-guided exploration can recover capability that would otherwise require a much larger model trained on more data.
+
+This creates a new design dimension: the **compute allocation tradeoff**. A 7B model spending 16k tokens on internal deliberation may outperform a 70B model responding in 512 tokens on hard reasoning tasks. Researchers are now studying how to route queries to the right compute budget adaptively — spending reasoning tokens only when a question genuinely benefits from deliberation rather than burning them uniformly.
+
+The research challenge is measurement. Standard benchmarks like MMLU and HellaSwag were designed for zero-shot or few-shot evaluation and don't capture the quality improvement curve as reasoning length increases. New evaluation frameworks that sweep over budget-constrained settings are emerging, but they have not yet standardized.
+
+[Related: Beyond human — are AI's advanced reasoning capabilities about to change everything? → /ai-advanced-reasoning-capabilities-changing-everything]
+
+---
+
+### The Open-Weight Ecosystem Matures
+
+A year ago, the gap between open-weight and frontier API models on reasoning tasks was wide enough to feel categorical. That gap has narrowed substantially. DeepSeek-R1, Qwen-2.5-72B, and their distilled derivatives have demonstrated that open-weight models can match or exceed GPT-4-class performance on coding (HumanEval, SWE-Bench) and mathematical reasoning (MATH, AIME).
+
+The downstream effect on research culture is real: reproducibility is improving. Studies comparing reasoning strategies (chain-of-thought vs. tree-of-thought vs. MCTS-guided search) can now be run on open weights rather than relying on API-mediated black boxes. This is closing the feedback loop between alignment research and capability evaluation.
+
+One under-discussed consequence: **distillation economics have shifted**. It is now cheaply possible to fine-tune a 7B or 14B model on reasoning traces generated by a strong open-weight 70B model, producing a small model with surprisingly good reasoning within a specific domain. This "reasoning distillation pipeline" is becoming a standard technique in applied ML teams.
+
+[Related: Feeling the AI buzz — custom chips, self-training agents, and the future of advanced reasoning → /feeling-the-ai-buzz-from-custom-chips-to-self-training-agents-is-this-the-future-of-advanced-reasoning]
+
+---
+
+### Efficient Fine-Tuning Beyond LoRA
+
+LoRA (Hu et al., arXiv:2106.09685) remains the workhorse of parameter-efficient fine-tuning, but 2024–2025 have produced a cluster of refinements addressing its known weaknesses.
+
+**LoRA+** (arXiv:2402.12354) identified that LoRA's standard setup uses the same learning rate for both the A and B adapter matrices, which is theoretically suboptimal — the B matrix starts at zero (by convention) while A is randomly initialized, creating a learning-rate mismatch. LoRA+ introduces a fixed learning rate ratio between A and B, resulting in faster convergence with the same parameter count.
+
+**DoRA** (Weight-Decomposed Low-Rank Adaptation) decomposes weight updates into magnitude and directional components, adapting each separately. This closes some of the accuracy gap between LoRA and full fine-tuning on tasks requiring deep representational change, particularly in multilingual and vision-language settings.
+
+**GaLore** (covered above) extends this logic to the pretraining regime, applying low-rank projection to optimizer states rather than weight deltas.
+
+Taken together, these methods suggest that the era of "fine-tune a giant model expensively" is giving way to a more surgical paradigm: understand *where* in the weight space a given capability lives, and modify only that subspace.
+
+---
+
+## Section 3: Deep Dive — DeepSeek-R1 and the GRPO Training Paradigm
+
+DeepSeek-R1 is worth examining in granular detail because its training methodology represents a meaningful departure from the RLHF canon established by InstructGPT.
+
+### The Standard RLHF Pipeline and Its Costs
+
+Standard RLHF (Stiennon et al., 2020) requires three distinct components: a pretrained base model, a reward model trained on human preference pairs, and a policy optimization loop (typically PPO) that tunes the base model to maximize reward while staying close to a frozen reference model via a KL penalty. The value network required by PPO adds roughly the same memory footprint as the model itself, making RLHF expensive for large models.
+
+### What GRPO Changes
+
+GRPO (Group Relative Policy Optimization) eliminates the value network entirely. For each prompt, it samples a *group* of responses from the current policy, scores them all with the reward function, and uses the group's mean reward as the baseline. The policy gradient is then computed as the advantage of each response relative to this group mean.
+
+This is computationally lighter than PPO because:
+1. No separate value network needs to be stored or updated.
+2. The baseline estimation is purely reward-derived — no learned critic.
+3. The group structure naturally regularizes variance in the gradient estimate.
+
+For DeepSeek-R1, the reward function has two components: a **format reward** (did the model produce reasoning inside `<think>` tags before the final answer?) and an **accuracy reward** (is the final answer verifiably correct?). No human preference labels are required.
+
+### The Emergent Behaviors
+
+What makes R1's training story compelling for researchers is what *wasn't* explicitly trained. The model spontaneously developed:
+
+- **Self-verification:** revisiting an intermediate conclusion and checking whether it contradicts earlier steps.
+- **Backtracking:** explicitly abandoning a reasoning path mid-thought and restarting from a different angle.
+- **Exploration-exploitation balance:** generating multiple candidate approaches before committing to the most promising.
+
+These behaviors were not in the training data or reward specification — they emerged because they are reliably associated with arriving at verifiably correct answers. This is a case of instrumental convergence in action: if your reward function cares only about correctness, the model will discover useful cognitive strategies independently.
+
+### Limitations and Open Questions
+
+R1 is not without weaknesses. The model's reasoning traces are verbose — it often spends tokens on hesitation and reformulation that a human expert would skip. This is partly a product of the GRPO training signal: the model learns that *more deliberation correlates with higher accuracy*, even when a single-pass response would suffice.
+
+Additionally, the verifiable reward requirement means R1-style training works best in domains with ground-truth answers: math, code, formal logic. Extending this paradigm to open-ended domains — creative writing, strategic advice, medical reasoning — requires either a reliable reward model trained on human preferences (reintroducing RLHF's cost) or a self-evaluation mechanism that remains an active research challenge.
+
+[Related: Is AI our new deepresearch agent for everything, or just getting started? → /is-ai-our-new-deepresearch-agent-for-everything-or-just-getting-started]
+
+[Related: embenx — the Python library for vector search and agentic memory → /embenx-python-embedding-toolkit]
+
+---
+
+## Section 4: Open Questions and Expert Commentary
+
+### Can Reasoning Be Made Efficient?
+
+The most pressing open question in reasoning model research is the cost of inference. A model generating 8,000 reasoning tokens per query is 16× more expensive to serve than one generating 500. The field needs better **adaptive reasoning budget** mechanisms — methods that can estimate query difficulty before generating a full reasoning trace and allocate tokens accordingly.
+
+Early work on this (sometimes called "budget forcing" or "thinking token prediction") shows promise, but the decision of when to think hard and when to answer directly remains poorly understood. It is not clear whether this is a fundamentally hard problem or simply a matter of training on the right curriculum.
+
+### Reward Hacking in RL-Based Training
+
+GRPO and similar RL approaches optimize for reward signals that are proxies for genuine capability. The risk of Goodhart's law is real: a model may learn to game the format reward (producing long `<think>` sections that are structurally correct but logically incoherent) without genuinely reasoning. The DeepSeek team reports this was a real problem during training, requiring careful reward shaping. More principled methods for designing unamenable reward functions remain an open area.
+
+### The Multimodal Reasoning Gap
+
+Most of the progress in reasoning models has occurred in text-only settings. Extending chain-of-thought reasoning to multimodal inputs — images, audio, structured data — is substantially harder. The challenge is not just architectural (vision encoders are relatively mature) but epistemological: what does "reasoning through" an image mean, and how do you construct a verifiable reward for it?
+
+Some early work on visual chain-of-thought (e.g., grounding reasoning steps in image regions) is promising, but the benchmark infrastructure for evaluating multimodal reasoning is still immature compared to mathematical or coding evaluation.
+
+[Related: Is AI making us smarter or scared? Multimodal AI, quantum AI, and our evolving minds → /is-ai-making-us-smarter-or-scared-multimodal-quantum-ai-evolving-minds]
+
+### Fine-Tuning Stability at Scale
+
+GaLore and related memory-efficient methods are compelling, but researchers report nontrivial sensitivity to the subspace update frequency (how often the low-rank projection basis is recomputed) and rank schedule. There is not yet a principled theory of how to set these hyperparameters without empirical search, which limits adoption in settings where compute for hyperparameter sweeps is itself constrained.
+
+---
+
+## Section 5: Quick Reads and References
+
+- **DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning** — DeepSeek-AI, 2025. [arXiv:2501.12948](https://arxiv.org/abs/2501.12948)
+
+- **GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection** — Zhao, Zhang et al., ICML 2024. [arXiv:2403.03507](https://arxiv.org/abs/2403.03507)
+
+- **Thinking LLMs: General Instruction Following with Thought Generation** — Wu et al., 2024. [arXiv:2410.10630](https://arxiv.org/abs/2410.10630)
+
+- **LoRA: Low-Rank Adaptation of Large Language Models** — Hu et al., ICLR 2022. [arXiv:2106.09685](https://arxiv.org/abs/2106.09685)
+
+- **LoRA+: Efficient Low Rank Adaptation of Large Models** — Hayou et al., 2024. [arXiv:2402.12354](https://arxiv.org/abs/2402.12354)
+
+- **Self-Play Fine-Tuning Converts Weak Language Models to Strong Language Models** — Chen et al., 2024. [arXiv:2401.01335](https://arxiv.org/abs/2401.01335)
+
+- **QLoRA: Efficient Finetuning of Quantized LLMs** — Dettmers et al., NeurIPS 2023. [arXiv:2305.14314](https://arxiv.org/abs/2305.14314)
+
+---
+
+## Related Reading on This Blog
+
+- [Beyond Human: Are AI's Advanced Reasoning Capabilities About to Change Everything? → /ai-advanced-reasoning-capabilities-changing-everything](/ai-advanced-reasoning-capabilities-changing-everything)
+- [Are AI's Advanced Reasoning Capabilities a Superpower or a Threat to Our Own Thinking Skills? → /ai-advanced-reasoning-superpower-or-threat](/ai-advanced-reasoning-superpower-or-threat)
+- [Is AI Our New Deepresearch Agent for Everything? → /is-ai-our-new-deepresearch-agent-for-everything-or-just-getting-started](/is-ai-our-new-deepresearch-agent-for-everything-or-just-getting-started)
+- [Is AI Making Us Smarter or Scared? Multimodal AI and Our Evolving Minds → /is-ai-making-us-smarter-or-scared-multimodal-quantum-ai-evolving-minds](/is-ai-making-us-smarter-or-scared-multimodal-quantum-ai-evolving-minds)
+- [embenx: The Python Library for Vector Search and Agentic Memory → /embenx-python-embedding-toolkit](/embenx-python-embedding-toolkit)
+- [Are We Ready for an AI-Powered Future? Advanced Reasoning Is Reshaping Everything → /ai-powered-future-advanced-reasoning](/ai-powered-future-advanced-reasoning)
+- [Feeling the AI Buzz? From Custom Chips to Self-Training Agents → /feeling-the-ai-buzz-from-custom-chips-to-self-training-agents-is-this-the-future-of-advanced-reasoning](/feeling-the-ai-buzz-from-custom-chips-to-self-training-agents-is-this-the-future-of-advanced-reasoning)
+
+---
+
+## Call to Think
+
+Reasoning models trained with RL can develop emergent cognitive strategies — self-verification, backtracking, hypothesis exploration — without ever being shown examples of those behaviors. If these strategies emerge because they are instrumentally useful for arriving at correct answers, what other strategies might emerge as we extend reward-based training to longer time horizons and more open-ended domains? And how would we even recognize them?
+
+The question is not just technical. It is one of the more interesting problems in interpretability: *how do you study cognition in a system whose cognition you did not design?*
