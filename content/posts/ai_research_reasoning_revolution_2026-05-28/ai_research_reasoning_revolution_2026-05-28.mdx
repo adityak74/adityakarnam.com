@@ -1,0 +1,230 @@
+---
+title: "The Reasoning Revolution: How RL-Trained LLMs and Test-Time Compute Scaling Are Redefining AI Intelligence"
+description: "A deep research dive into DeepSeek-R1, test-time compute scaling, and DoRA—the 2025 breakthroughs quietly reshaping how LLMs think."
+date: 2026-05-28
+slug: "/ai-research-reasoning-revolution-llm-2026"
+canonicalUrl: "https://adityakarnam.com/ai-research-reasoning-revolution-llm-2026/"
+keywords:
+  [
+    "LLM reasoning",
+    "DeepSeek-R1",
+    "test-time compute scaling",
+    "reinforcement learning LLMs",
+    "chain-of-thought reasoning",
+    "efficient fine-tuning",
+    "DoRA",
+    "transformer models",
+    "AI research 2025",
+    "emergent reasoning",
+    "GRPO",
+    "LoRA",
+    "open-weight models",
+    "AI alignment",
+    "multimodal learning",
+  ]
+tags: ["autoblog", "AI Research", "LLM", "reasoning"]
+---
+
+_Featured Snippet: A look at how reinforcement learning, test-time scaling, and parameter-efficient fine-tuning are converging to reshape large language model capabilities in 2025._
+
+---
+
+Something fundamental shifted in early 2025. Not in the press-release sense—product launches, benchmark leaderboards, corporate announcements—but in the quieter, more durable sense of research paradigms actually changing. Three threads of work, developed across different labs and released within months of each other, are collectively pointing toward a new theory of what makes language models intelligent: it isn't just scale, and it isn't just data. It's *how* models are trained to reason, and *how much compute* they're allowed to spend at inference time.
+
+This post synthesizes those threads. We'll survey the key papers, identify the emerging pattern across them, and then go deep on one standout result that has already changed how practitioners think about model training at the frontier.
+
+---
+
+## Section 1: Key Research Papers
+
+### 1. DeepSeek-R1: Incentivizing Reasoning via Pure Reinforcement Learning
+
+**arXiv: [2501.12948](https://arxiv.org/abs/2501.12948)** | DeepSeek-AI, January 2025
+
+DeepSeek-R1 is the most discussed open-weights model release of the past year—and for good reason. The paper is technically ambitious: the team trained a 671B mixture-of-experts model using Group Relative Policy Optimization (GRPO), a variant of PPO that removes the need for a separate critic network by estimating advantage from a group of sampled outputs. The result is a model that, on math and code benchmarks, matches or exceeds GPT-4o and Claude 3.5 Sonnet while being fully open-weight.
+
+What makes the paper scientifically interesting beyond the benchmark numbers is the intermediate result: **DeepSeek-R1-Zero**, a model trained *exclusively* through RL with no supervised fine-tuning warmup. R1-Zero spontaneously developed extended chain-of-thought behavior, self-verification loops, and what the authors call an "aha moment"—a pattern where the model learns to pause mid-reasoning, reconsider its approach, and correct its own errors. That this emerged without explicit training signal for such behavior suggests RL is doing something more structurally interesting than reward hacking.
+
+> *"We observe that DeepSeek-R1-Zero naturally learns to allocate more thinking time to difficult problems by re-evaluating and reflecting on previous steps."* — DeepSeek-R1 paper
+
+### 2. Scaling LLM Test-Time Compute Optimally
+
+**arXiv: [2408.03314](https://arxiv.org/abs/2408.03314)** | Snell et al., Google DeepMind, August 2024
+
+While most scaling laws discourse focuses on training compute (the Chinchilla-style question of how many tokens per parameter), this paper asks a different question: given a fixed inference budget, how should you spend it? The authors compare several test-time compute strategies—best-of-N sampling, beam search, process-reward model (PRM) guided search—and find that the optimal strategy depends strongly on problem difficulty and model capability.
+
+The critical finding: for problems where the base model has moderate success probability (~30–70%), test-time compute scaling *dominates* training compute scaling in cost-efficiency. A smaller model with smart inference can outperform a larger model doing greedy decode on a fixed FLOPs budget. This has direct implications for deployment economics and argues for investing more in PRMs and search infrastructure rather than always defaulting to larger base models.
+
+### 3. DoRA: Weight-Decomposed Low-Rank Adaptation
+
+**arXiv: [2402.09353](https://arxiv.org/abs/2402.09353)** | Liu et al., NVIDIA, February 2024
+
+LoRA has been the dominant efficient fine-tuning method since 2021—it's fast, memory-efficient, and surprisingly effective. DoRA asks: *why* does LoRA work, and can we understand it structurally? The authors decompose pre-trained weight matrices into magnitude and direction components, then apply LoRA only to the directional component. This small change produces consistent improvements across LLaMA, LLaVA, and VL-BART benchmarks—often matching full fine-tuning performance at LoRA parameter counts.
+
+More than a practical improvement, DoRA offers a theoretical lens: fine-tuning, it suggests, is primarily about adjusting the *direction* of weight updates, not their magnitude. That framing has implications for understanding catastrophic forgetting, adapter merging, and the geometry of fine-tuning loss landscapes.
+
+---
+
+## Section 2: Emerging Technical Themes
+
+### The Test-Time Compute Shift
+
+There's a pattern connecting all three papers above: intelligence is increasingly being located *at inference*, not just at training. DeepSeek-R1 models are trained to produce long chains of reasoning—sometimes thousands of tokens of internal deliberation before answering. Test-time scaling research formalizes this: more compute at inference time, spent in the right way, is a direct substitute for larger models.
+
+This is architecturally important. It means the design space for "making models smarter" now has two axes rather than one: (1) improve the base policy through better training, and (2) improve how that policy is queried at inference. The research community is actively exploring both.
+
+It also raises a practical question explored in [earlier posts on advanced reasoning capabilities](/ai-advanced-reasoning-capabilities-changing-everything/): at what point does inference-time reasoning become indistinguishable from planning, and what does that mean for alignment and safety?
+
+### RL as a First-Class Training Paradigm
+
+Until recently, RL post-training was understood primarily as RLHF for alignment—a way to make models less harmful and more helpful. DeepSeek-R1 changes the framing. RL here is a *capability development* technique, not just a preference alignment step. The model learns *how to think*, not just *what to say*.
+
+This connects to a broader shift visible in OpenAI's o1/o3 series, Google's Gemini thinking modes, and Anthropic's extended thinking—all of which apply various forms of search and RL-style training to improve reasoning at inference. The infrastructure for doing this well (reward models, process-level supervision, verifiable environments for math/code) is becoming as strategically important as base model training infrastructure.
+
+For a broader view on how autonomous reasoning capabilities are reshaping AI deployment, see [AI's Wild Ride: Autonomous Agents and Advanced Reasoning](/ais-wild-ride-autonomous-agents-advanced-reasoning/) and [AI's Exponential Leap](/ai-exponential-leap-advanced-reasoning-ai-agents/).
+
+### Parameter Efficiency and Fine-Tuning Theory
+
+DoRA represents a maturing of the LoRA ecosystem. What started as an empirical hack—"low-rank updates work surprisingly well"—is being given theoretical grounding. The magnitude/direction decomposition connects to classical work in optimization theory about the structure of gradient descent in overparameterized networks. As fine-tuning moves into production for more specialized domains, this theoretical grounding matters: it informs decisions about adapter rank, learning rate schedules, and how to merge multiple fine-tuned adapters without performance collapse.
+
+---
+
+## Section 3: Deep Dive — DeepSeek-R1
+
+### Background: Why Reasoning Is Hard to Train
+
+Neural language models, at their core, are sequence predictors. They learn distributions over tokens given context. This works remarkably well for knowledge retrieval and pattern matching, but it creates a specific failure mode for multi-step reasoning: each token generation is a local decision, without any mechanism to plan ahead, backtrack, or verify intermediate steps.
+
+Supervised fine-tuning on chain-of-thought examples helps—models learn to write down intermediate steps—but it doesn't fundamentally change the local nature of generation. The model is imitating reasoning, not *doing* reasoning in any computationally meaningful sense.
+
+Reinforcement learning changes the objective. Instead of maximizing likelihood of human-written reasoning traces, the model maximizes expected reward on verifiable outcomes. For math problems, the reward is binary: the final answer is either correct or not. This sparse signal, it turns out, is enough to induce substantial structural changes in how the model behaves.
+
+### The GRPO Algorithm
+
+Standard PPO requires a separately trained value network (the critic) that estimates the expected future reward from each state. This doubles training complexity and introduces instability from two neural networks updating simultaneously. GRPO replaces the critic with a group estimate: sample *G* completions for each prompt, compute the actual rewards, and use the mean reward across the group as the baseline. The advantage for each completion is then:
+
+```
+A_i = (r_i - mean(r_1..r_G)) / std(r_1..r_G)
+```
+
+This is simpler, more stable, and requires no separate value network. The tradeoff is that you need multiple completions per training step, which increases per-step compute—but the DeepSeek team argues this is more than offset by improved training stability.
+
+### Emergent Reasoning Behaviors in R1-Zero
+
+The most scientifically striking part of the DeepSeek-R1 paper is what happened when they trained R1-Zero: a model with a strong base policy (DeepSeek-V3 architecture) but zero SFT reasoning data, trained purely with RL against math/code verification rewards.
+
+The model developed:
+
+- **Extended internal monologue**: responses became much longer as the model "thought out loud," exploring dead ends before converging on answers.
+- **Self-correction**: the model would generate a reasoning path, recognize an inconsistency, and explicitly note "wait, let me reconsider" before revising.
+- **Reflection scaling**: harder problems elicited longer, more elaborate reasoning chains—the model dynamically allocated more "thinking budget" to harder inputs without being explicitly trained to do so.
+
+None of these behaviors were in the training data. They emerged from the RL objective alone. The authors term the most visible instance of this the "aha moment":
+
+> *"During the training of DeepSeek-R1-Zero, we observe an interesting 'aha moment' ... The model learns to rethink using an anthropomorphic expression, suggesting it is developing something resembling meta-cognitive awareness."*
+
+Whether "meta-cognitive awareness" is the right framing is philosophically contested—these are pattern-matching systems over tokens, after all. But the *functional* behavior is real and reproducible: the model performs significantly better on hard reasoning tasks than a comparably sized SFT model.
+
+### From R1-Zero to R1: Adding Structure Back
+
+R1-Zero has one significant weakness: its outputs are sometimes incoherent or switch languages mid-reasoning. The full DeepSeek-R1 model addresses this through a carefully structured pipeline:
+
+1. **Cold-start SFT**: a small amount of human-curated long-form reasoning data gives the model an initial coherent reasoning style.
+2. **RL training**: GRPO over math/code/logic rewards, same as R1-Zero.
+3. **Rejection-sampling SFT**: generate many solutions, keep only the correct ones, fine-tune on them.
+4. **Final RL for helpfulness/harmlessness**: standard RLHF-style alignment pass.
+
+This pipeline produces a model that combines the emergent reasoning depth of R1-Zero with the output coherence needed for deployment. The ablations in the paper show each stage contributes meaningfully—removing the cold-start SFT produces R1-Zero-quality reasoning but much worse readability.
+
+### Benchmark Performance
+
+DeepSeek-R1 (671B MoE, ~37B active parameters) achieves:
+
+| Benchmark       | DeepSeek-R1 | OpenAI o1     | Claude 3.5 Sonnet |
+| --------------- | ----------- | ------------- | ----------------- |
+| AIME 2024       | 79.8%       | 79.2%         | 16.0%             |
+| MATH-500        | 97.3%       | 96.4%         | 71.1%             |
+| Codeforces      | 96.3%       | 96.6%         | 27.0%             |
+| MMLU            | 90.8%       | 91.8%         | 88.3%             |
+| LiveCodeBench   | 65.9%       | 63.4%         | 40.0%             |
+
+The headline result: on math and code benchmarks requiring extended reasoning, R1 matches OpenAI's o1—a closed, proprietary model—while being fully open-weight. The distilled variants (R1-Distill-7B, R1-Distill-14B, R1-Distill-32B, based on Qwen and LLaMA architectures) make frontier reasoning accessible at much smaller scales.
+
+### Implications for the Field
+
+A few things follow from this:
+
+**Open-weight parity**: The gap between closed and open frontier models has narrowed substantially. This has downstream effects on deployment costs, fine-tuning access, and safety research—open-weight models allow far more thorough internal analysis than API-only systems.
+
+**RL infrastructure matters**: The DeepSeek team's ability to run GRPO at 671B scale required significant systems investment in distributed training stability, reward modeling, and verifiable task environments. This infrastructure is now a meaningful competitive moat—separate from base model quality.
+
+**Reasoning as a first-class capability**: Tasks requiring multi-step reasoning—formal math, competitive programming, scientific problem-solving—are becoming solvable at near-human expert levels. The ceiling is lifting faster than most predicted. For a broader look at what this means for research applications, see [Is AI Our New DeepResearch Agent?](/is-ai-our-new-deepresearch-agent-for-everything-or-just-getting-started/).
+
+---
+
+## Section 4: Open Questions & Expert Commentary
+
+### Is "Emergent Reasoning" Actually Reasoning?
+
+The philosophical question won't die: when a model generates a long chain of tokens that leads to a correct answer, is it *reasoning*, or is it performing a learned pattern that mimics reasoning? The emergent self-correction behaviors in R1-Zero make this harder to dismiss—the model isn't imitating a specific training example when it backtracks. But the token-by-token generation mechanism doesn't obviously support the kind of parallel hypothesis testing that human reasoning involves.
+
+One productive framing: these models are implementing something like *serial search* over reasoning paths. The long chain of thought is the model exploring a reasoning tree one step at a time, pruning based on the coherence of the trajectory. Whether that's "real reasoning" may be less important than whether it's effective and reliable—but the question matters for safety, because systems that *simulate* reasoning without *doing* reasoning may fail in qualitatively different ways than systems that don't reason at all.
+
+### The Process Reward Model Bottleneck
+
+Test-time compute scaling methods that use search (beam search, best-of-N reranking) require a reliable way to score intermediate reasoning steps—a Process Reward Model (PRM). Training good PRMs is hard: it requires dense human annotation of reasoning correctness at the step level, not just the outcome level. The math domain has an advantage here because automated verification is tractable. For domains like law, medicine, or open-ended scientific reasoning, step-level verification is much harder to automate or annotate at scale.
+
+This is likely the bottleneck for extending RL-trained reasoning to new domains. The question isn't whether RL can work outside math and code—the evidence suggests it can—but whether we can build the reward signal infrastructure needed to make it work reliably. See [AI's Next Leap: Advanced Reasoning and Faster Training](/ai-next-leap-advanced-reasoning-training-impact/) for more on the training infrastructure side of this challenge.
+
+### Fine-Tuning Meets Reasoning Models
+
+DoRA and the broader parameter-efficient fine-tuning literature have mostly been tested on instruction-following and knowledge tasks. It's an open question how well these methods generalize to reasoning-specialized models like DeepSeek-R1. Reasoning models have unusual weight distributions—they've been specifically shaped by RL to produce long, exploratory outputs. Applying LoRA/DoRA adapters to them for domain-specific tasks may require rethinking rank selection and learning rate schedules.
+
+Early community experiments suggest that fine-tuning R1-distill models on domain-specific reasoning datasets (legal reasoning, medical differential diagnosis) is feasible and improves domain performance—but sometimes reduces the quality of the "thinking" traces. More systematic study is needed. The interaction between RL-induced reasoning behavior and SFT-based adaptation is poorly understood.
+
+### Safety and Controllability
+
+Longer chain-of-thought outputs create new attack surfaces. Prompt injection attempts can hide in reasoning traces. Models can be manipulated into producing harmful content through multi-step "reasoning" that superficially looks legitimate. As reasoning models become more capable and more widely deployed, the safety community needs evaluation frameworks that go beyond output-level harmlessness to assess reasoning-trace integrity.
+
+For a thoughtful look at the tension between capability and safety in advanced reasoning systems, see [AI Advanced Reasoning: Superpower or Threat?](/ai-advanced-reasoning-superpower-or-threat/).
+
+---
+
+## Section 5: References & Quick Reads
+
+1. **DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning**  
+   DeepSeek-AI (2025). arXiv:2501.12948. [https://arxiv.org/abs/2501.12948](https://arxiv.org/abs/2501.12948)
+
+2. **Scaling LLM Test-Time Compute Optimally**  
+   Snell et al., Google DeepMind (2024). arXiv:2408.03314. [https://arxiv.org/abs/2408.03314](https://arxiv.org/abs/2408.03314)
+
+3. **DoRA: Weight-Decomposed Low-Rank Adaptation**  
+   Liu et al., NVIDIA (2024). arXiv:2402.09353. [https://arxiv.org/abs/2402.09353](https://arxiv.org/abs/2402.09353)
+
+4. **LoRA: Low-Rank Adaptation of Large Language Models**  
+   Hu et al., Microsoft (2021). arXiv:2106.09685. [https://arxiv.org/abs/2106.09685](https://arxiv.org/abs/2106.09685)
+
+5. **Training Language Models to Follow Instructions with Human Feedback**  
+   Ouyang et al., OpenAI (2022). arXiv:2203.02155. [https://arxiv.org/abs/2203.02155](https://arxiv.org/abs/2203.02155)
+
+6. **Let's Verify Step by Step** (Process Reward Models)  
+   Lightman et al., OpenAI (2023). arXiv:2305.20050. [https://arxiv.org/abs/2305.20050](https://arxiv.org/abs/2305.20050)
+
+### Related Posts on This Blog
+
+- [AI's Wild Ride: Autonomous Agents and Advanced Reasoning](/ais-wild-ride-autonomous-agents-advanced-reasoning/)
+- [AI's Exponential Leap: Advanced Reasoning and AI Agents](/ai-exponential-leap-advanced-reasoning-ai-agents/)
+- [Beyond Human: Are AI's Advanced Reasoning Capabilities About to Change Everything?](/ai-advanced-reasoning-capabilities-changing-everything/)
+- [Is AI Our New DeepResearch Agent for Everything?](/is-ai-our-new-deepresearch-agent-for-everything-or-just-getting-started/)
+- [AI Advanced Reasoning: Superpower or Threat?](/ai-advanced-reasoning-superpower-or-threat/)
+- [Multimodal AI and Our Evolving Minds](/is-ai-making-us-smarter-or-scared-multimodal-quantum-ai-evolving-minds/)
+- [AI's Next Leap: Advanced Reasoning and Faster Training](/ai-next-leap-advanced-reasoning-training-impact/)
+- [Beyond the Hype: Is AI's Advanced Reasoning Quietly Reshaping Our World?](/beyond-the-hype-is-ais-advanced-reasoning-capability-quietly-reshaping-our-world/)
+
+---
+
+## Call to Think
+
+DeepSeek-R1's emergent self-correction behaviors raise a question worth sitting with: if a model trained only on outcome rewards—without any training signal for the *process* of reasoning—spontaneously develops what looks like deliberate, reflective thinking, what does that tell us about the relationship between optimization pressure and cognitive structure? Is reasoning a *capability* that emerges from sufficiently strong outcome optimization, or is it an *architecture* that needs to be designed in?
+
+The answer matters—not just for how we build the next generation of models, but for how we think about the nature of intelligence itself.
