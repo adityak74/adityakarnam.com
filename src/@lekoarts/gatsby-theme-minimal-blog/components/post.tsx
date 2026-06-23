@@ -46,7 +46,7 @@ const Post: React.FC<React.PropsWithChildren<PageProps<MBPostProps>>> = ({ data:
           fontWeight: `600`,
           letterSpacing: `0.07em`,
           textTransform: `uppercase`,
-          color: `#8B949E`,
+          color: `secondary`,
           backgroundColor: (t: any) => t.colors?.modes?.dark ? `rgba(255,255,255,0.06)` : `rgba(0,0,0,0.05)`,
           bg: `muted`,
           border: `1px solid`,
