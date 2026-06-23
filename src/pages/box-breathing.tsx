@@ -6,9 +6,9 @@ export function Head() {
       <title>box breathing</title>
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <style>{`
-        body { margin: 0; padding: 0; background: #06060f; }
+        body { margin: 0; padding: 0; background: #15140F; }
         #box-breathing-root * { margin: 0; padding: 0; box-sizing: border-box; }
-        #box-breathing-root { background: #06060f; height: 100vh; overflow: hidden; user-select: none; }
+        #box-breathing-root { background: #15140F; height: 100vh; overflow: hidden; user-select: none; }
         #box-breathing-root canvas { position: fixed; inset: 0; width: 100%; height: 100%; }
         #phase-label, #count, #cycles, #hint, .bl {
           position: fixed;
@@ -41,7 +41,7 @@ export function Head() {
         #start {
           position: fixed; inset: 0; display: flex; flex-direction: column;
           align-items: center; justify-content: center; gap: 18px;
-          z-index: 20; background: #06060f; transition: opacity 2.2s ease;
+          z-index: 20; background: #15140F; transition: opacity 2.2s ease;
         }
         #start.fade { opacity: 0; pointer-events: none; }
         .st {
@@ -342,7 +342,7 @@ const BoxBreathingPage = () => {
       prevNow = now
       ambT += dt * .00024
 
-      ctx.fillStyle = "#06060f"
+      ctx.fillStyle = "#15140F"
       ctx.fillRect(0, 0, W, H)
 
       if (!running || paused) {
