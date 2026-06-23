@@ -7,13 +7,13 @@ const SpotlightSection: React.FC = () => {
   const isDark = colorMode === "dark";
 
   const colors = {
-    text: isDark ? "#C9D1D9" : "#111827",
-    heading: isDark ? "#F0F6FC" : "#111827",
-    secondary: isDark ? "#8B949E" : "#6B7280",
-    primary: isDark ? "#58A6FF" : "#2563EB",
-    divide: isDark ? "#21262D" : "#E5E7EB",
-    cardBg: isDark ? "#161B22" : "#F8FAFC",
-    cardBorder: isDark ? "#21262D" : "#E5E7EB",
+    text: isDark ? "#E5E1D8" : "#1A1A1A",
+    heading: isDark ? "#FAF8F3" : "#1A1A1A",
+    secondary: isDark ? "#928D7E" : "#6B6B6B",
+    primary: isDark ? "#E5E1D8" : "#1A1A1A",
+    divide: isDark ? "#2B291F" : "#E2DED4",
+    cardBg: isDark ? "#1F1D16" : "#F0EDE5",
+    cardBorder: isDark ? "#2B291F" : "#E2DED4",
   };
 
   const categoryMeta: Record<string, { icon: React.ComponentType; color: string }> = {
