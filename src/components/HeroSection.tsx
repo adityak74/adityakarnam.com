@@ -405,6 +405,101 @@ const HeroSection: React.FC = () => {
             </div>
           </a>
 
+          {/* subagent-fleet */}
+          <a
+            href="https://github.com/adityak74/subagent-fleet"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: "1rem",
+              padding: "1rem 1.25rem",
+              backgroundColor: isDark ? "#0D1117" : "#F8FAFC",
+              border: `1px solid ${isDark ? "#21262D" : "#E5E7EB"}`,
+              borderLeft: `3px solid ${colors.primary}`,
+              borderRadius: "8px",
+              textDecoration: "none",
+              color: "inherit",
+              marginBottom: "2rem",
+              transition: "border-color 0.15s ease, transform 0.15s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = colors.primary;
+              e.currentTarget.style.transform = "translateY(-1px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = isDark ? "#21262D" : "#E5E7EB";
+              e.currentTarget.style.borderLeftColor = colors.primary;
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.375rem", flexWrap: "wrap" }}>
+                <span
+                  style={{
+                    fontSize: "0.7rem",
+                    fontWeight: "600",
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    color: colors.primary,
+                    backgroundColor: isDark ? "rgba(88, 166, 255, 0.1)" : "rgba(37, 99, 235, 0.08)",
+                    padding: "0.15rem 0.5rem",
+                    borderRadius: "4px",
+                  }}
+                >
+                  Also Building
+                </span>
+                <span
+                  style={{
+                    fontSize: "0.95rem",
+                    fontWeight: "600",
+                    color: colors.heading,
+                    fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                  }}
+                >
+                  subagent-fleet
+                </span>
+              </div>
+              <p style={{ fontSize: "0.875rem", color: colors.secondary, margin: "0 0 0.5rem", lineHeight: "1.55" }}>
+                Local AI compute control plane for Claude Code and coding agents. Turns your Macs, GPUs, and Ollama backends into one intelligent fleet — routing subagents to the right model and machine by role, with real-time health monitoring, model warmup, and execution tracing via a live SSE dashboard.
+              </p>
+              <code
+                style={{
+                  fontSize: "0.8rem",
+                  fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                  color: colors.primary,
+                  backgroundColor: isDark ? "rgba(88, 166, 255, 0.08)" : "rgba(37, 99, 235, 0.06)",
+                  padding: "0.15rem 0.5rem",
+                  borderRadius: "4px",
+                }}
+              >
+                Python · Ollama · LiteLLM · CLI
+              </code>
+            </div>
+            <div style={{ display: "flex", gap: "0.5rem", flexShrink: 0, alignItems: "center", paddingTop: "2px" }}>
+              <a
+                href="https://github.com/adityak74/subagent-fleet"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                title="GitHub"
+                style={{
+                  color: colors.secondary,
+                  fontSize: "1rem",
+                  display: "flex",
+                  alignItems: "center",
+                  transition: "color 0.15s ease",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = colors.heading; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = colors.secondary; }}
+              >
+                {React.createElement(FaGithubIcon)}
+              </a>
+              {React.createElement(FaExternalLinkAlt, { style: { color: colors.secondary, fontSize: "0.75rem" } })}
+            </div>
+          </a>
+
           {/* CTA */}
           <a
             href="/ai-toolkit"
