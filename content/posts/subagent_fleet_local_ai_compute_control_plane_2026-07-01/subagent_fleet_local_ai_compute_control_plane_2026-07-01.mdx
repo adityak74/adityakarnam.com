@@ -169,6 +169,41 @@ One of the small but painful issues in local LLM workflows is cold startup time.
 
 That small detail changes the feel of the workflow. Instead of waiting for the first planner or implementer call to pay the load penalty, the fleet gets prepared upfront.
 
+## The Local Fleet vs Sonnet 5 Eval
+
+After building the control plane, the obvious question was: does this local fleet actually hold up against frontier models on coding work?
+
+So I added a live head-to-head eval. It sends 8 real coding tasks to three systems:
+
+- the local fleet through the LiteLLM gateway
+- Claude Sonnet 5 through OpenRouter
+- GPT-4o-mini through OpenRouter
+
+The tasks are intentionally practical: bug fixes, an LRU cache, a token bucket rate limiter, N+1 query cleanup, FastAPI endpoint work, race-condition fixes, and pytest unit tests. A separate LLM judge scores each answer blind on a 0-10 rubric for correctness, code quality, and completeness.
+
+The first run surprised me:
+
+| System | Mean Score | Mean Latency | Total Cost |
+| --- | ---: | ---: | ---: |
+| Local fleet | 8.38 | 17.47s | $0.0000 |
+| Sonnet 5 | 8.88 | 5.22s | $0.0077 |
+| GPT-4o-mini | 7.50 | 3.47s | $0.0004 |
+
+The local fleet reached **94% of Sonnet 5's mean quality at $0 marginal model cost**, and it beat GPT-4o-mini on mean score. It also passed 7 of 8 prompts against the bar I cared about: staying within 80% of the best frontier score for that prompt.
+
+The one miss was useful: `pytest_unit_tests`. The fleet scored 4.0 there while Sonnet 5 scored 8.0. That is not a reason to hide the result. It is the kind of specific failure a good eval should surface. Local coding models can be strong at implementation and refactoring while still needing work on edge-case test generation.
+
+The takeaway is not "local beats frontier." It does not. Sonnet 5 was faster and still had the highest mean score. The takeaway is more practical: for a large slice of coding-agent work, a well-routed local fleet can get close enough to be useful, private, and effectively free per additional run.
+
+The full report lives in the repo at [`docs/evals/frontier-comparison-2026-06-30.json`](https://github.com/adityak74/subagent-fleet/blob/main/docs/evals/frontier-comparison-2026-06-30.json), and the live test can be rerun against your own fleet:
+
+```bash
+export OPENROUTER_API_KEY=<your-key>
+export LITELLM_MASTER_KEY=<your-fleet-master-key>
+litellm --config ./litellm_config.yaml &
+python -m pytest tests/evals/test_frontier_comparison_live.py --run-live -v -s
+```
+
 ## Built for Private Local Networks
 
 This is not a hosted SaaS control plane. It assumes your machines are on a private network: LAN, Tailscale, WireGuard, or a private subnet.
