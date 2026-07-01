@@ -1,0 +1,7 @@
+interface:
+  display_name: "Blog Analyze"
+  short_description: "Audit blog quality and SEO"
+  default_prompt: "Use $blog-analyze to score this adityakarnam.com blog post and list concrete fixes."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Blog Schema"
+  short_description: "Generate blog JSON-LD schema"
+  default_prompt: "Use $blog-schema to create or review JSON-LD schema for this adityakarnam.com post."
+
+policy:
+  allow_implicit_invocation: true

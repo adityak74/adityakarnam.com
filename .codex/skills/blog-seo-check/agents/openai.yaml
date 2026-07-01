@@ -1,0 +1,7 @@
+interface:
+  display_name: "Blog SEO Check"
+  short_description: "Validate post SEO readiness"
+  default_prompt: "Use $blog-seo-check to validate this adityakarnam.com MDX post before publishing."
+
+policy:
+  allow_implicit_invocation: true

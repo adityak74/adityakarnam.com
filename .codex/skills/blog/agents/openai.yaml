@@ -1,0 +1,7 @@
+interface:
+  display_name: "Blog"
+  short_description: "Route repo-local blog workflows"
+  default_prompt: "Use $blog to route this adityakarnam.com blog task to the right writing, brief, SEO, analysis, or schema workflow."
+
+policy:
+  allow_implicit_invocation: true
