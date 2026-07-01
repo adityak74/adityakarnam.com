@@ -8,14 +8,15 @@ const HeroSection: React.FC = () => {
 
   const colors = {
     bg: "transparent",
-    text: isDark ? "#E5E1D8" : "#1A1A1A",
-    heading: isDark ? "#FAF8F3" : "#1A1A1A",
-    secondary: isDark ? "#928D7E" : "#6B6B6B",
-    primary: isDark ? "#E5E1D8" : "#1A1A1A",
-    divide: isDark ? "#2B291F" : "#E2DED4",
-    cardBg: isDark ? "#1F1D16" : "#F0EDE5",
-    cardBorder: isDark ? "#2B291F" : "#E2DED4",
-    mutedBg: isDark ? "#15140F" : "#F0EDE5",
+    text: isDark ? "#E8E6DD" : "#181818",
+    heading: isDark ? "#F5F2E9" : "#181818",
+    secondary: isDark ? "#97927F" : "#66635C",
+    primary: isDark ? "#E8E6DD" : "#181818",
+    accent: isDark ? "#E08A6B" : "#D97757",
+    divide: isDark ? "#2D2A22" : "#DDD9CD",
+    cardBg: isDark ? "#211F18" : "#E8E4D9",
+    cardBorder: isDark ? "#2D2A22" : "#DDD9CD",
+    mutedBg: isDark ? "#141310" : "#E8E4D9",
   };
 
   return (
@@ -23,20 +24,21 @@ const HeroSection: React.FC = () => {
       {/* Hero content */}
       <div
         style={{
-          paddingTop: "3rem",
-          paddingBottom: "4rem",
+          paddingTop: "3.5rem",
+          paddingBottom: "5rem",
         }}
       >
         {/* Name + role */}
         <div style={{ marginBottom: "3rem" }}>
           <h1
             style={{
-              fontSize: "clamp(2rem, 5vw, 3rem)",
-              fontWeight: "700",
+              fontFamily: "'Fraunces', Georgia, serif",
+              fontSize: "clamp(2.25rem, 5.5vw, 3.5rem)",
+              fontWeight: "600",
               color: colors.heading,
               marginBottom: "0.75rem",
-              lineHeight: "1.15",
-              letterSpacing: "-0.03em",
+              lineHeight: "1.1",
+              letterSpacing: "-0.02em",
             }}
           >
             Hi, I'm Aditya Karnam
@@ -120,9 +122,8 @@ const HeroSection: React.FC = () => {
               alignItems: "flex-start",
               gap: "1rem",
               padding: "1rem 1.25rem",
-              backgroundColor: isDark ? "#0D1117" : "#F8FAFC",
-              border: `1px solid ${isDark ? "#21262D" : "#E5E7EB"}`,
-              borderLeft: `3px solid ${colors.primary}`,
+              backgroundColor: colors.cardBg,
+              border: `1px solid ${colors.cardBorder}`,
               borderRadius: "8px",
               textDecoration: "none",
               color: "inherit",
@@ -130,12 +131,11 @@ const HeroSection: React.FC = () => {
               transition: "border-color 0.15s ease, transform 0.15s ease",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = colors.primary;
+              e.currentTarget.style.borderColor = colors.accent;
               e.currentTarget.style.transform = "translateY(-1px)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = isDark ? "#21262D" : "#E5E7EB";
-              e.currentTarget.style.borderLeftColor = colors.primary;
+              e.currentTarget.style.borderColor = colors.cardBorder;
               e.currentTarget.style.transform = "translateY(0)";
             }}
           >
@@ -147,8 +147,8 @@ const HeroSection: React.FC = () => {
                     fontWeight: "600",
                     letterSpacing: "0.08em",
                     textTransform: "uppercase",
-                    color: colors.primary,
-                    backgroundColor: isDark ? "rgba(88, 166, 255, 0.1)" : "rgba(37, 99, 235, 0.08)",
+                    color: colors.accent,
+                    backgroundColor: isDark ? "rgba(224, 138, 107, 0.12)" : "rgba(217, 119, 87, 0.08)",
                     padding: "0.15rem 0.5rem",
                     borderRadius: "4px",
                   }}
@@ -173,8 +173,8 @@ const HeroSection: React.FC = () => {
                 style={{
                   fontSize: "0.8rem",
                   fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-                  color: colors.primary,
-                  backgroundColor: isDark ? "rgba(88, 166, 255, 0.08)" : "rgba(37, 99, 235, 0.06)",
+                  color: colors.accent,
+                  backgroundColor: isDark ? "rgba(224, 138, 107, 0.1)" : "rgba(217, 119, 87, 0.06)",
                   padding: "0.15rem 0.5rem",
                   borderRadius: "4px",
                 }}
@@ -215,9 +215,8 @@ const HeroSection: React.FC = () => {
               alignItems: "flex-start",
               gap: "1rem",
               padding: "1rem 1.25rem",
-              backgroundColor: isDark ? "#0D1117" : "#F8FAFC",
-              border: `1px solid ${isDark ? "#21262D" : "#E5E7EB"}`,
-              borderLeft: `3px solid ${colors.primary}`,
+              backgroundColor: colors.cardBg,
+              border: `1px solid ${colors.cardBorder}`,
               borderRadius: "8px",
               textDecoration: "none",
               color: "inherit",
@@ -225,12 +224,11 @@ const HeroSection: React.FC = () => {
               transition: "border-color 0.15s ease, transform 0.15s ease",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = colors.primary;
+              e.currentTarget.style.borderColor = colors.accent;
               e.currentTarget.style.transform = "translateY(-1px)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = isDark ? "#21262D" : "#E5E7EB";
-              e.currentTarget.style.borderLeftColor = colors.primary;
+              e.currentTarget.style.borderColor = colors.cardBorder;
               e.currentTarget.style.transform = "translateY(0)";
             }}
           >
@@ -242,8 +240,8 @@ const HeroSection: React.FC = () => {
                     fontWeight: "600",
                     letterSpacing: "0.08em",
                     textTransform: "uppercase",
-                    color: colors.primary,
-                    backgroundColor: isDark ? "rgba(88, 166, 255, 0.1)" : "rgba(37, 99, 235, 0.08)",
+                    color: colors.accent,
+                    backgroundColor: isDark ? "rgba(224, 138, 107, 0.12)" : "rgba(217, 119, 87, 0.08)",
                     padding: "0.15rem 0.5rem",
                     borderRadius: "4px",
                   }}
@@ -273,8 +271,8 @@ const HeroSection: React.FC = () => {
                   style={{
                     fontSize: "0.8rem",
                     fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-                    color: colors.primary,
-                    backgroundColor: isDark ? "rgba(88, 166, 255, 0.08)" : "rgba(37, 99, 235, 0.06)",
+                    color: colors.accent,
+                    backgroundColor: isDark ? "rgba(224, 138, 107, 0.1)" : "rgba(217, 119, 87, 0.06)",
                     padding: "0.15rem 0.5rem",
                     borderRadius: "4px",
                     textDecoration: "none",
@@ -320,9 +318,8 @@ const HeroSection: React.FC = () => {
               alignItems: "flex-start",
               gap: "1rem",
               padding: "1rem 1.25rem",
-              backgroundColor: isDark ? "#0D1117" : "#F8FAFC",
-              border: `1px solid ${isDark ? "#21262D" : "#E5E7EB"}`,
-              borderLeft: `3px solid ${colors.primary}`,
+              backgroundColor: colors.cardBg,
+              border: `1px solid ${colors.cardBorder}`,
               borderRadius: "8px",
               textDecoration: "none",
               color: "inherit",
@@ -330,12 +327,11 @@ const HeroSection: React.FC = () => {
               transition: "border-color 0.15s ease, transform 0.15s ease",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = colors.primary;
+              e.currentTarget.style.borderColor = colors.accent;
               e.currentTarget.style.transform = "translateY(-1px)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = isDark ? "#21262D" : "#E5E7EB";
-              e.currentTarget.style.borderLeftColor = colors.primary;
+              e.currentTarget.style.borderColor = colors.cardBorder;
               e.currentTarget.style.transform = "translateY(0)";
             }}
           >
@@ -347,8 +343,8 @@ const HeroSection: React.FC = () => {
                     fontWeight: "600",
                     letterSpacing: "0.08em",
                     textTransform: "uppercase",
-                    color: colors.primary,
-                    backgroundColor: isDark ? "rgba(88, 166, 255, 0.1)" : "rgba(37, 99, 235, 0.08)",
+                    color: colors.accent,
+                    backgroundColor: isDark ? "rgba(224, 138, 107, 0.12)" : "rgba(217, 119, 87, 0.08)",
                     padding: "0.15rem 0.5rem",
                     borderRadius: "4px",
                   }}
@@ -373,8 +369,8 @@ const HeroSection: React.FC = () => {
                 style={{
                   fontSize: "0.8rem",
                   fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-                  color: colors.primary,
-                  backgroundColor: isDark ? "rgba(88, 166, 255, 0.08)" : "rgba(37, 99, 235, 0.06)",
+                  color: colors.accent,
+                  backgroundColor: isDark ? "rgba(224, 138, 107, 0.1)" : "rgba(217, 119, 87, 0.06)",
                   padding: "0.15rem 0.5rem",
                   borderRadius: "4px",
                 }}
@@ -415,9 +411,8 @@ const HeroSection: React.FC = () => {
               alignItems: "flex-start",
               gap: "1rem",
               padding: "1rem 1.25rem",
-              backgroundColor: isDark ? "#0D1117" : "#F8FAFC",
-              border: `1px solid ${isDark ? "#21262D" : "#E5E7EB"}`,
-              borderLeft: `3px solid ${colors.primary}`,
+              backgroundColor: colors.cardBg,
+              border: `1px solid ${colors.cardBorder}`,
               borderRadius: "8px",
               textDecoration: "none",
               color: "inherit",
@@ -425,12 +420,11 @@ const HeroSection: React.FC = () => {
               transition: "border-color 0.15s ease, transform 0.15s ease",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = colors.primary;
+              e.currentTarget.style.borderColor = colors.accent;
               e.currentTarget.style.transform = "translateY(-1px)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = isDark ? "#21262D" : "#E5E7EB";
-              e.currentTarget.style.borderLeftColor = colors.primary;
+              e.currentTarget.style.borderColor = colors.cardBorder;
               e.currentTarget.style.transform = "translateY(0)";
             }}
           >
@@ -442,8 +436,8 @@ const HeroSection: React.FC = () => {
                     fontWeight: "600",
                     letterSpacing: "0.08em",
                     textTransform: "uppercase",
-                    color: colors.primary,
-                    backgroundColor: isDark ? "rgba(88, 166, 255, 0.1)" : "rgba(37, 99, 235, 0.08)",
+                    color: colors.accent,
+                    backgroundColor: isDark ? "rgba(224, 138, 107, 0.12)" : "rgba(217, 119, 87, 0.08)",
                     padding: "0.15rem 0.5rem",
                     borderRadius: "4px",
                   }}
@@ -468,8 +462,8 @@ const HeroSection: React.FC = () => {
                 style={{
                   fontSize: "0.8rem",
                   fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-                  color: colors.primary,
-                  backgroundColor: isDark ? "rgba(88, 166, 255, 0.08)" : "rgba(37, 99, 235, 0.06)",
+                  color: colors.accent,
+                  backgroundColor: isDark ? "rgba(224, 138, 107, 0.1)" : "rgba(217, 119, 87, 0.06)",
                   padding: "0.15rem 0.5rem",
                   borderRadius: "4px",
                 }}
@@ -507,7 +501,7 @@ const HeroSection: React.FC = () => {
               display: "inline-flex",
               alignItems: "center",
               gap: "0.5rem",
-              backgroundColor: colors.primary,
+              backgroundColor: colors.accent,
               color: "#ffffff",
               padding: "0.75rem 1.5rem",
               borderRadius: "8px",
@@ -515,9 +509,7 @@ const HeroSection: React.FC = () => {
               fontWeight: "600",
               fontSize: "0.95rem",
               transition: "opacity 0.15s ease, transform 0.15s ease",
-              boxShadow: isDark
-                ? "0 2px 8px rgba(88, 166, 255, 0.2)"
-                : "0 2px 8px rgba(37, 99, 235, 0.2)",
+              boxShadow: "0 2px 8px rgba(217, 119, 87, 0.25)",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.opacity = "0.88";
@@ -547,7 +539,7 @@ const HeroSection: React.FC = () => {
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "1rem",
+            gap: "1.5rem",
             marginBottom: "2.5rem",
           }}
         >
@@ -557,14 +549,15 @@ const HeroSection: React.FC = () => {
               borderRadius: "8px",
               padding: "1.5rem",
               border: `1px solid ${colors.cardBorder}`,
-              borderLeft: `3px solid ${colors.primary}`,
-              transition: "transform 0.15s ease",
+              transition: "transform 0.15s ease, border-color 0.15s ease",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.borderColor = colors.accent;
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.borderColor = colors.cardBorder;
             }}
           >
             <h3
@@ -578,7 +571,7 @@ const HeroSection: React.FC = () => {
                 gap: "0.5rem",
               }}
             >
-              {React.createElement(FaTools, { style: { color: colors.primary, fontSize: "0.9rem" } })}
+              {React.createElement(FaTools, { style: { color: colors.accent, fontSize: "0.9rem" } })}
               AI Toolkit
             </h3>
             <p
@@ -602,14 +595,15 @@ const HeroSection: React.FC = () => {
               borderRadius: "8px",
               padding: "1.5rem",
               border: `1px solid ${colors.cardBorder}`,
-              borderLeft: `3px solid ${colors.primary}`,
-              transition: "transform 0.15s ease",
+              transition: "transform 0.15s ease, border-color 0.15s ease",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.borderColor = colors.accent;
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.borderColor = colors.cardBorder;
             }}
           >
             <h3
@@ -623,7 +617,7 @@ const HeroSection: React.FC = () => {
                 gap: "0.5rem",
               }}
             >
-              {React.createElement(FaBrain, { style: { color: colors.primary, fontSize: "0.9rem" } })}
+              {React.createElement(FaBrain, { style: { color: colors.accent, fontSize: "0.9rem" } })}
               Intelligent Systems
             </h3>
             <p
@@ -645,9 +639,9 @@ const HeroSection: React.FC = () => {
         <div
           style={{
             padding: "1rem 1.25rem",
-            backgroundColor: isDark ? "rgba(88, 166, 255, 0.06)" : "rgba(37, 99, 235, 0.04)",
+            backgroundColor: isDark ? "rgba(224, 138, 107, 0.08)" : "rgba(217, 119, 87, 0.05)",
             borderRadius: "6px",
-            border: `1px solid ${isDark ? "rgba(88, 166, 255, 0.15)" : "rgba(37, 99, 235, 0.12)"}`,
+            border: `1px solid ${isDark ? "rgba(224, 138, 107, 0.18)" : "rgba(217, 119, 87, 0.15)"}`,
             marginBottom: "2.5rem",
           }}
         >
@@ -659,7 +653,7 @@ const HeroSection: React.FC = () => {
               lineHeight: "1.6",
             }}
           >
-            <span style={{ color: colors.primary, fontWeight: "600" }}>
+            <span style={{ color: colors.accent, fontWeight: "600" }}>
               Currently exploring:
             </span>{" "}
             Structured reasoning traces and evaluation frameworks that let teams audit agent behavior without slowing down production systems.

@@ -25,9 +25,12 @@ const BlogListItem = ({ post, showTags = true }: BlogListItemProps) => {
   const visibleTags = post.tags?.filter((t) => t.name !== `autoblog`) ?? []
 
   return (
-    <Box mb={4}>
+    <Box mb={5}>
       <div sx={{ display: `flex`, alignItems: `center`, gap: `0.5rem`, flexWrap: `wrap` }}>
-        <Link to={post.slug} sx={(t) => ({ ...t.styles?.a, fontSize: [1, 2, 3], color: `text` })}>
+        <Link
+          to={post.slug}
+          sx={(t) => ({ ...t.styles?.a, fontSize: [1, 2, 3], color: `text`, ":hover": { color: `accent` } })}
+        >
           {post.title}
         </Link>
         {isAutoblog && (
