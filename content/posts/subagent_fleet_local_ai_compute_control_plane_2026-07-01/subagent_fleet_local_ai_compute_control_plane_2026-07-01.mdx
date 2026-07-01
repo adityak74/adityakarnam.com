@@ -1,6 +1,6 @@
 ---
-title: "subagent-fleet: A Local AI Compute Control Plane for Coding Agents"
-description: "I built subagent-fleet to route Claude Code-style subagents across my own local Ollama machines, with LiteLLM generation, health checks, model warmup, and a real-time dashboard."
+title: "subagent-fleet: Local AI Compute Control Plane for Coding Agents"
+description: "I built subagent-fleet to route Claude Code-style subagents across local Ollama machines, with LiteLLM generation, health checks, model warmup, and a live dashboard."
 date: 2026-07-01
 slug: "/subagent-fleet-local-ai-compute-control-plane"
 canonicalUrl: "https://adityakarnam.com/subagent-fleet-local-ai-compute-control-plane/"
@@ -29,13 +29,15 @@ tags:
 
 _I built [subagent-fleet](https://github.com/adityak74/subagent-fleet) because my local AI setup had outgrown the single-endpoint mental model. One laptop, one Mac mini, one workstation, and a few Ollama models should behave like a coordinated fleet, not a pile of disconnected machines._
 
+**TL;DR:** `subagent-fleet` is an open-source control plane for running Claude Code-style subagents across local Ollama nodes. It generates LiteLLM config, Claude agent definitions, local environment files, model warmup flows, and a live SSE dashboard from one `fleet.yaml`.
+
 Local LLM development has a strange ceiling. You can have plenty of useful hardware around you: a MacBook for fast planning, a Mac mini with more memory for coding, maybe a GPU workstation for heavier jobs. But most coding-agent setups still ask for one model endpoint.
 
 That is fine for a single chat. It breaks down when you start using subagents.
 
 A planner does not need the same model as an implementer. A reviewer should probably run on a stronger coding model. A summarizer can be cheap and local. A long-running coding session should not silently fail because one Ollama node dropped off the network.
 
-So I built **subagent-fleet**: a local AI compute control plane for Claude Code-style subagents and coding agents.
+So I built **subagent-fleet**: a local AI compute control plane for Claude Code-style subagents and coding agents. It sits in the same direction as my broader agent-infrastructure work, including [awesome-agentic-memory](/awesome-agentic-memory/) and [embenx](/embenx-python-embedding-toolkit/): less hidden glue, more explicit runtime behavior.
 
 The project is open source on GitHub:
 
@@ -219,7 +221,7 @@ The project is meant for developers who want more control over their local AI co
 
 ## The Current Release
 
-The current control-plane release is `v0.2.0`. The CLI includes:
+The package version I checked locally is `v0.2.1`. The CLI includes:
 
 ```bash
 subagent-fleet init
