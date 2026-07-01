@@ -1,0 +1,7 @@
+interface:
+  display_name: "Blog Write"
+  short_description: "Write Gatsby MDX blog posts"
+  default_prompt: "Use $blog-write to draft a new adityakarnam.com MDX blog post from my topic or project repo."
+
+policy:
+  allow_implicit_invocation: true

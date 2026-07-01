@@ -1,0 +1,7 @@
+interface:
+  display_name: "Project Blog Post Writer"
+  short_description: "Draft Gatsby MDX project posts"
+  default_prompt: "Use $project-blog-post-writer to write a new project blog post for adityakarnam.com from a local repo and create a PR."
+
+policy:
+  allow_implicit_invocation: true

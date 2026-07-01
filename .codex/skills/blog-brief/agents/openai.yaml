@@ -1,0 +1,7 @@
+interface:
+  display_name: "Blog Brief"
+  short_description: "Plan blog angle and outline"
+  default_prompt: "Use $blog-brief to create a practical content brief for a new adityakarnam.com post."
+
+policy:
+  allow_implicit_invocation: true
