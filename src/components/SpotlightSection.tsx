@@ -7,19 +7,20 @@ const SpotlightSection: React.FC = () => {
   const isDark = colorMode === "dark";
 
   const colors = {
-    text: isDark ? "#E5E1D8" : "#1A1A1A",
-    heading: isDark ? "#FAF8F3" : "#1A1A1A",
-    secondary: isDark ? "#928D7E" : "#6B6B6B",
-    primary: isDark ? "#E5E1D8" : "#1A1A1A",
-    divide: isDark ? "#2B291F" : "#E2DED4",
-    cardBg: isDark ? "#1F1D16" : "#F0EDE5",
-    cardBorder: isDark ? "#2B291F" : "#E2DED4",
+    text: isDark ? "#E8E6DD" : "#181818",
+    heading: isDark ? "#F5F2E9" : "#181818",
+    secondary: isDark ? "#97927F" : "#66635C",
+    primary: isDark ? "#E8E6DD" : "#181818",
+    accent: isDark ? "#E08A6B" : "#D97757",
+    divide: isDark ? "#2D2A22" : "#DDD9CD",
+    cardBg: isDark ? "#211F18" : "#E8E4D9",
+    cardBorder: isDark ? "#2D2A22" : "#DDD9CD",
   };
 
   const categoryMeta: Record<string, { icon: React.ComponentType; color: string }> = {
-    "AI & Machine Learning": { icon: FaRobot, color: colors.primary },
-    "Software Engineering": { icon: FaCode, color: isDark ? "#3FB950" : "#16A34A" },
-    "Blockchain & Data": { icon: FaDatabase, color: isDark ? "#E3B341" : "#D97706" },
+    "AI & Machine Learning": { icon: FaRobot, color: colors.accent },
+    "Software Engineering": { icon: FaCode, color: isDark ? "#8FAE7F" : "#6B8E5A" },
+    "Blockchain & Data": { icon: FaDatabase, color: isDark ? "#E3B341" : "#B8860B" },
   };
 
   const researchHighlights = [
@@ -28,28 +29,28 @@ const SpotlightSection: React.FC = () => {
       description: "Presented my genetic algorithm work for community detection problem using ERBGA a novel algorithm.",
       url: "https://www.umsl.edu/cmpsci/dept-news-events/news-listings/hope-center.html",
       icon: FaFlask,
-      accentColor: colors.primary,
+      accentColor: colors.accent,
     },
     {
       title: "Masters Winner Prize",
       description: "Masters Winner Prize for presenting my research work ERBGA.",
       url: "https://www.umsl.edu/cmpsci/dept-news-events/news-listings/grad-research-fair.html",
       icon: FaTrophy,
-      accentColor: isDark ? "#E3B341" : "#D97706",
+      accentColor: isDark ? "#E3B341" : "#B8860B",
     },
     {
       title: "Midwest Bioinformatics Conference",
       description: "ERBGA Presentation at 2018 Midwest Bioinformatics Conference",
       url: "https://www.umsl.edu/cmpsci/dept-news-events/news-listings/midwest-bioinformatics.html",
       icon: FaFlask,
-      accentColor: isDark ? "#3FB950" : "#16A34A",
+      accentColor: isDark ? "#8FAE7F" : "#6B8E5A",
     },
     {
       title: "Published Research Paper",
       description: "Efficient Reduced-Bias Genetic Algorithm (ERBGA) for Generic Community Detection Objectives",
       url: "https://profiles.umsl.edu/en/publications/efficient-reduced-bias-genetic-algorithm-erbga-for-generic-commun-2",
       icon: FaCode,
-      accentColor: isDark ? "#BC8CFF" : "#7C3AED",
+      accentColor: isDark ? "#B49FCB" : "#8B6BA8",
     },
   ];
 
@@ -81,12 +82,13 @@ const SpotlightSection: React.FC = () => {
       <div style={{ marginBottom: "3rem" }}>
         <h1
           style={{
-            fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
-            fontWeight: "700",
+            fontFamily: "'Fraunces', Georgia, serif",
+            fontSize: "clamp(2rem, 4.5vw, 2.75rem)",
+            fontWeight: "600",
             color: colors.heading,
             marginBottom: "0.75rem",
-            letterSpacing: "-0.03em",
-            lineHeight: "1.15",
+            letterSpacing: "-0.02em",
+            lineHeight: "1.1",
           }}
         >
           Spotlight
@@ -190,7 +192,7 @@ const SpotlightSection: React.FC = () => {
                 borderRadius: "8px",
                 padding: "1.25rem 1.25rem 1.25rem 1rem",
                 border: `1px solid ${colors.cardBorder}`,
-                borderLeft: `3px solid ${highlight.accentColor}`,
+                borderLeft: `2px solid ${highlight.accentColor}`,
                 transition: "transform 0.15s ease, border-color 0.15s ease",
                 textDecoration: "none",
                 color: "inherit",
@@ -236,7 +238,7 @@ const SpotlightSection: React.FC = () => {
         </h2>
 
         {Object.entries(articles).map(([category, categoryArticles]) => {
-          const meta = categoryMeta[category] ?? { icon: FaCode, color: colors.primary };
+          const meta = categoryMeta[category] ?? { icon: FaCode, color: colors.accent };
           return (
             <div key={category} style={{ marginBottom: "2.5rem" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem" }}>

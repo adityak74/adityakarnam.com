@@ -16,7 +16,7 @@ const Header = ({ children }: HeaderProps) => {
   const { navigation: nav, externalLinks } = useMinimalBlogConfig();
 
   return (
-    <header sx={{ mb: [5, 6] }}>
+    <header sx={{ mb: [4, 5] }}>
       <div
         sx={{
           display: `flex`,
@@ -39,7 +39,7 @@ const Header = ({ children }: HeaderProps) => {
           color: `secondary`,
           a: {
             color: `secondary`,
-            ":hover": { color: `primary` },
+            ":hover": { color: `accent` },
             transition: `color 0.2s ease`,
           },
           flexFlow: `wrap`,

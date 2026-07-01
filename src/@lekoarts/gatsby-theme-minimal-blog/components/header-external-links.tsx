@@ -20,7 +20,7 @@ type HeaderExternalLinksProps = {
 };
 
 const HeaderExternalLinks = ({ links }: HeaderExternalLinksProps) => (
-  <div sx={{ "a:not(:first-of-type)": { ml: 3 }, fontSize: [1, `18px`] }}>
+  <div sx={{ "a:not(:first-of-type)": { ml: 2 }, fontSize: [1, `18px`] }}>
     {links.map((link) => {
       let IconComponent: React.ComponentType | null = null;
 
@@ -56,10 +56,10 @@ const HeaderExternalLinks = ({ links }: HeaderExternalLinksProps) => (
           rel="noopener noreferrer"
           sx={{
             color: `secondary`,
-            ":hover": { color: `heading` },
+            ":hover": { color: `accent` },
             display: "inline-flex",
             alignItems: "center",
-            fontSize: "20px",
+            fontSize: "18px",
             transition: "color 0.3s ease",
           }}
           title={link.name}
