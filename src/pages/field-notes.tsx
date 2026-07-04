@@ -193,7 +193,7 @@ observability + evals`}
           <Grid sx={{ gridTemplateColumns: [`1fr`, `repeat(2, minmax(0, 1fr))`], gap: 3 }}>
             {groundedPosts.map(post => (
               <ConsoleCard key={post.slug} title={post.date} accent={consoleColors.accentAlt}>
-                <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [2, 3], mb: 2 }}>
+                <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [2, 3], mt: 0, mb: 2, lineHeight: 1.15 }}>
                   {post.title}
                 </Heading>
                 <Text sx={{ color: consoleColors.muted, mb: 2 }}>{post.description || post.excerpt}</Text>
@@ -218,7 +218,7 @@ observability + evals`}
                 title={essay.status}
                 accent={essay.status === "Priority draft" ? consoleColors.accent : consoleColors.warning}
               >
-                <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [2, 3], mb: 2 }}>
+                <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [2, 3], mt: 0, mb: 2, lineHeight: 1.15 }}>
                   {essay.title}
                 </Heading>
                 <Text sx={{ color: consoleColors.muted, mb: 3 }}>{essay.thesis}</Text>

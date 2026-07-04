@@ -113,8 +113,11 @@ export const ConsoleCard = ({ title, children, accent = consoleColors.accent }: 
       bg: consoleColors.panel,
       border: `1px solid ${consoleColors.border}`,
       borderRadius: 12,
+      display: `grid`,
+      gap: 3,
       p: [3, 4],
       height: `100%`,
+      minWidth: 0,
       boxShadow: `0 1px 2px rgba(26, 26, 24, 0.06)`,
     }}
   >
@@ -124,14 +127,15 @@ export const ConsoleCard = ({ title, children, accent = consoleColors.accent }: 
         fontFamily: `monospace`,
         color: accent,
         fontSize: 0,
+        lineHeight: 1.45,
         textTransform: `uppercase`,
         letterSpacing: `0.06em`,
-        mb: 2,
+        mb: 0,
       }}
     >
       {title}
     </Text>
-    {children}
+    <Box sx={{ minWidth: 0 }}>{children}</Box>
   </Box>
 )
 
@@ -150,6 +154,7 @@ export const SignalPill = ({ children }: SignalPillProps) => (
       fontFamily: `monospace`,
       fontSize: 0,
       letterSpacing: `0.02em`,
+      mb: 2,
     }}
   >
     {children}
