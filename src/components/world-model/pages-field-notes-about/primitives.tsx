@@ -152,11 +152,12 @@ export const SignalPill = ({ children }: SignalPillProps) => (
   <Box
     as="span"
     sx={{
-      display: `inline-flex`,
+      display: `block`,
+      width: `fit-content`,
       alignItems: `center`,
       px: 2,
       py: 1,
-      mb: 2,
+      mb: 3,
       borderRadius: 999,
       border: `1px solid ${consoleColors.border}`,
       bg: consoleColors.panelAlt,
