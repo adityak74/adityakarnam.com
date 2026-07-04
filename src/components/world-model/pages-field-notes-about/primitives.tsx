@@ -75,7 +75,7 @@ export const ConsoleShell = ({ children }: ShellProps) => (
 )
 
 export const SectionBlock = ({ eyebrow, title, description, children }: SectionProps) => (
-  <Box sx={{ mb: [6, 7, 8] }}>
+  <Box sx={{ mb: [4, 5, 6] }}>
     <Box sx={{ mb: 4 }}>
       {eyebrow ? (
         <Text

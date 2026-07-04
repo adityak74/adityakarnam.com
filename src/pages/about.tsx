@@ -97,7 +97,7 @@ const principles = [
 const AboutPage = () => {
   return (
     <Layout>
-      <Box sx={{ display: `grid`, gap: [4, 5], my: [4, 5] }}>
+      <Box sx={{ display: `grid`, gap: [3, 4], my: [3, 4] }}>
         <ConsoleShell>
           <Grid sx={{ gridTemplateColumns: [`1fr`, `1fr`, `1.45fr 0.95fr`], gap: 4, alignItems: `start` }}>
             <Box>
