@@ -9,10 +9,10 @@ const config: GatsbyConfig = {
     // You can also add new values here to query them like usual
     // See all options: https://github.com/LekoArts/gatsby-themes/blob/main/themes/gatsby-theme-minimal-blog/gatsby-config.mjs
     siteTitle: `Aditya Karnam`,
-    siteTitleAlt: `Aditya Karnam - Senior AI Systems Engineer | LLM & Agent Platforms | Research-Driven AI Tools`,
-    siteHeadline: `Aditya Karnam — Senior AI Systems Engineer building agent platforms, reasoning systems, and research-driven tools for high-impact teams.`,
+    siteTitleAlt: `Aditya Karnam — World Model Infrastructure Lab`,
+    siteHeadline: `Aditya Karnam builds the infrastructure layer for world-model-driven AI: memory, retrieval, model routing, local inference, agent runtimes, and evals.`,
     siteUrl: `https://adityakarnam.com`,
-    siteDescription: `Senior AI Systems Engineer Aditya Karnam designs and ships agent platforms, LLM tooling, and interpretable AI systems — reducing manual work and improving robustness for research-driven and product teams.`,
+    siteDescription: `Aditya Karnam is a world model infrastructure builder focused on agent runtimes, memory, retrieval, model routing, local inference, and evaluation systems.`,
     siteImage: `/banner-aditya.png`,
     siteLanguage: `en`,
     author: `@aditya_karnam`,
@@ -24,16 +24,28 @@ const config: GatsbyConfig = {
       options: {
         navigation: [
           {
-            title: `Spotlight`,
-            slug: `/spotlight`,
+            title: `Systems`,
+            slug: `/systems`,
           },
           {
-            title: `AI Toolkit`,
-            slug: `/ai-toolkit`,
+            title: `Stack`,
+            slug: `/stack`,
           },
           {
-            title: `Agentic Memory`,
-            slug: `/awesome-agentic-memory`,
+            title: `Field Notes`,
+            slug: `/field-notes`,
+          },
+          {
+            title: `Ask`,
+            slug: `/ask`,
+          },
+          {
+            title: `Now`,
+            slug: `/now`,
+          },
+          {
+            title: `About`,
+            slug: `/about`,
           },
         ],
         externalLinks: [
@@ -81,11 +93,11 @@ const config: GatsbyConfig = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `Aditya Karnam - AI Research & Insights`,
+        name: `Aditya Karnam - World Model Infrastructure Lab`,
         short_name: `adityakarnam`,
-        description: `AI research, tools, and insights by Aditya Karnam — software engineer and AI researcher exploring LLMs, agentic AI, and intelligent systems.`,
+        description: `World model infrastructure, agent runtimes, memory, retrieval, routing, and evaluation systems by Aditya Karnam.`,
         start_url: `/`,
-        background_color: `#fff`,
+        background_color: `#02090d`,
         display: `standalone`,
         icons: [
           {

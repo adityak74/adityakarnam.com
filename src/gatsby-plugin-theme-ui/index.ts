@@ -4,39 +4,39 @@ import { lightThemeVars, darkThemeVars } from "@lekoarts/gatsby-theme-minimal-bl
 
 const theme = merge(tailwind, {
   config: {
-    initialColorModeName: `light`,
+    initialColorModeName: `dark`,
   },
   colors: {
-    text: `#181818`,
-    background: `#F0EEE6`,
-    primary: `#181818`,
-    secondary: `#66635C`,
-    accent: `#D97757`,
+    text: `#DCE8E4`,
+    background: `#02090d`,
+    primary: `#F2FAF7`,
+    secondary: `#7F9892`,
+    accent: `#6FFFE9`,
     toggleIcon: tailwind.colors.gray[8],
-    heading: `#181818`,
-    divide: `#DDD9CD`,
-    muted: `#E8E4D9`,
-    highlightLineBg: `rgba(0, 0, 0, 0.04)`,
+    heading: `#F2FAF7`,
+    divide: `rgba(111, 255, 233, 0.14)`,
+    muted: `#07171D`,
+    highlightLineBg: `rgba(111, 255, 233, 0.08)`,
     ...lightThemeVars,
     modes: {
       dark: {
-        text: `#E8E6DD`,
-        background: `#141310`,
-        primary: `#E8E6DD`,
-        secondary: `#97927F`,
-        accent: `#E08A6B`,
+        text: `#DCE8E4`,
+        background: `#02090d`,
+        primary: `#F2FAF7`,
+        secondary: `#7F9892`,
+        accent: `#6FFFE9`,
         toggleIcon: tailwind.colors.gray[4],
-        heading: `#F5F2E9`,
-        divide: `#2D2A22`,
-        muted: `#211F18`,
-        highlightLineBg: `rgba(255, 255, 255, 0.05)`,
+        heading: `#F2FAF7`,
+        divide: `rgba(111, 255, 233, 0.14)`,
+        muted: `#07171D`,
+        highlightLineBg: `rgba(111, 255, 233, 0.08)`,
         ...darkThemeVars,
       },
     },
   },
   fonts: {
-    body: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif`,
-    heading: `'Fraunces', Georgia, 'Iowan Old Style', 'Times New Roman', serif`,
+    body: `'IBM Plex Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif`,
+    heading: `'Geist', 'IBM Plex Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif`,
     monospace: `'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, 'Courier New', monospace`,
   },
   fontWeights: {
@@ -55,6 +55,7 @@ const theme = merge(tailwind, {
     root: {
       color: `text`,
       backgroundColor: `background`,
+      backgroundImage: `radial-gradient(circle at top left, rgba(111, 255, 233, 0.08), transparent 20%), linear-gradient(180deg, rgba(255,255,255,0.015), transparent 28%)`,
       margin: 0,
       padding: 0,
       boxSizing: `border-box`,
@@ -74,6 +75,7 @@ const theme = merge(tailwind, {
         borderColor: `divide`,
         color: `heading`,
         lineHeight: 1.65,
+        boxShadow: `0 14px 40px rgba(0, 0, 0, 0.24)`,
         overflowX: `auto`,
         p: 3,
         my: 4,
@@ -165,6 +167,8 @@ const theme = merge(tailwind, {
       py: 1,
       color: `secondary`,
       fontStyle: `italic`,
+      backgroundColor: `rgba(7, 23, 29, 0.68)`,
+      borderRadius: `0 12px 12px 0`,
       p: {
         fontStyle: `italic`,
         my: 0,
@@ -211,7 +215,7 @@ const theme = merge(tailwind, {
       borderRadius: `6px`,
       border: `1px solid`,
       borderColor: `divide`,
-      boxShadow: `0 1px 2px rgba(0,0,0,0.04)`,
+      boxShadow: `0 12px 40px rgba(0, 0, 0, 0.24)`,
       maxWidth: `100%`,
     },
     code: {
@@ -236,7 +240,7 @@ const theme = merge(tailwind, {
   layout: {
     container: {
       padding: [3, 4, 5],
-      maxWidth: `1400px`,
+      maxWidth: `1380px`,
     },
     content: {
       figure: {
