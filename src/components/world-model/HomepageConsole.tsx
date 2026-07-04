@@ -27,7 +27,7 @@ const sectionLabelStyles = {
   color: "primary",
   fontFamily: "monospace",
   fontSize: 0,
-  letterSpacing: "0.12em",
+  letterSpacing: "0.04em",
   textTransform: "uppercase" as const,
   mb: 3,
 }

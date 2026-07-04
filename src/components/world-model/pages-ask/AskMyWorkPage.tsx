@@ -149,7 +149,7 @@ const AskMyWorkPage = () => {
             style={{
               fontFamily: "'JetBrains Mono', monospace",
               fontSize: "0.74rem",
-              letterSpacing: "0.14em",
+              letterSpacing: "0.05em",
               textTransform: "uppercase",
               color: colors.accent,
             }}
@@ -209,7 +209,7 @@ const AskMyWorkPage = () => {
       >
         <div style={panelStyle}>
           <div style={{ marginBottom: "1rem" }}>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "0.74rem", letterSpacing: "0.12em", textTransform: "uppercase", color: colors.accent }}>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "0.74rem", letterSpacing: "0.05em", textTransform: "uppercase", color: colors.accent }}>
               Explore My Work Through Your Lens
             </div>
             <p style={{ margin: "0.75rem 0 0", color: colors.secondary, lineHeight: 1.65, fontSize: "17px" }}>{lensIntro}</p>
@@ -280,7 +280,7 @@ const AskMyWorkPage = () => {
 
         <div style={panelStyle}>
           <div style={{ marginBottom: "1rem" }}>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "0.74rem", letterSpacing: "0.12em", textTransform: "uppercase", color: colors.accent }}>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "0.74rem", letterSpacing: "0.05em", textTransform: "uppercase", color: colors.accent }}>
               Ask My Work
             </div>
             <p style={{ margin: "0.75rem 0 0", color: colors.secondary, lineHeight: 1.65, fontSize: "17px" }}>{askIntro}</p>

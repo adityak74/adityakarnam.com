@@ -62,7 +62,7 @@ export const styles = {
     display: "block",
     fontFamily: monospaceFamily,
     fontSize: "0.72rem",
-    letterSpacing: "0.16em",
+    letterSpacing: "0.06em",
     marginBottom: "0.9rem",
     textTransform: "uppercase" as const,
   },
@@ -264,7 +264,7 @@ export const TagList = ({ items }: TagListProps) => (
           color: palette.body,
           fontFamily: monospaceFamily,
           fontSize: "0.75rem",
-          letterSpacing: "0.04em",
+          letterSpacing: "0.02em",
           padding: "0.35rem 0.7rem",
           textTransform: "lowercase",
           background: palette.panelSoft,
@@ -312,7 +312,7 @@ export const StatusRow = ({ label, value }: { label: string; value: string }) =>
         color: palette.slate,
         fontFamily: monospaceFamily,
         fontSize: "0.74rem",
-        letterSpacing: "0.12em",
+        letterSpacing: "0.06em",
         textTransform: "uppercase",
       }}
     >

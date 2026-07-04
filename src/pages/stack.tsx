@@ -115,7 +115,7 @@ const StackPage = (_props: PageProps) => (
                       fontFamily:
                         "'JetBrains Mono', 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace",
                       fontSize: "0.78rem",
-                      letterSpacing: "0.18em",
+                      letterSpacing: "0.06em",
                       marginBottom: "0.55rem",
                       textTransform: "uppercase",
                     }}

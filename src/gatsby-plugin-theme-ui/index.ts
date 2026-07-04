@@ -50,7 +50,7 @@ const theme = merge(tailwind, {
     heading: 1.2,
   },
   letterSpacings: {
-    heading: `-0.005em`,
+    heading: `-0.01em`,
   },
   styles: {
     root: {
@@ -113,17 +113,25 @@ const theme = merge(tailwind, {
       wordBreak: `break-word`,
     },
     ul: {
+      pl: `1.2rem`,
+      my: 3,
       li: {
         fontSize: [`17px`, `17px`, `17px`],
-        letterSpacing: `-0.01em`,
+        letterSpacing: `-0.008em`,
         lineHeight: `body`,
+        mb: 2,
+        pl: `0.2rem`,
       },
     },
     ol: {
+      pl: `1.35rem`,
+      my: 3,
       li: {
         fontSize: [`17px`, `17px`, `17px`],
-        letterSpacing: `-0.01em`,
+        letterSpacing: `-0.008em`,
         lineHeight: `body`,
+        mb: 2,
+        pl: `0.2rem`,
       },
     },
     h1: {
@@ -275,7 +283,7 @@ const theme = merge(tailwind, {
     cursor: `pointer`,
     fontSize: [`12px`, `12px`, `13px`],
     fontFamily: `monospace`,
-    letterSpacing: `0.02rem`,
+    letterSpacing: `0.01em`,
     transition: `all 0.2s ease`,
     "&[disabled]": {
       cursor: `not-allowed`,

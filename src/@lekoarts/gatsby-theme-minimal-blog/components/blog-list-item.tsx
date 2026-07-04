@@ -37,7 +37,7 @@ const BlogListItem = ({ post, showTags = true }: BlogListItemProps) => {
           <span sx={{
             fontSize: `0.65rem`,
             fontWeight: `600`,
-            letterSpacing: `0.07em`,
+            letterSpacing: `0.04em`,
             textTransform: `uppercase`,
             color: `secondary`,
             bg: `muted`,

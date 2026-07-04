@@ -57,7 +57,7 @@ export const ConsoleShell = ({ children }: ShellProps) => (
         bg: `#FAF9F7`,
       }}
     >
-      <Text sx={{ fontFamily: `monospace`, fontSize: 0, color: consoleColors.soft, letterSpacing: `0.08em`, textTransform: `uppercase` }}>
+      <Text sx={{ fontFamily: `monospace`, fontSize: 0, color: consoleColors.soft, letterSpacing: `0.04em`, textTransform: `uppercase` }}>
         Aditya Karnam · World Model Infrastructure Lab
       </Text>
     </Box>
@@ -73,7 +73,7 @@ export const SectionBlock = ({ eyebrow, title, description, children }: SectionP
           sx={{
             display: `block`,
             textTransform: `uppercase`,
-            letterSpacing: `0.12em`,
+            letterSpacing: `0.06em`,
             fontSize: 0,
             fontFamily: `monospace`,
             color: consoleColors.accent,
@@ -125,7 +125,7 @@ export const ConsoleCard = ({ title, children, accent = consoleColors.accent }: 
         color: accent,
         fontSize: 0,
         textTransform: `uppercase`,
-        letterSpacing: `0.12em`,
+        letterSpacing: `0.06em`,
         mb: 2,
       }}
     >
@@ -149,7 +149,7 @@ export const SignalPill = ({ children }: SignalPillProps) => (
       color: consoleColors.muted,
       fontFamily: `monospace`,
       fontSize: 0,
-      letterSpacing: `0.04em`,
+      letterSpacing: `0.02em`,
     }}
   >
     {children}

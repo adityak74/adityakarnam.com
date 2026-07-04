@@ -142,7 +142,7 @@ const SystemsPage = (_props: PageProps) => (
                 fontFamily:
                   "'JetBrains Mono', 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace",
                 fontSize: "0.76rem",
-                letterSpacing: "0.18em",
+                letterSpacing: "0.06em",
                 textTransform: "uppercase",
               }}
             >
@@ -238,7 +238,7 @@ const SystemsPage = (_props: PageProps) => (
                       fontFamily:
                         "'JetBrains Mono', 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace",
                       fontSize: "0.76rem",
-                      letterSpacing: "0.16em",
+                      letterSpacing: "0.06em",
                       marginBottom: "0.85rem",
                       textTransform: "uppercase",
                     }}

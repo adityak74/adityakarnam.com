@@ -42,7 +42,7 @@ const ResearchLensPanel = () => {
         boxShadow: "0 1px 2px rgba(26,26,24,0.06)",
       }}
     >
-      <Text sx={{ display: "block", color: "primary", fontFamily: "monospace", fontSize: 0, mb: 2, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+      <Text sx={{ display: "block", color: "primary", fontFamily: "monospace", fontSize: 0, mb: 2, letterSpacing: "0.04em", textTransform: "uppercase" }}>
         Explore My Work Through Your Lens
       </Text>
       <Flex sx={{ gap: 2, flexWrap: "wrap", mb: 3 }}>

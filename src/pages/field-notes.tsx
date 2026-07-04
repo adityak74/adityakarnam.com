@@ -238,9 +238,9 @@ observability + evals`}
           <Grid sx={{ gridTemplateColumns: [`1fr`, `repeat(2, minmax(0, 1fr))`], gap: 3 }}>
             {readingPaths.map(path => (
               <ConsoleCard key={path.topic} title={path.topic}>
-                <Box as="ol" sx={{ pl: 3, m: 0, color: consoleColors.muted }}>
+                <Box as="ol" sx={{ pl: 3, my: 0, color: consoleColors.muted }}>
                   {path.steps.map(step => (
-                    <li key={step}>
+                    <li key={step} sx={{ mb: 2, pl: 1 }}>
                       <Text sx={{ color: consoleColors.muted }}>{step}</Text>
                     </li>
                   ))}
