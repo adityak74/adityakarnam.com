@@ -117,7 +117,7 @@ const FieldNotesPage = ({ data }: PageProps<FieldNotesData>) => {
     <Layout>
       <Box sx={{ display: `grid`, gap: [3, 4], my: [3, 4] }}>
         <ConsoleShell>
-          <Grid sx={{ gridTemplateColumns: [`1fr`, `1fr`, `1.35fr 0.95fr`], gap: 4, alignItems: `start` }}>
+          <Grid sx={{ gridTemplateColumns: [`1fr`, `1fr`, `1.35fr 0.95fr`], gap: 3, alignItems: `start` }}>
             <Box>
               <SignalPill>Field Notes / World Model Infrastructure Lab</SignalPill>
               <Heading

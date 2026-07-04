@@ -70,7 +70,7 @@ export const ConsoleShell = ({ children }: ShellProps) => (
         Aditya Karnam · World Model Infrastructure Lab
       </Text>
     </Box>
-    <Box sx={{ p: [4, 5, 6] }}>{children}</Box>
+    <Box sx={{ p: [2, 3, 4] }}>{children}</Box>
   </Box>
 )
 
