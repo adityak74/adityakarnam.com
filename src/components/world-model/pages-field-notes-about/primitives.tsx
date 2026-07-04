@@ -52,12 +52,21 @@ export const ConsoleShell = ({ children }: ShellProps) => (
     <Box
       sx={{
         px: [3, 4],
-        py: 2,
+        py: [2, 3],
         borderBottom: `1px solid ${consoleColors.border}`,
         bg: `#FAF9F7`,
       }}
     >
-      <Text sx={{ fontFamily: `monospace`, fontSize: 0, color: consoleColors.soft, letterSpacing: `0.04em`, textTransform: `uppercase` }}>
+      <Text
+        sx={{
+          display: `block`,
+          fontFamily: `monospace`,
+          fontSize: 0,
+          color: consoleColors.soft,
+          letterSpacing: `0.04em`,
+          textTransform: `uppercase`,
+        }}
+      >
         Aditya Karnam · World Model Infrastructure Lab
       </Text>
     </Box>
@@ -114,7 +123,7 @@ export const ConsoleCard = ({ title, children, accent = consoleColors.accent }: 
       border: `1px solid ${consoleColors.border}`,
       borderRadius: 12,
       display: `grid`,
-      gap: 3,
+      gap: 2,
       p: [3, 4],
       height: `100%`,
       minWidth: 0,
@@ -130,12 +139,12 @@ export const ConsoleCard = ({ title, children, accent = consoleColors.accent }: 
         lineHeight: 1.45,
         textTransform: `uppercase`,
         letterSpacing: `0.06em`,
-        mb: 0,
+        mb: 1,
       }}
     >
       {title}
     </Text>
-    <Box sx={{ minWidth: 0 }}>{children}</Box>
+    <Box sx={{ minWidth: 0, pt: 1 }}>{children}</Box>
   </Box>
 )
 
@@ -147,6 +156,7 @@ export const SignalPill = ({ children }: SignalPillProps) => (
       alignItems: `center`,
       px: 2,
       py: 1,
+      mb: 2,
       borderRadius: 999,
       border: `1px solid ${consoleColors.border}`,
       bg: consoleColors.panelAlt,
@@ -154,7 +164,6 @@ export const SignalPill = ({ children }: SignalPillProps) => (
       fontFamily: `monospace`,
       fontSize: 0,
       letterSpacing: `0.02em`,
-      mb: 2,
     }}
   >
     {children}

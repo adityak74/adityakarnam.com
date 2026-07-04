@@ -120,7 +120,17 @@ const FieldNotesPage = ({ data }: PageProps<FieldNotesData>) => {
           <Grid sx={{ gridTemplateColumns: [`1fr`, `1fr`, `1.35fr 0.95fr`], gap: 4, alignItems: `start` }}>
             <Box>
               <SignalPill>Field Notes / World Model Infrastructure Lab</SignalPill>
-              <Heading as="h1" sx={{ color: consoleColors.text, fontSize: [5, 6, 7], mt: 3, mb: 3, maxWidth: `10ch` }}>
+              <Heading
+                as="h1"
+                sx={{
+                  color: consoleColors.text,
+                  fontSize: [5, 6, 7],
+                  mt: 3,
+                  mb: 3,
+                  maxWidth: `10ch`,
+                  lineHeight: 1.02,
+                }}
+              >
                 Thought leadership notes for the systems layer behind AI agents.
               </Heading>
               <Text sx={{ color: consoleColors.muted, fontSize: [2, 2, 3], maxWidth: `60ch`, mb: 3 }}>
