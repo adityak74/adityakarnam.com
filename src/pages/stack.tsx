@@ -105,7 +105,7 @@ const StackPage = (_props: PageProps) => (
                 style={{
                   display: "grid",
                   gap: "0.9rem",
-                  gridTemplateColumns: "minmax(180px, 240px) 1fr",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
                 }}
               >
                 <div>

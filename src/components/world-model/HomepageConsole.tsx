@@ -216,13 +216,40 @@ const HomepageConsole = () => {
               <Text sx={{ color: "secondary", fontFamily: "monospace", fontSize: 0, mb: 2 }}>
                 {system.tags.join(" · ")}
               </Text>
-              <Text sx={{ color: "text", fontSize: 1, mb: 1 }}>Research Question</Text>
-              <Text sx={{ color: "secondary", lineHeight: 1.65, mb: 2, fontSize: "17px" }}>{system.researchQuestion}</Text>
-              <Text sx={{ color: "text", fontSize: 1, mb: 1 }}>System Built</Text>
-              <Text sx={{ color: "secondary", lineHeight: 1.65, mb: 2, fontSize: "17px" }}>{system.systemBuilt}</Text>
-              <Text sx={{ color: "text", fontSize: 1, mb: 1 }}>Why It Matters</Text>
-              <Text sx={{ color: "secondary", lineHeight: 1.65, mb: 3, fontSize: "17px" }}>{system.whyItMatters}</Text>
-              <Text sx={{ color: "text", fontSize: 1, mb: 2 }}>Status: {system.status}</Text>
+              <Box sx={{ display: "grid", gap: 3, mb: 3 }}>
+                <Box>
+                  <Text as="div" sx={{ color: "text", fontSize: 1, fontWeight: 500, mb: 1 }}>
+                    Research Question
+                  </Text>
+                  <Text as="div" sx={{ color: "secondary", lineHeight: 1.65, fontSize: "17px" }}>
+                    {system.researchQuestion}
+                  </Text>
+                </Box>
+                <Box>
+                  <Text as="div" sx={{ color: "text", fontSize: 1, fontWeight: 500, mb: 1 }}>
+                    System Built
+                  </Text>
+                  <Text as="div" sx={{ color: "secondary", lineHeight: 1.65, fontSize: "17px" }}>
+                    {system.systemBuilt}
+                  </Text>
+                </Box>
+                <Box>
+                  <Text as="div" sx={{ color: "text", fontSize: 1, fontWeight: 500, mb: 1 }}>
+                    Why It Matters
+                  </Text>
+                  <Text as="div" sx={{ color: "secondary", lineHeight: 1.65, fontSize: "17px" }}>
+                    {system.whyItMatters}
+                  </Text>
+                </Box>
+                <Box>
+                  <Text as="div" sx={{ color: "text", fontSize: 1, fontWeight: 500, mb: 1 }}>
+                    Status
+                  </Text>
+                  <Text as="div" sx={{ color: "secondary", lineHeight: 1.65, fontSize: "17px" }}>
+                    {system.status}
+                  </Text>
+                </Box>
+              </Box>
               <Flex sx={{ gap: 3, flexWrap: "wrap" }}>
                 {system.links.map((link) => {
                   const external = link.href.startsWith("http")
@@ -297,8 +324,34 @@ const HomepageConsole = () => {
       <Box sx={{ ...cardStyles, p: [4, 5], background: "muted" }}>
         <Text sx={sectionLabelStyles}>System Boot Notes</Text>
         <Grid columns={[1, null, 2]} gap={3}>
-          {heroBootSequence.map((line) => (
-            <Text key={line} sx={{ fontFamily: "monospace", color: "secondary", fontSize: 0 }}>
+          {heroBootSequence.map((line, index) => (
+            <Text
+              key={line}
+              sx={{
+                fontFamily: "monospace",
+                color: "secondary",
+                fontSize: 0,
+                opacity: 0,
+                transform: "translateY(4px)",
+                animation: "bootNoteReveal 480ms cubic-bezier(0.4, 0, 0.2, 1) forwards",
+                animationDelay: `${index * 140}ms`,
+                "@keyframes bootNoteReveal": {
+                  "0%": {
+                    opacity: 0,
+                    transform: "translateY(4px)",
+                  },
+                  "100%": {
+                    opacity: 1,
+                    transform: "translateY(0)",
+                  },
+                },
+                "@media (prefers-reduced-motion: reduce)": {
+                  animation: "none",
+                  opacity: 1,
+                  transform: "none",
+                },
+              }}
+            >
               {line}
             </Text>
           ))}
