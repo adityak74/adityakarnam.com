@@ -30,6 +30,8 @@ const Footer = () => {
         {` · `}
         <Link href="/systems/">Current Systems</Link>
         {` · `}
+        <Link href="/status/">Status</Link>
+        {` · `}
         <Link href="/ask/">Ask My Work</Link>
       </div>
     </footer>
