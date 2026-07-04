@@ -2,20 +2,6 @@ import * as React from "react"
 import { Box, Button, Flex, Text } from "theme-ui"
 import { lensFallbacks, lensOptions } from "./data"
 
-const buttonStyles = {
-  border: "1px solid",
-  borderColor: "rgba(111, 255, 233, 0.18)",
-  bg: "rgba(4, 19, 24, 0.78)",
-  color: "heading",
-  px: 3,
-  py: 2,
-  borderRadius: "999px",
-  fontSize: 1,
-  fontFamily: "monospace",
-  cursor: "pointer",
-  transition: "all 0.2s ease",
-}
-
 const ResearchLensPanel = () => {
   const [activeLens, setActiveLens] = React.useState(lensOptions[0])
   const [response, setResponse] = React.useState(lensFallbacks[lensOptions[0]])
@@ -48,15 +34,15 @@ const ResearchLensPanel = () => {
   return (
     <Box
       sx={{
-        border: "1px solid rgba(111, 255, 233, 0.16)",
-        borderRadius: "24px",
+        border: "1px solid",
+        borderColor: "divide",
+        borderRadius: "16px",
         p: [3, 4],
-        background:
-          "linear-gradient(180deg, rgba(7, 24, 29, 0.92) 0%, rgba(4, 14, 19, 0.92) 100%)",
-        boxShadow: "0 24px 80px rgba(0, 0, 0, 0.28)",
+        background: "#FFFFFF",
+        boxShadow: "0 1px 2px rgba(26,26,24,0.06)",
       }}
     >
-      <Text sx={{ display: "block", color: "accent", fontFamily: "monospace", fontSize: 1, mb: 2 }}>
+      <Text sx={{ display: "block", color: "primary", fontFamily: "monospace", fontSize: 0, mb: 2, letterSpacing: "0.12em", textTransform: "uppercase" }}>
         Explore My Work Through Your Lens
       </Text>
       <Flex sx={{ gap: 2, flexWrap: "wrap", mb: 3 }}>
@@ -65,17 +51,28 @@ const ResearchLensPanel = () => {
             key={lens}
             onClick={() => void updateLens(lens)}
             sx={{
-              ...buttonStyles,
-              color: lens === activeLens ? "#07171d" : "heading",
-              bg: lens === activeLens ? "accent" : buttonStyles.bg,
-              borderColor: lens === activeLens ? "accent" : buttonStyles.borderColor,
+              border: "1px solid",
+              borderColor: lens === activeLens ? "primary" : "divide",
+              backgroundColor: lens === activeLens ? "primary" : "transparent",
+              color: lens === activeLens ? "#ffffff" : "secondary",
+              px: 3,
+              py: 2,
+              borderRadius: "999px",
+              fontSize: 1,
+              fontFamily: "body",
+              fontWeight: 400,
+              cursor: "pointer",
+              boxShadow: "none",
+              ":hover": {
+                backgroundColor: lens === activeLens ? "#A8421F" : "muted",
+              },
             }}
           >
             {lens}
           </Button>
         ))}
       </Flex>
-      <Text sx={{ color: "secondary", fontSize: [1, 2], lineHeight: 1.8 }}>
+      <Text sx={{ color: "secondary", fontSize: "17px", lineHeight: 1.65 }}>
         {loading ? "Calibrating research profile..." : response}
       </Text>
     </Box>

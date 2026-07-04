@@ -129,13 +129,13 @@ const AboutPage = () => {
             <Box
               sx={{
                 border: `1px solid ${consoleColors.border}`,
-                borderRadius: 20,
+                borderRadius: 12,
                 p: 3,
-                bg: `rgba(7, 11, 10, 0.38)`,
+                bg: consoleColors.panelAlt,
               }}
             >
-              <Text sx={{ display: `block`, color: consoleColors.accentAlt, fontFamily: `monospace`, fontSize: 0, mb: 2 }}>
-                boot.log
+              <Text sx={{ display: `block`, color: consoleColors.accent, fontFamily: `monospace`, fontSize: 0, mb: 2 }}>
+                Research Notes
               </Text>
               <Box as="pre" sx={{ m: 0, p: 0, bg: `transparent`, border: `none`, color: consoleColors.text, fontSize: 1 }}>
                 <code>

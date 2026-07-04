@@ -1,8 +1,6 @@
 /** @jsx jsx */
 import { jsx } from "theme-ui";
-import useSiteMetadata from "@lekoarts/gatsby-theme-minimal-blog/src/hooks/use-site-metadata";
 import useMinimalBlogConfig from "@lekoarts/gatsby-theme-minimal-blog/src/hooks/use-minimal-blog-config";
-import ColorModeToggle from "@lekoarts/gatsby-theme-minimal-blog/src/components/colormode-toggle";
 import Navigation from "@lekoarts/gatsby-theme-minimal-blog/src/components/navigation";
 import HeaderTitle from "@lekoarts/gatsby-theme-minimal-blog/src/components/header-title";
 import HeaderExternalLinks from "./header-external-links";
@@ -12,38 +10,45 @@ type HeaderProps = {
 };
 
 const Header = ({ children }: HeaderProps) => {
-  const { siteTitle } = useSiteMetadata();
   const { navigation: nav, externalLinks } = useMinimalBlogConfig();
 
   return (
-    <header sx={{ mb: [4, 5] }}>
+    <header sx={{ mb: [5, 6], pt: [2, 3] }}>
       <div
         sx={{
           display: `flex`,
-          alignItems: `center`,
+          alignItems: `flex-start`,
           justifyContent: `space-between`,
+          gap: 3,
+          flexWrap: `wrap`,
         }}
       >
-        <HeaderTitle />
-        <ColorModeToggle />
+        <div>
+          <HeaderTitle />
+          <div sx={{ color: `secondary`, fontSize: 1, mt: 1, maxWidth: `26rem`, letterSpacing: `-0.01em` }}>
+            Building the infrastructure layer for world-model-driven AI.
+          </div>
+        </div>
       </div>
       <div
         sx={{
           boxSizing: `border-box`,
           display: `flex`,
-          variant: `dividers.bottom`,
+          borderBottom: `1px solid`,
+          borderColor: `divide`,
           alignItems: `center`,
           justifyContent: `space-between`,
-          mt: `12px`,
-          pt: `10px`,
+          mt: 3,
+          pt: 3,
+          pb: 2,
           color: `secondary`,
           a: {
             color: `secondary`,
-            ":hover": { color: `accent` },
-            transition: `color 0.2s ease`,
+            ":hover": { color: `primary` },
+            transition: `color 120ms cubic-bezier(0.4, 0, 0.2, 1)`,
           },
           flexFlow: `wrap`,
-          gap: 2,
+          gap: 3,
         }}
       >
         <Navigation nav={nav} />

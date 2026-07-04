@@ -133,9 +133,9 @@ const FieldNotesPage = ({ data }: PageProps<FieldNotesData>) => {
               </Text>
             </Box>
 
-            <Box sx={{ border: `1px solid ${consoleColors.border}`, borderRadius: 20, p: 3, bg: `rgba(7, 11, 10, 0.38)` }}>
-              <Text sx={{ display: `block`, fontFamily: `monospace`, color: consoleColors.accentAlt, fontSize: 0, mb: 2 }}>
-                scope.map
+            <Box sx={{ border: `1px solid ${consoleColors.border}`, borderRadius: 12, p: 3, bg: consoleColors.panelAlt }}>
+              <Text sx={{ display: `block`, fontFamily: `monospace`, color: consoleColors.accent, fontSize: 0, mb: 2 }}>
+                Research Scope
               </Text>
               <Box as="pre" sx={{ m: 0, p: 0, bg: `transparent`, border: `none`, color: consoleColors.text, fontSize: 1 }}>
                 <code>

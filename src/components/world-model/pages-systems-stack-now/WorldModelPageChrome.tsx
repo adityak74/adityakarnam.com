@@ -34,25 +34,25 @@ type TagListProps = {
 }
 
 const palette = {
-  page: "#071116",
-  pageGlow: "rgba(38, 214, 211, 0.08)",
-  pageGlowSecondary: "rgba(93, 214, 154, 0.06)",
-  panel: "rgba(7, 20, 27, 0.82)",
-  panelSoft: "rgba(10, 25, 34, 0.68)",
-  border: "rgba(128, 163, 180, 0.24)",
-  text: "#E6F4F1",
-  body: "#A5C0C2",
-  heading: "#F3FFFD",
-  cyan: "#64E9E2",
-  green: "#8DEA9B",
-  slate: "#8BA6AD",
-  grid: "rgba(120, 157, 166, 0.09)",
+  page: "#FAF9F7",
+  pageGlow: "rgba(212, 165, 116, 0.12)",
+  pageGlowSecondary: "rgba(194, 82, 45, 0.06)",
+  panel: "#FFFFFF",
+  panelSoft: "#F2F0EC",
+  border: "#D8D4CC",
+  text: "#1A1A18",
+  body: "#6B6B63",
+  heading: "#1A1A18",
+  cyan: "#C2522D",
+  green: "#D4A574",
+  slate: "#8A857C",
+  grid: "rgba(216, 212, 204, 0.55)",
 }
 
 const monospaceFamily =
   "'JetBrains Mono', 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace"
 const sansFamily =
-  "'Inter', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+  "'Styrene A', 'Styrene B', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
 
 export const labPalette = palette
 
@@ -62,24 +62,24 @@ export const styles = {
     display: "block",
     fontFamily: monospaceFamily,
     fontSize: "0.72rem",
-    letterSpacing: "0.22em",
+    letterSpacing: "0.16em",
     marginBottom: "0.9rem",
     textTransform: "uppercase" as const,
   },
   sectionHeading: {
     color: palette.heading,
     fontFamily: sansFamily,
-    fontSize: "clamp(1.7rem, 3vw, 2.6rem)",
-    fontWeight: 600,
-    letterSpacing: "-0.04em",
-    lineHeight: 1.05,
+    fontSize: "clamp(2rem, 4vw, 3.25rem)",
+    fontWeight: 500,
+    letterSpacing: "-0.03em",
+    lineHeight: 1.08,
     margin: 0,
   },
   sectionBody: {
     color: palette.body,
     fontFamily: sansFamily,
-    fontSize: "1rem",
-    lineHeight: 1.75,
+    fontSize: "17px",
+    lineHeight: 1.65,
     margin: "1rem 0 0",
     maxWidth: "52rem",
   },
@@ -89,17 +89,17 @@ export const WorldModelPageShell = ({ children }: ShellProps) => (
   <div
     style={{
       background:
-        `radial-gradient(circle at top left, ${palette.pageGlow}, transparent 30%), ` +
-        `radial-gradient(circle at top right, ${palette.pageGlowSecondary}, transparent 28%), ` +
+        `radial-gradient(circle at top left, ${palette.pageGlow}, transparent 26%), ` +
+        `radial-gradient(circle at top right, ${palette.pageGlowSecondary}, transparent 22%), ` +
         palette.page,
-      backgroundAttachment: "fixed",
       border: `1px solid ${palette.border}`,
-      borderRadius: "28px",
+      borderRadius: "16px",
       color: palette.text,
       fontFamily: sansFamily,
       marginTop: "2rem",
       overflow: "hidden",
       position: "relative",
+      boxShadow: "0 4px 24px rgba(26,26,24,0.08)",
     }}
   >
     <div
@@ -109,42 +109,24 @@ export const WorldModelPageShell = ({ children }: ShellProps) => (
           `linear-gradient(${palette.grid} 1px, transparent 1px), ` +
           `linear-gradient(90deg, ${palette.grid} 1px, transparent 1px)`,
         backgroundPosition: "center center",
-        backgroundSize: "36px 36px",
+        backgroundSize: "72px 72px",
         inset: 0,
-        maskImage: "linear-gradient(to bottom, rgba(0,0,0,0.95), rgba(0,0,0,0.35))",
+        opacity: 0.18,
         pointerEvents: "none",
         position: "absolute",
       }}
     />
-    <div style={{ padding: "clamp(1.1rem, 2vw, 1.5rem)" }}>
-      <div
-        style={{
-          backgroundColor: "rgba(4, 14, 20, 0.56)",
-          border: `1px solid rgba(128, 163, 180, 0.16)`,
-          borderRadius: "22px",
-          padding: "clamp(1rem, 2.2vw, 1.6rem)",
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
-        {children}
-      </div>
-    </div>
+    <div style={{ padding: "clamp(1.5rem, 2.6vw, 2.25rem)", position: "relative" }}>{children}</div>
   </div>
 )
 
-export const WorldModelHero = ({
-  eyebrow,
-  title,
-  description,
-  aside,
-}: HeroProps) => (
+export const WorldModelHero = ({ eyebrow, title, description, aside }: HeroProps) => (
   <section
     style={{
       display: "grid",
-      gap: "1.5rem",
+      gap: "2rem",
       gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-      padding: "clamp(1rem, 2vw, 1.5rem)",
+      paddingBottom: "1.5rem",
     }}
   >
     <div>
@@ -153,10 +135,10 @@ export const WorldModelHero = ({
         style={{
           color: palette.heading,
           fontFamily: sansFamily,
-          fontSize: "clamp(2.5rem, 7vw, 4.8rem)",
-          fontWeight: 600,
-          letterSpacing: "-0.06em",
-          lineHeight: 0.95,
+          fontSize: "clamp(2.8rem, 7vw, 4.9rem)",
+          fontWeight: 500,
+          letterSpacing: "-0.03em",
+          lineHeight: 1.04,
           margin: 0,
           maxWidth: "12ch",
         }}
@@ -166,28 +148,21 @@ export const WorldModelHero = ({
       <p
         style={{
           color: palette.body,
-          fontSize: "1.08rem",
-          lineHeight: 1.8,
+          fontSize: "17px",
+          lineHeight: 1.65,
           margin: "1.4rem 0 0",
-          maxWidth: "44rem",
+          maxWidth: "46rem",
         }}
       >
         {description}
       </p>
     </div>
-    <Panel accent="cyan">
-      {aside}
-    </Panel>
+    <Panel accent="slate">{aside}</Panel>
   </section>
 )
 
-export const WorldModelSection = ({
-  eyebrow,
-  title,
-  description,
-  children,
-}: SectionProps) => (
-  <section style={{ padding: "1.5rem 1rem 1rem" }}>
+export const WorldModelSection = ({ eyebrow, title, description, children }: SectionProps) => (
+  <section style={{ padding: "2rem 0 0" }}>
     {eyebrow ? <span style={styles.label}>{eyebrow}</span> : null}
     <h2 style={styles.sectionHeading}>{title}</h2>
     {description ? <p style={styles.sectionBody}>{description}</p> : null}
@@ -196,22 +171,34 @@ export const WorldModelSection = ({
 )
 
 export const Panel = ({ children, accent = "slate" }: PanelProps) => {
-  const accentColor =
-    accent === "cyan" ? palette.cyan : accent === "green" ? palette.green : palette.slate
+  const accentColor = accent === "cyan" ? palette.cyan : accent === "green" ? palette.green : palette.slate
 
   return (
     <div
       style={{
-        background: `linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)), ${palette.panel}`,
+        background: palette.panel,
         border: `1px solid ${palette.border}`,
-        borderTop: `1px solid ${accentColor}55`,
-        borderRadius: "18px",
-        boxShadow: `inset 0 1px 0 ${accentColor}20`,
+        borderRadius: "12px",
+        boxShadow: `0 1px 2px rgba(26,26,24,0.06)`,
         height: "100%",
-        padding: "1rem",
+        padding: "1.25rem",
+        position: "relative",
       }}
     >
-      {children}
+      <div
+        aria-hidden="true"
+        style={{
+          background: accentColor,
+          borderRadius: "999px",
+          height: "6px",
+          left: "1.25rem",
+          position: "absolute",
+          top: "1rem",
+          width: "44px",
+          opacity: 0.55,
+        }}
+      />
+      <div style={{ paddingTop: "0.75rem" }}>{children}</div>
     </div>
   )
 }
@@ -243,27 +230,23 @@ export const ThreeColumnGrid = ({ children }: ShellProps) => (
 export const ConsoleList = ({ items }: TagListProps) => (
   <div
     style={{
-      backgroundColor: palette.panelSoft,
-      border: `1px solid ${palette.border}`,
-      borderRadius: "14px",
       display: "grid",
-      gap: "0.7rem",
-      padding: "1rem",
+      gap: "0.85rem",
     }}
   >
-    {items.map(item => (
+    {items.map((item) => (
       <div
         key={item}
         style={{
           color: palette.body,
           display: "flex",
-          fontFamily: monospaceFamily,
-          fontSize: "0.88rem",
+          fontFamily: sansFamily,
+          fontSize: "17px",
           gap: "0.7rem",
-          lineHeight: 1.6,
+          lineHeight: 1.65,
         }}
       >
-        <span style={{ color: palette.green }}>›</span>
+        <span style={{ color: palette.cyan }}>•</span>
         <span>{item}</span>
       </div>
     ))}
@@ -272,7 +255,7 @@ export const ConsoleList = ({ items }: TagListProps) => (
 
 export const TagList = ({ items }: TagListProps) => (
   <div style={{ display: "flex", flexWrap: "wrap", gap: "0.55rem" }}>
-    {items.map(item => (
+    {items.map((item) => (
       <span
         key={item}
         style={{
@@ -282,8 +265,9 @@ export const TagList = ({ items }: TagListProps) => (
           fontFamily: monospaceFamily,
           fontSize: "0.75rem",
           letterSpacing: "0.04em",
-          padding: "0.3rem 0.6rem",
+          padding: "0.35rem 0.7rem",
           textTransform: "lowercase",
+          background: palette.panelSoft,
         }}
       >
         {item}
@@ -314,36 +298,26 @@ export const Divider = () => (
   />
 )
 
-export const StatusRow = ({
-  label,
-  value,
-}: {
-  label: string
-  value: string
-}) => (
+export const StatusRow = ({ label, value }: { label: string; value: string }) => (
   <div
     style={{
-      alignItems: "center",
-      display: "flex",
-      gap: "0.85rem",
-      justifyContent: "space-between",
-      padding: "0.65rem 0",
+      display: "grid",
+      gap: "0.35rem",
+      padding: "0.8rem 0",
+      borderTop: `1px solid ${palette.border}`,
     }}
   >
     <span
       style={{
         color: palette.slate,
         fontFamily: monospaceFamily,
-        fontSize: "0.78rem",
-        letterSpacing: "0.14em",
+        fontSize: "0.74rem",
+        letterSpacing: "0.12em",
         textTransform: "uppercase",
       }}
     >
       {label}
     </span>
-    <span style={{ color: palette.text, fontSize: "0.94rem", textAlign: "right" }}>
-      {value}
-    </span>
+    <span style={{ color: palette.text, lineHeight: 1.65 }}>{value}</span>
   </div>
 )
-
