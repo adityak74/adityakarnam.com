@@ -14,6 +14,7 @@ import {
   TwoColumnGrid,
   consoleColors,
 } from "../components/world-model/pages-field-notes-about/primitives"
+import { Panel } from "../components/world-model/pages-systems-stack-now/WorldModelPageChrome"
 
 const operatingLoop = [
   {
@@ -191,10 +192,28 @@ status: ready`}
           description="This is the recurring frame behind the site. It is how I think agent systems move from prompt chains toward world-model behavior."
         >
           <Grid sx={{ gridTemplateColumns: [`1fr`, `repeat(2, minmax(0, 1fr))`, `repeat(3, minmax(0, 1fr))`], gap: 3 }}>
-            {operatingLoop.map(item => (
-              <ConsoleCard key={item.step} title={item.step}>
-                <Text sx={{ color: consoleColors.muted }}>{item.detail}</Text>
-              </ConsoleCard>
+            {operatingLoop.map((item, index) => (
+              <Panel key={item.step} accent={index % 2 === 0 ? consoleColors.accent : consoleColors.accentAlt}>
+                <div style={{ display: "grid", gap: "0.75rem" }}>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: "0.75rem", flexWrap: "wrap" }}>
+                    <span
+                      style={{
+                        color: consoleColors.soft,
+                        fontFamily: "monospace",
+                        fontSize: "0.74rem",
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      0{index + 1}
+                    </span>
+                    <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [2, 3], m: 0, lineHeight: 1.15 }}>
+                      {item.step}
+                    </Heading>
+                  </div>
+                  <Text sx={{ color: consoleColors.muted, lineHeight: 1.7 }}>{item.detail}</Text>
+                </div>
+              </Panel>
             ))}
           </Grid>
         </SectionBlock>
