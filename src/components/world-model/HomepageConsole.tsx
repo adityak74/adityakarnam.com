@@ -272,33 +272,33 @@ const HomepageConsole = () => {
       <Box sx={{ ...cardStyles, p: [4, 5], mb: [6, 7], background: "#F7F4EE" }}>
         <Flex sx={{ justifyContent: "space-between", alignItems: "flex-end", gap: 3, flexWrap: "wrap", mb: 4 }}>
           <Box>
-            <Text sx={sectionLabelStyles}>New Benchmark</Text>
+            <Text sx={sectionLabelStyles}>New Eval</Text>
             <Heading as="h2" sx={{ fontSize: ["1.8rem", "2.2rem"], fontWeight: 500, mb: 2 }}>
-              Local LLM serving on Apple Silicon, measured instead of guessed
+              Local LLM serving on Apple Silicon, evaluated instead of guessed
             </Heading>
             <Text sx={{ color: "secondary", lineHeight: 1.65, maxWidth: "48rem", fontSize: "17px" }}>
-              I benchmarked Ollama, vLLM Metal, and SGLang on an Apple M5 Pro MacBook Pro, then added a Gemma 4
-              LLM-as-judge pass to compare visible response quality across the same workload set.
+              I ran the same workload set through Ollama, vLLM Metal, and SGLang on an Apple M5 Pro MacBook Pro,
+              added a warmed response-quality eval suite, and then used Gemma 4 as a second quality judge.
             </Text>
           </Box>
           <Link
             to="/benchmarking-local-llms-ollama-vllm-sglang-apple-silicon/"
             sx={{ color: "primary", textDecoration: "none", fontFamily: "monospace", fontSize: 0 }}
           >
-            Open benchmark note
+            Open eval note
           </Link>
         </Flex>
 
         <Grid columns={[1, null, 4]} gap={3} sx={{ mb: 4 }}>
           <Box sx={{ border: "1px solid", borderColor: "divide", borderRadius: "12px", p: 3, bg: "#FFFFFF" }}>
-            <Text sx={{ color: "primary", fontFamily: "monospace", fontSize: 0, mb: 1 }}>Runtime winner</Text>
+            <Text sx={{ color: "primary", fontFamily: "monospace", fontSize: 0, mb: 1 }}>Eval winner</Text>
             <Text sx={{ color: "text", fontSize: 2, fontWeight: 500 }}>Ollama</Text>
-            <Text sx={{ color: "secondary", fontSize: 1, mt: 1 }}>Fastest in 5 of 6 workloads on this machine.</Text>
+            <Text sx={{ color: "secondary", fontSize: 1, mt: 1 }}>Only runtime that passed every warmed quality check.</Text>
           </Box>
           <Box sx={{ border: "1px solid", borderColor: "divide", borderRadius: "12px", p: 3, bg: "#FFFFFF" }}>
             <Text sx={{ color: "primary", fontFamily: "monospace", fontSize: 0, mb: 1 }}>Structured JSON</Text>
-            <Text sx={{ color: "text", fontSize: 2, fontWeight: 500 }}>SGLang</Text>
-            <Text sx={{ color: "secondary", fontSize: 1, mt: 1 }}>Strongest latency result on the JSON workload.</Text>
+            <Text sx={{ color: "text", fontSize: 2, fontWeight: 500 }}>vLLM</Text>
+            <Text sx={{ color: "secondary", fontSize: 1, mt: 1 }}>Only non-Ollama runtime that fully passed the JSON eval.</Text>
           </Box>
           <Box sx={{ border: "1px solid", borderColor: "divide", borderRadius: "12px", p: 3, bg: "#FFFFFF" }}>
             <Text sx={{ color: "primary", fontFamily: "monospace", fontSize: 0, mb: 1 }}>Judge winner</Text>
@@ -313,7 +313,7 @@ const HomepageConsole = () => {
         </Grid>
 
         <Text sx={{ color: "secondary", lineHeight: 1.65, fontSize: "17px", maxWidth: "52rem" }}>
-          The useful part of the benchmark was not just the chart. It exposed the runtime-specific details that decide
+          The useful part of the eval was not just the chart. It exposed the runtime-specific details that decide
           whether a local stack is actually practical: memory contention, answer formatting behavior, and how much
           configuration it takes to get stable outputs on Apple Silicon.
         </Text>

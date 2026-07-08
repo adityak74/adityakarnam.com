@@ -1,6 +1,6 @@
 ---
-title: "I Benchmarked Ollama vs vLLM vs SGLang on an Apple Silicon Mac"
-description: "I set up Ollama, vLLM Metal, and SGLang on an Apple M5 Pro MacBook Pro, ran the same local-serving benchmark harness across all three, and used Gemma 4 as an LLM judge for response quality."
+title: "I Ran Local LLM Evals on an Apple Silicon Mac"
+description: "I set up Ollama, vLLM Metal, and SGLang on an Apple M5 Pro MacBook Pro, ran the same local-serving benchmark and response-quality eval suite across all three, and used Gemma 4 as an LLM judge for visible output quality."
 date: 2026-07-08
 slug: "/benchmarking-local-llms-ollama-vllm-sglang-apple-silicon"
 canonicalUrl: "https://adityakarnam.com/benchmarking-local-llms-ollama-vllm-sglang-apple-silicon/"
@@ -13,7 +13,7 @@ keywords:
     "M5 Pro",
     "local LLMs",
     "LLM serving",
-    "benchmarking",
+    "evals",
     "vllm-metal",
     "MLX",
     "Gemma 4",
@@ -22,22 +22,22 @@ keywords:
 tags:
   - ai
   - local-llms
-  - benchmarking
+  - evals
   - open-source
 ---
 
-_I wanted a real answer to a practical question: if I am serving local models on my own machine, which stack actually wins for my hardware and workload mix?_
+_I wanted a real answer to a practical question: if I am serving local models on my own machine, which stack actually wins for my hardware, workload mix, and visible output bar?_
 
-So I built a small benchmark harness, set up **Ollama**, **vLLM Metal**, and **SGLang** on the same Apple Silicon machine, ran the same workload set across all three, and then added a second pass with **Gemma 4 as an LLM judge** for visible response quality.
+So I built a small benchmark-and-evals harness, set up **Ollama**, **vLLM Metal**, and **SGLang** on the same Apple Silicon machine, ran the same workload set across all three, added a warmed response-quality eval pass, and then added a second pass with **Gemma 4 as an LLM judge** for visible response quality.
 
 The short answer:
 
 - **Ollama** was the best overall latency baseline on my machine
 - **SGLang** was close on latency and strongest on the structured JSON case
 - **vLLM Metal** worked, but it was much more memory-sensitive in this setup
-- In the quality pass, **Ollama** won all six workloads because the other two often leaked visible `<think>` traces instead of returning clean final answers
+- In the warmed eval pass, **Ollama** cleared every visible-output check while the other two often leaked visible `<think>` traces instead of returning clean final answers
 
-The benchmark harness and report live here:
+The harness, eval artifacts, and report live here:
 
 - [llm-serving-bench-lab on GitHub](https://github.com/adityak74/llm-serving-bench-lab)
 
@@ -66,7 +66,7 @@ People talk about:
 
 All of that matters, but only up to the point where you actually try to serve workloads you care about.
 
-I wanted to benchmark the tasks I personally care about for coding-agent and infra workflows:
+I wanted to evaluate the tasks I personally care about for coding-agent and infra workflows:
 
 - short chat
 - long-context summarization
@@ -87,7 +87,7 @@ I standardized on the **Qwen3 0.6B family** so I could get all three servers run
 
 These are not byte-for-byte identical artifacts, so this is not a perfect scientific purity test. But it is a realistic engineering comparison of what each stack can actually serve on the same laptop.
 
-The config shape in the harness was intentionally simple. Each runtime is just a benchmark target with:
+The config shape in the harness was intentionally simple. Each runtime is just an eval target with:
 
 - an ID
 - a serving kind
@@ -147,13 +147,30 @@ That does not mean vLLM is "bad." It means that on **this specific Apple Silicon
 
 That is the whole point of running the lab instead of repeating generic runtime talking points.
 
-## The Quality Pass
+## The Warmed Eval Pass
 
 Latency is only half the story.
 
-If a runtime is fast but returns poor visible answers, the benchmark is incomplete.
+If a runtime is fast but returns poor visible answers, the result is incomplete.
 
-So I added a quick **LLM-as-judge** pass using local **`gemma4:31b-mlx`** through Ollama.
+So I added a small warmed response-quality eval suite and then kept the earlier **LLM-as-judge** pass using local **`gemma4:31b-mlx`** through Ollama as a second lens.
+
+The warmed eval suite checks:
+
+- non-empty visible output
+- no `<think>` leakage
+- valid JSON where required
+- workload-specific instruction following
+
+Here is the warmed response-quality summary:
+
+| runtime | success rate | rubric pass rate | avg latency s |
+| --- | ---: | ---: | ---: |
+| Ollama | 1.00 | 1.00 | 0.660 |
+| vLLM | 1.00 | 0.72 | 1.902 |
+| SGLang | 1.00 | 0.47 | 0.821 |
+
+That mattered because it separated "the server answered" from "the server returned a clean final answer."
 
 The judge only scored **visible answer quality**:
 
@@ -175,7 +192,7 @@ That part surfaced another important runtime-level issue.
 
 For `qwen3:0.6b` on Ollama, I found that the API could return an empty visible answer in `message.content` while placing the reasoning trace in `message.thinking`.
 
-So for the quality pass, I recollected the Ollama outputs using:
+So for both the eval collection and the judge pass, I recollected the Ollama outputs using:
 
 ```json
 { "think": false }
@@ -214,7 +231,7 @@ So the quality result was not "the model weights are inherently worse under vLLM
 
 It was: **the final answer behavior of the serving path matters a lot**.
 
-That is exactly the kind of operational detail that benchmark charts usually miss.
+That is exactly the kind of operational detail that plain benchmark charts usually miss.
 
 ## What I Learned
 
@@ -259,7 +276,7 @@ That makes it harder to recommend as the default on a single shared Apple Silico
 
 ## Why This Matters Beyond One Laptop
 
-I think this kind of benchmark matters because a lot of agent infrastructure work is quietly moving local again.
+I think this kind of eval work matters because a lot of agent infrastructure work is quietly moving local again.
 
 Developers want:
 

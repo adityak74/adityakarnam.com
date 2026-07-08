@@ -78,7 +78,7 @@ const readingPaths = [
       "Start with the infrastructure thesis below.",
       "Read subagent-fleet for the runtime and routing angle.",
       "Follow with embenx for retrieval and memory interfaces.",
-      "Use the Apple Silicon benchmark note for the local-serving and runtime-behavior layer.",
+      "Use the Apple Silicon eval note for the local-serving and runtime-behavior layer.",
       "Treat the remaining essays as the planned research map.",
     ],
   },
@@ -86,7 +86,7 @@ const readingPaths = [
     topic: "Local inference",
     steps: [
       "Begin with subagent-fleet for fleet orchestration and model routing.",
-      "Read the Ollama vs vLLM vs SGLang benchmark note for measured serving behavior on Apple Silicon.",
+      "Read the Ollama vs vLLM vs SGLang eval note for measured serving behavior on Apple Silicon.",
       "Use MLX non-determinism as the reliability counterweight.",
       "Then connect both to the planned local-first infrastructure essay.",
     ],
@@ -105,7 +105,7 @@ const signalNotes: Record<string, string> = {
   "/subagent-fleet-local-ai-compute-control-plane":
     "Strongest public proof of the runtime, routing, and local-compute thesis.",
   "/benchmarking-local-llms-ollama-vllm-sglang-apple-silicon":
-    "Measured comparison of local serving stacks on Apple Silicon, including latency, memory contention, and LLM-as-judge response quality.",
+    "Measured evals of local serving stacks on Apple Silicon, including latency, memory contention, warmed response-quality checks, and LLM-as-judge scoring.",
   "/embenx-python-embedding-toolkit":
     "Best current artifact for memory, retrieval abstraction, and MCP-facing context systems.",
   "/mlx-non-determinism-apple-silicon":
