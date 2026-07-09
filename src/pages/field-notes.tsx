@@ -105,7 +105,7 @@ const signalNotes: Record<string, string> = {
   "/subagent-fleet-local-ai-compute-control-plane":
     "Strongest public proof of the runtime, routing, and local-compute thesis.",
   "/benchmarking-local-llms-ollama-vllm-sglang-apple-silicon":
-    "Measured evals of local serving stacks on Apple Silicon, including latency, memory contention, warmed response-quality checks, and LLM-as-judge scoring.",
+    "Measured evals of local serving stacks on Apple Silicon, then an Ollama-only Qwen 3.5 size sweep, including latency, memory contention, warmed response-quality checks, and LLM-as-judge scoring.",
   "/embenx-python-embedding-toolkit":
     "Best current artifact for memory, retrieval abstraction, and MCP-facing context systems.",
   "/mlx-non-determinism-apple-silicon":

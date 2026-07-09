@@ -278,7 +278,8 @@ const HomepageConsole = () => {
             </Heading>
             <Text sx={{ color: "secondary", lineHeight: 1.65, maxWidth: "48rem", fontSize: "17px" }}>
               I ran the same workload set through Ollama, vLLM Metal, and SGLang on an Apple M5 Pro MacBook Pro,
-              added a warmed response-quality eval suite, and then used Gemma 4 as a second quality judge.
+              added a warmed response-quality eval suite, used Gemma 4 as a second quality judge, and then followed
+              up with a Qwen 3.5 model sweep from 0.8B to 9B on Ollama.
             </Text>
           </Box>
           <Link
@@ -291,9 +292,9 @@ const HomepageConsole = () => {
 
         <Grid columns={[1, null, 4]} gap={3} sx={{ mb: 4 }}>
           <Box sx={{ border: "1px solid", borderColor: "divide", borderRadius: "12px", p: 3, bg: "#FFFFFF" }}>
-            <Text sx={{ color: "primary", fontFamily: "monospace", fontSize: 0, mb: 1 }}>Eval winner</Text>
-            <Text sx={{ color: "text", fontSize: 2, fontWeight: 500 }}>Ollama</Text>
-            <Text sx={{ color: "secondary", fontSize: 1, mt: 1 }}>Only runtime that passed every warmed quality check.</Text>
+            <Text sx={{ color: "primary", fontFamily: "monospace", fontSize: 0, mb: 1 }}>Model sweep</Text>
+            <Text sx={{ color: "text", fontSize: 2, fontWeight: 500 }}>Qwen 3.5 2B</Text>
+            <Text sx={{ color: "secondary", fontSize: 1, mt: 1 }}>Best balance point in the Ollama-only follow-up sweep.</Text>
           </Box>
           <Box sx={{ border: "1px solid", borderColor: "divide", borderRadius: "12px", p: 3, bg: "#FFFFFF" }}>
             <Text sx={{ color: "primary", fontFamily: "monospace", fontSize: 0, mb: 1 }}>Structured JSON</Text>
