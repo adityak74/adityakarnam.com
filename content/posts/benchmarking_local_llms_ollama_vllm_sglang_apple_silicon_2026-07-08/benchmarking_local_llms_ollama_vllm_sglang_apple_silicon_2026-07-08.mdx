@@ -1,0 +1,313 @@
+---
+title: "I Ran Local LLM Evals on an Apple Silicon Mac"
+description: "I set up Ollama, vLLM Metal, and SGLang on an Apple M5 Pro MacBook Pro, ran the same local-serving benchmark and response-quality eval suite across all three, and used Gemma 4 as an LLM judge for visible output quality."
+date: 2026-07-08
+slug: "/benchmarking-local-llms-ollama-vllm-sglang-apple-silicon"
+canonicalUrl: "https://adityakarnam.com/benchmarking-local-llms-ollama-vllm-sglang-apple-silicon/"
+keywords:
+  [
+    "Ollama",
+    "vLLM",
+    "SGLang",
+    "Apple Silicon",
+    "M5 Pro",
+    "local LLMs",
+    "LLM serving",
+    "evals",
+    "vllm-metal",
+    "MLX",
+    "Gemma 4",
+    "LLM as judge",
+  ]
+tags:
+  - ai
+  - local-llms
+  - evals
+  - open-source
+---
+
+_I wanted a real answer to a practical question: if I am serving local models on my own machine, which stack actually wins for my hardware, workload mix, and visible output bar?_
+
+So I built a small benchmark-and-evals harness, set up **Ollama**, **vLLM Metal**, and **SGLang** on the same Apple Silicon machine, ran the same workload set across all three, added a warmed response-quality eval pass, and then added a second pass with **Gemma 4 as an LLM judge** for visible response quality.
+
+The short answer:
+
+- **Ollama** was the best overall latency baseline on my machine
+- **SGLang** was close on latency and strongest on the structured JSON case
+- **vLLM Metal** worked, but it was much more memory-sensitive in this setup
+- In the warmed eval pass, **Ollama** cleared every visible-output check while the other two often leaked visible `<think>` traces instead of returning clean final answers
+
+The harness, eval artifacts, and report live here:
+
+- [llm-serving-bench-lab on GitHub](https://github.com/adityak74/llm-serving-bench-lab)
+
+## The Machine
+
+This was not a cloud run. Everything was local.
+
+- **Machine**: MacBook Pro
+- **Chip**: Apple M5 Pro
+- **Memory**: 48 GB
+- **OS**: macOS 26.5.2
+
+That matters because local serving results are extremely hardware-specific. A setup that behaves well on a large Linux GPU box may behave very differently on unified-memory Apple Silicon.
+
+## Why I Ran This
+
+Most local LLM conversations about serving stacks stay too abstract.
+
+People talk about:
+
+- theoretical throughput
+- paging architectures
+- prefix caching
+- OpenAI-compatible endpoints
+- MLX integration
+
+All of that matters, but only up to the point where you actually try to serve workloads you care about.
+
+I wanted to evaluate the tasks I personally care about for coding-agent and infra workflows:
+
+- short chat
+- long-context summarization
+- code generation
+- structured JSON output
+- shared-prefix analysis
+- multi-turn agent traces
+
+That is what drove the harness design.
+
+## The Runtime Setup
+
+I standardized on the **Qwen3 0.6B family** so I could get all three servers running locally with a comparable model scale:
+
+- **Ollama**: `qwen3:0.6b`
+- **vLLM**: `Qwen/Qwen3-0.6B`
+- **SGLang**: `mlx-community/Qwen3-0.6B-4bit`
+
+These are not byte-for-byte identical artifacts, so this is not a perfect scientific purity test. But it is a realistic engineering comparison of what each stack can actually serve on the same laptop.
+
+The config shape in the harness was intentionally simple. Each runtime is just an eval target with:
+
+- an ID
+- a serving kind
+- a model name
+- a base URL
+- a max context window
+
+That was enough to run a uniform workload file against all three.
+
+## What Went Wrong First
+
+The first interesting result was not a latency number.
+
+It was a failure.
+
+When I ran **vLLM** and **SGLang** as co-resident servers on the same machine, `vllm-metal` crashed with a Metal out-of-memory error once SGLang had already reserved a large MLX KV pool.
+
+The important message was:
+
+```text
+[METAL] Command buffer execution failed: Insufficient Memory
+```
+
+This is exactly the kind of detail that gets lost when people hand-wave local serving as "just point everything at the same model."
+
+On Apple Silicon, memory is the system. If one runtime aggressively reserves unified memory, that directly changes whether another runtime remains viable.
+
+To get valid vLLM numbers, I had to:
+
+- stop SGLang
+- rerun vLLM in isolation
+- reduce `VLLM_METAL_MEMORY_FRACTION`
+- lower the max model length for the vLLM pass
+
+That does make the vLLM run less apples-to-apples than the other two, but it also tells the truth about what the system could actually sustain.
+
+## Latency Results
+
+Here were the measured latencies from the final run set:
+
+| workload | ollama latency s | sglang latency s | vllm latency s | winner |
+| --- | ---: | ---: | ---: | --- |
+| short-chat | 0.759 | 1.394 | 3.450 | Ollama |
+| long-context-summarization | 0.907 | 1.037 | 2.273 | Ollama |
+| code-generation | 1.076 | 1.196 | 2.656 | Ollama |
+| tool-call-json | 0.791 | 0.074 | 0.644 | SGLang |
+| shared-prefix-analysis | 0.874 | 0.967 | 2.146 | Ollama |
+| multi-turn-agent-trace | 0.871 | 0.996 | 2.119 | Ollama |
+
+The pattern was pretty clear:
+
+- **Ollama won 5 of 6 workloads on latency**
+- **SGLang won the structured JSON case**
+- **vLLM was the slowest in the isolated configuration I could keep stable**
+
+That does not mean vLLM is "bad." It means that on **this specific Apple Silicon machine**, the practical local baseline was better with Ollama.
+
+That is the whole point of running the lab instead of repeating generic runtime talking points.
+
+## The Warmed Eval Pass
+
+Latency is only half the story.
+
+If a runtime is fast but returns poor visible answers, the result is incomplete.
+
+So I added a small warmed response-quality eval suite and then kept the earlier **LLM-as-judge** pass using local **`gemma4:31b-mlx`** through Ollama as a second lens.
+
+The warmed eval suite checks:
+
+- non-empty visible output
+- no `<think>` leakage
+- valid JSON where required
+- workload-specific instruction following
+
+Here is the warmed response-quality summary:
+
+| runtime | success rate | rubric pass rate | avg latency s |
+| --- | ---: | ---: | ---: |
+| Ollama | 1.00 | 1.00 | 0.660 |
+| vLLM | 1.00 | 0.72 | 1.902 |
+| SGLang | 1.00 | 0.47 | 0.821 |
+
+That mattered because it separated "the server answered" from "the server returned a clean final answer."
+
+The judge only scored **visible answer quality**:
+
+- instruction-following
+- correctness
+- completeness
+- formatting
+- usefulness
+
+It explicitly ignored:
+
+- latency
+- model size
+- hidden reasoning quality
+
+That part surfaced another important runtime-level issue.
+
+### Ollama Needed a Special Fix
+
+For `qwen3:0.6b` on Ollama, I found that the API could return an empty visible answer in `message.content` while placing the reasoning trace in `message.thinking`.
+
+So for both the eval collection and the judge pass, I recollected the Ollama outputs using:
+
+```json
+{ "think": false }
+```
+
+Without that flag, the judged comparison would have been unfair because the visible answer would look empty even though the model was generating reasoning internally.
+
+### Judge Scores
+
+Here is what Gemma 4 decided:
+
+| workload | ollama score | vllm score | sglang score | judge winner |
+| --- | ---: | ---: | ---: | --- |
+| short-chat | 6 | 1 | 1 | Ollama |
+| long-context-summarization | 10 | 1 | 1 | Ollama |
+| code-generation | 6 | 1 | 1 | Ollama |
+| tool-call-json | 10 | 9 | 1 | Ollama |
+| shared-prefix-analysis | 6 | 1 | 1 | Ollama |
+| multi-turn-agent-trace | 5 | 1 | 1 | Ollama |
+
+Average quality scores:
+
+- **Ollama**: `7.17`
+- **vLLM**: `2.33`
+- **SGLang**: `1.00`
+
+That looked harsh at first, but the reason was consistent and easy to understand.
+
+In this serving configuration:
+
+- **vLLM** often exposed visible `<think>` traces instead of a clean final answer
+- **SGLang** did the same even more often
+- **Ollama** was the only stack that consistently returned visible user-facing answers once I disabled thinking explicitly
+
+So the quality result was not "the model weights are inherently worse under vLLM or SGLang."
+
+It was: **the final answer behavior of the serving path matters a lot**.
+
+That is exactly the kind of operational detail that plain benchmark charts usually miss.
+
+## What I Learned
+
+The main lesson from this run is that local LLM serving on Apple Silicon is not just about raw model support. It is about the interaction between:
+
+- serving runtime
+- memory behavior
+- visible response formatting
+- workload type
+
+On my machine:
+
+### 1. Ollama was the most practical default
+
+It was the easiest stack to keep working end to end.
+
+It also gave me the best combination of:
+
+- lowest overall latency
+- stable local operation
+- strongest judged visible-answer quality
+
+### 2. SGLang is worth keeping around
+
+It was close enough on most latencies to stay interesting.
+
+And it absolutely crushed the structured JSON workload in this run.
+
+So if I cared more about JSON-heavy routing or wanted to explore prefix/radix behavior more deeply, SGLang would still be in the conversation.
+
+### 3. vLLM Metal is real, but memory-sensitive
+
+The good news is that `vllm-metal` did work.
+
+The bad news is that it became the first runtime to fall over once memory pressure got real.
+
+That makes it harder to recommend as the default on a single shared Apple Silicon machine unless:
+
+- it runs alone
+- its memory budget is capped
+- context length is tuned carefully
+
+## Why This Matters Beyond One Laptop
+
+I think this kind of eval work matters because a lot of agent infrastructure work is quietly moving local again.
+
+Developers want:
+
+- private coding models
+- predictable serving
+- low per-run cost
+- direct control over the runtime stack
+
+That is a good direction.
+
+But once you care about local serving seriously, you stop asking "which runtime is the best in theory?" and start asking:
+
+**Which stack behaves best on my machine, for my prompts, under my memory constraints?**
+
+That is a much better question.
+
+## If I Had to Choose Today
+
+If I were picking one default local stack for this machine right now:
+
+1. **Ollama** as the default local serving baseline
+2. **SGLang** as the experimental or JSON-focused alternative
+3. **vLLM Metal** as the memory-sensitive option that needs isolation and tuning
+
+That ranking is not universal.
+
+It is just the first result set I trust from this particular Apple Silicon setup.
+
+And that is exactly why I built the lab.
+
+## References
+
+1. [llm-serving-bench-lab on GitHub](https://github.com/adityak74/llm-serving-bench-lab)
+2. [Final Apple Silicon report in the repo](https://github.com/adityak74/llm-serving-bench-lab/blob/main/artifacts/final-report-qwen3-apple-silicon.md)

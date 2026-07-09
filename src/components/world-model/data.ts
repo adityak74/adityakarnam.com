@@ -253,6 +253,13 @@ export const fieldNotes: FieldNote[] = [
       "A local AI control plane can get materially closer to frontier coding quality than most people expect, while preserving privacy and operator control.",
   },
   {
+    title: "I Ran Local LLM Evals on an Apple Silicon Mac",
+    href: "/benchmarking-local-llms-ollama-vllm-sglang-apple-silicon/",
+    status: "published eval note",
+    thesis:
+      "Local inference decisions should be based on measured runtime behavior, memory pressure, and visible answer quality, not just architecture claims.",
+  },
+  {
     title: "embenx Guide: The Ultimate Python Library for Vector Search",
     href: "/embenx-python-embedding-toolkit/",
     status: "published system note",
