@@ -257,7 +257,7 @@ export const fieldNotes: FieldNote[] = [
     href: "/benchmarking-local-llms-ollama-vllm-sglang-apple-silicon/",
     status: "published eval note",
     thesis:
-      "Local inference decisions should be based on measured runtime behavior, memory pressure, and visible answer quality, not just architecture claims.",
+      "Local inference decisions should be based on measured runtime behavior, memory pressure, visible answer quality, and model-size tradeoffs, not just architecture claims.",
   },
   {
     title: "embenx Guide: The Ultimate Python Library for Vector Search",

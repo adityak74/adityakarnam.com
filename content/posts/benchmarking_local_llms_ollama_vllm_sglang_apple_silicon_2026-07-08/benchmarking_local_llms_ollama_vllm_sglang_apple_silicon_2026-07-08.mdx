@@ -1,6 +1,6 @@
 ---
 title: "I Ran Local LLM Evals on an Apple Silicon Mac"
-description: "I set up Ollama, vLLM Metal, and SGLang on an Apple M5 Pro MacBook Pro, ran the same local-serving benchmark and response-quality eval suite across all three, and used Gemma 4 as an LLM judge for visible output quality."
+description: "I set up Ollama, vLLM Metal, and SGLang on an Apple M5 Pro MacBook Pro, ran a local-serving benchmark and response-quality eval suite across the runtimes, then followed up with a Qwen 3.5 Ollama model sweep from 0.8B to 9B."
 date: 2026-07-08
 slug: "/benchmarking-local-llms-ollama-vllm-sglang-apple-silicon"
 canonicalUrl: "https://adityakarnam.com/benchmarking-local-llms-ollama-vllm-sglang-apple-silicon/"
@@ -30,12 +30,20 @@ _I wanted a real answer to a practical question: if I am serving local models on
 
 So I built a small benchmark-and-evals harness, set up **Ollama**, **vLLM Metal**, and **SGLang** on the same Apple Silicon machine, ran the same workload set across all three, added a warmed response-quality eval pass, and then added a second pass with **Gemma 4 as an LLM judge** for visible response quality.
 
+After that runtime comparison, I ran the same six workloads again as an **Ollama-only Qwen 3.5 model sweep** across:
+
+- `qwen3.5:0.8b`
+- `qwen3.5:2b`
+- `qwen3.5:4b`
+- `qwen3.5:9b`
+
 The short answer:
 
 - **Ollama** was the best overall latency baseline on my machine
 - **SGLang** was close on latency and strongest on the structured JSON case
 - **vLLM Metal** worked, but it was much more memory-sensitive in this setup
 - In the warmed eval pass, **Ollama** cleared every visible-output check while the other two often leaked visible `<think>` traces instead of returning clean final answers
+- In the Qwen 3.5 size sweep, **`qwen3.5:0.8b`** was the clear speed winner, while **`qwen3.5:2b`** looked like the best overall balance point
 
 The harness, eval artifacts, and report live here:
 
@@ -172,6 +180,54 @@ Here is the warmed response-quality summary:
 
 That mattered because it separated "the server answered" from "the server returned a clean final answer."
 
+## The Qwen 3.5 Ollama Sweep
+
+Once the runtime comparison was done, I wanted a cleaner answer to a second question:
+
+**If I stay on Ollama, which Qwen 3.5 size is actually the best local default on this machine?**
+
+So I ran the same six workloads again across:
+
+- `qwen3.5:0.8b`
+- `qwen3.5:2b`
+- `qwen3.5:4b`
+- `qwen3.5:9b`
+
+### Benchmark Summary
+
+Average latency across the six workloads:
+
+| model | avg latency s | avg ttft s | avg tokens/s |
+| --- | ---: | ---: | ---: |
+| `qwen3.5:0.8b` | 1.643 | 0.417 | 146.03 |
+| `qwen3.5:2b` | 2.741 | 0.518 | 82.64 |
+| `qwen3.5:4b` | 4.594 | 0.703 | 51.08 |
+| `qwen3.5:9b` | 7.889 | 0.883 | 29.77 |
+
+The smallest model won every workload on speed. There was no workload in this harness where the bigger model paid back its latency cost with a faster answer.
+
+### Warmed Eval Summary
+
+The deterministic warmed eval sweep came out like this:
+
+| model | rubric pass rate | avg eval latency s |
+| --- | ---: | ---: |
+| `qwen3.5:0.8b` | 0.89 | 1.402 |
+| `qwen3.5:2b` | 0.93 | 2.348 |
+| `qwen3.5:4b` | 0.90 | 3.480 |
+| `qwen3.5:9b` | 0.93 | 5.642 |
+
+That was the interesting part.
+
+- `0.8b` was extremely fast, but it missed a few more rubric checks
+- `2b` materially improved the pass rate without a huge latency jump
+- `4b` did not really justify itself over `2b`
+- `9b` tied the best rubric score, but at a very large latency cost
+
+So on this host, **`qwen3.5:2b` looked like the practical default**.
+
+It stayed much closer to the smaller model on speed than the larger models did, while still cleaning up several of the response-quality misses that showed up at `0.8b`.
+
 The judge only scored **visible answer quality**:
 
 - instruction-following
@@ -254,6 +310,8 @@ It also gave me the best combination of:
 - stable local operation
 - strongest judged visible-answer quality
 
+And after the follow-up size sweep, the best Ollama sub-choice on this machine looked like **`qwen3.5:2b`** rather than the larger `4b` or `9b` variants.
+
 ### 2. SGLang is worth keeping around
 
 It was close enough on most latencies to stay interesting.
@@ -298,8 +356,9 @@ That is a much better question.
 If I were picking one default local stack for this machine right now:
 
 1. **Ollama** as the default local serving baseline
-2. **SGLang** as the experimental or JSON-focused alternative
+2. **`qwen3.5:2b` on Ollama** as the default local model for this workload mix
 3. **vLLM Metal** as the memory-sensitive option that needs isolation and tuning
+4. **SGLang** as the experimental or JSON-focused alternative
 
 That ranking is not universal.
 
