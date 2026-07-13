@@ -20,7 +20,7 @@ Operate the complete research-to-publication loop for `/value-lab/`. Treat the p
 ## Full research run — mandatory
 
 1. Read [research-workflow.md](references/research-workflow.md), [source-registry.md](references/source-registry.md), and [data-contract.md](references/data-contract.md).
-2. Inspect the prior `current.json`, latest snapshot, source manifest, open integrity notices, and unrelated worktree changes.
+2. Preserve and inspect the prior `current.json` as the weekly comparison baseline, plus the latest snapshot, source manifest, open integrity notices, and unrelated worktree changes.
 3. Create `data/value-lab/raw/YYYY-MM-DD/`. Fetch every in-scope official benchmark, pricing, plan, release-note, and integrity source. Save immutable raw responses plus retrieval metadata before extracting numbers.
 4. Build `bundle.json` exactly as specified in the research workflow. Every record must reference a collected `sourceId`.
 5. Validate and generate with:
@@ -36,8 +36,8 @@ Operate the complete research-to-publication loop for `/value-lab/`. Treat the p
 
 6. Stop for human review when the gate exits `2`. Do not weaken or bypass the gate. Correct extraction errors from raw evidence; do not edit generated numbers.
 7. Update the renderer only when generated fields require a capability it does not support. A normal research refresh changes data, raw evidence, snapshots, and review output—not page components.
-8. Generate and validate the schema-2 dashboard cards and every dashboard dataset: ranked performance (`ranked_bar`), harness comparisons (`dumbbell`), research coverage (`coverage`), and `scatter` only when cost-ready inputs exist. Missing comparison evidence must produce an explicit empty dataset; missing cost or value evidence must produce explicit zero/unavailable states. Generate the Markdown summary from the same publication output.
-9. Verify deterministic tests, skill validation, Gatsby build, page rendering, source links, visible uncertainty/evidence labels, and Copy as Markdown output. Check cards and graphs at both desktop and mobile widths, including empty and unavailable states.
+8. Generate and validate the schema-3 `weeklyChanges` block, all seven dashboard cards, and every dashboard dataset: ranked performance (`ranked_bar`), harness comparisons (`dumbbell`), research coverage (`coverage`), and `scatter` only when cost-ready inputs exist. Weekly changes must compare the preserved prior publication, contain no more than four evidence-linked findings, and preserve explicit baseline or no-material-change states. Missing comparison evidence must produce an explicit empty dataset; missing cost or value evidence must produce explicit zero/unavailable states. Generate the Markdown summary from the same publication output.
+9. Review every weekly headline against its current/prior run IDs and resolved HTTPS sources. Then verify deterministic tests, skill validation, Gatsby build, page rendering, source links, visible uncertainty/evidence labels, and Copy as Markdown output. Check weekly populated, no-material-change, and baseline states plus cards and graphs at both desktop and mobile widths, including empty and unavailable states.
 10. Commit the raw bundle, generated data, dated snapshot, gate report, skill changes, and any required renderer changes. Preserve unrelated files.
 
 ## Research rules
@@ -67,10 +67,11 @@ Do not use `gpt-5.6-sol` for routine collection, formatting, validation, or data
 
 - `src/data/value-lab/current.json` is generated current state.
 - `src/data/value-lab/snapshots/YYYY-MM-DD/<run-id>.json` is immutable history.
+- Render the required schema-3 weekly comparison directly below the hero. Keep its page rows and Markdown export derived from the same `weeklyChanges` records.
 - Keep research values out of `src/pages/value-lab.tsx`.
 - Preserve `WorldModelPageShell`, `WorldModelHero`, `WorldModelSection`, `Panel`, responsive grids, evidence labels, source links, and Copy as Markdown.
 - Fail visibly for unsupported chart types or missing required fields.
-- Render all seven schema-2 dashboard cards in their `summary`/`supporting` groups. Preserve explicit unavailable, empty, and zero states instead of hiding incomplete evidence.
+- Render all seven schema-3 dashboard cards in their `summary`/`supporting` groups. Preserve explicit weekly baseline/no-change states and unavailable, empty, and zero dashboard states instead of hiding incomplete evidence.
 
 ## Verification
 
@@ -82,4 +83,4 @@ python3 /Users/adityakarnam/.codex/skills/.system/skill-creator/scripts/quick_va
 npm run build
 ```
 
-Completion requires: raw evidence preserved, bundle valid, deterministic output, version isolation, grounded insights, seven validated dashboard cards, ranked performance/harness comparison/coverage datasets, any eligible scatter dataset, immutable snapshot, gate reviewed, page rebuilt, desktop/mobile card and graph checks, Markdown summary/export checked, and only intended files committed.
+Completion requires: raw evidence preserved, bundle valid, deterministic output, version isolation, a validated evidence-linked weekly comparison, grounded insights, seven validated dashboard cards, ranked performance/harness comparison/coverage datasets, any eligible scatter dataset, immutable snapshot, gate reviewed, page rebuilt, desktop/mobile weekly/card/graph checks, Markdown summary/export checked, and only intended files committed.

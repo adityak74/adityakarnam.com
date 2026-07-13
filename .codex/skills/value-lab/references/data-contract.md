@@ -4,10 +4,24 @@ The current file is `src/data/value-lab/current.json`. Keep it versioned and hum
 
 ```json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "updatedAt": "2026-07-13",
   "title": "Coding Agent Value Lab",
   "subtitle": "Benchmarks tell you who scored highest. Value Lab tells you what to use.",
+  "weeklyChanges": {
+    "title": "What's Changed Since Last Week?",
+    "baselineDate": "2026-07-06",
+    "currentDate": "2026-07-13",
+    "status": "compared",
+    "items": [{
+      "id": "leader-unchanged-terminal-bench-2-1",
+      "marker": "same",
+      "headline": "Example model remained the leader on terminal-bench 2.1.",
+      "evidence": "official_verified",
+      "sourceRunIds": ["sha256:current", "sha256:baseline"],
+      "sources": [{ "label": "Example model benchmark", "url": "https://example.com" }]
+    }]
+  },
   "recommendation": {
     "eyebrow": "Current default",
     "title": "Use the balanced configuration by default.",
@@ -70,9 +84,13 @@ The current file is `src/data/value-lab/current.json`. Keep it versioned and hum
 }
 ```
 
-Required top-level fields: `schemaVersion`, `updatedAt`, `title`, `subtitle`, `recommendation`, `insights`, `dashboardCards`, `configurations`, `charts`, `methodology`.
+Required top-level fields: `schemaVersion`, `updatedAt`, `title`, `subtitle`, `weeklyChanges`, `recommendation`, `insights`, `dashboardCards`, `configurations`, `charts`, `methodology`.
 
-`schemaVersion` is `2` for the dashboard contract. `dashboardCards` contains seven cards: four in the `summary` group and three in the `supporting` group. Every card requires `id`, `label`, `value`, `detail`, `accent`, `evidence`, `sourceRunIds`, and `group`. `group` must be `summary` or `supporting`; every ID in `sourceRunIds` must resolve to a normalized configuration `runId`. A card with unavailable evidence remains present and uses an explicit value such as `Unavailable`, an empty `sourceRunIds` array, and a detail explaining what evidence is missing.
+`schemaVersion` is `3` for the weekly-change dashboard contract. `weeklyChanges` is always present and contains at most four deterministic findings. `status` is `baseline` or `compared`; baseline output requires `baselineDate: null` and an empty `items` array. Compared output requires an earlier ISO `baselineDate`, may use an empty array when no material tracked changes exist, and never compares different benchmark versions.
+
+Every weekly item requires `id`, `marker`, `headline`, `evidence`, `sourceRunIds`, and `sources`. `marker` is `up`, `down`, `same`, or `star`. Run IDs must resolve to the current or supplied prior publication. `sources` must be a non-empty, deduplicated list of matching HTTPS benchmark and pricing links embedded by the pipeline so the standalone current publication retains its comparison provenance. Task-cost evidence must be described as measured task-cost movement, not as a provider-wide API price change.
+
+`dashboardCards` contains seven cards: four in the `summary` group and three in the `supporting` group. Every card requires `id`, `label`, `value`, `detail`, `accent`, `evidence`, `sourceRunIds`, and `group`. `group` must be `summary` or `supporting`; every ID in `sourceRunIds` must resolve to a normalized configuration `runId`. A card with unavailable evidence remains present and uses an explicit value such as `Unavailable`, an empty `sourceRunIds` array, and a detail explaining what evidence is missing.
 
 Optional top-level fields: `positioning`, `status`, `alternatives`, `controls`, and `history`. `recommendation.configurationId` may be `null` while the pipeline has no publishable recommendation.
 

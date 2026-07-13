@@ -136,9 +136,11 @@ The deterministic script computes supported metrics only when inputs exist:
 - performance-cost Pareto frontier within exact benchmark versions;
 - practical-equivalence value recommendation;
 - near-equivalent lower-cost insights;
-- historical score, price, and recommendation changes.
+- historical frontier, benchmark-leader, measured task-cost, and recommendation changes.
 
 Insight prose must be derivable from `facts`. `sourceRunIds` must resolve to normalized benchmark runs.
+
+The required `weeklyChanges` block compares the current publication with the prior dated publication. It emits at most four deterministic, ranked items and preserves both current/prior run IDs plus resolved HTTPS source links. A missing or same-day prior publication produces `baseline`; a valid comparison with no material candidates produces `compared` with an empty item list. Never fill the section with unsupported prose or cross-version comparisons.
 
 ## 6. Publication gate
 
@@ -159,9 +161,10 @@ Exit code `2` means “valid output generated, review required.” It is not a p
 
 After the gate passes or receives explicit human approval, the generated publication checklist must include:
 
-1. `dashboardCards`, including all seven cards, their `summary`/`supporting` groups, evidence labels, and `sourceRunIds`.
-2. Every chart dataset: ranked performance (`ranked_bar`), harness comparison (`dumbbell`), research coverage (`coverage`), and `scatter` when cost-ready inputs exist.
-3. The recommendation, configuration rows, insights, history, and Markdown summary/export.
+1. `weeklyChanges`, including the comparison dates/status, no more than four ranked items, evidence labels, current/prior `sourceRunIds`, and resolved HTTPS sources.
+2. `dashboardCards`, including all seven cards, their `summary`/`supporting` groups, evidence labels, and `sourceRunIds`.
+3. Every chart dataset: ranked performance (`ranked_bar`), harness comparison (`dumbbell`), research coverage (`coverage`), and `scatter` when cost-ready inputs exist.
+4. The recommendation, configuration rows, insights, history, and Markdown summary/export.
 
 For every derived visual claim—each card value/detail and each chart title, point, endpoint, delta, or coverage count—include source and normalized run references. An empty comparison dataset and zero/unavailable cost or value states are valid outputs and must be included in the handoff rather than omitted.
 
@@ -170,6 +173,6 @@ Then:
 1. Inspect `current.json` against `data-contract.md`.
 2. Confirm all public values originate from normalized records.
 3. Confirm source links, evidence labels, benchmark versions, and uncertainty are visible.
-4. Verify Copy as Markdown includes recommendation, dashboard cards, configuration rows, all chart summaries, history, and citations.
-5. Check the cards and graphs at desktop and mobile widths, including unavailable, empty, and zero states.
+4. Verify Copy as Markdown includes the exact weekly findings before the recommendation, plus dashboard cards, configuration rows, all chart summaries, history, and citations.
+5. Check weekly populated, no-material-change, and baseline states plus cards and graphs at desktop and mobile widths, including unavailable, empty, and zero states.
 6. Change the page only if the JSON introduces a new supported concept.
