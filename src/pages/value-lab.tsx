@@ -4,6 +4,15 @@ import Layout from "@lekoarts/gatsby-theme-minimal-blog/src/components/layout"
 import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
 import valueLab from "../data/value-lab/current.json"
 import {
+  ChartView,
+  DashboardCardGrid,
+  isCoverageChart,
+  isDumbbellChart,
+  isRankedBarChart,
+  type DashboardCard,
+  type ValueLabChart,
+} from "../components/value-lab/ValueLabVisuals"
+import {
   Divider,
   Panel,
   TagList,
@@ -47,20 +56,8 @@ const configurations = valueLab.configurations as Array<{
   sourceUrl: string
 }>
 const history = valueLab.history as Array<{ date: string; label: string }>
-const charts = valueLab.charts as unknown as Array<{
-  id: string
-  title: string
-  type: string
-  points: Array<{
-    configurationId: string
-    label?: string
-    value?: number
-    low?: number
-    high?: number
-    x?: number
-    y?: number
-  }>
-}>
+const dashboardCards = ((valueLab as unknown) as { dashboardCards?: DashboardCard[] }).dashboardCards ?? []
+const charts = valueLab.charts as unknown as ValueLabChart[]
 
 const formatMarkdown = () => {
   const lines = [
@@ -109,8 +106,36 @@ const formatMarkdown = () => {
     )
   }
 
-  if (valueLab.charts.length > 0) {
-    lines.push("", "## Charts", "", ...valueLab.charts.map(chart => `- ${chart.title}: ${chart.points.length} data points (${chart.type})`))
+  if (dashboardCards.length > 0) {
+    lines.push(
+      "",
+      "## Dashboard",
+      "",
+      "| Card | Value | Detail | Evidence |",
+      "| --- | --- | --- | --- |",
+      ...dashboardCards.map(card => `| ${card.label} | ${card.value} | ${card.detail} | ${evidenceLabels[card.evidence] ?? card.evidence} |`)
+    )
+  }
+
+  if (charts.length > 0) {
+    lines.push("", "## Charts")
+    charts.forEach(chart => {
+      lines.push("", `### ${chart.title}`, "")
+      if (isRankedBarChart(chart)) {
+        lines.push("| Configuration | Score | Interval |", "| --- | --- | --- |", ...chart.points.map(point => {
+          const interval = point.low !== undefined && point.high !== undefined ? `${(point.low * 100).toFixed(1)}–${(point.high * 100).toFixed(1)}%` : "Not published"
+          return `| ${point.label} | ${(point.value * 100).toFixed(1)}% | ${interval} |`
+        }))
+      } else if (isDumbbellChart(chart)) {
+        lines.push("| Configuration | Harness values | Observed difference |", "| --- | --- | --- |", ...chart.points.map(point =>
+          `| ${point.label} | ${point.left.label}: ${(point.left.value * 100).toFixed(1)}%; ${point.right.label}: ${(point.right.value * 100).toFixed(1)}% | ${(point.delta * 100).toFixed(1)} pts |`
+        ))
+      } else if (isCoverageChart(chart)) {
+        lines.push("| Stage | Count |", "| --- | --- |", ...chart.points.map(point => `| ${point.label} | ${point.value} |`))
+      } else {
+        lines.push(`- ${Array.isArray(chart.points) ? chart.points.length : 0} data points (${chart.type})`)
+      }
+    })
   }
 
   if (history.length > 0) {
@@ -172,58 +197,6 @@ const CopyMarkdownButton = () => {
   )
 }
 
-const ScatterPlaceholder = ({ message }: { message?: string }) => (
-  <div
-    style={{
-      alignItems: "center",
-      background: "rgba(242, 240, 236, 0.75)",
-      border: `1px dashed ${labPalette.border}`,
-      borderRadius: "10px",
-      display: "flex",
-      minHeight: "250px",
-      padding: "1.5rem",
-    }}
-  >
-    <div>
-      <span style={styles.label}>Awaiting data</span>
-      <p style={{ color: labPalette.body, lineHeight: 1.6, margin: 0, maxWidth: "34rem" }}>
-        {message ?? <>Add verified configuration rows to <code>src/data/value-lab/current.json</code>. The performance–cost frontier will appear here automatically on the next build.</>}
-      </p>
-    </div>
-  </div>
-)
-
-const ScoreBarChart = ({ chart }: { chart: (typeof charts)[number] }) => (
-  <div style={{ display: "grid", gap: "0.8rem" }}>
-    {chart.points.map(point => (
-      <div key={point.configurationId}>
-        <div style={{ alignItems: "baseline", display: "flex", gap: "1rem", justifyContent: "space-between" }}>
-          <span style={{ color: labPalette.heading, fontSize: "0.9rem" }}>{point.label}</span>
-          <span style={{ color: labPalette.cyan, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.82rem", whiteSpace: "nowrap" }}>
-            {((point.value ?? 0) * 100).toFixed(1)}%
-          </span>
-        </div>
-        <div style={{ background: labPalette.panelSoft, borderRadius: "999px", height: "8px", marginTop: "0.35rem", overflow: "hidden" }}>
-          <div style={{ background: labPalette.cyan, borderRadius: "999px", height: "100%", width: `${(point.value ?? 0) * 100}%` }} />
-        </div>
-        {point.low !== undefined && point.high !== undefined ? (
-          <small style={{ color: labPalette.slate, fontFamily: "'JetBrains Mono', monospace" }}>
-            interval {(point.low * 100).toFixed(1)}–{(point.high * 100).toFixed(1)}%
-          </small>
-        ) : null}
-      </div>
-    ))}
-  </div>
-)
-
-const ChartView = () => {
-  const chart = charts[0]
-  if (!chart) return <ScatterPlaceholder message="No chart data was generated for this snapshot." />
-  if (chart.type === "bar") return <ScoreBarChart chart={chart} />
-  if (chart.type === "scatter" && chart.points.length === 0) return <ScatterPlaceholder />
-  return <ScatterPlaceholder message={`Unsupported chart type “${chart.type}”. Add a renderer before publishing this data.`} />
-}
-
 const ValueLabPage = (_props: PageProps) => (
   <Layout>
     <WorldModelPageShell>
@@ -246,6 +219,12 @@ const ValueLabPage = (_props: PageProps) => (
           </div>
         }
       />
+
+      {dashboardCards.filter(card => card.group === "summary").length > 0 ? (
+        <WorldModelSection eyebrow="Dashboard" title="Measured research at a glance.">
+          <DashboardCardGrid cards={dashboardCards.filter(card => card.group === "summary")} />
+        </WorldModelSection>
+      ) : null}
 
       <Divider />
 
@@ -290,9 +269,22 @@ const ValueLabPage = (_props: PageProps) => (
         </div>
       </WorldModelSection>
 
-      <WorldModelSection eyebrow="Measured comparison" title={charts[0]?.title ?? "Measured performance"} description="Configurations remain tied to the exact model, harness, benchmark version, evaluation date, and evidence source.">
-        <ChartView />
-      </WorldModelSection>
+      {charts.map(chart => (
+        <WorldModelSection
+          key={chart.id}
+          eyebrow="Measured comparison"
+          title={chart.title}
+          description={chart.description ?? chart.yLabel}
+        >
+          <ChartView chart={chart} />
+        </WorldModelSection>
+      ))}
+
+      {dashboardCards.filter(card => card.group === "supporting").length > 0 ? (
+        <WorldModelSection eyebrow="Supporting evidence" title="Context for the measured results.">
+          <DashboardCardGrid cards={dashboardCards.filter(card => card.group === "supporting")} />
+        </WorldModelSection>
+      ) : null}
 
       <WorldModelSection eyebrow="Methodology" title="Useful ranges over false precision." description={valueLab.methodology.summary}>
         <TwoColumnGrid>
