@@ -224,6 +224,102 @@ export const systems: SystemArtifact[] = [
         "This artifact is more map than codebase; start with the category tables, then compare MCP support, memory types, and backend tradeoffs across the listed tools.",
     },
   },
+  {
+    name: "mcp-scholarly",
+    slug: "/mcp-scholarly/",
+    tags: ["MCP", "research retrieval", "academic search", "tool interface"],
+    researchQuestion: "Can AI agents retrieve verified academic knowledge without hallucinating citations?",
+    systemBuilt:
+      "An MCP server that lets agents search and retrieve accurate academic articles from scholarly databases, giving agents a direct path to peer-reviewed literature.",
+    whyItMatters:
+      "Research-grounded agents need a reliable retrieval path to scholarly knowledge. mcp-scholarly closes the gap between LLM training data and verifiable, up-to-date academic sources.",
+    status: "Shipping / active",
+    links: [
+      { label: "GitHub", href: "https://github.com/adityak74/mcp-scholarly" },
+    ],
+    explanationModes: {
+      "Research Idea":
+        "mcp-scholarly explores whether agents can cite and reason over real academic literature rather than relying on potentially stale or hallucinated training knowledge.",
+      "System Design":
+        "It exposes a standard MCP interface that any compatible agent can call to search scholarly indexes, returning structured article metadata that agents can cite and reason over.",
+      "Business Value":
+        "It gives research-adjacent AI workflows a credibility layer, making agent outputs grounded in verifiable sources rather than model priors.",
+      "Code Walkthrough":
+        "Start with the MCP server entry point, inspect the search handler and result schema, then review how article metadata is normalized for agent consumption.",
+    },
+  },
+  {
+    name: "locobench",
+    slug: "/locobench/",
+    tags: ["evals", "local inference", "coding models", "benchmarking"],
+    researchQuestion: "How do local coding models actually compare on real tasks when evaluated systematically instead of guessed at?",
+    systemBuilt:
+      "LoCoBench — a local coding model benchmark that runs a reproducible evaluation suite against locally-hosted models to expose performance differences that spec sheets hide.",
+    whyItMatters:
+      "Local coding agents need trusted eval data. LoCoBench makes the comparison ground truth available for builders selecting models for local agent fleets instead of relying on benchmark marketing.",
+    status: "Early experiment",
+    links: [
+      { label: "GitHub", href: "https://github.com/adityak74/locobench" },
+    ],
+    explanationModes: {
+      "Research Idea":
+        "LoCoBench asks whether a lightweight, reproducible benchmark can expose the real performance gap between local coding models that all claim to be competitive.",
+      "System Design":
+        "It runs a fixed task suite against locally-served models via a shell harness, collecting pass/fail rates, latency, and output quality to generate a comparable scorecard.",
+      "Business Value":
+        "Teams choosing between local models for coding agents can run LoCoBench on their own hardware and get a decision-ready comparison rather than guessing from leaderboard numbers.",
+      "Code Walkthrough":
+        "Start with the task definitions, then inspect the runner script, model invocation layer, and output normalizer that feeds the final comparison report.",
+    },
+  },
+  {
+    name: "learn-anything-24h",
+    slug: "/learn-anything-24h/",
+    tags: ["agent skills", "active learning", "claude-code", "LLM", "education"],
+    researchQuestion: "Can a single structured skill turn any complex topic into a rigorous 24-hour active-learning sprint using AI agents?",
+    systemBuilt:
+      "A Claude Code / Codex skill that decomposes any topic into spaced-repetition tasks, active recall prompts, and a timed learning sequence with LLM-guided evaluation.",
+    whyItMatters:
+      "AI agents are increasingly used for self-directed learning, but few systems encode pedagogical rigor into the agent workflow itself. This skill closes the gap by making the learning loop agent-executable.",
+    status: "Active experiment",
+    links: [
+      { label: "GitHub", href: "https://github.com/adityak74/learn-anything-24h" },
+    ],
+    explanationModes: {
+      "Research Idea":
+        "learn-anything-24h explores whether deliberate practice techniques — spaced repetition, active recall, interleaving — can be codified as an agent skill instead of a static study guide.",
+      "System Design":
+        "The skill accepts a topic, generates a structured 24-hour task sequence, and uses an LLM evaluation loop to grade recall and adjust difficulty across sessions.",
+      "Business Value":
+        "It gives developers and researchers a fast ramp to any new technical domain, with the structure of a designed curriculum rather than an open-ended chat session.",
+      "Code Walkthrough":
+        "Start with the skill entry point and topic decomposer, then inspect the task generator, recall evaluation loop, and session state tracker that carries progress across checkpoints.",
+    },
+  },
+  {
+    name: "quecto",
+    slug: "/quecto/",
+    tags: ["Rust", "agent runtime", "local inference", "coding agent", "zero async"],
+    researchQuestion: "How small and fast can a fully capable AI agent harness be when built in Rust with zero async overhead?",
+    systemBuilt:
+      "A minimal Rust AI interface framework: a ~1.2 MB synchronous core library for OpenAI-compatible endpoints, plus quecto-agent — a full coding agent with multi-step tool use, SQLite-backed session persistence, and an approval-gated sandbox.",
+    whyItMatters:
+      "Most agent runtimes carry heavyweight async stacks and large dependency trees. quecto proves that a self-contained, statically-linked binary with only two direct dependencies can still deliver a complete coding agent with resume, undo, and diff.",
+    status: "Shipped / active",
+    links: [
+      { label: "GitHub", href: "https://github.com/adityak74/quecto" },
+    ],
+    explanationModes: {
+      "Research Idea":
+        "quecto asks whether agent runtime complexity is accidental or essential — and whether stripping async, eliminating hidden dependencies, and going synchronous-first changes what's possible at the infrastructure edge.",
+      "System Design":
+        "The core is a four-function library (buffered + streaming modes) over ureq + serde_json. quecto-agent layers tool use, a hard-denylist sandbox, trust-on-first-use manifests, and SQLite session state on top.",
+      "Business Value":
+        "A ~1 MB statically-linked agent binary that works with Ollama, LM Studio, or OpenAI and needs no runtime installation is a practical primitive for embedding agents in constrained or air-gapped environments.",
+      "Code Walkthrough":
+        "Start with the core four-function API and streaming path, then move to quecto-agent's tool dispatch loop, sandbox denylist, manifest flavor loading, and SQLite session resume/undo flow.",
+    },
+  },
 ]
 
 export const fieldNotes: FieldNote[] = [
