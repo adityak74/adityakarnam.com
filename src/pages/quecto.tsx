@@ -219,6 +219,13 @@ const TerminalPanel = ({ children }: { children: React.ReactNode }) => (
         overflowX: "auto",
         padding: "1.25rem 1.5rem",
         whiteSpace: "pre",
+        // Overrides the theme's global `html pre{}` reset (background,
+        // border, border-radius, box-shadow) which otherwise paints a
+        // light "muted" background over this dark terminal block.
+        background: "transparent",
+        border: "none",
+        borderRadius: 0,
+        boxShadow: "none",
       }}
     >
       {children}
