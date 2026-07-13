@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-07-13",
+  "title": "Coding Agent Value Lab",
+  "subtitle": "Independent analysis of coding models, harnesses, reasoning levels, costs, and subscription efficiency.",
+  "positioning": "Benchmarks tell you who scored highest. This lab tells you what to use.",
+  "status": "Research pipeline ready · first verified dataset pending",
+  "recommendation": {
+    "eyebrow": "Current default",
+    "title": "The recommendation appears when the evidence is ready.",
+    "summary": "The renderer is live, but it will not invent a winner. Add verified benchmark rows and the page will calculate the practical default from the research JSON.",
+    "configurationId": null,
+    "metrics": [
+      { "label": "Verified configurations", "value": "0" },
+      { "label": "Benchmark families", "value": "0" },
+      { "label": "Evidence policy", "value": "Active" }
+    ]
+  },
+  "alternatives": [],
+  "controls": {
+    "workloads": [
+      { "id": "small", "label": "Small" },
+      { "id": "medium", "label": "Medium" },
+      { "id": "large", "label": "Large" },
+      { "id": "xl", "label": "XL" }
+    ],
+    "accessModes": [
+      { "id": "both", "label": "Subscription + API" },
+      { "id": "subscription", "label": "Subscription" },
+      { "id": "api", "label": "API" }
+    ],
+    "goals": [
+      { "id": "value", "label": "Best value" },
+      { "id": "quality", "label": "Best quality" },
+      { "id": "throughput", "label": "Most work per window" },
+      { "id": "speed", "label": "Fastest" }
+    ]
+  },
+  "insights": [
+    {
+      "id": "evidence-first",
+      "label": "Evidence policy",
+      "title": "No benchmark row enters the recommendation without its context.",
+      "body": "Model, harness, reasoning effort, benchmark version, run configuration, evidence class, and source are separate fields in the data contract.",
+      "accent": "cyan",
+      "evidence": "methodology"
+    },
+    {
+      "id": "static-research",
+      "label": "Static architecture",
+      "title": "The page is a renderer, not a second research database.",
+      "body": "A scheduled pipeline can update current.json and snapshots. Gatsby rebuilds the same interface from the new evidence.",
+      "accent": "green",
+      "evidence": "methodology"
+    },
+    {
+      "id": "practical-value",
+      "label": "Decision lens",
+      "title": "The useful answer is a configuration, not a model name.",
+      "body": "Value depends on capability, cost, quota consumption, speed, reliability, task fit, harness, and evidence quality.",
+      "accent": "slate",
+      "evidence": "methodology"
+    }
+  ],
+  "configurations": [],
+  "charts": [
+    {
+      "id": "performance-cost",
+      "title": "Performance versus API cost",
+      "type": "scatter",
+      "xLabel": "Median task cost (USD)",
+      "yLabel": "Benchmark pass rate",
+      "points": []
+    }
+  ],
+  "methodology": {
+    "summary": "The Value Lab keeps benchmark versions isolated, labels evidence quality, preserves uncertainty, and distinguishes measured performance from estimated developer value.",
+    "assumptions": [
+      "Subscription-window estimates require first-party or adequately documented quota observations.",
+      "Raw scores from different benchmark versions are not directly comparable.",
+      "A missing value remains missing rather than being silently imputed."
+    ],
+    "sources": []
+  },
+  "history": []
+}
