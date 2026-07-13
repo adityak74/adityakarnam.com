@@ -202,15 +202,18 @@ def _configurations_by_id(publication: dict[str, Any]) -> dict[str, dict[str, An
 
 
 def _weekly_sources(*configurations: dict[str, Any] | None) -> list[dict[str, str]]:
-    links: dict[str, str] = {}
+    links: dict[str, set[str]] = defaultdict(set)
     for configuration in configurations:
         if not configuration:
             continue
         if isinstance(configuration.get("sourceUrl"), str):
-            links[configuration["sourceUrl"]] = f"{configuration.get('model', 'Configuration')} benchmark"
+            links[configuration["sourceUrl"]].add(f"{configuration.get('model', 'Configuration')} benchmark")
         if isinstance(configuration.get("priceSourceUrl"), str):
-            links[configuration["priceSourceUrl"]] = f"{configuration.get('model', 'Configuration')} pricing"
-    return [{"label": links[url], "url": url} for url in sorted(links)]
+            links[configuration["priceSourceUrl"]].add(f"{configuration.get('model', 'Configuration')} pricing")
+    return [
+        {"label": " + ".join(sorted(links[url])), "url": url}
+        for url in sorted(links)
+    ]
 
 
 def _weekly_item(
@@ -254,6 +257,14 @@ def _frontier_map(publication: dict[str, Any]) -> dict[str, set[str]]:
     }
 
 
+def _cohort_configurations(publication: dict[str, Any], cohort: str) -> list[dict[str, Any]]:
+    return [
+        configuration for configuration in publication.get("configurations", [])
+        if isinstance(configuration, dict)
+        and f"{configuration.get('benchmark')}@{configuration.get('benchmarkVersion')}" == cohort
+    ]
+
+
 def build_weekly_changes(
     current: dict[str, Any], previous: dict[str, Any] | None,
 ) -> dict[str, Any]:
@@ -275,6 +286,10 @@ def build_weekly_changes(
     current_frontiers = _frontier_map(current)
     previous_frontiers = _frontier_map(previous)
     for cohort in sorted(set(current_frontiers) & set(previous_frontiers)):
+        cohort_evidence = [
+            *_cohort_configurations(current, cohort),
+            *_cohort_configurations(previous, cohort),
+        ]
         for configuration_id in sorted(current_frontiers[cohort] - previous_frontiers[cohort]):
             configuration = current_by_id.get(configuration_id)
             if configuration:
@@ -282,7 +297,7 @@ def build_weekly_changes(
                     item_id=f"frontier-entry-{slug(cohort)}-{slug(configuration_id)}",
                     marker="up",
                     headline=f"{configuration['model']} entered the {configuration['benchmark']} {configuration['benchmarkVersion']} Pareto frontier.",
-                    evidence=configuration["evidence"], configurations=[configuration], priority=10,
+                    evidence=configuration["evidence"], configurations=cohort_evidence, priority=10,
                 ))
         for configuration_id in sorted(previous_frontiers[cohort] - current_frontiers[cohort]):
             configuration = previous_by_id.get(configuration_id)
@@ -291,7 +306,7 @@ def build_weekly_changes(
                     item_id=f"frontier-exit-{slug(cohort)}-{slug(configuration_id)}",
                     marker="down",
                     headline=f"{configuration['model']} left the {configuration['benchmark']} {configuration['benchmarkVersion']} Pareto frontier.",
-                    evidence=configuration["evidence"], configurations=[configuration], priority=10,
+                    evidence=configuration["evidence"], configurations=cohort_evidence, priority=10,
                 ))
 
     current_leaders = _leader_map(current)
@@ -747,6 +762,13 @@ def validate_publication_visuals(
                 expected_sources = _weekly_sources(*referenced)
                 if sources_list != expected_sources:
                     errors.append(f"{prefix} sources must match referenced run provenance")
+        try:
+            expected_weekly = build_weekly_changes(publication, previous)
+        except (KeyError, TypeError, ValueError):
+            errors.append("weeklyChanges could not be recomputed from publication inputs")
+        else:
+            if weekly != expected_weekly:
+                errors.append("weeklyChanges must match deterministic comparison")
 
     cards = publication.get("dashboardCards", [])
     if not isinstance(cards, list) or len(cards) != 7:

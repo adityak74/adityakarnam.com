@@ -165,6 +165,91 @@ class ValueLabPipelineTests(unittest.TestCase):
 
         self.assertTrue(any("weeklyChanges" in error and "HTTPS" in error for error in errors))
 
+    def test_weekly_change_validation_rejects_noncanonical_claim(self):
+        prior_bundle = sample_bundle()
+        prior_bundle["run"].update({
+            "runId": "2026-07-06T120000Z",
+            "retrievedAt": "2026-07-06T12:00:00Z",
+        })
+        previous = build_publication(normalize_bundle(prior_bundle))
+        publication = build_publication(normalize_bundle(sample_bundle()), previous)
+        publication["weeklyChanges"]["items"][0]["headline"] = "Fabricated movement."
+
+        errors = validate_publication_visuals(publication, previous=previous)
+
+        self.assertTrue(any("weeklyChanges must match deterministic comparison" in error for error in errors))
+
+    def test_weekly_changes_detects_leader_and_frontier_changes_with_cohort_provenance(self):
+        prior_bundle = sample_bundle()
+        prior_bundle["run"].update({
+            "runId": "2026-07-06T120000Z",
+            "retrievedAt": "2026-07-06T12:00:00Z",
+        })
+        prior_bundle["benchmarkRuns"][0]["score"] = 0.62
+        previous = build_publication(normalize_bundle(prior_bundle))
+
+        publication = build_publication(normalize_bundle(sample_bundle()), previous)
+        items = {item["id"]: item for item in publication["weeklyChanges"]["items"]}
+        frontier = next(item for item in items.values() if item["id"].startswith("frontier-entry"))
+        leader = next(item for item in items.values() if item["id"].startswith("leader-change"))
+        expected_cohort_runs = {
+            configuration["runId"]
+            for source in (previous, publication)
+            for configuration in source["configurations"]
+            if configuration["benchmark"] == "terminal-bench"
+            and configuration["benchmarkVersion"] == "2.1"
+        }
+
+        self.assertEqual(frontier["marker"], "up")
+        self.assertEqual(set(frontier["sourceRunIds"]), expected_cohort_runs)
+        self.assertEqual(leader["marker"], "up")
+        self.assertIn("became the leader", leader["headline"])
+
+    def test_weekly_changes_detects_recommendation_and_task_cost_changes(self):
+        prior_bundle = sample_bundle()
+        prior_bundle["run"].update({
+            "runId": "2026-07-06T120000Z",
+            "retrievedAt": "2026-07-06T12:00:00Z",
+        })
+        previous = build_publication(normalize_bundle(prior_bundle))
+        current_bundle = sample_bundle()
+        current_bundle["prices"][1].update({
+            "inputPerMillionUsd": 0.2,
+            "cachedInputPerMillionUsd": 0.05,
+            "outputPerMillionUsd": 0.8,
+        })
+
+        publication = build_publication(normalize_bundle(current_bundle), previous)
+        items = publication["weeklyChanges"]["items"]
+        recommendation = next(item for item in items if item["id"].startswith("value-recommendation"))
+        cost = next(item for item in items if item["id"].startswith("task-cost-down"))
+
+        self.assertEqual(recommendation["marker"], "star")
+        self.assertIn("highest-value measured configuration", recommendation["headline"])
+        self.assertEqual(cost["marker"], "down")
+        self.assertIn("measured task cost fell", cost["headline"])
+
+    def test_weekly_changes_can_report_no_material_change_for_disjoint_measured_cohorts(self):
+        prior_bundle = sample_bundle()
+        prior_bundle["run"].update({
+            "runId": "2026-07-06T120000Z",
+            "retrievedAt": "2026-07-06T12:00:00Z",
+        })
+        current_bundle = sample_bundle()
+        for bundle in (prior_bundle, current_bundle):
+            bundle["prices"] = []
+            for run in bundle["benchmarkRuns"]:
+                for field in ("inputTokens", "cachedInputTokens", "outputTokens"):
+                    run.pop(field)
+        for run in current_bundle["benchmarkRuns"]:
+            run["benchmarkVersion"] = "2.2"
+        previous = build_publication(normalize_bundle(prior_bundle))
+
+        publication = build_publication(normalize_bundle(current_bundle), previous)
+
+        self.assertEqual(publication["weeklyChanges"]["status"], "compared")
+        self.assertEqual(publication["weeklyChanges"]["items"], [])
+
     def test_mixed_cost_readiness_preserves_exact_benchmark_and_pricing_lineage(self):
         normalized = normalize_bundle(mixed_cost_readiness_bundle())
         publication = build_publication(normalized)
