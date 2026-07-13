@@ -8,7 +8,10 @@ import {
   DashboardCardGrid,
   isCoverageChart,
   isDumbbellChart,
+  isLegacyBarChart,
+  isLegacyScatterChart,
   isRankedBarChart,
+  isScatterChart,
   type DashboardCard,
   type ValueLabChart,
 } from "../components/value-lab/ValueLabVisuals"
@@ -111,9 +114,9 @@ const formatMarkdown = () => {
       "",
       "## Dashboard",
       "",
-      "| Card | Value | Detail | Evidence |",
-      "| --- | --- | --- | --- |",
-      ...dashboardCards.map(card => `| ${card.label} | ${card.value} | ${card.detail} | ${evidenceLabels[card.evidence] ?? card.evidence} |`)
+      "| Card | Value | Detail | Evidence | Source run IDs |",
+      "| --- | --- | --- | --- | --- |",
+      ...dashboardCards.map(card => `| ${card.label} | ${card.value} | ${card.detail} | ${evidenceLabels[card.evidence] ?? card.evidence} | ${card.sourceRunIds.join(", ") || "None"} |`)
     )
   }
 
@@ -122,16 +125,27 @@ const formatMarkdown = () => {
     charts.forEach(chart => {
       lines.push("", `### ${chart.title}`, "")
       if (isRankedBarChart(chart)) {
+        lines.push("| Configuration | Score | Interval | Source run IDs |", "| --- | --- | --- | --- |", ...chart.points.map(point => {
+          const interval = point.low !== undefined && point.high !== undefined ? `${(point.low * 100).toFixed(1)}–${(point.high * 100).toFixed(1)}%` : "Not published"
+          return `| ${point.label} | ${(point.value * 100).toFixed(1)}% | ${interval} | ${point.sourceRunIds.join(", ")} |`
+        }))
+      } else if (isLegacyBarChart(chart)) {
         lines.push("| Configuration | Score | Interval |", "| --- | --- | --- |", ...chart.points.map(point => {
           const interval = point.low !== undefined && point.high !== undefined ? `${(point.low * 100).toFixed(1)}–${(point.high * 100).toFixed(1)}%` : "Not published"
           return `| ${point.label} | ${(point.value * 100).toFixed(1)}% | ${interval} |`
         }))
       } else if (isDumbbellChart(chart)) {
-        lines.push("| Configuration | Harness values | Observed difference |", "| --- | --- | --- |", ...chart.points.map(point =>
-          `| ${point.label} | ${point.left.label}: ${(point.left.value * 100).toFixed(1)}%; ${point.right.label}: ${(point.right.value * 100).toFixed(1)}% | ${(point.delta * 100).toFixed(1)} pts |`
+        lines.push("| Configuration | Harness values | Observed difference | Source run IDs |", "| --- | --- | --- | --- |", ...chart.points.map(point =>
+          `| ${point.label} | ${point.left.label}: ${(point.left.value * 100).toFixed(1)}%; ${point.right.label}: ${(point.right.value * 100).toFixed(1)}% | ${(point.delta * 100).toFixed(1)} pts | ${point.sourceRunIds.join(", ")} |`
         ))
       } else if (isCoverageChart(chart)) {
-        lines.push("| Stage | Count |", "| --- | --- |", ...chart.points.map(point => `| ${point.label} | ${point.value} |`))
+        lines.push("| Stage | Count | Source run IDs |", "| --- | --- | --- |", ...chart.points.map(point => `| ${point.label} | ${point.value} | ${point.sourceRunIds.join(", ") || "None"} |`))
+      } else if (isScatterChart(chart)) {
+        lines.push("| Configuration | Cost per task | Score | Source run IDs |", "| --- | --- | --- | --- |", ...chart.points.map(point =>
+          `| ${point.configurationId} | ${point.x ?? "Unavailable"} | ${point.y === undefined ? "Unavailable" : `${(point.y * 100).toFixed(1)}%`} | ${point.sourceRunIds.join(", ")} |`
+        ))
+      } else if (isLegacyScatterChart(chart)) {
+        lines.push(`- ${chart.points.length} legacy scatter data points (${chart.type})`)
       } else {
         lines.push(`- ${Array.isArray(chart.points) ? chart.points.length : 0} data points (${chart.type})`)
       }

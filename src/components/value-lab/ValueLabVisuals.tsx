@@ -20,16 +20,24 @@ type ChartBase = {
   yLabel?: string
 }
 
+type RankingPoint = {
+  configurationId: string
+  label: string
+  value: number
+  low?: number
+  high?: number
+}
+
 export type RankedBarChartData = ChartBase & {
-  type: "ranked_bar" | "bar"
+  type: "ranked_bar"
   points: Array<{
-    configurationId: string
-    label: string
-    value: number
-    low?: number
-    high?: number
-    sourceRunIds?: string[]
-  }>
+    sourceRunIds: string[]
+  } & RankingPoint>
+}
+
+export type LegacyBarChartData = ChartBase & {
+  type: "bar"
+  points: RankingPoint[]
 }
 
 export type DumbbellChartData = ChartBase & {
@@ -54,6 +62,16 @@ export type CoverageChartData = ChartBase & {
   }>
 }
 
+export type ScatterChartData = ChartBase & {
+  type: "scatter"
+  points: Array<{
+    configurationId: string
+    x?: number | null
+    y?: number
+    sourceRunIds: string[]
+  }>
+}
+
 export type LegacyScatterChartData = ChartBase & {
   type: "scatter"
   points: Array<{
@@ -68,16 +86,24 @@ export type UnsupportedChartData = ChartBase & {
   points?: unknown[]
 }
 
-export type ValueLabChart = RankedBarChartData | DumbbellChartData | CoverageChartData | LegacyScatterChartData | UnsupportedChartData
+export type ValueLabChart = RankedBarChartData | LegacyBarChartData | DumbbellChartData | CoverageChartData | ScatterChartData | LegacyScatterChartData | UnsupportedChartData
 
 export const isRankedBarChart = (chart: ValueLabChart): chart is RankedBarChartData =>
-  (chart.type === "ranked_bar" || chart.type === "bar") && Array.isArray(chart.points)
+  chart.type === "ranked_bar" && Array.isArray(chart.points)
+
+export const isLegacyBarChart = (chart: ValueLabChart): chart is LegacyBarChartData =>
+  chart.type === "bar" && Array.isArray(chart.points)
 
 export const isDumbbellChart = (chart: ValueLabChart): chart is DumbbellChartData =>
   chart.type === "dumbbell" && Array.isArray(chart.points)
 
 export const isCoverageChart = (chart: ValueLabChart): chart is CoverageChartData =>
   chart.type === "coverage" && Array.isArray(chart.points)
+
+export const isScatterChart = (chart: ValueLabChart): chart is ScatterChartData =>
+  chart.type === "scatter" && Array.isArray(chart.points) && chart.points.every(point =>
+    typeof point === "object" && point !== null && Array.isArray((point as { sourceRunIds?: unknown }).sourceRunIds)
+  )
 
 export const isLegacyScatterChart = (chart: ValueLabChart): chart is LegacyScatterChartData =>
   chart.type === "scatter" && Array.isArray(chart.points)
@@ -110,6 +136,15 @@ const ChartIntro = ({ chart }: { chart: ChartBase }) => (
   </div>
 )
 
+export const SourceRunDetails = ({ sourceRunIds }: { sourceRunIds: string[] }) => (
+  <details style={{ color: labPalette.slate, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.72rem", marginTop: "0.65rem" }}>
+    <summary style={{ cursor: "pointer" }}>{sourceRunIds.length} source run{sourceRunIds.length === 1 ? "" : "s"}</summary>
+    <code style={{ display: "block", lineHeight: 1.5, marginTop: "0.4rem", overflowWrap: "anywhere", whiteSpace: "pre-wrap" }}>
+      {sourceRunIds.length > 0 ? sourceRunIds.join("\n") : "No source run IDs supplied."}
+    </code>
+  </details>
+)
+
 export const DashboardCardGrid = ({ cards }: { cards: DashboardCard[] }) => {
   if (cards.length === 0) return null
 
@@ -122,6 +157,7 @@ export const DashboardCardGrid = ({ cards }: { cards: DashboardCard[] }) => {
             <div style={{ color: labPalette.heading, fontFamily: "'JetBrains Mono', monospace", fontSize: "1.35rem", lineHeight: 1.25 }}>{card.value}</div>
             <p style={{ color: labPalette.body, lineHeight: 1.55, margin: "0.7rem 0" }}>{card.detail}</p>
             <small style={{ color: labPalette.slate, fontFamily: "'JetBrains Mono', monospace" }}>{evidenceLabels[card.evidence] ?? card.evidence}</small>
+            <SourceRunDetails sourceRunIds={card.sourceRunIds} />
           </Panel>
         </div>
       ))}
@@ -129,7 +165,7 @@ export const DashboardCardGrid = ({ cards }: { cards: DashboardCard[] }) => {
   )
 }
 
-export const RankedBarChart = ({ chart }: { chart: RankedBarChartData }) => (
+export const RankedBarChart = ({ chart }: { chart: RankedBarChartData | LegacyBarChartData }) => (
   <Panel accent="cyan">
     <ChartIntro chart={chart} />
     <div aria-label={`${chart.title} ranking`} style={{ display: "grid", gap: "0.9rem" }}>
@@ -145,6 +181,7 @@ export const RankedBarChart = ({ chart }: { chart: RankedBarChartData }) => (
           {point.low !== undefined && point.high !== undefined ? (
             <small style={{ color: labPalette.slate, fontFamily: "'JetBrains Mono', monospace" }}>Interval {percentage(point.low)}–{percentage(point.high)}</small>
           ) : null}
+          {chart.type === "ranked_bar" ? <SourceRunDetails sourceRunIds={point.sourceRunIds} /> : null}
         </div>
       ))}
     </div>
@@ -180,6 +217,7 @@ export const HarnessDumbbellChart = ({ chart }: { chart: DumbbellChartData }) =>
               <span>{point.right.label} {percentage(point.right.value)}</span>
               <span style={{ color: labPalette.slate }}>Observed difference {points(point.delta)}</span>
             </div>
+            <SourceRunDetails sourceRunIds={point.sourceRunIds} />
           </div>
         )
       })}
@@ -203,6 +241,7 @@ export const CoverageChart = ({ chart }: { chart: CoverageChartData }) => {
             <div aria-hidden="true" style={{ background: labPalette.panelSoft, borderRadius: "999px", height: "8px", marginTop: "0.35rem", overflow: "hidden" }}>
               <div style={{ background: labPalette.slate, borderRadius: "999px", height: "100%", width: `${(point.value / maximum) * 100}%` }} />
             </div>
+            <SourceRunDetails sourceRunIds={point.sourceRunIds} />
           </div>
         ))}
       </div>
@@ -225,10 +264,30 @@ const UnsupportedChart = ({ chart }: { chart: ChartBase & { type: string } }) =>
   </div>
 )
 
+const UnsupportedScatterChart = ({ chart }: { chart: ScatterChartData }) => (
+  <div role="alert">
+    <Panel accent="slate">
+      <span style={styles.label}>Unsupported chart type</span>
+      <p style={{ color: labPalette.body, lineHeight: 1.6, margin: 0 }}>Chart “{chart.title}” uses unsupported type “{chart.type}”. Add a renderer before publishing this data.</p>
+      <div style={{ display: "grid", gap: "0.5rem", marginTop: "0.8rem" }}>
+        {chart.points.map(point => (
+          <div key={point.configurationId}>
+            <span style={{ color: labPalette.body, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.76rem" }}>{point.configurationId}</span>
+            <SourceRunDetails sourceRunIds={point.sourceRunIds} />
+          </div>
+        ))}
+      </div>
+    </Panel>
+  </div>
+)
+
 export const ChartView = ({ chart }: { chart: ValueLabChart }) => {
   if (isRankedBarChart(chart)) return <RankedBarChart chart={chart} />
+  if (isLegacyBarChart(chart)) return <RankedBarChart chart={chart} />
   if (isDumbbellChart(chart)) return <HarnessDumbbellChart chart={chart} />
   if (isCoverageChart(chart)) return <CoverageChart chart={chart} />
+  if (isScatterChart(chart) && chart.points.length === 0) return <EmptyChart message="No performance–cost points were generated for this snapshot." />
+  if (isScatterChart(chart)) return <UnsupportedScatterChart chart={chart} />
   if (isLegacyScatterChart(chart) && chart.points.length === 0) return <EmptyChart message="No performance–cost points were generated for this snapshot." />
   return <UnsupportedChart chart={chart} />
 }
