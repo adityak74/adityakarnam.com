@@ -66,9 +66,12 @@ export type ScatterChartData = ChartBase & {
   type: "scatter"
   points: Array<{
     configurationId: string
-    x?: number | null
-    y?: number
+    x: number
+    y: number
     sourceRunIds: string[]
+    priceSourceId: string
+    priceSourceUrl: string
+    priceEffectiveFrom: string
   }>
 }
 
@@ -264,22 +267,50 @@ const UnsupportedChart = ({ chart }: { chart: ChartBase & { type: string } }) =>
   </div>
 )
 
-const UnsupportedScatterChart = ({ chart }: { chart: ScatterChartData }) => (
-  <div role="alert">
-    <Panel accent="slate">
-      <span style={styles.label}>Unsupported chart type</span>
-      <p style={{ color: labPalette.body, lineHeight: 1.6, margin: 0 }}>Chart “{chart.title}” uses unsupported type “{chart.type}”. Add a renderer before publishing this data.</p>
-      <div style={{ display: "grid", gap: "0.5rem", marginTop: "0.8rem" }}>
+const ScatterChart = ({ chart }: { chart: ScatterChartData }) => {
+  const xValues = chart.points.map(point => point.x)
+  const yValues = chart.points.map(point => point.y)
+  const xMinimum = Math.min(...xValues)
+  const xMaximum = Math.max(...xValues)
+  const yMinimum = Math.min(...yValues)
+  const yMaximum = Math.max(...yValues)
+  const xSpan = xMaximum - xMinimum || 1
+  const ySpan = yMaximum - yMinimum || 1
+  const xPosition = (value: number) => 12 + ((value - xMinimum) / xSpan) * 80
+  const yPosition = (value: number) => 88 - ((value - yMinimum) / ySpan) * 76
+  const description = `${chart.title}. Each point plots generated API cost per evaluated task on the horizontal axis and the published benchmark pass rate on the vertical axis. ${chart.points.map(point => `${point.configurationId}: $${point.x.toFixed(2)} per task, ${percentage(point.y)}, benchmark run ${point.sourceRunIds.join(", ")}, pricing source ${point.priceSourceId} effective ${point.priceEffectiveFrom}.`).join(" ")}`
+
+  return (
+    <Panel accent="green">
+      <ChartIntro chart={chart} />
+      <svg aria-describedby={`${chart.id}-description`} aria-labelledby={`${chart.id}-title`} role="img" viewBox="0 0 100 100" style={{ display: "block", height: "auto", maxWidth: "42rem", width: "100%" }}>
+        <title id={`${chart.id}-title`}>{chart.title}</title>
+        <desc id={`${chart.id}-description`}>{description}</desc>
+        <line stroke={labPalette.border} strokeWidth="1" x1="12" x2="92" y1="88" y2="88" />
+        <line stroke={labPalette.border} strokeWidth="1" x1="12" x2="12" y1="12" y2="88" />
+        <text fill={labPalette.slate} fontSize="3" textAnchor="middle" x="52" y="98">{chart.xLabel}</text>
+        <text fill={labPalette.slate} fontSize="3" textAnchor="middle" transform="rotate(-90 3 50)" x="3" y="50">{chart.yLabel}</text>
         {chart.points.map(point => (
-          <div key={point.configurationId}>
-            <span style={{ color: labPalette.body, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.76rem" }}>{point.configurationId}</span>
+          <circle aria-label={`${point.configurationId}: $${point.x.toFixed(2)} per task and ${percentage(point.y)}`} cx={xPosition(point.x)} cy={yPosition(point.y)} fill={labPalette.cyan} key={point.configurationId} r="3.2" stroke={labPalette.panel} strokeWidth="1.25" />
+        ))}
+      </svg>
+      <div aria-label={`${chart.title} point details`} style={{ display: "grid", gap: "0.8rem", marginTop: "1rem" }}>
+        {chart.points.map(point => (
+          <div key={point.configurationId} style={{ borderTop: `1px solid ${labPalette.border}`, paddingTop: "0.75rem" }}>
+            <div style={{ alignItems: "baseline", display: "flex", flexWrap: "wrap", gap: "0.35rem 1rem", justifyContent: "space-between" }}>
+              <span style={{ color: labPalette.heading, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.78rem" }}>{point.configurationId}</span>
+              <span style={{ color: labPalette.cyan, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.78rem" }}>${point.x.toFixed(2)} · {percentage(point.y)}</span>
+            </div>
+            <small style={{ color: labPalette.slate, display: "block", lineHeight: 1.5, marginTop: "0.3rem" }}>
+              Pricing: <a href={point.priceSourceUrl} rel="noreferrer" target="_blank" style={{ color: labPalette.cyan }}>{point.priceSourceId}</a> · effective {point.priceEffectiveFrom}
+            </small>
             <SourceRunDetails sourceRunIds={point.sourceRunIds} />
           </div>
         ))}
       </div>
     </Panel>
-  </div>
-)
+  )
+}
 
 export const ChartView = ({ chart }: { chart: ValueLabChart }) => {
   if (isRankedBarChart(chart)) return <RankedBarChart chart={chart} />
@@ -287,7 +318,7 @@ export const ChartView = ({ chart }: { chart: ValueLabChart }) => {
   if (isDumbbellChart(chart)) return <HarnessDumbbellChart chart={chart} />
   if (isCoverageChart(chart)) return <CoverageChart chart={chart} />
   if (isScatterChart(chart) && chart.points.length === 0) return <EmptyChart message="No performance–cost points were generated for this snapshot." />
-  if (isScatterChart(chart)) return <UnsupportedScatterChart chart={chart} />
+  if (isScatterChart(chart)) return <ScatterChart chart={chart} />
   if (isLegacyScatterChart(chart) && chart.points.length === 0) return <EmptyChart message="No performance–cost points were generated for this snapshot." />
   return <UnsupportedChart chart={chart} />
 }

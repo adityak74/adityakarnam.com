@@ -2,6 +2,7 @@ import json
 import sys
 import tempfile
 import unittest
+from copy import deepcopy
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parents[1]
@@ -66,7 +67,90 @@ def sample_bundle():
     }
 
 
+def mixed_cost_readiness_bundle():
+    """One cost-ready run and one measured-only run with distinct source families."""
+    bundle = sample_bundle()
+    bundle["sources"].append({
+        "id": "openai-pricing-2026-07",
+        "kind": "pricing",
+        "url": "https://openai.com/api/pricing/",
+        "retrievedAt": "2026-07-13T12:00:00Z",
+        "accessible": True,
+    })
+    bundle["prices"][0]["sourceId"] = "openai-pricing-2026-07"
+    bundle["prices"][1]["sourceId"] = "openai-pricing-2026-07"
+    for field in ("inputTokens", "cachedInputTokens", "outputTokens"):
+        bundle["benchmarkRuns"][1].pop(field)
+    return bundle
+
+
+def cost_ready_harness_bundle():
+    bundle = mixed_cost_readiness_bundle()
+    alternate = deepcopy(bundle["benchmarkRuns"][0])
+    alternate.update({"harness": "Harness Y", "score": 0.64})
+    bundle["benchmarkRuns"].append(alternate)
+    return bundle
+
+
 class ValueLabPipelineTests(unittest.TestCase):
+    def test_mixed_cost_readiness_preserves_exact_benchmark_and_pricing_lineage(self):
+        normalized = normalize_bundle(mixed_cost_readiness_bundle())
+        publication = build_publication(normalized)
+        cost_ready_run = next(run for run in normalized["benchmarkRuns"] if run["model"] == "Model A")
+        measured_only_run = next(run for run in normalized["benchmarkRuns"] if run["model"] == "Model B")
+        cost_ready = next(configuration for configuration in publication["configurations"] if configuration["id"] == cost_ready_run["configurationId"])
+        scatter = next(chart for chart in publication["charts"] if chart["id"] == "performance-cost")
+        point = scatter["points"][0]
+
+        self.assertIn("priceSourceId", cost_ready_run)
+        self.assertIn("priceSourceId", cost_ready)
+        self.assertIn("priceEffectiveFrom", cost_ready)
+        self.assertIn("sourceRunIds", point)
+        self.assertIn("priceSourceId", point)
+        self.assertIn("priceEffectiveFrom", point)
+        self.assertIn("sourceRunIds", publication["recommendation"])
+        self.assertIn("priceSourceId", publication["recommendation"])
+        self.assertIsNone(measured_only_run.get("costPerTaskUsd"))
+
+    def test_visual_validation_requires_exact_card_and_chart_contract(self):
+        normalized = normalize_bundle(sample_bundle())
+        publication = build_publication(normalized)
+        publication["dashboardCards"].pop()
+        publication["charts"] = [chart for chart in publication["charts"] if chart["id"] != "research-coverage"]
+
+        errors = validate_publication_visuals(publication)
+
+        self.assertTrue(any("exactly seven dashboard cards" in error for error in errors))
+        self.assertTrue(any("required chart" in error and "research-coverage" in error for error in errors))
+
+    def test_visual_validation_rejects_invalid_numeric_intervals_and_endpoint_semantics(self):
+        normalized = normalize_bundle(cost_ready_harness_bundle())
+        publication = build_publication(normalized)
+        ranked = next(chart for chart in publication["charts"] if chart["id"] == "measured-performance")
+        dumbbell = next(chart for chart in publication["charts"] if chart["id"] == "harness-comparison")
+        ranked["points"][0].update({"value": "0.64", "low": 0.7, "high": 0.6})
+        ranked["points"][1].update({"value": 0.6, "low": 0.7, "high": 0.6})
+        dumbbell["points"][0]["right"] = {"label": "Harness Y", "value": 1.1}
+
+        errors = validate_publication_visuals(publication)
+
+        self.assertTrue(any("ranked point" in error and "numeric" in error for error in errors))
+        self.assertTrue(any("ranked point" in error and "interval" in error for error in errors))
+        self.assertTrue(any("dumbbell" in error and "endpoint" in error for error in errors))
+
+    def test_visual_validation_requires_scatter_source_run_and_price_lineage(self):
+        normalized = normalize_bundle(mixed_cost_readiness_bundle())
+        publication = build_publication(normalized)
+        bad_source_run = deepcopy(publication)
+        next(chart for chart in bad_source_run["charts"] if chart["id"] == "performance-cost")["points"][0]["sourceRunIds"] = ["sha256:wrong"]
+        bad_price_source = deepcopy(publication)
+        next(chart for chart in bad_price_source["charts"] if chart["id"] == "performance-cost")["points"][0]["priceSourceId"] = "wrong-price-source"
+
+        errors = validate_publication_visuals(bad_source_run) + validate_publication_visuals(bad_price_source)
+
+        self.assertTrue(any("scatter point" in error and "sourceRunIds" in error for error in errors))
+        self.assertTrue(any("scatter point" in error and "priceSourceId" in error for error in errors))
+
     def test_dashboard_cards_are_generated_from_publishable_runs(self):
         publication = build_publication(normalize_bundle(sample_bundle()))
         cards = {card["id"]: card for card in publication["dashboardCards"]}

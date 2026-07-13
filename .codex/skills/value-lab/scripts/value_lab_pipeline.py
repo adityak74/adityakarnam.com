@@ -159,6 +159,8 @@ def normalize_bundle(bundle: dict[str, Any]) -> dict[str, Any]:
             )
             run["costPerTaskUsd"] = round(cost, 6)
             run["expectedSolvedTasksPerDollar"] = round(float(run["score"]) / cost, 6) if cost else None
+            run["priceSourceId"] = price["sourceId"]
+            run["priceEffectiveFrom"] = price["effectiveFrom"]
         run["integrityWarning"] = run["configurationId"] in notices
         run["sourceAccessible"] = source_access.get(run["sourceId"], False)
         runs.append(run)
@@ -210,6 +212,9 @@ def _select_recommendation(runs: list[dict[str, Any]]) -> dict[str, Any]:
         "title": f"Use {winner['model']} with {winner['harness']} at {winner['reasoningEffort']} effort.",
         "summary": f"It is within two points of the highest score in {winner['benchmark']}@{winner['benchmarkVersion']} and offers the strongest expected solved tasks per API dollar in that practical-equivalence band.",
         "configurationId": winner["configurationId"],
+        "sourceRunIds": [winner["runId"]],
+        "priceSourceId": winner["priceSourceId"],
+        "priceEffectiveFrom": winner["priceEffectiveFrom"],
         "metrics": [
             {"label": "Measured score", "value": f"{winner['score'] * 100:.1f}%"},
             {"label": "Median task cost", "value": f"${winner['costPerTaskUsd']:.2f}"},
@@ -353,16 +358,25 @@ def _build_dashboard_cards(
 
 def _configuration_records(runs: list[dict[str, Any]], sources: list[dict[str, Any]]) -> list[dict[str, Any]]:
     source_urls = {source["id"]: source["url"] for source in sources}
-    return [
-        {
+    records = []
+    for run in runs:
+        if run.get("integrityWarning") or not run.get("sourceAccessible"):
+            continue
+        record = {
             "id": run["configurationId"], "runId": run["runId"], "model": run["model"], "provider": run["provider"],
             "harness": run["harness"], "reasoningEffort": run["reasoningEffort"], "benchmark": run["benchmark"],
             "benchmarkVersion": run["benchmarkVersion"], "score": run["score"], "costPerTaskUsd": run.get("costPerTaskUsd"),
             "confidenceIntervalLow": run["confidenceIntervalLow"], "confidenceIntervalHigh": run["confidenceIntervalHigh"],
             "evidence": run["evidence"], "sourceUrl": source_urls[run["sourceId"]],
         }
-        for run in runs if not run.get("integrityWarning") and run.get("sourceAccessible")
-    ]
+        if run.get("costPerTaskUsd") is not None:
+            record.update({
+                "priceSourceId": run["priceSourceId"],
+                "priceSourceUrl": source_urls[run["priceSourceId"]],
+                "priceEffectiveFrom": run["priceEffectiveFrom"],
+            })
+        records.append(record)
+    return records
 
 
 def _build_harness_chart(configurations: list[dict[str, Any]]) -> dict[str, Any]:
@@ -416,50 +430,198 @@ def _build_coverage_chart(
     }
 
 
-def validate_publication_visuals(publication: dict[str, Any]) -> list[str]:
-    errors = []
-    available_run_ids = {configuration.get("runId") for configuration in publication.get("configurations", [])}
-    run_ids = {run_id for card in publication.get("dashboardCards", []) for run_id in card.get("sourceRunIds", [])}
-    for index, card in enumerate(publication.get("dashboardCards", [])):
-        for field in ("id", "label", "value", "detail", "accent", "evidence", "sourceRunIds", "group"):
-            if field not in card:
-                errors.append(f"dashboardCards[{index}] missing {field}")
-        if card.get("group") not in {"summary", "supporting"}:
-            errors.append(f"dashboardCards[{index}] has invalid group")
-        for run_id in card.get("sourceRunIds", []):
-            if run_id not in available_run_ids:
-                errors.append(f"dashboardCards[{index}] references unknown sourceRunIds: {run_id}")
-    supported = {"ranked_bar", "dumbbell", "coverage", "scatter"}
-    for index, chart in enumerate(publication.get("charts", [])):
-        chart_type = chart.get("type")
-        if chart_type not in supported:
-            errors.append(f"charts[{index}] unknown chart type: {chart_type}")
-        if "points" not in chart or not isinstance(chart["points"], list):
-            errors.append(f"charts[{index}] missing points")
-        if chart_type == "coverage":
-            for point in chart.get("points", []):
-                if "label" not in point or "value" not in point or "sourceRunIds" not in point:
-                    errors.append(f"charts[{index}] coverage point missing label, value, or sourceRunIds")
-                for run_id in point.get("sourceRunIds", []):
-                    if run_id not in available_run_ids:
-                        errors.append(f"charts[{index}] coverage point references unknown sourceRunIds: {run_id}")
+def _is_number(value: Any, minimum: float | None = None, maximum: float | None = None) -> bool:
+    return (
+        isinstance(value, (int, float)) and not isinstance(value, bool)
+        and (minimum is None or value >= minimum) and (maximum is None or value <= maximum)
+    )
+
+
+def _source_run_ids_are_valid(run_ids: Any, available_run_ids: set[str]) -> bool:
+    return (
+        isinstance(run_ids, list)
+        and all(isinstance(run_id, str) and run_id.startswith("sha256:") and run_id in available_run_ids for run_id in run_ids)
+    )
+
+
+def validate_publication_visuals(
+    publication: dict[str, Any], normalized_runs: list[dict[str, Any]] | None = None,
+) -> list[str]:
+    """Validate the published renderer contract against normalized run provenance."""
+    errors: list[str] = []
+    configurations = publication.get("configurations", [])
+    run_records = normalized_runs if normalized_runs is not None else configurations
+    runs_by_id = {run.get("runId"): run for run in run_records if isinstance(run.get("runId"), str)}
+    configurations_by_id = {configuration.get("id"): configuration for configuration in configurations if isinstance(configuration.get("id"), str)}
+    available_run_ids = set(runs_by_id)
+    expected_card_ids = {
+        "leader", "measured-configurations", "leader-gap", "evidence-health",
+        "top-three", "largest-harness-difference", "research-coverage",
+    }
+    cards = publication.get("dashboardCards", [])
+    if not isinstance(cards, list) or len(cards) != 7:
+        errors.append("publication requires exactly seven dashboard cards")
+    if isinstance(cards, list):
+        if {card.get("id") for card in cards if isinstance(card, dict)} != expected_card_ids:
+            errors.append("dashboard cards must use the required card IDs")
+        if sum(card.get("group") == "summary" for card in cards if isinstance(card, dict)) != 4:
+            errors.append("dashboard cards require exactly four summary cards")
+        if sum(card.get("group") == "supporting" for card in cards if isinstance(card, dict)) != 3:
+            errors.append("dashboard cards require exactly three supporting cards")
+        for index, card in enumerate(cards):
+            if not isinstance(card, dict):
+                errors.append(f"dashboardCards[{index}] must be an object")
+                continue
+            required_types = {
+                "id": str, "label": str, "value": str, "detail": str,
+                "accent": str, "evidence": str, "group": str,
+            }
+            for field, field_type in required_types.items():
+                if not isinstance(card.get(field), field_type) or not card.get(field):
+                    errors.append(f"dashboardCards[{index}] {field} must be a non-empty {field_type.__name__}")
+            if card.get("evidence") not in EVIDENCE:
+                errors.append(f"dashboardCards[{index}] has invalid evidence")
+            if card.get("group") not in {"summary", "supporting"}:
+                errors.append(f"dashboardCards[{index}] has invalid group")
+            if not _source_run_ids_are_valid(card.get("sourceRunIds"), available_run_ids):
+                errors.append(f"dashboardCards[{index}] references invalid sourceRunIds")
+
+    expected_chart_types = {
+        "measured-performance": "ranked_bar",
+        "harness-comparison": "dumbbell",
+        "research-coverage": "coverage",
+    }
+    if any(configuration.get("costPerTaskUsd") is not None for configuration in configurations if isinstance(configuration, dict)):
+        expected_chart_types["performance-cost"] = "scatter"
+    charts = publication.get("charts", [])
+    charts_by_id = {chart.get("id"): chart for chart in charts if isinstance(chart, dict)} if isinstance(charts, list) else {}
+    if not isinstance(charts, list):
+        errors.append("charts must be a list")
+        charts = []
+    if len(charts_by_id) != len(charts) or set(charts_by_id) != set(expected_chart_types):
+        errors.append("publication charts must match the required chart IDs")
+    supported_chart_types = {"ranked_bar", "dumbbell", "coverage", "scatter"}
+    for index, chart in enumerate(charts):
+        if not isinstance(chart, dict) or chart.get("type") not in supported_chart_types:
+            errors.append(f"charts[{index}] unknown chart type: {chart.get('type') if isinstance(chart, dict) else None}")
+    for chart_id, chart_type in expected_chart_types.items():
+        chart = charts_by_id.get(chart_id)
+        if not chart:
+            errors.append(f"required chart missing: {chart_id}")
+            continue
+        if chart.get("type") != chart_type:
+            errors.append(f"required chart {chart_id} must use type {chart_type}")
+            continue
+        if not isinstance(chart.get("title"), str) or not chart["title"]:
+            errors.append(f"chart {chart_id} title must be a non-empty string")
+        if not isinstance(chart.get("points"), list):
+            errors.append(f"chart {chart_id} points must be a list")
+            continue
+        if chart_type in {"ranked_bar", "scatter"}:
+            for label in ("xLabel", "yLabel"):
+                if not isinstance(chart.get(label), str) or not chart[label]:
+                    errors.append(f"chart {chart_id} {label} must be a non-empty string")
         if chart_type == "ranked_bar":
-            for point in chart.get("points", []):
-                if not all(field in point for field in ("configurationId", "label", "value", "low", "high", "sourceRunIds")):
-                    errors.append(f"charts[{index}] ranked point missing required field or sourceRunIds")
-                for run_id in point.get("sourceRunIds", []):
-                    if run_id not in available_run_ids:
-                        errors.append(f"charts[{index}] ranked point references unknown sourceRunIds: {run_id}")
-        if chart_type == "dumbbell":
-            for point in chart.get("points", []):
-                if not all(field in point for field in ("left", "right", "delta", "sourceRunIds")):
-                    errors.append(f"charts[{index}] dumbbell point missing required field")
-                run_ids.update(point.get("sourceRunIds", []))
-                for run_id in point.get("sourceRunIds", []):
-                    if run_id not in available_run_ids:
-                        errors.append(f"charts[{index}] references unknown sourceRunIds: {run_id}")
-    if any(run_id for run_id in run_ids if not isinstance(run_id, str) or not run_id.startswith("sha256:")):
-        errors.append("visual sourceRunIds must reference normalized run IDs")
+            for index, point in enumerate(chart["points"]):
+                prefix = f"ranked point {index}"
+                if not isinstance(point, dict) or not all(field in point for field in ("configurationId", "label", "value", "low", "high", "sourceRunIds")):
+                    errors.append(f"{prefix} missing required field or sourceRunIds")
+                    continue
+                if not isinstance(point["configurationId"], str) or not isinstance(point["label"], str):
+                    errors.append(f"{prefix} configurationId and label must be strings")
+                if not all(_is_number(point[field], 0, 1) for field in ("value", "low", "high")):
+                    errors.append(f"{prefix} values must be numeric and between 0 and 1")
+                elif not point["low"] <= point["value"] <= point["high"]:
+                    errors.append(f"{prefix} interval must contain value in ascending order")
+                run = runs_by_id.get(point["sourceRunIds"][0]) if isinstance(point.get("sourceRunIds"), list) and len(point["sourceRunIds"]) == 1 else None
+                if not run or not _source_run_ids_are_valid(point.get("sourceRunIds"), available_run_ids):
+                    errors.append(f"{prefix} sourceRunIds must reference exactly one normalized run")
+                elif point.get("configurationId") != run.get("configurationId") or not math.isclose(float(point["value"]), float(run["score"])):
+                    errors.append(f"{prefix} sourceRunIds do not match its configuration and score")
+        elif chart_type == "dumbbell":
+            for index, point in enumerate(chart["points"]):
+                prefix = f"dumbbell point {index}"
+                if not isinstance(point, dict) or not all(field in point for field in ("id", "label", "benchmark", "left", "right", "delta", "sourceRunIds")):
+                    errors.append(f"{prefix} missing required field")
+                    continue
+                endpoints = (point.get("left"), point.get("right"))
+                if not all(isinstance(endpoint, dict) and isinstance(endpoint.get("label"), str) and _is_number(endpoint.get("value"), 0, 1) for endpoint in endpoints):
+                    errors.append(f"{prefix} endpoint must have a string label and numeric value between 0 and 1")
+                    continue
+                if not _is_number(point.get("delta"), 0, 1) or not math.isclose(float(point["delta"]), abs(float(point["right"]["value"]) - float(point["left"]["value"]))):
+                    errors.append(f"{prefix} delta must match its endpoint values")
+                run_ids = point.get("sourceRunIds")
+                if not _source_run_ids_are_valid(run_ids, available_run_ids) or not isinstance(run_ids, list) or len(run_ids) != 2 or len(set(run_ids)) != 2:
+                    errors.append(f"{prefix} sourceRunIds must reference exactly two normalized runs")
+                    continue
+                left_run, right_run = (runs_by_id[run_id] for run_id in run_ids)
+                semantics = ("provider", "model", "reasoningEffort", "benchmark", "benchmarkVersion")
+                if any(left_run.get(field) != right_run.get(field) for field in semantics):
+                    errors.append(f"{prefix} endpoints must share provider, model, effort, benchmark, and benchmark version")
+                if point["left"]["label"] != left_run.get("harness") or point["right"]["label"] != right_run.get("harness") or not math.isclose(float(point["left"]["value"]), float(left_run["score"])) or not math.isclose(float(point["right"]["value"]), float(right_run["score"])):
+                    errors.append(f"{prefix} endpoints do not match their exact source runs")
+                if point.get("benchmark") != f"{left_run['benchmark']}@{left_run['benchmarkVersion']}":
+                    errors.append(f"{prefix} benchmark must match its endpoint benchmark version")
+        elif chart_type == "coverage":
+            expected_labels = {"Collected", "Measured", "Cost-ready", "Value-ready"}
+            points_by_label = {point.get("label"): point for point in chart["points"] if isinstance(point, dict)}
+            if len(points_by_label) != len(chart["points"]) or set(points_by_label) != expected_labels:
+                errors.append("coverage chart must contain each required stage exactly once")
+            for label, point in points_by_label.items():
+                if not isinstance(point.get("value"), int) or isinstance(point.get("value"), bool) or point["value"] < 0:
+                    errors.append(f"coverage point {label} value must be a non-negative integer")
+                if not _source_run_ids_are_valid(point.get("sourceRunIds"), available_run_ids):
+                    errors.append(f"coverage point {label} references invalid sourceRunIds")
+        elif chart_type == "scatter":
+            for index, point in enumerate(chart["points"]):
+                prefix = f"scatter point {index}"
+                required = ("configurationId", "x", "y", "sourceRunIds", "priceSourceId", "priceSourceUrl", "priceEffectiveFrom")
+                if not isinstance(point, dict) or not all(field in point for field in required):
+                    errors.append(f"{prefix} missing required provenance field")
+                    continue
+                if not isinstance(point["configurationId"], str) or not _is_number(point["x"], 0) or not _is_number(point["y"], 0, 1):
+                    errors.append(f"{prefix} configurationId, cost, and score must have valid types and bounds")
+                run = runs_by_id.get(point["sourceRunIds"][0]) if isinstance(point.get("sourceRunIds"), list) and len(point["sourceRunIds"]) == 1 else None
+                if not run or not _source_run_ids_are_valid(point.get("sourceRunIds"), available_run_ids):
+                    errors.append(f"{prefix} sourceRunIds must reference exactly one cost-ready normalized run")
+                    continue
+                if (
+                    point["configurationId"] != run.get("configurationId")
+                    or run.get("costPerTaskUsd") is None
+                    or not math.isclose(float(point["x"]), float(run["costPerTaskUsd"]))
+                    or not math.isclose(float(point["y"]), float(run["score"]))
+                    or point["priceSourceId"] != run.get("priceSourceId")
+                    or point["priceEffectiveFrom"] != run.get("priceEffectiveFrom")
+                ):
+                    errors.append(f"{prefix} sourceRunIds or priceSourceId do not match its normalized run")
+                configuration = configurations_by_id.get(point["configurationId"])
+                if not configuration or point["priceSourceUrl"] != configuration.get("priceSourceUrl"):
+                    errors.append(f"{prefix} priceSourceUrl does not match its cost-ready configuration")
+
+    for configuration in configurations:
+        if not isinstance(configuration, dict):
+            errors.append("configuration must be an object")
+            continue
+        if configuration.get("costPerTaskUsd") is not None:
+            for field in ("priceSourceId", "priceSourceUrl", "priceEffectiveFrom"):
+                if not isinstance(configuration.get(field), str) or not configuration[field]:
+                    errors.append(f"cost-ready configuration {configuration.get('id')} missing {field}")
+            run = runs_by_id.get(configuration.get("runId"))
+            if run and (
+                configuration.get("priceSourceId") != run.get("priceSourceId")
+                or configuration.get("priceEffectiveFrom") != run.get("priceEffectiveFrom")
+            ):
+                errors.append(f"cost-ready configuration {configuration.get('id')} price provenance does not match its normalized run")
+
+    recommendation = publication.get("recommendation", {})
+    recommendation_id = recommendation.get("configurationId") if isinstance(recommendation, dict) else None
+    if recommendation_id is not None:
+        configuration = configurations_by_id.get(recommendation_id)
+        run = runs_by_id.get(configuration.get("runId")) if configuration else None
+        if not run or recommendation.get("sourceRunIds") != [run["runId"]]:
+            errors.append("recommendation sourceRunIds must reference its exact normalized run")
+        if not run or recommendation.get("priceSourceId") != run.get("priceSourceId") or recommendation.get("priceEffectiveFrom") != run.get("priceEffectiveFrom"):
+            errors.append("recommendation pricing provenance must match its exact normalized run")
     return errors
 
 
@@ -478,7 +640,11 @@ def build_publication(normalized: dict[str, Any]) -> dict[str, Any]:
     configurations = publishable_configurations
     ranked_configurations = _configuration_records(current_cohort, normalized["sources"])
     points = [
-        {"configurationId": item["id"], "x": item["costPerTaskUsd"], "y": item["score"]}
+        {
+            "configurationId": item["id"], "x": item["costPerTaskUsd"], "y": item["score"],
+            "sourceRunIds": [item["runId"]], "priceSourceId": item["priceSourceId"],
+            "priceSourceUrl": item["priceSourceUrl"], "priceEffectiveFrom": item["priceEffectiveFrom"],
+        }
         for item in configurations if item["costPerTaskUsd"] is not None
     ]
     score_points = [
@@ -595,7 +761,7 @@ def main() -> int:
 
     normalized = normalize_bundle(bundle)
     publication = build_publication(normalized)
-    visual_errors = validate_publication_visuals(publication)
+    visual_errors = validate_publication_visuals(publication, normalized["benchmarkRuns"])
     if visual_errors:
         gate = {
             "requiresReview": True,

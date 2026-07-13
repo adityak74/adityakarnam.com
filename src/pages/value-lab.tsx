@@ -47,6 +47,8 @@ const sources = valueLab.methodology.sources as Array<{
   retrievedAt?: string
 }>
 const configurations = valueLab.configurations as Array<{
+  id: string
+  runId: string
   model: string
   harness: string
   reasoningEffort: string
@@ -57,6 +59,10 @@ const configurations = valueLab.configurations as Array<{
   confidenceIntervalHigh?: number
   evidence: string
   sourceUrl: string
+  costPerTaskUsd?: number | null
+  priceSourceId?: string
+  priceSourceUrl?: string
+  priceEffectiveFrom?: string
 }>
 const history = valueLab.history as Array<{ date: string; label: string }>
 const dashboardCards = ((valueLab as unknown) as { dashboardCards?: DashboardCard[] }).dashboardCards ?? []
@@ -104,7 +110,7 @@ const formatMarkdown = () => {
       "## Configurations",
       "",
       ...configurations.map(configuration =>
-        `- [${configuration.model}](${configuration.sourceUrl}) · ${configuration.harness} · ${configuration.reasoningEffort} effort · ${configuration.benchmark}@${configuration.benchmarkVersion}: ${(configuration.score * 100).toFixed(1)}%${configuration.confidenceIntervalLow !== undefined && configuration.confidenceIntervalHigh !== undefined ? ` (${(configuration.confidenceIntervalLow * 100).toFixed(1)}–${(configuration.confidenceIntervalHigh * 100).toFixed(1)}%)` : ""} · ${evidenceLabels[configuration.evidence] ?? configuration.evidence}`
+        `- [${configuration.model}](${configuration.sourceUrl}) · ${configuration.harness} · ${configuration.reasoningEffort} effort · ${configuration.benchmark}@${configuration.benchmarkVersion}: ${(configuration.score * 100).toFixed(1)}%${configuration.confidenceIntervalLow !== undefined && configuration.confidenceIntervalHigh !== undefined ? ` (${(configuration.confidenceIntervalLow * 100).toFixed(1)}–${(configuration.confidenceIntervalHigh * 100).toFixed(1)}%)` : ""} · ${evidenceLabels[configuration.evidence] ?? configuration.evidence}${configuration.costPerTaskUsd !== null && configuration.costPerTaskUsd !== undefined ? ` · $${configuration.costPerTaskUsd.toFixed(6)} per task · benchmark run ${configuration.runId} · pricing [${configuration.priceSourceId}](${configuration.priceSourceUrl}) effective ${configuration.priceEffectiveFrom}` : ""}`
       )
     )
   }
@@ -141,8 +147,8 @@ const formatMarkdown = () => {
       } else if (isCoverageChart(chart)) {
         lines.push("| Stage | Count | Source run IDs |", "| --- | --- | --- |", ...chart.points.map(point => `| ${point.label} | ${point.value} | ${point.sourceRunIds.join(", ") || "None"} |`))
       } else if (isScatterChart(chart)) {
-        lines.push("| Configuration | Cost per task | Score | Source run IDs |", "| --- | --- | --- | --- |", ...chart.points.map(point =>
-          `| ${point.configurationId} | ${point.x ?? "Unavailable"} | ${point.y === undefined ? "Unavailable" : `${(point.y * 100).toFixed(1)}%`} | ${point.sourceRunIds.join(", ")} |`
+        lines.push("| Configuration | Cost per task | Score | Benchmark run IDs | Pricing source | Effective from |", "| --- | --- | --- | --- | --- | --- |", ...chart.points.map(point =>
+          `| ${point.configurationId} | $${point.x.toFixed(6)} | ${(point.y * 100).toFixed(1)}% | ${point.sourceRunIds.join(", ")} | [${point.priceSourceId}](${point.priceSourceUrl}) | ${point.priceEffectiveFrom} |`
         ))
       } else if (isLegacyScatterChart(chart)) {
         lines.push(`- ${chart.points.length} legacy scatter data points (${chart.type})`)
