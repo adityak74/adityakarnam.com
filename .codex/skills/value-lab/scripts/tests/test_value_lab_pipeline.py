@@ -87,7 +87,35 @@ class ValueLabPipelineTests(unittest.TestCase):
         self.assertEqual(charts["harness-comparison"]["type"], "dumbbell")
         self.assertEqual(charts["research-coverage"]["type"], "coverage")
         self.assertEqual(charts["research-coverage"]["points"][1]["value"], 2)
-        self.assertEqual(charts["research-coverage"]["points"][2]["value"], 0)
+        self.assertEqual(charts["research-coverage"]["points"][2]["value"], 2)
+        self.assertEqual(charts["research-coverage"]["points"][3]["value"], 1)
+
+    def test_rank_cards_and_chart_use_one_current_benchmark_version_cohort(self):
+        bundle = sample_bundle()
+        older = dict(bundle["benchmarkRuns"][0])
+        older.update({"benchmarkVersion": "2.0", "score": 0.99})
+        bundle["benchmarkRuns"].append(older)
+        publication = build_publication(normalize_bundle(bundle))
+        cards = {card["id"]: card for card in publication["dashboardCards"]}
+        current_ids = {
+            configuration["runId"] for configuration in publication["configurations"]
+            if configuration["benchmarkVersion"] == "2.1"
+        }
+        self.assertEqual(cards["leader"]["value"], "61.0%")
+        self.assertEqual(set(cards["leader"]["sourceRunIds"]), {cards["leader"]["sourceRunIds"][0]})
+        self.assertTrue(set(cards["top-three"]["sourceRunIds"]).issubset(current_ids))
+        ranked = next(chart for chart in publication["charts"] if chart["id"] == "measured-performance")
+        self.assertTrue(all(point["configurationId"] in {
+            configuration["id"] for configuration in publication["configurations"]
+            if configuration["benchmarkVersion"] == "2.1"
+        } for point in ranked["points"]))
+
+    def test_coverage_counts_cost_ready_and_value_ready_configurations(self):
+        publication = build_publication(normalize_bundle(sample_bundle()))
+        coverage = next(chart for chart in publication["charts"] if chart["id"] == "research-coverage")
+        values = {point["label"]: point["value"] for point in coverage["points"]}
+        self.assertEqual(values["Cost-ready"], 2)
+        self.assertEqual(values["Value-ready"], 1)
 
     def test_harness_chart_never_pairs_different_benchmark_versions(self):
         bundle = sample_bundle()

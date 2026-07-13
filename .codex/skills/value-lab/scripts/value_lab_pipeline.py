@@ -201,10 +201,7 @@ def _select_recommendation(runs: list[dict[str, Any]]) -> dict[str, Any]:
                 {"label": "Cost-ready configurations", "value": "0"},
             ],
         }
-    groups: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
-    for run in eligible:
-        groups[(run["benchmark"], run["benchmarkVersion"])].append(run)
-    selected = max(groups.values(), key=lambda group: (max(item.get("evaluatedAt", "") for item in group), len(group)))
+    selected = _select_current_cohort(eligible)
     best_score = max(run["score"] for run in selected)
     practical = [run for run in selected if run["score"] >= best_score - 0.02]
     winner = max(practical, key=lambda run: (float("inf") if run["costPerTaskUsd"] == 0 else (run.get("expectedSolvedTasksPerDollar") or 0), run["score"]))
@@ -219,6 +216,22 @@ def _select_recommendation(runs: list[dict[str, Any]]) -> dict[str, Any]:
             {"label": "Evidence", "value": winner["evidence"].replace("_", " ").title()},
         ],
     }
+
+
+def _select_current_cohort(runs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    groups: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
+    for run in runs:
+        groups[(run["benchmark"], run["benchmarkVersion"])].append(run)
+    if not groups:
+        return []
+    return max(
+        groups.items(),
+        key=lambda item: (
+            max(run.get("evaluatedAt", "") for run in item[1]),
+            len(item[1]),
+            item[0],
+        ),
+    )[1]
 
 
 def _generate_insights(runs: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -261,7 +274,8 @@ def _generate_insights(runs: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def _build_dashboard_cards(
-    runs: list[dict[str, Any]], sources: list[dict[str, Any]], updated_at: str
+    runs: list[dict[str, Any]], sources: list[dict[str, Any]], updated_at: str,
+    recommendation: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     publishable = [run for run in runs if run.get("sourceAccessible") and not run.get("integrityWarning")]
     ranked = sorted(publishable, key=lambda run: (-float(run["score"]), run["configurationId"]))
@@ -292,7 +306,7 @@ def _build_dashboard_cards(
     second = ranked[1] if len(ranked) > 1 else None
     verified = [run for run in publishable if run.get("evidence") in evidence_ready and run.get("sourceId") in source_ids]
     harness_chart = _build_harness_chart(_configuration_records(runs, sources))
-    coverage_chart = _build_coverage_chart(_configuration_records(runs, sources))
+    coverage_chart = _build_coverage_chart(_configuration_records(runs, sources), recommendation)
     harness_points = harness_chart["points"]
     coverage_points = coverage_chart["points"]
     largest = max(harness_points, key=lambda point: (point["delta"], point["id"])) if harness_points else None
@@ -370,14 +384,22 @@ def _build_harness_chart(configurations: list[dict[str, Any]]) -> dict[str, Any]
     return {"id": "harness-comparison", "title": "Harness comparison", "type": "dumbbell", "points": points}
 
 
-def _build_coverage_chart(configurations: list[dict[str, Any]]) -> dict[str, Any]:
+def _build_coverage_chart(
+    configurations: list[dict[str, Any]], recommendation: dict[str, Any] | None = None
+) -> dict[str, Any]:
     measured = len(configurations)
-    cost_ready = 0
+    cost_ready = sum(configuration.get("costPerTaskUsd") is not None for configuration in configurations)
+    value_ready = int(bool(recommendation and recommendation.get("configurationId") and any(
+        configuration["id"] == recommendation["configurationId"]
+        and configuration.get("costPerTaskUsd") is not None
+        and configuration.get("sourceUrl")
+        for configuration in configurations
+    )))
     return {
         "id": "research-coverage", "title": "Research coverage", "type": "coverage",
         "points": [
             {"label": "Collected", "value": measured}, {"label": "Measured", "value": measured},
-            {"label": "Cost-ready", "value": cost_ready}, {"label": "Value-ready", "value": 0},
+            {"label": "Cost-ready", "value": cost_ready}, {"label": "Value-ready", "value": value_ready},
         ],
     }
 
@@ -431,7 +453,12 @@ def build_publication(normalized: dict[str, Any]) -> dict[str, Any]:
     runs = normalized["benchmarkRuns"]
     frontiers = compute_pareto_frontier(runs)
     recommendation = _select_recommendation(runs)
-    configurations = _configuration_records(runs, normalized["sources"])
+    publishable_configurations = _configuration_records(runs, normalized["sources"])
+    current_cohort = _select_current_cohort([
+        run for run in runs if run.get("sourceAccessible") and not run.get("integrityWarning")
+    ])
+    configurations = publishable_configurations
+    ranked_configurations = _configuration_records(current_cohort, normalized["sources"])
     points = [
         {"configurationId": item["id"], "x": item["costPerTaskUsd"], "y": item["score"]}
         for item in configurations if item["costPerTaskUsd"] is not None
@@ -444,7 +471,7 @@ def build_publication(normalized: dict[str, Any]) -> dict[str, Any]:
             "low": item["confidenceIntervalLow"],
             "high": item["confidenceIntervalHigh"],
         }
-        for item in sorted(configurations, key=lambda record: record["score"], reverse=True)
+        for item in sorted(ranked_configurations, key=lambda record: record["score"], reverse=True)
     ]
     charts = [{
         "id": "measured-performance", "title": "Measured performance", "type": "ranked_bar",
@@ -456,13 +483,13 @@ def build_publication(normalized: dict[str, Any]) -> dict[str, Any]:
             "xLabel": "Median task cost (USD)", "yLabel": "Benchmark pass rate", "points": points,
             "frontiers": frontiers,
         })
-    charts.extend([_build_harness_chart(configurations), _build_coverage_chart(configurations)])
+    charts.extend([_build_harness_chart(publishable_configurations), _build_coverage_chart(publishable_configurations, recommendation)])
     updated = normalized["run"]["retrievedAt"][:10]
     return {
         "schemaVersion": 2, "updatedAt": updated, "title": "Coding Agent Value Lab",
         "subtitle": "Independent analysis of coding models, harnesses, reasoning levels, costs, and subscription efficiency.",
         "positioning": "Benchmarks tell you who scored highest. This lab tells you what to use.",
-        "status": f"{len(configurations)} publishable configurations · refreshed {updated}",
+        "status": f"{len(publishable_configurations)} publishable configurations · refreshed {updated}",
         "recommendation": recommendation, "alternatives": [],
         "controls": {
             "workloads": [{"id": value, "label": value.title()} for value in ("small", "medium", "large", "xl")],
@@ -470,7 +497,7 @@ def build_publication(normalized: dict[str, Any]) -> dict[str, Any]:
             "goals": [{"id": "value", "label": "Best value"}, {"id": "quality", "label": "Best quality"}, {"id": "throughput", "label": "Most work per window"}, {"id": "speed", "label": "Fastest"}],
         },
         "insights": _generate_insights(runs), "configurations": configurations,
-        "dashboardCards": _build_dashboard_cards(runs, normalized["sources"], updated),
+        "dashboardCards": _build_dashboard_cards(current_cohort, normalized["sources"], updated, recommendation),
         "charts": charts,
         "methodology": {
             "summary": "Benchmark versions are isolated; evidence, source dates, uncertainty, harness, and reasoning effort remain visible.",
