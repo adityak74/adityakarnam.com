@@ -52,6 +52,10 @@ const config: GatsbyConfig = {
             slug: `/quecto`,
           },
           {
+            title: `Value Lab`,
+            slug: `/value-lab`,
+          },
+          {
             title: `About`,
             slug: `/about`,
           },
