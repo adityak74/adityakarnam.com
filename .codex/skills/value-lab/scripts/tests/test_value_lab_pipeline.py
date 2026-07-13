@@ -117,6 +117,33 @@ class ValueLabPipelineTests(unittest.TestCase):
         self.assertEqual(values["Cost-ready"], 2)
         self.assertEqual(values["Value-ready"], 1)
 
+    def test_ranked_and_coverage_points_include_exact_supporting_run_ids(self):
+        publication = build_publication(normalize_bundle(sample_bundle()))
+        all_run_ids = {configuration["runId"] for configuration in publication["configurations"]}
+        ranked = next(chart for chart in publication["charts"] if chart["id"] == "measured-performance")
+        self.assertTrue(all(point.get("sourceRunIds") == [
+            next(configuration["runId"] for configuration in publication["configurations"]
+                if configuration["id"] == point["configurationId"])
+        ] for point in ranked["points"]))
+        coverage = next(chart for chart in publication["charts"] if chart["id"] == "research-coverage")
+        points = {point["label"]: point for point in coverage["points"]}
+        self.assertEqual(set(points["Collected"]["sourceRunIds"]), all_run_ids)
+        self.assertEqual(set(points["Measured"]["sourceRunIds"]), all_run_ids)
+        self.assertEqual(set(points["Cost-ready"]["sourceRunIds"]), all_run_ids)
+        recommendation_id = publication["recommendation"]["configurationId"]
+        recommendation_run_id = next(configuration["runId"] for configuration in publication["configurations"] if configuration["id"] == recommendation_id)
+        self.assertEqual(points["Value-ready"]["sourceRunIds"], [recommendation_run_id])
+
+    def test_visual_validation_rejects_missing_or_unknown_ranked_and_coverage_sources(self):
+        publication = build_publication(normalize_bundle(sample_bundle()))
+        ranked = next(chart for chart in publication["charts"] if chart["id"] == "measured-performance")
+        coverage = next(chart for chart in publication["charts"] if chart["id"] == "research-coverage")
+        ranked["points"][0].pop("sourceRunIds", None)
+        coverage["points"][0]["sourceRunIds"] = ["sha256:unknown"]
+        errors = validate_publication_visuals(publication)
+        self.assertTrue(any("ranked" in error and "sourceRunIds" in error for error in errors))
+        self.assertTrue(any("coverage" in error and "sourceRunIds" in error for error in errors))
+
     def test_harness_chart_never_pairs_different_benchmark_versions(self):
         bundle = sample_bundle()
         bundle["benchmarkRuns"][1]["benchmarkVersion"] = "2.0"

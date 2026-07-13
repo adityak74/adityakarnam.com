@@ -389,17 +389,29 @@ def _build_coverage_chart(
 ) -> dict[str, Any]:
     measured = len(configurations)
     cost_ready = sum(configuration.get("costPerTaskUsd") is not None for configuration in configurations)
+    all_run_ids = [configuration["runId"] for configuration in configurations]
+    cost_ready_run_ids = [
+        configuration["runId"] for configuration in configurations
+        if configuration.get("costPerTaskUsd") is not None
+    ]
     value_ready = int(bool(recommendation and recommendation.get("configurationId") and any(
         configuration["id"] == recommendation["configurationId"]
         and configuration.get("costPerTaskUsd") is not None
         and configuration.get("sourceUrl")
         for configuration in configurations
     )))
+    value_ready_run_ids = [
+        configuration["runId"] for configuration in configurations
+        if recommendation and configuration["id"] == recommendation.get("configurationId")
+        and configuration.get("costPerTaskUsd") is not None and configuration.get("sourceUrl")
+    ]
     return {
         "id": "research-coverage", "title": "Research coverage", "type": "coverage",
         "points": [
-            {"label": "Collected", "value": measured}, {"label": "Measured", "value": measured},
-            {"label": "Cost-ready", "value": cost_ready}, {"label": "Value-ready", "value": value_ready},
+            {"label": "Collected", "value": measured, "sourceRunIds": all_run_ids},
+            {"label": "Measured", "value": measured, "sourceRunIds": all_run_ids},
+            {"label": "Cost-ready", "value": cost_ready, "sourceRunIds": cost_ready_run_ids},
+            {"label": "Value-ready", "value": value_ready, "sourceRunIds": value_ready_run_ids},
         ],
     }
 
@@ -426,12 +438,18 @@ def validate_publication_visuals(publication: dict[str, Any]) -> list[str]:
             errors.append(f"charts[{index}] missing points")
         if chart_type == "coverage":
             for point in chart.get("points", []):
-                if "label" not in point or "value" not in point:
-                    errors.append(f"charts[{index}] coverage point missing label or value")
+                if "label" not in point or "value" not in point or "sourceRunIds" not in point:
+                    errors.append(f"charts[{index}] coverage point missing label, value, or sourceRunIds")
+                for run_id in point.get("sourceRunIds", []):
+                    if run_id not in available_run_ids:
+                        errors.append(f"charts[{index}] coverage point references unknown sourceRunIds: {run_id}")
         if chart_type == "ranked_bar":
             for point in chart.get("points", []):
-                if not all(field in point for field in ("configurationId", "label", "value", "low", "high")):
-                    errors.append(f"charts[{index}] ranked point missing required field")
+                if not all(field in point for field in ("configurationId", "label", "value", "low", "high", "sourceRunIds")):
+                    errors.append(f"charts[{index}] ranked point missing required field or sourceRunIds")
+                for run_id in point.get("sourceRunIds", []):
+                    if run_id not in available_run_ids:
+                        errors.append(f"charts[{index}] ranked point references unknown sourceRunIds: {run_id}")
         if chart_type == "dumbbell":
             for point in chart.get("points", []):
                 if not all(field in point for field in ("left", "right", "delta", "sourceRunIds")):
@@ -470,6 +488,7 @@ def build_publication(normalized: dict[str, Any]) -> dict[str, Any]:
             "value": item["score"],
             "low": item["confidenceIntervalLow"],
             "high": item["confidenceIntervalHigh"],
+            "sourceRunIds": [item["runId"]],
         }
         for item in sorted(ranked_configurations, key=lambda record: record["score"], reverse=True)
     ]
