@@ -64,6 +64,7 @@ typings/
 **/.cache
 public
 .worktrees/
+.superpowers/
 
 .idea
 .vscode
