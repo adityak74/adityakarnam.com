@@ -8,7 +8,7 @@
 4. Validation and normalization
 5. Calculations and insights
 6. Publication gate
-7. Page handoff
+7. Publication checklist and visual handoff
 
 ## 1. Run layout
 
@@ -155,12 +155,21 @@ Require human review when any condition is true:
 
 Exit code `2` means “valid output generated, review required.” It is not a pipeline failure and must not be converted to success automatically.
 
-## 7. Page handoff
+## 7. Publication checklist and visual handoff
 
-After the gate passes or receives explicit human approval:
+After the gate passes or receives explicit human approval, the generated publication checklist must include:
+
+1. `dashboardCards`, including all seven cards, their `summary`/`supporting` groups, evidence labels, and `sourceRunIds`.
+2. Every chart dataset: ranked performance (`ranked_bar`), harness comparison (`dumbbell`), research coverage (`coverage`), and `scatter` when cost-ready inputs exist.
+3. The recommendation, configuration rows, insights, history, and Markdown summary/export.
+
+For every derived visual claim—each card value/detail and each chart title, point, endpoint, delta, or coverage count—include source and normalized run references. An empty comparison dataset and zero/unavailable cost or value states are valid outputs and must be included in the handoff rather than omitted.
+
+Then:
 
 1. Inspect `current.json` against `data-contract.md`.
 2. Confirm all public values originate from normalized records.
 3. Confirm source links, evidence labels, benchmark versions, and uncertainty are visible.
-4. Verify Copy as Markdown includes recommendation, configuration rows, chart summaries, history, and citations.
-5. Change the page only if the JSON introduces a new supported concept.
+4. Verify Copy as Markdown includes recommendation, dashboard cards, configuration rows, all chart summaries, history, and citations.
+5. Check the cards and graphs at desktop and mobile widths, including unavailable, empty, and zero states.
+6. Change the page only if the JSON introduces a new supported concept.

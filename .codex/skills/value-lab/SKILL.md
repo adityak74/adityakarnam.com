@@ -36,7 +36,8 @@ Operate the complete research-to-publication loop for `/value-lab/`. Treat the p
 
 6. Stop for human review when the gate exits `2`. Do not weaken or bypass the gate. Correct extraction errors from raw evidence; do not edit generated numbers.
 7. Update the renderer only when generated fields require a capability it does not support. A normal research refresh changes data, raw evidence, snapshots, and review output—not page components.
-8. Verify deterministic tests, skill validation, Gatsby build, page rendering, source links, visible uncertainty/evidence labels, and Copy as Markdown output.
+8. Generate and validate the schema-2 dashboard cards and every dashboard dataset: ranked performance (`ranked_bar`), harness comparisons (`dumbbell`), research coverage (`coverage`), and `scatter` only when cost-ready inputs exist. Missing comparison evidence must produce an explicit empty dataset; missing cost or value evidence must produce explicit zero/unavailable states. Generate the Markdown summary from the same publication output.
+9. Verify deterministic tests, skill validation, Gatsby build, page rendering, source links, visible uncertainty/evidence labels, and Copy as Markdown output. Check cards and graphs at both desktop and mobile widths, including empty and unavailable states.
 9. Commit the raw bundle, generated data, dated snapshot, gate report, skill changes, and any required renderer changes. Preserve unrelated files.
 
 ## Research rules
@@ -54,13 +55,15 @@ Operate the complete research-to-publication loop for `/value-lab/`. Treat the p
 
 Use one agent per independent source family; require structured output and source URLs. Name the model and effort in every delegation prompt.
 
-- `gpt-5.6-luna`, low: source inventory, URL/access checks, schema validation, JSON formatting, link completeness.
+- `gpt-5.6-luna`, low: source inventory, URL/access checks, visual JSON/schema validation, routine refresh checks, JSON formatting, and link completeness.
 - `gpt-5.6-luna`, medium: extract one official leaderboard or one provider's pricing/plan records into the raw-bundle schema.
 - `gpt-5.6-terra`, medium: reconcile aliases, release notes, benchmark versions, and integrity notices across sources.
-- `gpt-5.6-terra`, high: implement a new metric, collector shape, renderer capability, or cross-source consistency fix.
+- `gpt-5.6-terra`, high: introduce a new card/chart renderer or implement a new metric, collector shape, or cross-source consistency fix that requires renderer capability.
 - `gpt-5.6-sol`, high: only for disputed methodology, ambiguous benchmark comparability, substantial pipeline architecture, or a difficult integrity incident.
 
 Do not use `gpt-5.6-sol` for routine collection, formatting, validation, or data-only refreshes. Keep agent write sets disjoint. The main agent must independently run deterministic validation and inspect the publication gate.
+
+Routine dashboard schema validation and refresh checks stay on `gpt-5.6-luna` at low effort. Use `gpt-5.6-terra` at high effort when a new card or chart renderer is required. Reserve `gpt-5.6-sol` for substantial methodology or architecture disputes, including difficult benchmark comparability or integrity incidents.
 
 ## Renderer contract
 
@@ -69,6 +72,7 @@ Do not use `gpt-5.6-sol` for routine collection, formatting, validation, or data
 - Keep research values out of `src/pages/value-lab.tsx`.
 - Preserve `WorldModelPageShell`, `WorldModelHero`, `WorldModelSection`, `Panel`, responsive grids, evidence labels, source links, and Copy as Markdown.
 - Fail visibly for unsupported chart types or missing required fields.
+- Render all seven schema-2 dashboard cards in their `summary`/`supporting` groups. Preserve explicit unavailable, empty, and zero states instead of hiding incomplete evidence.
 
 ## Verification
 
@@ -80,4 +84,4 @@ python3 /Users/adityakarnam/.codex/skills/.system/skill-creator/scripts/quick_va
 npm run build
 ```
 
-Completion requires: raw evidence preserved, bundle valid, deterministic output, version isolation, grounded insights, immutable snapshot, gate reviewed, page rebuilt, Markdown export checked, and only intended files committed.
+Completion requires: raw evidence preserved, bundle valid, deterministic output, version isolation, grounded insights, seven validated dashboard cards, ranked performance/harness comparison/coverage datasets, any eligible scatter dataset, immutable snapshot, gate reviewed, page rebuilt, desktop/mobile card and graph checks, Markdown summary/export checked, and only intended files committed.
