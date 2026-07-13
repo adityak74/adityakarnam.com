@@ -260,21 +260,178 @@ def _generate_insights(runs: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return sorted(insights, key=lambda item: item["id"])
 
 
+def _build_dashboard_cards(
+    runs: list[dict[str, Any]], sources: list[dict[str, Any]], updated_at: str
+) -> list[dict[str, Any]]:
+    publishable = [run for run in runs if run.get("sourceAccessible") and not run.get("integrityWarning")]
+    ranked = sorted(publishable, key=lambda run: (-float(run["score"]), run["configurationId"]))
+    source_ids = {source["id"] for source in sources}
+    evidence_ready = {
+        "official_verified", "independently_reproduced", "first_party_measured"
+    }
+
+    def unavailable_card(card_id: str, label: str, accent: str = "slate") -> dict[str, Any]:
+        return {
+            "id": card_id, "label": label, "value": "Unavailable",
+            "detail": "Not enough publishable benchmark evidence yet.", "accent": accent,
+            "evidence": "estimated", "sourceRunIds": [], "group": "summary",
+        }
+
+    if not ranked:
+        return [
+            unavailable_card("leader", "Measured leader", "cyan"),
+            unavailable_card("measured-configurations", "Measured configurations"),
+            unavailable_card("leader-gap", "Leader gap"),
+            unavailable_card("evidence-health", "Evidence health"),
+            {**unavailable_card("top-three", "Top three"), "group": "supporting"},
+            {**unavailable_card("largest-harness-difference", "Largest harness difference"), "group": "supporting"},
+            {**unavailable_card("research-coverage", "Research coverage"), "group": "supporting"},
+        ]
+
+    leader = ranked[0]
+    second = ranked[1] if len(ranked) > 1 else None
+    verified = [run for run in publishable if run.get("evidence") in evidence_ready and run.get("sourceId") in source_ids]
+    harness_chart = _build_harness_chart(_configuration_records(runs, sources))
+    coverage_chart = _build_coverage_chart(_configuration_records(runs, sources))
+    harness_points = harness_chart["points"]
+    coverage_points = coverage_chart["points"]
+    largest = max(harness_points, key=lambda point: (point["delta"], point["id"])) if harness_points else None
+    return [
+        {
+            "id": "leader", "label": "Measured leader", "value": f"{leader['score'] * 100:.1f}%",
+            "detail": f"{leader['model']} · {leader['harness']} · interval {leader['confidenceIntervalLow'] * 100:.1f}–{leader['confidenceIntervalHigh'] * 100:.1f}%",
+            "accent": "cyan", "evidence": leader["evidence"], "sourceRunIds": [leader["runId"]], "group": "summary",
+        },
+        {
+            "id": "measured-configurations", "label": "Measured configurations", "value": str(len(ranked)),
+            "detail": f"Across {len({(run['benchmark'], run['benchmarkVersion']) for run in ranked})} benchmark version(s) · refreshed {updated_at}.",
+            "accent": "violet", "evidence": "first_party_measured", "sourceRunIds": [run["runId"] for run in ranked], "group": "summary",
+        },
+        {
+            "id": "leader-gap", "label": "Leader gap", "value": f"{(leader['score'] - second['score']) * 100:.1f} pts" if second else "Unavailable",
+            "detail": f"Compared with {second['model']} · ranked by measured score." if second else "A second publishable run is required.",
+            "accent": "amber", "evidence": leader["evidence"], "sourceRunIds": [leader["runId"], second["runId"]] if second else [leader["runId"]], "group": "summary",
+        },
+        {
+            "id": "evidence-health", "label": "Evidence health", "value": f"{len(verified)}/{len(publishable)} verified",
+            "detail": "Accessible, non-warning runs with first-party or independently verified evidence.",
+            "accent": "green", "evidence": "first_party_measured", "sourceRunIds": [run["runId"] for run in verified], "group": "summary",
+        },
+        {
+            "id": "top-three", "label": "Top three", "value": str(min(3, len(ranked))),
+            "detail": "Ranked publishable configurations by measured benchmark score.", "accent": "cyan",
+            "evidence": leader["evidence"], "sourceRunIds": [run["runId"] for run in ranked[:3]], "group": "supporting",
+        },
+        {
+            "id": "largest-harness-difference", "label": "Largest harness difference",
+            "value": f"{largest['delta'] * 100:.1f} pts" if largest else "Unavailable",
+            "detail": f"{largest['label']} · {largest['benchmark']}" if largest else "No benchmark has multiple harnesses.",
+            "accent": "amber", "evidence": "first_party_measured",
+            "sourceRunIds": largest["sourceRunIds"] if largest else [], "group": "supporting",
+        },
+        {
+            "id": "research-coverage", "label": "Research coverage", "value": f"{coverage_points[1]['value']}/{coverage_points[-1]['value'] or 0} stages",
+            "detail": "Collected, measured, cost-ready, and value-ready evidence stages.", "accent": "violet",
+            "evidence": "first_party_measured", "sourceRunIds": [run["runId"] for run in ranked], "group": "supporting",
+        },
+    ]
+
+
+def _configuration_records(runs: list[dict[str, Any]], sources: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    source_urls = {source["id"]: source["url"] for source in sources}
+    return [
+        {
+            "id": run["configurationId"], "runId": run["runId"], "model": run["model"], "provider": run["provider"],
+            "harness": run["harness"], "reasoningEffort": run["reasoningEffort"], "benchmark": run["benchmark"],
+            "benchmarkVersion": run["benchmarkVersion"], "score": run["score"], "costPerTaskUsd": run.get("costPerTaskUsd"),
+            "confidenceIntervalLow": run["confidenceIntervalLow"], "confidenceIntervalHigh": run["confidenceIntervalHigh"],
+            "evidence": run["evidence"], "sourceUrl": source_urls[run["sourceId"]],
+        }
+        for run in runs if not run.get("integrityWarning") and run.get("sourceAccessible")
+    ]
+
+
+def _build_harness_chart(configurations: list[dict[str, Any]]) -> dict[str, Any]:
+    groups: dict[tuple[str, str, str, str, str], list[dict[str, Any]]] = defaultdict(list)
+    for configuration in configurations:
+        groups[(configuration["provider"], configuration["model"], configuration["reasoningEffort"], configuration["benchmark"], configuration["benchmarkVersion"])].append(configuration)
+    points = []
+    for key, group in sorted(groups.items()):
+        harnesses = sorted(group, key=lambda item: (item["score"], item["harness" ]))
+        if len(harnesses) < 2:
+            continue
+        low, high = harnesses[0], harnesses[-1]
+        points.append({
+            "id": configuration_id({"provider": key[0], "model": key[1], "harness": "comparison", "reasoningEffort": key[2], "benchmark": key[3], "benchmarkVersion": key[4]}),
+            "label": key[1], "benchmark": f"{key[3]}@{key[4]}",
+            "left": {"label": low["harness"], "value": low["score"]}, "right": {"label": high["harness"], "value": high["score"]},
+            "delta": round(high["score"] - low["score"], 6), "sourceRunIds": [low["runId"], high["runId"]],
+        })
+    return {"id": "harness-comparison", "title": "Harness comparison", "type": "dumbbell", "points": points}
+
+
+def _build_coverage_chart(configurations: list[dict[str, Any]]) -> dict[str, Any]:
+    measured = len(configurations)
+    cost_ready = 0
+    return {
+        "id": "research-coverage", "title": "Research coverage", "type": "coverage",
+        "points": [
+            {"label": "Collected", "value": measured}, {"label": "Measured", "value": measured},
+            {"label": "Cost-ready", "value": cost_ready}, {"label": "Value-ready", "value": 0},
+        ],
+    }
+
+
+def validate_publication_visuals(publication: dict[str, Any]) -> list[str]:
+    errors = []
+    available_run_ids = {configuration.get("runId") for configuration in publication.get("configurations", [])}
+    run_ids = {run_id for card in publication.get("dashboardCards", []) for run_id in card.get("sourceRunIds", [])}
+    for index, card in enumerate(publication.get("dashboardCards", [])):
+        for field in ("id", "label", "value", "detail", "accent", "evidence", "sourceRunIds", "group"):
+            if field not in card:
+                errors.append(f"dashboardCards[{index}] missing {field}")
+        if card.get("group") not in {"summary", "supporting"}:
+            errors.append(f"dashboardCards[{index}] has invalid group")
+        for run_id in card.get("sourceRunIds", []):
+            if run_id not in available_run_ids:
+                errors.append(f"dashboardCards[{index}] references unknown sourceRunIds: {run_id}")
+    supported = {"ranked_bar", "dumbbell", "coverage", "scatter"}
+    for index, chart in enumerate(publication.get("charts", [])):
+        chart_type = chart.get("type")
+        if chart_type not in supported:
+            errors.append(f"charts[{index}] unknown chart type: {chart_type}")
+        if "points" not in chart or not isinstance(chart["points"], list):
+            errors.append(f"charts[{index}] missing points")
+        if chart_type == "coverage":
+            for point in chart.get("points", []):
+                if "label" not in point or "value" not in point:
+                    errors.append(f"charts[{index}] coverage point missing label or value")
+        if chart_type == "ranked_bar":
+            for point in chart.get("points", []):
+                if not all(field in point for field in ("configurationId", "label", "value", "low", "high")):
+                    errors.append(f"charts[{index}] ranked point missing required field")
+        if chart_type == "dumbbell":
+            for point in chart.get("points", []):
+                if not all(field in point for field in ("left", "right", "delta", "sourceRunIds")):
+                    errors.append(f"charts[{index}] dumbbell point missing required field")
+                run_ids.update(point.get("sourceRunIds", []))
+                for run_id in point.get("sourceRunIds", []):
+                    if run_id not in available_run_ids:
+                        errors.append(f"charts[{index}] references unknown sourceRunIds: {run_id}")
+    if any(run_id for run_id in run_ids if not isinstance(run_id, str) or not run_id.startswith("sha256:")):
+        errors.append("visual sourceRunIds must reference normalized run IDs")
+    return errors
+
+
+def snapshot_filename(bundle: dict[str, Any], publication: dict[str, Any]) -> str:
+    return f"{slug(bundle['run']['runId'])}-v{publication['schemaVersion']}.json"
+
+
 def build_publication(normalized: dict[str, Any]) -> dict[str, Any]:
     runs = normalized["benchmarkRuns"]
     frontiers = compute_pareto_frontier(runs)
     recommendation = _select_recommendation(runs)
-    configurations = [
-        {
-            "id": run["configurationId"], "model": run["model"], "provider": run["provider"],
-            "harness": run["harness"], "reasoningEffort": run["reasoningEffort"],
-            "benchmark": run["benchmark"], "benchmarkVersion": run["benchmarkVersion"],
-            "score": run["score"], "costPerTaskUsd": run.get("costPerTaskUsd"),
-            "confidenceIntervalLow": run["confidenceIntervalLow"], "confidenceIntervalHigh": run["confidenceIntervalHigh"],
-            "evidence": run["evidence"], "sourceUrl": next(source["url"] for source in normalized["sources"] if source["id"] == run["sourceId"]),
-        }
-        for run in runs if not run.get("integrityWarning") and run.get("sourceAccessible")
-    ]
+    configurations = _configuration_records(runs, normalized["sources"])
     points = [
         {"configurationId": item["id"], "x": item["costPerTaskUsd"], "y": item["score"]}
         for item in configurations if item["costPerTaskUsd"] is not None
@@ -290,7 +447,7 @@ def build_publication(normalized: dict[str, Any]) -> dict[str, Any]:
         for item in sorted(configurations, key=lambda record: record["score"], reverse=True)
     ]
     charts = [{
-        "id": "measured-performance", "title": "Measured performance", "type": "bar",
+        "id": "measured-performance", "title": "Measured performance", "type": "ranked_bar",
         "xLabel": "Configuration", "yLabel": "Benchmark pass rate", "points": score_points,
     }]
     if points:
@@ -299,9 +456,10 @@ def build_publication(normalized: dict[str, Any]) -> dict[str, Any]:
             "xLabel": "Median task cost (USD)", "yLabel": "Benchmark pass rate", "points": points,
             "frontiers": frontiers,
         })
+    charts.extend([_build_harness_chart(configurations), _build_coverage_chart(configurations)])
     updated = normalized["run"]["retrievedAt"][:10]
     return {
-        "schemaVersion": 1, "updatedAt": updated, "title": "Coding Agent Value Lab",
+        "schemaVersion": 2, "updatedAt": updated, "title": "Coding Agent Value Lab",
         "subtitle": "Independent analysis of coding models, harnesses, reasoning levels, costs, and subscription efficiency.",
         "positioning": "Benchmarks tell you who scored highest. This lab tells you what to use.",
         "status": f"{len(configurations)} publishable configurations · refreshed {updated}",
@@ -312,6 +470,7 @@ def build_publication(normalized: dict[str, Any]) -> dict[str, Any]:
             "goals": [{"id": "value", "label": "Best value"}, {"id": "quality", "label": "Best quality"}, {"id": "throughput", "label": "Most work per window"}, {"id": "speed", "label": "Fastest"}],
         },
         "insights": _generate_insights(runs), "configurations": configurations,
+        "dashboardCards": _build_dashboard_cards(runs, normalized["sources"], updated),
         "charts": charts,
         "methodology": {
             "summary": "Benchmark versions are isolated; evidence, source dates, uncertainty, harness, and reasoning effort remain visible.",
@@ -390,7 +549,19 @@ def main() -> int:
 
     normalized = normalize_bundle(bundle)
     publication = build_publication(normalized)
-    snapshot = args.snapshot_root / publication["updatedAt"] / f"{slug(bundle['run']['runId'])}.json"
+    visual_errors = validate_publication_visuals(publication)
+    if visual_errors:
+        gate = {
+            "requiresReview": True,
+            "reasons": ["publication visuals failed validation"],
+            "validationErrors": visual_errors,
+        }
+        if args.gate_output:
+            args.gate_output.parent.mkdir(parents=True, exist_ok=True)
+            args.gate_output.write_text(json.dumps(gate, indent=2, sort_keys=True) + "\n")
+        print(json.dumps({"gate": gate}, sort_keys=True))
+        return 2
+    snapshot = args.snapshot_root / publication["updatedAt"] / snapshot_filename(bundle, publication)
     previous = json.loads(args.previous.read_text()) if args.previous and args.previous.exists() else None
     gate = evaluate_change_gate(previous, publication, 0, len(bundle["benchmarkRuns"]), inaccessible, active_notices)
     if args.gate_output:

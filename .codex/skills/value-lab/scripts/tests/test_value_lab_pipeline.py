@@ -8,11 +8,13 @@ SCRIPT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SCRIPT_DIR))
 
 from value_lab_pipeline import (  # noqa: E402
+    _build_harness_chart,
     build_publication,
     calculate_api_cost,
     compute_pareto_frontier,
     evaluate_change_gate,
     normalize_bundle,
+    validate_publication_visuals,
     validate_bundle,
     write_publication,
 )
@@ -65,6 +67,42 @@ def sample_bundle():
 
 
 class ValueLabPipelineTests(unittest.TestCase):
+    def test_dashboard_cards_are_generated_from_publishable_runs(self):
+        publication = build_publication(normalize_bundle(sample_bundle()))
+        cards = {card["id"]: card for card in publication["dashboardCards"]}
+        self.assertEqual(publication["schemaVersion"], 2)
+        self.assertEqual(cards["leader"]["value"], "61.0%")
+        self.assertEqual(cards["measured-configurations"]["value"], "2")
+        self.assertEqual(cards["leader-gap"]["value"], "1.0 pts")
+        self.assertEqual(cards["evidence-health"]["value"], "2/2 verified")
+        self.assertTrue(cards["leader"]["sourceRunIds"])
+        self.assertEqual(len(publication["dashboardCards"]), 7)
+        self.assertEqual(sum(card["group"] == "summary" for card in publication["dashboardCards"]), 4)
+        self.assertEqual(sum(card["group"] == "supporting" for card in publication["dashboardCards"]), 3)
+
+    def test_dashboard_charts_include_rank_harness_and_coverage(self):
+        publication = build_publication(normalize_bundle(sample_bundle()))
+        charts = {chart["id"]: chart for chart in publication["charts"]}
+        self.assertEqual(charts["measured-performance"]["type"], "ranked_bar")
+        self.assertEqual(charts["harness-comparison"]["type"], "dumbbell")
+        self.assertEqual(charts["research-coverage"]["type"], "coverage")
+        self.assertEqual(charts["research-coverage"]["points"][1]["value"], 2)
+        self.assertEqual(charts["research-coverage"]["points"][2]["value"], 0)
+
+    def test_harness_chart_never_pairs_different_benchmark_versions(self):
+        bundle = sample_bundle()
+        bundle["benchmarkRuns"][1]["benchmarkVersion"] = "2.0"
+        chart = _build_harness_chart(build_publication(normalize_bundle(bundle))["configurations"])
+        self.assertEqual(chart["points"], [])
+
+    def test_publication_visual_validation_rejects_malformed_shapes(self):
+        publication = build_publication(normalize_bundle(sample_bundle()))
+        publication["dashboardCards"][0].pop("sourceRunIds")
+        publication["charts"][0]["type"] = "unknown"
+        errors = validate_publication_visuals(publication)
+        self.assertTrue(any("sourceRunIds" in error for error in errors))
+        self.assertTrue(any("unknown chart type" in error for error in errors))
+
     def test_api_cost_uses_uncached_cached_and_output_prices(self):
         cost = calculate_api_cost(100000, 20000, 10000, 2.0, 0.5, 8.0)
         self.assertAlmostEqual(cost, 0.25)
@@ -166,7 +204,7 @@ class ValueLabPipelineTests(unittest.TestCase):
             run.pop("outputTokens")
         publication = build_publication(normalize_bundle(bundle))
         chart = publication["charts"][0]
-        self.assertEqual(chart["type"], "bar")
+        self.assertEqual(chart["type"], "ranked_bar")
         self.assertEqual(len(chart["points"]), 2)
         self.assertIsNone(publication["recommendation"]["configurationId"])
         self.assertEqual(publication["recommendation"]["metrics"][0]["value"], "2")
