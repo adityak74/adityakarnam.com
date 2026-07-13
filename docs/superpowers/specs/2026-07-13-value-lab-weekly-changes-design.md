@@ -34,7 +34,11 @@ The generated publication gains a required `weeklyChanges` object:
         "marker": "same",
         "headline": "Model A remained the Terminal-Bench 2.1 leader.",
         "evidence": "official_verified",
-        "sourceRunIds": ["sha256:current", "sha256:baseline"]
+        "sourceRunIds": ["sha256:current", "sha256:baseline"],
+        "sources": [
+          {"label": "Current benchmark run", "url": "https://example.com/current"},
+          {"label": "Baseline benchmark run", "url": "https://example.com/baseline"}
+        ]
       }
     ]
   }
@@ -43,7 +47,7 @@ The generated publication gains a required `weeklyChanges` object:
 
 `status` is `compared` when a prior publication is available and `baseline` otherwise. A baseline publication has an empty `items` array and renders a clear message that the initial baseline has been established and the next refresh will report changes. Missing history must never produce fabricated movement.
 
-Every item requires `id`, `marker`, `headline`, `evidence`, and `sourceRunIds`. Markers are limited to `up`, `down`, `same`, and `star`. Referenced run IDs must resolve to either the current publication or the supplied prior publication. The renderer resolves source links from those runs; unsupported or unresolved evidence fails validation rather than disappearing.
+Every item requires `id`, `marker`, `headline`, `evidence`, `sourceRunIds`, and `sources`. Markers are limited to `up`, `down`, `same`, and `star`. Referenced run IDs must resolve to either the current publication or the supplied prior publication. The pipeline resolves those runs into deduplicated HTTPS `sources` records so the standalone current publication contains the provenance needed by the page and Markdown export. Unsupported or unresolved evidence fails validation rather than disappearing.
 
 This new required publication shape advances the schema version so consumers can distinguish it from the existing dashboard-only contract.
 
@@ -74,7 +78,7 @@ Validation checks:
 - current and baseline dates and their ordering;
 - a maximum of four unique items;
 - benchmark-version isolation;
-- resolvable current or prior source-run lineage;
+- resolvable current or prior source-run lineage and matching embedded HTTPS source links;
 - evidence labels supported by the existing evidence vocabulary;
 - an empty item list for baseline state;
 - stable, deterministic output for identical current and prior inputs.
