@@ -1,64 +1,83 @@
 ---
 name: value-lab
-description: Create or refresh the data-driven Coding Agent Value Lab page on adityakarnam.com. Use when research JSON, benchmark comparisons, pricing, quota estimates, recommendations, charts, evidence notes, or the Value Lab page need to be added or updated.
+description: Use when Coding Agent Value Lab needs new benchmark or pricing research, a scheduled evidence refresh, source revalidation, JSON regeneration, recommendation or chart updates, or a page/schema change.
 ---
 
 # Coding Agent Value Lab
 
-Use this skill to keep `/value-lab/` as a stable Gatsby renderer whose changing content comes from `src/data/value-lab/current.json`.
+Operate the complete research-to-publication loop for `/value-lab/`. Treat the page as a stable renderer; treat primary-source evidence and deterministic calculations as the product.
 
-## Core contract
+## Choose the run mode
 
-- Treat `src/data/value-lab/current.json` as the source of truth for current research output.
-- Preserve the existing landing-page language: `WorldModelPageShell`, `WorldModelHero`, `WorldModelSection`, `Panel`, the warm paper palette, grid texture, monospace eyebrows, responsive grids, and evidence-forward editorial tone.
-- Keep rendering deterministic. Do not hard-code benchmark numbers, prices, recommendations, chart points, or source claims in the page component.
-- Keep historical snapshots under `src/data/value-lab/snapshots/YYYY-MM-DD/` when supplied by the research pipeline.
-- Read [the data contract](references/data-contract.md) before changing the JSON shape or renderer.
+| Request | Required work |
+|---|---|
+| “Refresh/update/run Value Lab” | Execute the full research run below. Never start at `current.json`. |
+| New raw bundle supplied | Validate, normalize, calculate, generate, gate, snapshot, rebuild. |
+| Data-only correction | Re-run from preserved raw evidence; do not hand-edit derived values. |
+| New metric/chart/section | Update contract, tests, pipeline, renderer, then execute a full run. |
+| UI-only styling change | Preserve JSON contract; verify desktop/mobile and Markdown export. |
 
-## Update workflow
+## Full research run — mandatory
 
-1. Inspect the current branch, existing Value Lab files, `CODING_AGENT_VALUE_LAB.md`, and unrelated worktree changes. Do not delete or reset user files.
-2. Validate `current.json`: required metadata, stable IDs, numeric ranges, dates, evidence labels, source URLs, and chart series must be valid. Reject malformed or unsupported data instead of inventing values.
-3. Compare the incoming shape with the renderer's supported capabilities.
-   - Data-only refresh: update JSON/snapshots only; rebuild and verify.
-   - Existing field or series changed: update only the data mapping if the component already supports it.
-   - New visual primitive, section type, or interaction: update the renderer/components and add a focused test or verification fixture.
-4. Generate page sections from the data: recommendation hero, decision controls, insight cards, comparison table, charts, methodology/evidence notes, sources, and historical context when present.
-5. Add or preserve a `Copy as Markdown` control. The copied summary must include the page date, recommendation, key metrics, evidence labels, and source links; it must not expose hidden raw telemetry or credentials.
-6. Run the narrowest useful checks first, then `yarn build` for page changes. Report any pre-existing build/environment warning separately.
-7. For requested repository work, commit the skill, data, page, and tests as a focused change and create a PR only after verification.
+1. Read [research-workflow.md](references/research-workflow.md), [source-registry.md](references/source-registry.md), and [data-contract.md](references/data-contract.md).
+2. Inspect the prior `current.json`, latest snapshot, source manifest, open integrity notices, and unrelated worktree changes.
+3. Create `data/value-lab/raw/YYYY-MM-DD/`. Fetch every in-scope official benchmark, pricing, plan, release-note, and integrity source. Save immutable raw responses plus retrieval metadata before extracting numbers.
+4. Build `bundle.json` exactly as specified in the research workflow. Every record must reference a collected `sourceId`.
+5. Validate and generate with:
 
-## Model and subagent routing
+   ```bash
+   python3 .codex/skills/value-lab/scripts/value_lab_pipeline.py \
+     data/value-lab/raw/YYYY-MM-DD/bundle.json \
+     --previous src/data/value-lab/current.json \
+     --current src/data/value-lab/current.json \
+     --snapshot-root src/data/value-lab/snapshots \
+     --gate-output data/value-lab/review/YYYY-MM-DD/gate.json
+   ```
 
-Use subagents only for bounded, independent work. Every delegation prompt must name the model and reasoning level:
+6. Stop for human review when the gate exits `2`. Do not weaken or bypass the gate. Correct extraction errors from raw evidence; do not edit generated numbers.
+7. Update the renderer only when generated fields require a capability it does not support. A normal research refresh changes data, raw evidence, snapshots, and review output—not page components.
+8. Verify deterministic tests, skill validation, Gatsby build, page rendering, source links, visible uncertainty/evidence labels, and Copy as Markdown output.
+9. Commit the raw bundle, generated data, dated snapshot, gate report, skill changes, and any required renderer changes. Preserve unrelated files.
 
-- `gpt-5.6-luna`, low: file inventory, schema checks, JSON formatting, source/link completeness, and simple verification.
-- `gpt-5.6-luna`, medium: routine data-only refresh review or Markdown serialization review.
-- `gpt-5.6-terra`, medium: ordinary React/Gatsby component changes, responsive layout review, and test/build diagnosis.
-- `gpt-5.6-terra`, high: cross-file schema-to-renderer integration or non-trivial UI behavior.
-- `gpt-5.6-sol`, high: only for ambiguous architecture, substantial refactoring, difficult build failures, or research-methodology disputes.
+## Research rules
 
-Do not use `gpt-5.6-sol` for a data-only refresh. Do not spend a frontier model on formatting, inventory, or a single-field update. Subagents must own disjoint files, state that they are not alone in the worktree, and return changed paths plus verification results.
+- Browse current sources on every run; do not trust remembered prices, limits, model names, or leaderboard rows.
+- Use official benchmark/operator/provider pages first. Use papers or reproducible repositories second. Never use search snippets as the stored evidence.
+- Keep model, harness, reasoning effort, benchmark version, run configuration, and evaluation date separate.
+- Never compare raw scores across benchmark versions. The pipeline groups Pareto frontiers by `benchmark@version`.
+- Preserve unavailable, retracted, or changed sources in history and trigger review; never silently delete them.
+- Leave unknown prices, tokens, quotas, or effort levels as `null`/absent. Never infer subscription token allowances from anecdotes.
+- Generate facts deterministically. An LLM may rewrite prose only from an insight's `facts` and `sourceRunIds`.
+- Never publish prompts, repository contents, account identifiers, credentials, or private telemetry.
 
-Suggested delegation split:
+## Subagent and model routing
 
-- Luna: validate incoming JSON and produce a concise schema diff.
-- Terra: implement a new renderer capability or Copy as Markdown behavior.
-- Sol: review only when the change crosses data architecture, methodology, and UI boundaries.
+Use one agent per independent source family; require structured output and source URLs. Name the model and effort in every delegation prompt.
 
-## Safety and evidence
+- `gpt-5.6-luna`, low: source inventory, URL/access checks, schema validation, JSON formatting, link completeness.
+- `gpt-5.6-luna`, medium: extract one official leaderboard or one provider's pricing/plan records into the raw-bundle schema.
+- `gpt-5.6-terra`, medium: reconcile aliases, release notes, benchmark versions, and integrity notices across sources.
+- `gpt-5.6-terra`, high: implement a new metric, collector shape, renderer capability, or cross-source consistency fix.
+- `gpt-5.6-sol`, high: only for disputed methodology, ambiguous benchmark comparability, substantial pipeline architecture, or a difficult integrity incident.
 
-- Never fabricate benchmark results, pricing, quota allowances, confidence intervals, or source URLs.
-- Keep benchmark versions isolated unless the data explicitly supplies a documented normalization.
-- Preserve evidence labels and uncertainty in user-visible output.
-- Treat social posts as context, not primary numeric evidence.
-- Do not collect or publish prompts, source code, account identifiers, credentials, or private telemetry.
+Do not use `gpt-5.6-sol` for routine collection, formatting, validation, or data-only refreshes. Keep agent write sets disjoint. The main agent must independently run deterministic validation and inspect the publication gate.
 
-## Completion checklist
+## Renderer contract
 
-- JSON validates against the data contract.
-- Renderer contains no duplicated research values.
-- Copy as Markdown includes the current recommendation and citations.
-- Mobile and desktop layout remain responsive.
-- Build/tests pass or failures are clearly identified.
-- Only intended files are committed.
+- `src/data/value-lab/current.json` is generated current state.
+- `src/data/value-lab/snapshots/YYYY-MM-DD/<run-id>.json` is immutable history.
+- Keep research values out of `src/pages/value-lab.tsx`.
+- Preserve `WorldModelPageShell`, `WorldModelHero`, `WorldModelSection`, `Panel`, responsive grids, evidence labels, source links, and Copy as Markdown.
+- Fail visibly for unsupported chart types or missing required fields.
+
+## Verification
+
+Run:
+
+```bash
+python3 -m unittest discover -s .codex/skills/value-lab/scripts/tests -v
+python3 /Users/adityakarnam/.codex/skills/.system/skill-creator/scripts/quick_validate.py .codex/skills/value-lab
+npm run build
+```
+
+Completion requires: raw evidence preserved, bundle valid, deterministic output, version isolation, grounded insights, immutable snapshot, gate reviewed, page rebuilt, Markdown export checked, and only intended files committed.

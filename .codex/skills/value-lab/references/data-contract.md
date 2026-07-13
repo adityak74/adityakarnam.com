@@ -61,3 +61,5 @@ Optional top-level fields: `positioning`, `status`, `alternatives`, `controls`, 
 Evidence values are: `official_verified`, `independently_reproduced`, `first_party_measured`, `vendor_reported`, `community_observed`, `estimated`, and `experimental`.
 
 The renderer may add optional fields, but must fail visibly for unsupported `charts[].type` values rather than silently dropping data.
+
+Supported chart types are `bar` for score-only benchmark data and `scatter` when sourced task-cost inputs exist. Bar points use `value`, `low`, and `high`; scatter points use `x` and `y`.

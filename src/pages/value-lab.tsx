@@ -41,8 +41,26 @@ const configurations = valueLab.configurations as Array<{
   benchmark: string
   benchmarkVersion: string
   score: number
+  confidenceIntervalLow?: number
+  confidenceIntervalHigh?: number
+  evidence: string
+  sourceUrl: string
 }>
 const history = valueLab.history as Array<{ date: string; label: string }>
+const charts = valueLab.charts as unknown as Array<{
+  id: string
+  title: string
+  type: string
+  points: Array<{
+    configurationId: string
+    label?: string
+    value?: number
+    low?: number
+    high?: number
+    x?: number
+    y?: number
+  }>
+}>
 
 const formatMarkdown = () => {
   const lines = [
@@ -86,7 +104,7 @@ const formatMarkdown = () => {
       "## Configurations",
       "",
       ...configurations.map(configuration =>
-        `- ${configuration.model} · ${configuration.harness} · ${configuration.reasoningEffort} · ${configuration.benchmark} ${configuration.benchmarkVersion}: ${configuration.score}`
+        `- [${configuration.model}](${configuration.sourceUrl}) · ${configuration.harness} · ${configuration.reasoningEffort} effort · ${configuration.benchmark}@${configuration.benchmarkVersion}: ${(configuration.score * 100).toFixed(1)}%${configuration.confidenceIntervalLow !== undefined && configuration.confidenceIntervalHigh !== undefined ? ` (${(configuration.confidenceIntervalLow * 100).toFixed(1)}–${(configuration.confidenceIntervalHigh * 100).toFixed(1)}%)` : ""} · ${evidenceLabels[configuration.evidence] ?? configuration.evidence}`
       )
     )
   }
@@ -175,6 +193,37 @@ const ScatterPlaceholder = ({ message }: { message?: string }) => (
   </div>
 )
 
+const ScoreBarChart = ({ chart }: { chart: (typeof charts)[number] }) => (
+  <div style={{ display: "grid", gap: "0.8rem" }}>
+    {chart.points.map(point => (
+      <div key={point.configurationId}>
+        <div style={{ alignItems: "baseline", display: "flex", gap: "1rem", justifyContent: "space-between" }}>
+          <span style={{ color: labPalette.heading, fontSize: "0.9rem" }}>{point.label}</span>
+          <span style={{ color: labPalette.cyan, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.82rem", whiteSpace: "nowrap" }}>
+            {((point.value ?? 0) * 100).toFixed(1)}%
+          </span>
+        </div>
+        <div style={{ background: labPalette.panelSoft, borderRadius: "999px", height: "8px", marginTop: "0.35rem", overflow: "hidden" }}>
+          <div style={{ background: labPalette.cyan, borderRadius: "999px", height: "100%", width: `${(point.value ?? 0) * 100}%` }} />
+        </div>
+        {point.low !== undefined && point.high !== undefined ? (
+          <small style={{ color: labPalette.slate, fontFamily: "'JetBrains Mono', monospace" }}>
+            interval {(point.low * 100).toFixed(1)}–{(point.high * 100).toFixed(1)}%
+          </small>
+        ) : null}
+      </div>
+    ))}
+  </div>
+)
+
+const ChartView = () => {
+  const chart = charts[0]
+  if (!chart) return <ScatterPlaceholder message="No chart data was generated for this snapshot." />
+  if (chart.type === "bar") return <ScoreBarChart chart={chart} />
+  if (chart.type === "scatter" && chart.points.length === 0) return <ScatterPlaceholder />
+  return <ScatterPlaceholder message={`Unsupported chart type “${chart.type}”. Add a renderer before publishing this data.`} />
+}
+
 const ValueLabPage = (_props: PageProps) => (
   <Layout>
     <WorldModelPageShell>
@@ -231,11 +280,18 @@ const ValueLabPage = (_props: PageProps) => (
               <small style={{ color: labPalette.slate, fontFamily: "'JetBrains Mono', monospace" }}>{evidenceLabels[insight.evidence] ?? insight.evidence}</small>
             </Panel>
           ))}
+          {valueLab.insights.length === 0 ? (
+            <Panel accent="slate">
+              <span style={styles.label}>Research boundary</span>
+              <h3 style={{ color: labPalette.heading, fontSize: "1.2rem", lineHeight: 1.25, margin: 0 }}>Cost conclusions are waiting for sourced run usage.</h3>
+              <p style={{ color: labPalette.body, lineHeight: 1.6 }}>The current benchmark publishes measured accuracy, but not the token usage required to calculate cost per evaluated task.</p>
+            </Panel>
+          ) : null}
         </div>
       </WorldModelSection>
 
-      <WorldModelSection eyebrow="Performance frontier" title={valueLab.charts[0]?.title ?? "Performance versus cost"} description="The chart is intentionally empty until the pipeline supplies comparable, sourced configurations.">
-        {valueLab.charts[0]?.type === "scatter" ? <ScatterPlaceholder /> : <ScatterPlaceholder message="Unsupported chart data. Add a renderer before publishing this chart type." />}
+      <WorldModelSection eyebrow="Measured comparison" title={charts[0]?.title ?? "Measured performance"} description="Configurations remain tied to the exact model, harness, benchmark version, evaluation date, and evidence source.">
+        <ChartView />
       </WorldModelSection>
 
       <WorldModelSection eyebrow="Methodology" title="Useful ranges over false precision." description={valueLab.methodology.summary}>
@@ -252,6 +308,11 @@ const ValueLabPage = (_props: PageProps) => (
               Every published claim will retain its benchmark version, harness, reasoning level, evidence class, date, and source.
             </p>
             <span style={{ color: labPalette.cyan }}>Data contract is versioned with the page</span>
+            {sources.length > 0 ? (
+              <div style={{ display: "grid", gap: "0.45rem", marginTop: "1rem" }}>
+                {sources.map(source => <a key={source.url} href={source.url} rel="noreferrer" target="_blank" style={{ color: labPalette.cyan }}>{source.label}</a>)}
+              </div>
+            ) : null}
           </Panel>
         </TwoColumnGrid>
       </WorldModelSection>
