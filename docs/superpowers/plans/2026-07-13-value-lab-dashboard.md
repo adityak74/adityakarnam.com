@@ -28,7 +28,7 @@
 **Interfaces:**
 - Consumes: normalized benchmark runs from `normalize_bundle(bundle)`.
 - Produces: `_build_dashboard_cards(runs, sources, updated_at) -> list[dict]`, `_build_harness_chart(configurations) -> dict`, `_build_coverage_chart(configurations) -> dict`, and `validate_publication_visuals(publication) -> list[str]`.
-- Produces: `build_publication()` output with `schemaVersion: 2`, `dashboardCards`, and chart types `ranked_bar`, `dumbbell`, and `coverage`.
+- Produces: `build_publication()` output with `schemaVersion: 2`, seven `dashboardCards` grouped as `summary` or `supporting`, and chart types `ranked_bar`, `dumbbell`, and `coverage`.
 
 - [ ] **Step 1: Write failing pipeline tests**
 
@@ -44,6 +44,9 @@ def test_dashboard_cards_are_generated_from_publishable_runs(self):
     self.assertEqual(cards["leader-gap"]["value"], "1.0 pts")
     self.assertEqual(cards["evidence-health"]["value"], "2/2 verified")
     self.assertTrue(cards["leader"]["sourceRunIds"])
+    self.assertEqual(len(publication["dashboardCards"]), 7)
+    self.assertEqual(sum(card["group"] == "summary" for card in publication["dashboardCards"]), 4)
+    self.assertEqual(sum(card["group"] == "supporting" for card in publication["dashboardCards"]), 3)
 
 def test_dashboard_charts_include_rank_harness_and_coverage(self):
     publication = build_publication(normalize_bundle(sample_bundle()))
@@ -95,7 +98,7 @@ Add `_build_dashboard_cards` using publishable runs sorted by score. Generate st
 }
 ```
 
-Generate `measured-configurations`, `leader-gap`, and `evidence-health` cards from the same filtered set. Use `Unavailable` and a neutral explanation when fewer than two runs exist. Evidence health counts only accessible, non-warning runs whose evidence is `official_verified`, `independently_reproduced`, or `first_party_measured`.
+Generate `measured-configurations`, `leader-gap`, and `evidence-health` summary cards from the same filtered set. Generate supporting cards for `top-three`, `largest-harness-difference`, and `research-coverage`; their values and detail must come from the same ranked, harness, and coverage datasets emitted by the pipeline. Add `group: "summary"` to the first four cards and `group: "supporting"` to the last three. Use `Unavailable` and a neutral explanation when fewer than two runs exist. Evidence health counts only accessible, non-warning runs whose evidence is `official_verified`, `independently_reproduced`, or `first_party_measured`.
 
 - [ ] **Step 4: Implement deterministic chart generation**
 
@@ -278,7 +281,7 @@ Run:
 jq '{schemaVersion, dashboardCards, charts: [.charts[] | {id, type, pointCount: (.points | length)}], recommendation}' src/data/value-lab/current.json
 ```
 
-Expected: four dashboard cards, non-empty ranking/harness/coverage charts, and a null recommendation configuration while cost usage remains unavailable.
+Expected: seven dashboard cards (four summary and three supporting), non-empty ranking/harness/coverage charts, and a null recommendation configuration while cost usage remains unavailable.
 
 - [ ] **Step 3: Commit generated artifacts**
 
