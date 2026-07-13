@@ -127,6 +127,44 @@ class ValueLabPipelineTests(unittest.TestCase):
         self.assertEqual(current_a["weeklyChanges"]["status"], "compared")
         self.assertLessEqual(len(current_a["weeklyChanges"]["items"]), 4)
 
+    def test_weekly_change_validation_rejects_unknown_marker_and_run(self):
+        prior_bundle = sample_bundle()
+        prior_bundle["run"].update({
+            "runId": "2026-07-06T120000Z",
+            "retrievedAt": "2026-07-06T12:00:00Z",
+        })
+        previous = build_publication(normalize_bundle(prior_bundle))
+        publication = build_publication(normalize_bundle(sample_bundle()), previous)
+        item = publication["weeklyChanges"]["items"][0]
+        item["marker"] = "new"
+        item["sourceRunIds"] = ["sha256:unknown"]
+
+        errors = validate_publication_visuals(publication, previous=previous)
+
+        self.assertTrue(any("weeklyChanges" in error and "marker" in error for error in errors))
+        self.assertTrue(any("weeklyChanges" in error and "sourceRunIds" in error for error in errors))
+
+    def test_weekly_change_validation_rejects_non_https_sources(self):
+        publication = build_publication(normalize_bundle(sample_bundle()))
+        publication["weeklyChanges"] = {
+            "title": "What's Changed Since Last Week?",
+            "baselineDate": "2026-07-06",
+            "currentDate": "2026-07-13",
+            "status": "compared",
+            "items": [{
+                "id": "bad",
+                "marker": "up",
+                "headline": "Bad source.",
+                "evidence": "official_verified",
+                "sourceRunIds": [],
+                "sources": [{"label": "Bad", "url": "http://example.com"}],
+            }],
+        }
+
+        errors = validate_publication_visuals(publication)
+
+        self.assertTrue(any("weeklyChanges" in error and "HTTPS" in error for error in errors))
+
     def test_mixed_cost_readiness_preserves_exact_benchmark_and_pricing_lineage(self):
         normalized = normalize_bundle(mixed_cost_readiness_bundle())
         publication = build_publication(normalized)

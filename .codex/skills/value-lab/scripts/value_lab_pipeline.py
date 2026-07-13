@@ -619,6 +619,7 @@ def _source_run_ids_are_valid(run_ids: Any, available_run_ids: set[str]) -> bool
 
 def validate_publication_visuals(
     publication: dict[str, Any], normalized_runs: list[dict[str, Any]] | None = None,
+    previous: dict[str, Any] | None = None,
 ) -> list[str]:
     """Validate the published renderer contract against normalized run provenance."""
     errors: list[str] = []
@@ -652,6 +653,101 @@ def validate_publication_visuals(
         "leader", "measured-configurations", "leader-gap", "evidence-health",
         "top-three", "largest-harness-difference", "research-coverage",
     }
+    if publication.get("schemaVersion") != 3:
+        errors.append("publication schemaVersion must be 3")
+
+    weekly = publication.get("weeklyChanges")
+    if not isinstance(weekly, dict):
+        errors.append("publication requires weeklyChanges")
+    else:
+        status = weekly.get("status")
+        items = weekly.get("items")
+        current_date = weekly.get("currentDate")
+        baseline_date = weekly.get("baselineDate")
+        if not isinstance(weekly.get("title"), str) or not weekly["title"]:
+            errors.append("weeklyChanges title must be a non-empty string")
+        if status not in {"baseline", "compared"}:
+            errors.append("weeklyChanges status must be baseline or compared")
+        if not isinstance(current_date, str) or current_date != publication.get("updatedAt"):
+            errors.append("weeklyChanges currentDate must match publication updatedAt")
+        else:
+            try:
+                date.fromisoformat(current_date)
+            except ValueError:
+                errors.append("weeklyChanges currentDate must be an ISO date")
+        if status == "baseline":
+            if baseline_date is not None or items != []:
+                errors.append("weeklyChanges baseline state requires a null baselineDate and empty items")
+        elif not isinstance(baseline_date, str):
+            errors.append("weeklyChanges compared state requires baselineDate")
+        else:
+            try:
+                if date.fromisoformat(baseline_date) >= date.fromisoformat(current_date):
+                    errors.append("weeklyChanges baselineDate must be earlier than currentDate")
+            except (TypeError, ValueError):
+                errors.append("weeklyChanges baselineDate must be an ISO date")
+
+        if not isinstance(items, list):
+            errors.append("weeklyChanges items must be a list")
+            items = []
+        elif len(items) > WEEKLY_CHANGE_LIMIT:
+            errors.append(f"weeklyChanges may contain at most {WEEKLY_CHANGE_LIMIT} items")
+
+        prior_configurations = previous.get("configurations", []) if isinstance(previous, dict) else []
+        weekly_configurations = [
+            configuration for configuration in [*configurations, *prior_configurations]
+            if isinstance(configuration, dict) and isinstance(configuration.get("runId"), str)
+        ]
+        weekly_run_ids = {configuration["runId"] for configuration in weekly_configurations}
+        seen_weekly_ids: set[str] = set()
+        for index, item in enumerate(items):
+            prefix = f"weeklyChanges.items[{index}]"
+            if not isinstance(item, dict):
+                errors.append(f"{prefix} must be an object")
+                continue
+            for field in ("id", "headline", "evidence"):
+                if not isinstance(item.get(field), str) or not item[field]:
+                    errors.append(f"{prefix} {field} must be a non-empty string")
+            if item.get("id") in seen_weekly_ids:
+                errors.append(f"{prefix} id must be unique")
+            elif isinstance(item.get("id"), str):
+                seen_weekly_ids.add(item["id"])
+            if item.get("marker") not in WEEKLY_CHANGE_MARKERS:
+                errors.append(f"{prefix} marker is invalid")
+            if item.get("evidence") not in EVIDENCE:
+                errors.append(f"{prefix} evidence is invalid")
+            source_run_ids = item.get("sourceRunIds")
+            if (
+                not isinstance(source_run_ids, list) or not source_run_ids
+                or len(source_run_ids) != len(set(source_run_ids))
+                or any(run_id not in weekly_run_ids for run_id in source_run_ids)
+            ):
+                errors.append(f"{prefix} sourceRunIds must resolve to unique current or prior runs")
+                source_run_ids = []
+            sources_list = item.get("sources")
+            if not isinstance(sources_list, list) or not sources_list:
+                errors.append(f"{prefix} sources must be a non-empty list")
+                sources_list = []
+            source_urls = []
+            for source_index, source in enumerate(sources_list):
+                if not isinstance(source, dict) or not isinstance(source.get("label"), str) or not source.get("label"):
+                    errors.append(f"{prefix}.sources[{source_index}] label must be a non-empty string")
+                url = source.get("url") if isinstance(source, dict) else None
+                if not isinstance(url, str) or not url.startswith("https://"):
+                    errors.append(f"{prefix}.sources[{source_index}] URL must use HTTPS")
+                else:
+                    source_urls.append(url)
+            if len(source_urls) != len(set(source_urls)):
+                errors.append(f"{prefix} source URLs must be unique")
+            if source_run_ids:
+                referenced = [
+                    configuration for configuration in weekly_configurations
+                    if configuration["runId"] in source_run_ids
+                ]
+                expected_sources = _weekly_sources(*referenced)
+                if sources_list != expected_sources:
+                    errors.append(f"{prefix} sources must match referenced run provenance")
+
     cards = publication.get("dashboardCards", [])
     if not isinstance(cards, list) or len(cards) != 7:
         errors.append("publication requires exactly seven dashboard cards")
@@ -961,9 +1057,10 @@ def main() -> int:
         print(json.dumps({"gate": gate}, sort_keys=True))
         return 2
 
+    previous = json.loads(args.previous.read_text()) if args.previous and args.previous.exists() else None
     normalized = normalize_bundle(bundle)
-    publication = build_publication(normalized)
-    visual_errors = validate_publication_visuals(publication, normalized["benchmarkRuns"])
+    publication = build_publication(normalized, previous)
+    visual_errors = validate_publication_visuals(publication, normalized["benchmarkRuns"], previous)
     if visual_errors:
         gate = {
             "requiresReview": True,
@@ -976,7 +1073,6 @@ def main() -> int:
         print(json.dumps({"gate": gate}, sort_keys=True))
         return 2
     snapshot = args.snapshot_root / publication["updatedAt"] / snapshot_filename(bundle, publication)
-    previous = json.loads(args.previous.read_text()) if args.previous and args.previous.exists() else None
     gate = evaluate_change_gate(previous, publication, 0, len(bundle["benchmarkRuns"]), inaccessible, active_notices)
     if args.gate_output:
         args.gate_output.parent.mkdir(parents=True, exist_ok=True)
