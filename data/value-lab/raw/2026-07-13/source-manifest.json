@@ -1,0 +1,30 @@
+{
+  "runId": "2026-07-13T063508Z",
+  "retrievedAt": "2026-07-13T06:35:08Z",
+  "sources": [
+    {
+      "id": "terminal-bench-2-1",
+      "url": "https://www.tbench.ai/leaderboard/terminal-bench/2.1",
+      "kind": "benchmark",
+      "accessible": true,
+      "rawPath": "data/value-lab/raw/2026-07-13/terminal-bench-2-1.html",
+      "sha256": "1280958e574a809b57ace5b2fb9baf51217d355a686a43704092966825cb3f30"
+    },
+    {
+      "id": "terminal-bench-2-1-release",
+      "url": "https://www.tbench.ai/news/terminal-bench-2-1",
+      "kind": "release_notes",
+      "accessible": true,
+      "rawPath": "data/value-lab/raw/2026-07-13/terminal-bench-2-1-release.html",
+      "sha256": "2528100a66b2b6c93cd3e1c3eae96b50164ad5ba2d6939a80744d8f8f5f414e7"
+    },
+    {
+      "id": "terminal-bench-integrity",
+      "url": "https://www.tbench.ai/news/leaderboard-integrity-update",
+      "kind": "integrity_notice",
+      "accessible": true,
+      "rawPath": "data/value-lab/raw/2026-07-13/terminal-bench-integrity.html",
+      "sha256": "0c3fd3546c29bb2153f2529de135f709b0b893bbe35fb1a8bdaa4f8be7568ef9"
+    }
+  ]
+}

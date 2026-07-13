@@ -1,0 +1,401 @@
+{
+  "alternatives": [],
+  "charts": [
+    {
+      "id": "measured-performance",
+      "points": [
+        {
+          "configurationId": "openai-gpt-5-5__codex-cli__unknown__terminal-bench-2-1",
+          "high": 0.856,
+          "label": "GPT-5.5 \u00b7 Codex CLI",
+          "low": 0.812,
+          "value": 0.834
+        },
+        {
+          "configurationId": "anthropic-claude-5-fable__claude-code__unknown__terminal-bench-2-1",
+          "high": 0.851,
+          "label": "Claude 5 Fable \u00b7 Claude Code",
+          "low": 0.811,
+          "value": 0.831
+        },
+        {
+          "configurationId": "anthropic-claude-5-fable__terminus-2__unknown__terminal-bench-2-1",
+          "high": 0.827,
+          "label": "Claude 5 Fable \u00b7 Terminus 2",
+          "low": 0.781,
+          "value": 0.804
+        },
+        {
+          "configurationId": "anthropic-claude-opus-4-8__claude-code__unknown__terminal-bench-2-1",
+          "high": 0.814,
+          "label": "Claude Opus 4.8 \u00b7 Claude Code",
+          "low": 0.764,
+          "value": 0.789
+        },
+        {
+          "configurationId": "openai-gpt-5-5__terminus-2__unknown__terminal-bench-2-1",
+          "high": 0.806,
+          "label": "GPT-5.5 \u00b7 Terminus 2",
+          "low": 0.758,
+          "value": 0.782
+        },
+        {
+          "configurationId": "anthropic-claude-opus-4-8__terminus-2__unknown__terminal-bench-2-1",
+          "high": 0.77,
+          "label": "Claude Opus 4.8 \u00b7 Terminus 2",
+          "low": 0.722,
+          "value": 0.746
+        },
+        {
+          "configurationId": "google-gemini-3-pro__terminus-2__unknown__terminal-bench-2-1",
+          "high": 0.77,
+          "label": "Gemini 3 Pro \u00b7 Terminus 2",
+          "low": 0.718,
+          "value": 0.744
+        },
+        {
+          "configurationId": "google-gemini-3-1-pro__gemini-cli__unknown__terminal-bench-2-1",
+          "high": 0.736,
+          "label": "Gemini 3.1 Pro \u00b7 Gemini CLI",
+          "low": 0.678,
+          "value": 0.707
+        },
+        {
+          "configurationId": "google-gemini-3-1-pro__terminus-2__unknown__terminal-bench-2-1",
+          "high": 0.732,
+          "label": "Gemini 3.1 Pro \u00b7 Terminus 2",
+          "low": 0.674,
+          "value": 0.703
+        },
+        {
+          "configurationId": "anthropic-claude-opus-4-7__claude-code__unknown__terminal-bench-2-1",
+          "high": 0.724,
+          "label": "Claude Opus 4.7 \u00b7 Claude Code",
+          "low": 0.67,
+          "value": 0.697
+        },
+        {
+          "configurationId": "google-gemini-3-pro__gemini-cli__unknown__terminal-bench-2-1",
+          "high": 0.69,
+          "label": "Gemini 3 Pro \u00b7 Gemini CLI",
+          "low": 0.636,
+          "value": 0.663
+        },
+        {
+          "configurationId": "anthropic-claude-opus-4-7__terminus-2__unknown__terminal-bench-2-1",
+          "high": 0.688,
+          "label": "Claude Opus 4.7 \u00b7 Terminus 2",
+          "low": 0.634,
+          "value": 0.661
+        },
+        {
+          "configurationId": "z-ai-glm-5-1__claude-code__unknown__terminal-bench-2-1",
+          "high": 0.611,
+          "label": "GLM 5.1 \u00b7 Claude Code",
+          "low": 0.563,
+          "value": 0.587
+        }
+      ],
+      "title": "Measured performance",
+      "type": "bar",
+      "xLabel": "Configuration",
+      "yLabel": "Benchmark pass rate"
+    }
+  ],
+  "configurations": [
+    {
+      "benchmark": "terminal-bench",
+      "benchmarkVersion": "2.1",
+      "confidenceIntervalHigh": 0.851,
+      "confidenceIntervalLow": 0.811,
+      "costPerTaskUsd": null,
+      "evidence": "official_verified",
+      "harness": "Claude Code",
+      "id": "anthropic-claude-5-fable__claude-code__unknown__terminal-bench-2-1",
+      "model": "Claude 5 Fable",
+      "provider": "Anthropic",
+      "reasoningEffort": "unknown",
+      "score": 0.831,
+      "sourceUrl": "https://www.tbench.ai/leaderboard/terminal-bench/2.1"
+    },
+    {
+      "benchmark": "terminal-bench",
+      "benchmarkVersion": "2.1",
+      "confidenceIntervalHigh": 0.827,
+      "confidenceIntervalLow": 0.781,
+      "costPerTaskUsd": null,
+      "evidence": "official_verified",
+      "harness": "Terminus 2",
+      "id": "anthropic-claude-5-fable__terminus-2__unknown__terminal-bench-2-1",
+      "model": "Claude 5 Fable",
+      "provider": "Anthropic",
+      "reasoningEffort": "unknown",
+      "score": 0.804,
+      "sourceUrl": "https://www.tbench.ai/leaderboard/terminal-bench/2.1"
+    },
+    {
+      "benchmark": "terminal-bench",
+      "benchmarkVersion": "2.1",
+      "confidenceIntervalHigh": 0.724,
+      "confidenceIntervalLow": 0.67,
+      "costPerTaskUsd": null,
+      "evidence": "official_verified",
+      "harness": "Claude Code",
+      "id": "anthropic-claude-opus-4-7__claude-code__unknown__terminal-bench-2-1",
+      "model": "Claude Opus 4.7",
+      "provider": "Anthropic",
+      "reasoningEffort": "unknown",
+      "score": 0.697,
+      "sourceUrl": "https://www.tbench.ai/leaderboard/terminal-bench/2.1"
+    },
+    {
+      "benchmark": "terminal-bench",
+      "benchmarkVersion": "2.1",
+      "confidenceIntervalHigh": 0.688,
+      "confidenceIntervalLow": 0.634,
+      "costPerTaskUsd": null,
+      "evidence": "official_verified",
+      "harness": "Terminus 2",
+      "id": "anthropic-claude-opus-4-7__terminus-2__unknown__terminal-bench-2-1",
+      "model": "Claude Opus 4.7",
+      "provider": "Anthropic",
+      "reasoningEffort": "unknown",
+      "score": 0.661,
+      "sourceUrl": "https://www.tbench.ai/leaderboard/terminal-bench/2.1"
+    },
+    {
+      "benchmark": "terminal-bench",
+      "benchmarkVersion": "2.1",
+      "confidenceIntervalHigh": 0.814,
+      "confidenceIntervalLow": 0.764,
+      "costPerTaskUsd": null,
+      "evidence": "official_verified",
+      "harness": "Claude Code",
+      "id": "anthropic-claude-opus-4-8__claude-code__unknown__terminal-bench-2-1",
+      "model": "Claude Opus 4.8",
+      "provider": "Anthropic",
+      "reasoningEffort": "unknown",
+      "score": 0.789,
+      "sourceUrl": "https://www.tbench.ai/leaderboard/terminal-bench/2.1"
+    },
+    {
+      "benchmark": "terminal-bench",
+      "benchmarkVersion": "2.1",
+      "confidenceIntervalHigh": 0.77,
+      "confidenceIntervalLow": 0.722,
+      "costPerTaskUsd": null,
+      "evidence": "official_verified",
+      "harness": "Terminus 2",
+      "id": "anthropic-claude-opus-4-8__terminus-2__unknown__terminal-bench-2-1",
+      "model": "Claude Opus 4.8",
+      "provider": "Anthropic",
+      "reasoningEffort": "unknown",
+      "score": 0.746,
+      "sourceUrl": "https://www.tbench.ai/leaderboard/terminal-bench/2.1"
+    },
+    {
+      "benchmark": "terminal-bench",
+      "benchmarkVersion": "2.1",
+      "confidenceIntervalHigh": 0.736,
+      "confidenceIntervalLow": 0.678,
+      "costPerTaskUsd": null,
+      "evidence": "official_verified",
+      "harness": "Gemini CLI",
+      "id": "google-gemini-3-1-pro__gemini-cli__unknown__terminal-bench-2-1",
+      "model": "Gemini 3.1 Pro",
+      "provider": "Google",
+      "reasoningEffort": "unknown",
+      "score": 0.707,
+      "sourceUrl": "https://www.tbench.ai/leaderboard/terminal-bench/2.1"
+    },
+    {
+      "benchmark": "terminal-bench",
+      "benchmarkVersion": "2.1",
+      "confidenceIntervalHigh": 0.732,
+      "confidenceIntervalLow": 0.674,
+      "costPerTaskUsd": null,
+      "evidence": "official_verified",
+      "harness": "Terminus 2",
+      "id": "google-gemini-3-1-pro__terminus-2__unknown__terminal-bench-2-1",
+      "model": "Gemini 3.1 Pro",
+      "provider": "Google",
+      "reasoningEffort": "unknown",
+      "score": 0.703,
+      "sourceUrl": "https://www.tbench.ai/leaderboard/terminal-bench/2.1"
+    },
+    {
+      "benchmark": "terminal-bench",
+      "benchmarkVersion": "2.1",
+      "confidenceIntervalHigh": 0.69,
+      "confidenceIntervalLow": 0.636,
+      "costPerTaskUsd": null,
+      "evidence": "official_verified",
+      "harness": "Gemini CLI",
+      "id": "google-gemini-3-pro__gemini-cli__unknown__terminal-bench-2-1",
+      "model": "Gemini 3 Pro",
+      "provider": "Google",
+      "reasoningEffort": "unknown",
+      "score": 0.663,
+      "sourceUrl": "https://www.tbench.ai/leaderboard/terminal-bench/2.1"
+    },
+    {
+      "benchmark": "terminal-bench",
+      "benchmarkVersion": "2.1",
+      "confidenceIntervalHigh": 0.77,
+      "confidenceIntervalLow": 0.718,
+      "costPerTaskUsd": null,
+      "evidence": "official_verified",
+      "harness": "Terminus 2",
+      "id": "google-gemini-3-pro__terminus-2__unknown__terminal-bench-2-1",
+      "model": "Gemini 3 Pro",
+      "provider": "Google",
+      "reasoningEffort": "unknown",
+      "score": 0.744,
+      "sourceUrl": "https://www.tbench.ai/leaderboard/terminal-bench/2.1"
+    },
+    {
+      "benchmark": "terminal-bench",
+      "benchmarkVersion": "2.1",
+      "confidenceIntervalHigh": 0.856,
+      "confidenceIntervalLow": 0.812,
+      "costPerTaskUsd": null,
+      "evidence": "official_verified",
+      "harness": "Codex CLI",
+      "id": "openai-gpt-5-5__codex-cli__unknown__terminal-bench-2-1",
+      "model": "GPT-5.5",
+      "provider": "OpenAI",
+      "reasoningEffort": "unknown",
+      "score": 0.834,
+      "sourceUrl": "https://www.tbench.ai/leaderboard/terminal-bench/2.1"
+    },
+    {
+      "benchmark": "terminal-bench",
+      "benchmarkVersion": "2.1",
+      "confidenceIntervalHigh": 0.806,
+      "confidenceIntervalLow": 0.758,
+      "costPerTaskUsd": null,
+      "evidence": "official_verified",
+      "harness": "Terminus 2",
+      "id": "openai-gpt-5-5__terminus-2__unknown__terminal-bench-2-1",
+      "model": "GPT-5.5",
+      "provider": "OpenAI",
+      "reasoningEffort": "unknown",
+      "score": 0.782,
+      "sourceUrl": "https://www.tbench.ai/leaderboard/terminal-bench/2.1"
+    },
+    {
+      "benchmark": "terminal-bench",
+      "benchmarkVersion": "2.1",
+      "confidenceIntervalHigh": 0.611,
+      "confidenceIntervalLow": 0.563,
+      "costPerTaskUsd": null,
+      "evidence": "official_verified",
+      "harness": "Claude Code",
+      "id": "z-ai-glm-5-1__claude-code__unknown__terminal-bench-2-1",
+      "model": "GLM 5.1",
+      "provider": "Z-AI",
+      "reasoningEffort": "unknown",
+      "score": 0.587,
+      "sourceUrl": "https://www.tbench.ai/leaderboard/terminal-bench/2.1"
+    }
+  ],
+  "controls": {
+    "accessModes": [
+      {
+        "id": "both",
+        "label": "Subscription + API"
+      },
+      {
+        "id": "subscription",
+        "label": "Subscription"
+      },
+      {
+        "id": "api",
+        "label": "API"
+      }
+    ],
+    "goals": [
+      {
+        "id": "value",
+        "label": "Best value"
+      },
+      {
+        "id": "quality",
+        "label": "Best quality"
+      },
+      {
+        "id": "throughput",
+        "label": "Most work per window"
+      },
+      {
+        "id": "speed",
+        "label": "Fastest"
+      }
+    ],
+    "workloads": [
+      {
+        "id": "small",
+        "label": "Small"
+      },
+      {
+        "id": "medium",
+        "label": "Medium"
+      },
+      {
+        "id": "large",
+        "label": "Large"
+      },
+      {
+        "id": "xl",
+        "label": "Xl"
+      }
+    ]
+  },
+  "history": [],
+  "insights": [],
+  "methodology": {
+    "assumptions": [
+      "A two-point practical-equivalence band is used for the default value recommendation."
+    ],
+    "sources": [
+      {
+        "label": "terminal-bench-2-1",
+        "retrievedAt": "2026-07-13T06:35:08Z",
+        "url": "https://www.tbench.ai/leaderboard/terminal-bench/2.1"
+      },
+      {
+        "label": "terminal-bench-2-1-release",
+        "retrievedAt": "2026-07-13T06:35:08Z",
+        "url": "https://www.tbench.ai/news/terminal-bench-2-1"
+      },
+      {
+        "label": "terminal-bench-integrity",
+        "retrievedAt": "2026-07-13T06:35:08Z",
+        "url": "https://www.tbench.ai/news/leaderboard-integrity-update"
+      }
+    ],
+    "summary": "Benchmark versions are isolated; evidence, source dates, uncertainty, harness, and reasoning effort remain visible."
+  },
+  "positioning": "Benchmarks tell you who scored highest. This lab tells you what to use.",
+  "recommendation": {
+    "configurationId": null,
+    "eyebrow": "Current evidence",
+    "metrics": [
+      {
+        "label": "Measured configurations",
+        "value": "13"
+      },
+      {
+        "label": "Cost-ready configurations",
+        "value": "0"
+      }
+    ],
+    "summary": "Verified benchmark results are published, but sourced per-run usage is still required for cost and value recommendations.",
+    "title": "Measured leaderboard live; value ranking pending."
+  },
+  "schemaVersion": 1,
+  "status": "13 publishable configurations \u00b7 refreshed 2026-07-13",
+  "subtitle": "Independent analysis of coding models, harnesses, reasoning levels, costs, and subscription efficiency.",
+  "title": "Coding Agent Value Lab",
+  "updatedAt": "2026-07-13"
+}

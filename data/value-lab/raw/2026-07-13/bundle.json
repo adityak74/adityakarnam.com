@@ -1,0 +1,54 @@
+{
+  "run": {
+    "runId": "2026-07-13T063508Z",
+    "retrievedAt": "2026-07-13T06:35:08Z"
+  },
+  "sources": [
+    {
+      "id": "terminal-bench-2-1",
+      "kind": "benchmark",
+      "url": "https://www.tbench.ai/leaderboard/terminal-bench/2.1",
+      "retrievedAt": "2026-07-13T06:35:08Z",
+      "accessible": true,
+      "rawPath": "data/value-lab/raw/2026-07-13/terminal-bench-2-1.html",
+      "evidence": "official_verified"
+    },
+    {
+      "id": "terminal-bench-2-1-release",
+      "kind": "release_notes",
+      "url": "https://www.tbench.ai/news/terminal-bench-2-1",
+      "retrievedAt": "2026-07-13T06:35:08Z",
+      "accessible": true,
+      "rawPath": "data/value-lab/raw/2026-07-13/terminal-bench-2-1-release.html",
+      "evidence": "official_verified"
+    },
+    {
+      "id": "terminal-bench-integrity",
+      "kind": "integrity_notice",
+      "url": "https://www.tbench.ai/news/leaderboard-integrity-update",
+      "retrievedAt": "2026-07-13T06:35:08Z",
+      "accessible": true,
+      "rawPath": "data/value-lab/raw/2026-07-13/terminal-bench-integrity.html",
+      "evidence": "official_verified"
+    }
+  ],
+  "benchmarkRuns": [
+    {"provider":"OpenAI","model":"GPT-5.5","harness":"Codex CLI","reasoningEffort":"unknown","benchmark":"terminal-bench","benchmarkVersion":"2.1","score":0.834,"reportedUncertainty":0.022,"taskCount":89,"evaluatedAt":"2026-05-01","sourceId":"terminal-bench-2-1","evidence":"official_verified"},
+    {"provider":"Anthropic","model":"Claude 5 Fable","harness":"Claude Code","reasoningEffort":"unknown","benchmark":"terminal-bench","benchmarkVersion":"2.1","score":0.831,"reportedUncertainty":0.020,"taskCount":89,"evaluatedAt":"2026-06-17","sourceId":"terminal-bench-2-1","evidence":"official_verified"},
+    {"provider":"Anthropic","model":"Claude 5 Fable","harness":"Terminus 2","reasoningEffort":"unknown","benchmark":"terminal-bench","benchmarkVersion":"2.1","score":0.804,"reportedUncertainty":0.023,"taskCount":89,"evaluatedAt":"2026-06-17","sourceId":"terminal-bench-2-1","evidence":"official_verified"},
+    {"provider":"Anthropic","model":"Claude Opus 4.8","harness":"Claude Code","reasoningEffort":"unknown","benchmark":"terminal-bench","benchmarkVersion":"2.1","score":0.789,"reportedUncertainty":0.025,"taskCount":89,"evaluatedAt":"2026-05-29","sourceId":"terminal-bench-2-1","evidence":"official_verified"},
+    {"provider":"OpenAI","model":"GPT-5.5","harness":"Terminus 2","reasoningEffort":"unknown","benchmark":"terminal-bench","benchmarkVersion":"2.1","score":0.782,"reportedUncertainty":0.024,"taskCount":89,"evaluatedAt":"2026-05-01","sourceId":"terminal-bench-2-1","evidence":"official_verified"},
+    {"provider":"Anthropic","model":"Claude Opus 4.8","harness":"Terminus 2","reasoningEffort":"unknown","benchmark":"terminal-bench","benchmarkVersion":"2.1","score":0.746,"reportedUncertainty":0.024,"taskCount":89,"evaluatedAt":"2026-05-29","sourceId":"terminal-bench-2-1","evidence":"official_verified"},
+    {"provider":"Google","model":"Gemini 3 Pro","harness":"Terminus 2","reasoningEffort":"unknown","benchmark":"terminal-bench","benchmarkVersion":"2.1","score":0.744,"reportedUncertainty":0.026,"taskCount":89,"evaluatedAt":"2026-05-01","sourceId":"terminal-bench-2-1","evidence":"official_verified"},
+    {"provider":"Google","model":"Gemini 3.1 Pro","harness":"Gemini CLI","reasoningEffort":"unknown","benchmark":"terminal-bench","benchmarkVersion":"2.1","score":0.707,"reportedUncertainty":0.029,"taskCount":89,"evaluatedAt":"2026-05-05","sourceId":"terminal-bench-2-1","evidence":"official_verified"},
+    {"provider":"Google","model":"Gemini 3.1 Pro","harness":"Terminus 2","reasoningEffort":"unknown","benchmark":"terminal-bench","benchmarkVersion":"2.1","score":0.703,"reportedUncertainty":0.029,"taskCount":89,"evaluatedAt":"2026-05-05","sourceId":"terminal-bench-2-1","evidence":"official_verified"},
+    {"provider":"Anthropic","model":"Claude Opus 4.7","harness":"Claude Code","reasoningEffort":"unknown","benchmark":"terminal-bench","benchmarkVersion":"2.1","score":0.697,"reportedUncertainty":0.027,"taskCount":89,"evaluatedAt":"2026-05-01","sourceId":"terminal-bench-2-1","evidence":"official_verified"},
+    {"provider":"Google","model":"Gemini 3 Pro","harness":"Gemini CLI","reasoningEffort":"unknown","benchmark":"terminal-bench","benchmarkVersion":"2.1","score":0.663,"reportedUncertainty":0.027,"taskCount":89,"evaluatedAt":"2026-05-02","sourceId":"terminal-bench-2-1","evidence":"official_verified"},
+    {"provider":"Anthropic","model":"Claude Opus 4.7","harness":"Terminus 2","reasoningEffort":"unknown","benchmark":"terminal-bench","benchmarkVersion":"2.1","score":0.661,"reportedUncertainty":0.027,"taskCount":89,"evaluatedAt":"2026-05-01","sourceId":"terminal-bench-2-1","evidence":"official_verified"},
+    {"provider":"Z-AI","model":"GLM 5.1","harness":"Claude Code","reasoningEffort":"unknown","benchmark":"terminal-bench","benchmarkVersion":"2.1","score":0.587,"reportedUncertainty":0.024,"taskCount":89,"evaluatedAt":"2026-05-02","sourceId":"terminal-bench-2-1","evidence":"official_verified"}
+  ],
+  "prices": [],
+  "plans": [],
+  "quotaObservations": [],
+  "integrityNotices": []
+}
