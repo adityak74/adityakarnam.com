@@ -1,0 +1,327 @@
+---
+title: Quecto
+slug: "/quecto"
+---
+
+<div style={{
+  fontFamily: "Georgia, 'Iowan Old Style', 'Times New Roman', serif",
+  backgroundColor: "#15140F",
+  minHeight: "100vh",
+  color: "#E5E1D8",
+  padding: "2rem 0"
+}}>
+  <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "0 1.5rem" }}>
+
+    {/* Hero */}
+    <div style={{ textAlign: "center", marginBottom: "4rem" }}>
+      <div style={{ marginBottom: "1rem", display: "flex", justifyContent: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+        <img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License" style={{ height: "20px" }} />
+        <img src="https://img.shields.io/badge/rust-edition%202021-orange?style=flat-square&logo=rust" alt="Rust" style={{ height: "20px" }} />
+        <img src="https://img.shields.io/badge/tests-179%20passing-success?style=flat-square" alt="Tests" style={{ height: "20px" }} />
+        <img src="https://img.shields.io/badge/status-M1--M7b%20shipped-success?style=flat-square" alt="Status" style={{ height: "20px" }} />
+      </div>
+      <h1 style={{
+        fontSize: "clamp(2rem, 5vw, 3.5rem)",
+        fontWeight: "400",
+        color: "#FAF8F3",
+        marginBottom: "1.25rem",
+        lineHeight: 1.15
+      }}>
+        quecto
+      </h1>
+      <p style={{
+        fontSize: "1.25rem",
+        color: "#E5E1D8",
+        maxWidth: "680px",
+        margin: "0 auto 1rem",
+        lineHeight: "1.6"
+      }}>
+        The leanest, fastest, smallest AI harness — and the coding agent built on it.
+      </p>
+      <p style={{
+        fontSize: "1rem",
+        color: "#928D7E",
+        maxWidth: "620px",
+        margin: "0 auto",
+        lineHeight: "1.7"
+      }}>
+        One endpoint. Zero async. A 1.2 MB core, a 3.3 MB agent — both shipped.
+      </p>
+
+      {/* Nav pills */}
+      <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "0.5rem", marginTop: "2rem" }}>
+        {[
+          ["#the-moat", "The Moat"],
+          ["#byoc", "BYOC"],
+          ["#agent", "quecto-agent"],
+          ["#quick-start", "Quick Start"],
+          ["#philosophy", "Philosophy"],
+        ].map(([href, label]) => (
+          <a key={href} href={href} style={{
+            background: "#1F1D16",
+            border: "1px solid #2B291F",
+            color: "#E5E1D8",
+            padding: "0.35rem 0.85rem",
+            borderRadius: "20px",
+            fontSize: "0.85rem",
+            textDecoration: "none",
+            transition: "border-color 0.2s"
+          }}>
+            {label}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    {/* What it is */}
+    <div style={{
+      background: "#1F1D16",
+      border: "1px solid #2B291F",
+      borderRadius: "12px",
+      padding: "2rem",
+      marginBottom: "3rem",
+      lineHeight: "1.75"
+    }}>
+      <p style={{ color: "#E5E1D8", margin: 0 }}>
+        <strong>quecto</strong> is the <a href="https://en.wikipedia.org/wiki/Metric_prefix" target="_blank" rel="noopener noreferrer" style={{ color: "#E5E1D8" }}>SI metric prefix</a> for 10⁻³⁰, the smallest unit in the metric system. If kilo is 10³ and quecto is 10⁻³⁰, this project lives at the extreme: a universal harness built from the smallest possible composable units, and the proof that smallest scales all the way up to a full coding agent. Two crates, one philosophy: <strong>quecto</strong> is the core, taking a prompt, running it through any OpenAI-compatible LLM (cloud or local), and returning the output, buffered or streamed. One job, zero opinions. <strong>quecto-agent</strong> is the coding agent built entirely on top of it: multi-step tool use, file edits under approval, a hard-denylist sandbox, verification gates, and session persistence, all in a 3.3 MB binary with no async runtime.
+      </p>
+    </div>
+
+    {/* The Moat */}
+    <div id="the-moat" style={{ marginBottom: "3rem" }}>
+      <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#E5E1D8", marginBottom: "0.5rem" }}>
+        🛡️ The Moat: 1.2 MB core, 3.3 MB agent
+      </h2>
+      <p style={{ color: "#928D7E", marginBottom: "1.5rem", lineHeight: "1.7" }}>
+        Both binaries are self-contained — no runtime, no interpreter, statically-linked rustls TLS. Two direct
+        dependencies on the core (<code>ureq</code> + <code>serde_json</code>), ~30 transitive crates, no{" "}
+        <code>tokio</code>, no <code>reqwest</code>, no async runtime. The agent adds a full tool loop, sandbox,
+        SQLite-backed session store, and manifest parsing — and still fits in 3.3 MB.
+      </p>
+      <div style={{ background: "#1F1D16", border: "1px solid #2B291F", borderRadius: "10px", overflow: "hidden" }}>
+        {[
+          ["quecto — default --release", "2.6 MB"],
+          ["quecto — stripped", "2.3 MB"],
+          ["quecto — size-optimized profile (shipped)", "~1.2 MB"],
+          ["quecto-agent — size-optimized profile (shipped)", "~3.3 MB"],
+        ].map(([build, size], i) => (
+          <div key={build} style={{
+            display: "flex",
+            justifyContent: "space-between",
+            padding: "0.85rem 1.25rem",
+            borderTop: i === 0 ? "none" : "1px solid #2B291F",
+          }}>
+            <span style={{ color: "#E5E1D8", fontSize: "0.95rem" }}>{build}</span>
+            <span style={{ color: "#928D7E", fontWeight: "700", fontSize: "0.95rem" }}>{size}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Demo */}
+    <div style={{ marginBottom: "3rem" }}>
+      <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#E5E1D8", marginBottom: "0.5rem" }}>
+        Demo
+      </h2>
+      <p style={{ color: "#928D7E", marginBottom: "1.5rem", lineHeight: "1.7" }}>
+        Real output, captured live against a local <code>qwen3.6:35b-mlx</code> model on Ollama — no API key.
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+        <div style={{ background: "#1F1D16", border: "1px solid #2B291F", borderRadius: "10px", padding: "1rem" }}>
+          <img
+            src="https://raw.githubusercontent.com/adityak74/quecto/main/docs/assets/demo-oneshot.svg"
+            alt="quecto one-shot: a haiku streamed from a local model"
+            style={{ width: "100%", borderRadius: "6px" }}
+          />
+        </div>
+        <div style={{ background: "#1F1D16", border: "1px solid #2B291F", borderRadius: "10px", padding: "1rem" }}>
+          <img
+            src="https://raw.githubusercontent.com/adityak74/quecto/main/docs/assets/demo-repl.svg"
+            alt="quecto interactive REPL answering a question"
+            style={{ width: "100%", borderRadius: "6px" }}
+          />
+        </div>
+      </div>
+    </div>
+
+    {/* BYOC */}
+    <div id="byoc" style={{ marginBottom: "3rem" }}>
+      <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#E5E1D8", marginBottom: "0.5rem" }}>
+        🔧 BYOC — Bring Your Own Config
+      </h2>
+      <p style={{ color: "#928D7E", marginBottom: "1.5rem", lineHeight: "1.7" }}>
+        Nothing in quecto is hardcoded to a vendor, a model, or a persona. Every layer is swappable via plain
+        env vars and files, no forking required.
+      </p>
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+        gap: "1rem",
+      }}>
+        {[
+          ["System prompt", <><code>QUECTO_SYSTEM</code> overrides the default persona entirely (repo rules and seed context still get appended after it for quecto-agent).</>],
+          ["Model & endpoint", <><code>QUECTO_BASE_URL</code> + <code>QUECTO_MODEL</code> point at any OpenAI-compatible server: local (Ollama, LM Studio, vLLM) or cloud (OpenAI, or anything else speaking the same API shape).</>],
+          ["Behavior presets", <><code>.quecto/flavors/*.toml</code> manifests bundle a system prompt, tool policy, and defaults into a named, trust-on-first-use profile you can switch between per project.</>],
+          ["Verification gate", <><code>QUECTO_VERIFY</code> runs your own shell commands (tests, linters, type checks) as a post-edit gate before the agent calls a step done.</>],
+          ["Storage locations", <><code>QUECTO_STATE_DB</code> and <code>QUECTO_TRUST_FILE</code> relocate session and trust state anywhere you want (ephemeral, encrypted volume, shared path).</>],
+        ].map(([title, desc]) => (
+          <div key={title} style={{
+            background: "#1F1D16",
+            border: "1px solid #2B291F",
+            borderRadius: "10px",
+            padding: "1.25rem",
+          }}>
+            <h3 style={{ fontSize: "1rem", fontWeight: "700", color: "#E5E1D8", marginBottom: "0.5rem" }}>{title}</h3>
+            <p style={{ color: "#928D7E", fontSize: "0.9rem", lineHeight: "1.6", margin: 0 }}>{desc}</p>
+          </div>
+        ))}
+      </div>
+      <p style={{ color: "#928D7E", fontSize: "0.9rem", lineHeight: "1.7", marginTop: "1.25rem" }}>
+        Because the core primitives (<code>quecto_raw</code>, <code>quecto_stream</code>) shape nothing and
+        discard nothing, none of this is a special case — it's the same config surface the library itself is
+        built from.
+      </p>
+    </div>
+
+    {/* quecto-agent capabilities */}
+    <div id="agent" style={{ marginBottom: "3rem" }}>
+      <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#E5E1D8", marginBottom: "0.5rem" }}>
+        quecto-agent — the coding agent
+      </h2>
+      <p style={{ color: "#928D7E", marginBottom: "1.5rem", lineHeight: "1.7" }}>
+        Built entirely on the core's <code>quecto_raw</code> primitive: same zero-async, statically-linked
+        philosophy, scaled up to a full agent loop.
+      </p>
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+        gap: "1rem",
+      }}>
+        {[
+          ["🔨", "Tool use", "File read/write/patch, search, git, and shell — multi-step tool use in a single agent loop."],
+          ["✅", "Approval gating", "Edits and commands gated by a configurable approval preset before anything touches disk."],
+          ["🔒", "Sandbox denylist", "Hard-denylist blocks sudo, rm -rf /, git push, and other destructive actions even under --yes."],
+          ["🧪", "Verification gates", "QUECTO_VERIFY runs your own tests/linters/type checks as a post-edit gate."],
+          ["💾", "Session persistence", "SQLite-backed sessions power resume, undo, and diff across runs."],
+          ["🎭", "Flavor manifests", "Named .quecto/flavors/*.toml profiles with content-hash trust-on-first-use."],
+        ].map(([icon, title, desc]) => (
+          <div key={title} style={{
+            background: "#1F1D16",
+            border: "1px solid #2B291F",
+            borderRadius: "10px",
+            padding: "1.25rem",
+          }}>
+            <div style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>{icon}</div>
+            <h3 style={{ fontSize: "1rem", fontWeight: "700", color: "#E5E1D8", marginBottom: "0.5rem" }}>{title}</h3>
+            <p style={{ color: "#928D7E", fontSize: "0.9rem", lineHeight: "1.6", margin: 0 }}>{desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Quick start */}
+    <div id="quick-start" style={{ marginBottom: "3rem" }}>
+      <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#E5E1D8", marginBottom: "0.5rem" }}>
+        Quick start
+      </h2>
+      <div style={{
+        background: "#1F1D16",
+        border: "1px solid #2B291F",
+        borderRadius: "10px",
+        padding: "1.5rem",
+        overflowX: "auto",
+      }}>
+        <pre style={{
+          margin: 0,
+          fontFamily: "'SF Mono', Menlo, monospace",
+          fontSize: "0.85rem",
+          color: "#E5E1D8",
+          lineHeight: "1.7",
+          whiteSpace: "pre",
+        }}>
+{`# Build the ~1.2 MB binary
+git clone https://github.com/adityak74/quecto
+cd quecto
+cargo build --release      # -> target/release/quecto
+cargo install --path . --force
+quecto "write me a haiku about small things"
+
+# Local (Ollama / LM Studio / vLLM) - no API key needed
+export QUECTO_BASE_URL="http://localhost:11434/v1"
+export QUECTO_MODEL="qwen2.5-coder"
+quecto "refactor this function"
+
+# The coding agent
+cargo build --release -p quecto-agent   # -> target/release/quecto-agent (~3.3 MB)
+cargo install --path quecto-agent --force
+quecto-agent "add a test for the parse_args function"
+quecto-agent chat`}
+        </pre>
+      </div>
+    </div>
+
+    {/* Philosophy */}
+    <div id="philosophy" style={{
+      background: "#1F1D16",
+      border: "1px solid #2B291F",
+      borderRadius: "12px",
+      padding: "2rem",
+      marginBottom: "3rem",
+    }}>
+      <h2 style={{ fontSize: "1.5rem", fontWeight: "700", color: "#E5E1D8", marginBottom: "1rem" }}>
+        Philosophy
+      </h2>
+      <p style={{
+        fontFamily: "'SF Mono', Menlo, monospace",
+        fontSize: "0.85rem",
+        color: "#928D7E",
+        marginBottom: "1.25rem",
+      }}>
+        … → mega (10⁶) → kilo (10³) → base → milli (10⁻³) → micro (10⁻⁶) → … → quecto (10⁻³⁰)
+      </p>
+      <ol style={{ color: "#E5E1D8", lineHeight: "1.8", paddingLeft: "1.25rem", margin: 0 }}>
+        <li><strong>LLMs are the backend.</strong> The harness is just the glue.</li>
+        <li><strong>Everything is composable.</strong> Small pieces → big things.</li>
+        <li><strong>Describe it, run it.</strong> If you can explain it to an LLM, quecto handles it.</li>
+      </ol>
+    </div>
+
+    {/* CTA */}
+    <div style={{
+      background: "#1F1D16",
+      border: "1px solid #2B291F",
+      borderRadius: "14px",
+      padding: "2.5rem",
+      textAlign: "center",
+      marginBottom: "2rem"
+    }}>
+      <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#E5E1D8", marginBottom: "0.75rem" }}>
+        Built in the open
+      </h2>
+      <p style={{ color: "#928D7E", lineHeight: "1.7", maxWidth: "550px", margin: "0 auto 1.5rem" }}>
+        quecto core and quecto-agent are both shipped and UAT-accepted — still an early, actively-developed
+        project. quecto-mcp (MCP server/client integrations) is next.
+      </p>
+      <a href="https://github.com/adityak74/quecto" target="_blank" rel="noopener noreferrer" style={{
+        display: "inline-block",
+        background: "#2B291F",
+        color: "#E5E1D8",
+        padding: "0.85rem 2rem",
+        borderRadius: "10px",
+        textDecoration: "none",
+        fontSize: "1rem",
+        fontWeight: "700"
+      }}>
+        View on GitHub →
+      </a>
+    </div>
+
+    {/* Footer */}
+    <div style={{ textAlign: "center", paddingTop: "2rem", borderTop: "1px solid #2B291F" }}>
+      <p style={{ color: "#928D7E", fontSize: "0.85rem" }}>
+        Licensed MIT · © 2026 Aditya Karnam
+      </p>
+    </div>
+
+  </div>
+</div>

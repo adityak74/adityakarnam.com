@@ -48,6 +48,10 @@ const config: GatsbyConfig = {
             slug: `/status`,
           },
           {
+            title: `Quecto`,
+            slug: `/quecto`,
+          },
+          {
             title: `About`,
             slug: `/about`,
           },
