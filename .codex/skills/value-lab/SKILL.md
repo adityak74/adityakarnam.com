@@ -38,7 +38,7 @@ Operate the complete research-to-publication loop for `/value-lab/`. Treat the p
 7. Update the renderer only when generated fields require a capability it does not support. A normal research refresh changes data, raw evidence, snapshots, and review output—not page components.
 8. Generate and validate the schema-2 dashboard cards and every dashboard dataset: ranked performance (`ranked_bar`), harness comparisons (`dumbbell`), research coverage (`coverage`), and `scatter` only when cost-ready inputs exist. Missing comparison evidence must produce an explicit empty dataset; missing cost or value evidence must produce explicit zero/unavailable states. Generate the Markdown summary from the same publication output.
 9. Verify deterministic tests, skill validation, Gatsby build, page rendering, source links, visible uncertainty/evidence labels, and Copy as Markdown output. Check cards and graphs at both desktop and mobile widths, including empty and unavailable states.
-9. Commit the raw bundle, generated data, dated snapshot, gate report, skill changes, and any required renderer changes. Preserve unrelated files.
+10. Commit the raw bundle, generated data, dated snapshot, gate report, skill changes, and any required renderer changes. Preserve unrelated files.
 
 ## Research rules
 
@@ -62,8 +62,6 @@ Use one agent per independent source family; require structured output and sourc
 - `gpt-5.6-sol`, high: only for disputed methodology, ambiguous benchmark comparability, substantial pipeline architecture, or a difficult integrity incident.
 
 Do not use `gpt-5.6-sol` for routine collection, formatting, validation, or data-only refreshes. Keep agent write sets disjoint. The main agent must independently run deterministic validation and inspect the publication gate.
-
-Routine dashboard schema validation and refresh checks stay on `gpt-5.6-luna` at low effort. Use `gpt-5.6-terra` at high effort when a new card or chart renderer is required. Reserve `gpt-5.6-sol` for substantial methodology or architecture disputes, including difficult benchmark comparability or integrity incidents.
 
 ## Renderer contract
 
