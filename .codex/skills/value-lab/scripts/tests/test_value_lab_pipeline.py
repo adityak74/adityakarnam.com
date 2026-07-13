@@ -93,6 +93,40 @@ def cost_ready_harness_bundle():
 
 
 class ValueLabPipelineTests(unittest.TestCase):
+    def test_weekly_changes_uses_baseline_without_older_publication(self):
+        publication = build_publication(normalize_bundle(sample_bundle()))
+
+        self.assertEqual(publication["schemaVersion"], 3)
+        self.assertEqual(publication["weeklyChanges"], {
+            "title": "What's Changed Since Last Week?",
+            "baselineDate": None,
+            "currentDate": "2026-07-13",
+            "status": "baseline",
+            "items": [],
+        })
+
+    def test_same_day_previous_publication_is_not_a_weekly_comparison(self):
+        previous = build_publication(normalize_bundle(sample_bundle()))
+
+        current = build_publication(normalize_bundle(sample_bundle()), previous)
+
+        self.assertEqual(current["weeklyChanges"]["status"], "baseline")
+
+    def test_weekly_changes_are_deterministic_and_capped_at_four(self):
+        previous_bundle = sample_bundle()
+        previous_bundle["run"].update({
+            "runId": "2026-07-06T120000Z",
+            "retrievedAt": "2026-07-06T12:00:00Z",
+        })
+        previous = build_publication(normalize_bundle(previous_bundle))
+
+        current_a = build_publication(normalize_bundle(sample_bundle()), previous)
+        current_b = build_publication(normalize_bundle(sample_bundle()), previous)
+
+        self.assertEqual(current_a["weeklyChanges"], current_b["weeklyChanges"])
+        self.assertEqual(current_a["weeklyChanges"]["status"], "compared")
+        self.assertLessEqual(len(current_a["weeklyChanges"]["items"]), 4)
+
     def test_mixed_cost_readiness_preserves_exact_benchmark_and_pricing_lineage(self):
         normalized = normalize_bundle(mixed_cost_readiness_bundle())
         publication = build_publication(normalized)
@@ -179,7 +213,7 @@ class ValueLabPipelineTests(unittest.TestCase):
     def test_dashboard_cards_are_generated_from_publishable_runs(self):
         publication = build_publication(normalize_bundle(sample_bundle()))
         cards = {card["id"]: card for card in publication["dashboardCards"]}
-        self.assertEqual(publication["schemaVersion"], 2)
+        self.assertEqual(publication["schemaVersion"], 3)
         self.assertEqual(cards["leader"]["value"], "61.0%")
         self.assertEqual(cards["measured-configurations"]["value"], "2")
         self.assertEqual(cards["leader-gap"]["value"], "1.0 pts")

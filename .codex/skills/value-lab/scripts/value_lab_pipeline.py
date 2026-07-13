@@ -23,6 +23,9 @@ EVIDENCE = {
     "estimated",
     "experimental",
 }
+WEEKLY_CHANGE_MARKERS = {"up", "down", "same", "star"}
+WEEKLY_CHANGE_LIMIT = 4
+MEANINGFUL_COST_CHANGE = 0.01
 
 
 def slug(value: str) -> str:
@@ -189,6 +192,176 @@ def compute_pareto_frontier(records: list[dict[str, Any]]) -> dict[str, list[str
                 frontier.append(candidate["configurationId"])
         frontiers[key] = sorted(frontier)
     return frontiers
+
+
+def _configurations_by_id(publication: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    return {
+        item["id"]: item for item in publication.get("configurations", [])
+        if isinstance(item, dict) and isinstance(item.get("id"), str)
+    }
+
+
+def _weekly_sources(*configurations: dict[str, Any] | None) -> list[dict[str, str]]:
+    links: dict[str, str] = {}
+    for configuration in configurations:
+        if not configuration:
+            continue
+        if isinstance(configuration.get("sourceUrl"), str):
+            links[configuration["sourceUrl"]] = f"{configuration.get('model', 'Configuration')} benchmark"
+        if isinstance(configuration.get("priceSourceUrl"), str):
+            links[configuration["priceSourceUrl"]] = f"{configuration.get('model', 'Configuration')} pricing"
+    return [{"label": links[url], "url": url} for url in sorted(links)]
+
+
+def _weekly_item(
+    *, item_id: str, marker: str, headline: str, evidence: str,
+    configurations: list[dict[str, Any]], priority: int,
+) -> dict[str, Any]:
+    return {
+        "id": item_id,
+        "marker": marker,
+        "headline": headline,
+        "evidence": evidence,
+        "sourceRunIds": sorted({item["runId"] for item in configurations}),
+        "sources": _weekly_sources(*configurations),
+        "_priority": priority,
+    }
+
+
+def _leader_map(publication: dict[str, Any]) -> dict[tuple[str, str], dict[str, Any]]:
+    cohorts: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
+    for configuration in publication.get("configurations", []):
+        if not isinstance(configuration, dict):
+            continue
+        cohorts[(configuration["benchmark"], configuration["benchmarkVersion"])].append(configuration)
+    return {
+        cohort: sorted(configurations, key=lambda item: (-float(item["score"]), item["id"]))[0]
+        for cohort, configurations in cohorts.items() if configurations
+    }
+
+
+def _frontier_map(publication: dict[str, Any]) -> dict[str, set[str]]:
+    chart = next(
+        (item for item in publication.get("charts", []) if item.get("id") == "performance-cost"),
+        None,
+    )
+    if not chart or not isinstance(chart.get("frontiers"), dict):
+        return {}
+    return {
+        cohort: set(configuration_ids)
+        for cohort, configuration_ids in chart["frontiers"].items()
+        if isinstance(cohort, str) and isinstance(configuration_ids, list)
+    }
+
+
+def build_weekly_changes(
+    current: dict[str, Any], previous: dict[str, Any] | None,
+) -> dict[str, Any]:
+    current_date = current["updatedAt"]
+    baseline = {
+        "title": "What's Changed Since Last Week?",
+        "baselineDate": None,
+        "currentDate": current_date,
+        "status": "baseline",
+        "items": [],
+    }
+    if not previous or not isinstance(previous.get("updatedAt"), str) or previous["updatedAt"] >= current_date:
+        return baseline
+
+    current_by_id = _configurations_by_id(current)
+    previous_by_id = _configurations_by_id(previous)
+    candidates: list[dict[str, Any]] = []
+
+    current_frontiers = _frontier_map(current)
+    previous_frontiers = _frontier_map(previous)
+    for cohort in sorted(set(current_frontiers) & set(previous_frontiers)):
+        for configuration_id in sorted(current_frontiers[cohort] - previous_frontiers[cohort]):
+            configuration = current_by_id.get(configuration_id)
+            if configuration:
+                candidates.append(_weekly_item(
+                    item_id=f"frontier-entry-{slug(cohort)}-{slug(configuration_id)}",
+                    marker="up",
+                    headline=f"{configuration['model']} entered the {configuration['benchmark']} {configuration['benchmarkVersion']} Pareto frontier.",
+                    evidence=configuration["evidence"], configurations=[configuration], priority=10,
+                ))
+        for configuration_id in sorted(previous_frontiers[cohort] - current_frontiers[cohort]):
+            configuration = previous_by_id.get(configuration_id)
+            if configuration:
+                candidates.append(_weekly_item(
+                    item_id=f"frontier-exit-{slug(cohort)}-{slug(configuration_id)}",
+                    marker="down",
+                    headline=f"{configuration['model']} left the {configuration['benchmark']} {configuration['benchmarkVersion']} Pareto frontier.",
+                    evidence=configuration["evidence"], configurations=[configuration], priority=10,
+                ))
+
+    current_leaders = _leader_map(current)
+    previous_leaders = _leader_map(previous)
+    for cohort in sorted(set(current_leaders) & set(previous_leaders)):
+        current_leader = current_leaders[cohort]
+        previous_leader = previous_leaders[cohort]
+        if current_leader["id"] != previous_leader["id"]:
+            candidates.append(_weekly_item(
+                item_id=f"leader-change-{slug(cohort[0])}-{slug(cohort[1])}-{slug(current_leader['id'])}",
+                marker="up",
+                headline=f"{current_leader['model']} became the leader on {cohort[0]} {cohort[1]}.",
+                evidence=current_leader["evidence"], configurations=[current_leader, previous_leader], priority=20,
+            ))
+        else:
+            candidates.append(_weekly_item(
+                item_id=f"leader-unchanged-{slug(cohort[0])}-{slug(cohort[1])}",
+                marker="same",
+                headline=f"{current_leader['model']} remained the leader on {cohort[0]} {cohort[1]}.",
+                evidence=current_leader["evidence"], configurations=[current_leader, previous_leader], priority=90,
+            ))
+
+    current_recommendation = current.get("recommendation", {}).get("configurationId")
+    previous_recommendation = previous.get("recommendation", {}).get("configurationId")
+    if current_recommendation and current_recommendation != previous_recommendation:
+        current_config = current_by_id.get(current_recommendation)
+        previous_config = previous_by_id.get(previous_recommendation)
+        if current_config:
+            candidates.append(_weekly_item(
+                item_id=f"value-recommendation-{slug(current_recommendation)}",
+                marker="star",
+                headline=f"{current_config['model']} became the highest-value measured configuration.",
+                evidence=current_config["evidence"],
+                configurations=[item for item in (current_config, previous_config) if item], priority=30,
+            ))
+
+    for configuration_id in sorted(set(current_by_id) & set(previous_by_id)):
+        current_config = current_by_id[configuration_id]
+        previous_config = previous_by_id[configuration_id]
+        old_cost = previous_config.get("costPerTaskUsd")
+        new_cost = current_config.get("costPerTaskUsd")
+        if not isinstance(old_cost, (int, float)) or isinstance(old_cost, bool) or old_cost <= 0:
+            continue
+        if not isinstance(new_cost, (int, float)) or isinstance(new_cost, bool):
+            continue
+        delta = (float(new_cost) - float(old_cost)) / float(old_cost)
+        if abs(delta) < MEANINGFUL_COST_CHANGE:
+            continue
+        direction = "fell" if delta < 0 else "rose"
+        marker = "down" if delta < 0 else "up"
+        candidates.append(_weekly_item(
+            item_id=f"task-cost-{marker}-{slug(configuration_id)}",
+            marker=marker,
+            headline=f"{current_config['model']} measured task cost {direction} by {abs(delta) * 100:.1f}%.",
+            evidence=current_config["evidence"], configurations=[current_config, previous_config], priority=40,
+        ))
+
+    unique = {candidate["id"]: candidate for candidate in candidates}
+    items = []
+    for candidate in sorted(unique.values(), key=lambda item: (item["_priority"], item["id"]))[:WEEKLY_CHANGE_LIMIT]:
+        candidate = dict(candidate)
+        candidate.pop("_priority")
+        items.append(candidate)
+    return {
+        "title": "What's Changed Since Last Week?",
+        "baselineDate": previous["updatedAt"],
+        "currentDate": current_date,
+        "status": "compared",
+        "items": items,
+    }
 
 
 def _select_recommendation(runs: list[dict[str, Any]]) -> dict[str, Any]:
@@ -654,7 +827,9 @@ def snapshot_filename(bundle: dict[str, Any], publication: dict[str, Any]) -> st
     return f"{slug(bundle['run']['runId'])}-v{publication['schemaVersion']}.json"
 
 
-def build_publication(normalized: dict[str, Any]) -> dict[str, Any]:
+def build_publication(
+    normalized: dict[str, Any], previous: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     runs = normalized["benchmarkRuns"]
     frontiers = compute_pareto_frontier(runs)
     recommendation = _select_recommendation(runs)
@@ -695,8 +870,8 @@ def build_publication(normalized: dict[str, Any]) -> dict[str, Any]:
         })
     charts.extend([_build_harness_chart(publishable_configurations), _build_coverage_chart(publishable_configurations, recommendation)])
     updated = normalized["run"]["retrievedAt"][:10]
-    return {
-        "schemaVersion": 2, "updatedAt": updated, "title": "Coding Agent Value Lab",
+    publication = {
+        "schemaVersion": 3, "updatedAt": updated, "title": "Coding Agent Value Lab",
         "subtitle": "Independent analysis of coding models, harnesses, reasoning levels, costs, and subscription efficiency.",
         "positioning": "Benchmarks tell you who scored highest. This lab tells you what to use.",
         "status": f"{len(publishable_configurations)} publishable configurations · refreshed {updated}",
@@ -716,6 +891,8 @@ def build_publication(normalized: dict[str, Any]) -> dict[str, Any]:
         },
         "history": [],
     }
+    publication["weeklyChanges"] = build_weekly_changes(publication, previous)
+    return publication
 
 
 def evaluate_change_gate(
