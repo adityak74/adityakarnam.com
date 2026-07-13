@@ -296,6 +296,30 @@ export const systems: SystemArtifact[] = [
         "Start with the skill entry point and topic decomposer, then inspect the task generator, recall evaluation loop, and session state tracker that carries progress across checkpoints.",
     },
   },
+  {
+    name: "quecto",
+    slug: "/quecto/",
+    tags: ["Rust", "agent runtime", "local inference", "coding agent", "zero async"],
+    researchQuestion: "How small and fast can a fully capable AI agent harness be when built in Rust with zero async overhead?",
+    systemBuilt:
+      "A minimal Rust AI interface framework: a ~1.2 MB synchronous core library for OpenAI-compatible endpoints, plus quecto-agent — a full coding agent with multi-step tool use, SQLite-backed session persistence, and an approval-gated sandbox.",
+    whyItMatters:
+      "Most agent runtimes carry heavyweight async stacks and large dependency trees. quecto proves that a self-contained, statically-linked binary with only two direct dependencies can still deliver a complete coding agent with resume, undo, and diff.",
+    status: "Shipped / active",
+    links: [
+      { label: "GitHub", href: "https://github.com/adityak74/quecto" },
+    ],
+    explanationModes: {
+      "Research Idea":
+        "quecto asks whether agent runtime complexity is accidental or essential — and whether stripping async, eliminating hidden dependencies, and going synchronous-first changes what's possible at the infrastructure edge.",
+      "System Design":
+        "The core is a four-function library (buffered + streaming modes) over ureq + serde_json. quecto-agent layers tool use, a hard-denylist sandbox, trust-on-first-use manifests, and SQLite session state on top.",
+      "Business Value":
+        "A ~1 MB statically-linked agent binary that works with Ollama, LM Studio, or OpenAI and needs no runtime installation is a practical primitive for embedding agents in constrained or air-gapped environments.",
+      "Code Walkthrough":
+        "Start with the core four-function API and streaming path, then move to quecto-agent's tool dispatch loop, sandbox denylist, manifest flavor loading, and SQLite session resume/undo flow.",
+    },
+  },
 ]
 
 export const fieldNotes: FieldNote[] = [
