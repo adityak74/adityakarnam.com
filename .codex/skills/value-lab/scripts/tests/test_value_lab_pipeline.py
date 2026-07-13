@@ -102,15 +102,40 @@ class ValueLabPipelineTests(unittest.TestCase):
         scatter = next(chart for chart in publication["charts"] if chart["id"] == "performance-cost")
         point = scatter["points"][0]
 
-        self.assertIn("priceSourceId", cost_ready_run)
-        self.assertIn("priceSourceId", cost_ready)
-        self.assertIn("priceEffectiveFrom", cost_ready)
-        self.assertIn("sourceRunIds", point)
-        self.assertIn("priceSourceId", point)
-        self.assertIn("priceEffectiveFrom", point)
-        self.assertIn("sourceRunIds", publication["recommendation"])
-        self.assertIn("priceSourceId", publication["recommendation"])
+        self.assertEqual(len(scatter["points"]), 1)
+        self.assertEqual(point["configurationId"], cost_ready_run["configurationId"])
+        self.assertEqual(point["sourceRunIds"], [cost_ready_run["runId"]])
+        self.assertEqual(point["priceSourceId"], cost_ready_run["priceSourceId"])
+        self.assertEqual(point["priceSourceUrl"], cost_ready["priceSourceUrl"])
+        self.assertEqual(point["priceEffectiveFrom"], cost_ready_run["priceEffectiveFrom"])
+        self.assertEqual(publication["recommendation"]["sourceRunIds"], [cost_ready_run["runId"]])
+        self.assertEqual(publication["recommendation"]["priceSourceId"], cost_ready_run["priceSourceId"])
         self.assertIsNone(measured_only_run.get("costPerTaskUsd"))
+        self.assertNotIn(measured_only_run["configurationId"], [item["configurationId"] for item in scatter["points"]])
+        self.assertNotIn(measured_only_run["runId"], point["sourceRunIds"])
+
+    def test_visual_validation_rejects_coverage_count_that_differs_from_source_runs(self):
+        normalized = normalize_bundle(mixed_cost_readiness_bundle())
+        publication = build_publication(normalized)
+        coverage = next(chart for chart in publication["charts"] if chart["id"] == "research-coverage")
+        point = next(point for point in coverage["points"] if point["label"] == "Cost-ready")
+        point["value"] = 0
+
+        errors = validate_publication_visuals(publication, normalized["benchmarkRuns"])
+
+        self.assertTrue(any("coverage point Cost-ready" in error and "value must equal sourceRunIds length" in error for error in errors))
+
+    def test_visual_validation_rejects_coverage_runs_that_are_valid_but_ineligible(self):
+        normalized = normalize_bundle(mixed_cost_readiness_bundle())
+        publication = build_publication(normalized)
+        measured_only_run = next(run for run in normalized["benchmarkRuns"] if run["model"] == "Model B")
+        coverage = next(chart for chart in publication["charts"] if chart["id"] == "research-coverage")
+        point = next(point for point in coverage["points"] if point["label"] == "Cost-ready")
+        point["sourceRunIds"] = [measured_only_run["runId"]]
+
+        errors = validate_publication_visuals(publication, normalized["benchmarkRuns"])
+
+        self.assertTrue(any("coverage point Cost-ready" in error and "sourceRunIds must exactly match eligible runs" in error for error in errors))
 
     def test_visual_validation_requires_exact_card_and_chart_contract(self):
         normalized = normalize_bundle(sample_bundle())

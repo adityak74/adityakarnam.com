@@ -105,7 +105,27 @@ export const isCoverageChart = (chart: ValueLabChart): chart is CoverageChartDat
 
 export const isScatterChart = (chart: ValueLabChart): chart is ScatterChartData =>
   chart.type === "scatter" && Array.isArray(chart.points) && chart.points.every(point =>
-    typeof point === "object" && point !== null && Array.isArray((point as { sourceRunIds?: unknown }).sourceRunIds)
+    typeof point === "object" && point !== null && (() => {
+      const candidate = point as Partial<ScatterChartData["points"][number]>
+      return typeof candidate.configurationId === "string"
+        && candidate.configurationId.length > 0
+        && typeof candidate.x === "number"
+        && Number.isFinite(candidate.x)
+        && candidate.x >= 0
+        && typeof candidate.y === "number"
+        && Number.isFinite(candidate.y)
+        && candidate.y >= 0
+        && candidate.y <= 1
+        && Array.isArray(candidate.sourceRunIds)
+        && candidate.sourceRunIds.length === 1
+        && candidate.sourceRunIds.every(runId => typeof runId === "string" && runId.startsWith("sha256:"))
+        && typeof candidate.priceSourceId === "string"
+        && candidate.priceSourceId.length > 0
+        && typeof candidate.priceSourceUrl === "string"
+        && candidate.priceSourceUrl.startsWith("https://")
+        && typeof candidate.priceEffectiveFrom === "string"
+        && /^\d{4}-\d{2}-\d{2}$/.test(candidate.priceEffectiveFrom)
+    })()
   )
 
 export const isLegacyScatterChart = (chart: ValueLabChart): chart is LegacyScatterChartData =>

@@ -96,3 +96,29 @@ Before changing the pipeline, `rtk python3 .codex/skills/value-lab/scripts/tests
 | No-cost determinism | Pipeline to `/private/tmp/value-lab-final-current.json`, `rtk shasum -a 256`, and `rtk cmp -s` | 0 | Both files: `c2ed3de8a28d88acfdac4e8e06746d79efa7f39e21c5af3048ff4a5bf92daa76`; byte-identical. |
 
 The build retained pre-existing non-fatal Gatsby/Browserlist/punycode/webpack warnings. No push or PR #63 action was performed.
+
+## Coverage-provenance re-review fix — RED/GREEN evidence
+
+Result: `DONE`
+
+### RED
+
+Before changing coverage validation, `rtk python3 .codex/skills/value-lab/scripts/tests/test_value_lab_pipeline.py` ran 27 tests and failed the two new focused mutations:
+
+- `test_visual_validation_rejects_coverage_count_that_differs_from_source_runs`: a `Cost-ready` count of `0` with one valid source run was accepted.
+- `test_visual_validation_rejects_coverage_runs_that_are_valid_but_ineligible`: a measured-only normalized run substituted into `Cost-ready` was accepted because it was a valid ID.
+
+### GREEN
+
+- Coverage validation now recomputes ordered eligible run IDs from normalized runs: publishable runs for `Collected` and `Measured`, the cost-ready subset for `Cost-ready`, and the recommendation-eligible cost-ready run for `Value-ready`.
+- Every coverage point must now have `value == len(sourceRunIds)` and an exact ordered `sourceRunIds` match for its stage.
+- The mixed readiness test now proves a single scatter point with exact configuration ID, benchmark run, pricing source URL/effective date, and excludes the measured-only run.
+- `isScatterChart` now checks each point's numeric bounds and required provenance before passing it to the SVG renderer.
+
+| Check | Command | Exit | Evidence |
+| --- | --- | ---: | --- |
+| Pipeline suite | `rtk python3 -m unittest discover -s .codex/skills/value-lab/scripts/tests -v` | 0 | `Ran 27 tests`; `OK` |
+| Gatsby build | `rtk npm run build` | 0 | Production build completed, including the scatter type guard. |
+| No-cost determinism | Pipeline to `/private/tmp/value-lab-coverage-current.json`, `rtk shasum -a 256`, and `rtk cmp -s` | 0 | Both files: `c2ed3de8a28d88acfdac4e8e06746d79efa7f39e21c5af3048ff4a5bf92daa76`; byte-identical. |
+
+No raw evidence, `current.json`, or immutable snapshot was changed.

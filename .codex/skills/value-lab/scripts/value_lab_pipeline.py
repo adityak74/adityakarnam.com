@@ -454,6 +454,27 @@ def validate_publication_visuals(
     runs_by_id = {run.get("runId"): run for run in run_records if isinstance(run.get("runId"), str)}
     configurations_by_id = {configuration.get("id"): configuration for configuration in configurations if isinstance(configuration.get("id"), str)}
     available_run_ids = set(runs_by_id)
+    coverage_runs = [
+        run for run in run_records
+        if isinstance(run.get("runId"), str)
+        and run.get("sourceAccessible", True)
+        and not run.get("integrityWarning", False)
+    ]
+    cost_ready_coverage_runs = [run for run in coverage_runs if run.get("costPerTaskUsd") is not None]
+    recommendation = publication.get("recommendation", {})
+    recommendation_id = recommendation.get("configurationId") if isinstance(recommendation, dict) else None
+    recommendation_configuration = configurations_by_id.get(recommendation_id)
+    value_ready_coverage_runs = [
+        run for run in cost_ready_coverage_runs
+        if run.get("configurationId", run.get("id")) == recommendation_id
+        and (recommendation_configuration is None or recommendation_configuration.get("sourceUrl"))
+    ]
+    expected_coverage_run_ids = {
+        "Collected": [run["runId"] for run in coverage_runs],
+        "Measured": [run["runId"] for run in coverage_runs],
+        "Cost-ready": [run["runId"] for run in cost_ready_coverage_runs],
+        "Value-ready": [run["runId"] for run in value_ready_coverage_runs],
+    }
     expected_card_ids = {
         "leader", "measured-configurations", "leader-gap", "evidence-health",
         "top-three", "largest-harness-difference", "research-coverage",
@@ -570,8 +591,14 @@ def validate_publication_visuals(
             for label, point in points_by_label.items():
                 if not isinstance(point.get("value"), int) or isinstance(point.get("value"), bool) or point["value"] < 0:
                     errors.append(f"coverage point {label} value must be a non-negative integer")
-                if not _source_run_ids_are_valid(point.get("sourceRunIds"), available_run_ids):
+                source_run_ids = point.get("sourceRunIds")
+                if not _source_run_ids_are_valid(source_run_ids, available_run_ids):
                     errors.append(f"coverage point {label} references invalid sourceRunIds")
+                    continue
+                if point.get("value") != len(source_run_ids):
+                    errors.append(f"coverage point {label} value must equal sourceRunIds length")
+                if source_run_ids != expected_coverage_run_ids[label]:
+                    errors.append(f"coverage point {label} sourceRunIds must exactly match eligible runs")
         elif chart_type == "scatter":
             for index, point in enumerate(chart["points"]):
                 prefix = f"scatter point {index}"
@@ -613,8 +640,6 @@ def validate_publication_visuals(
             ):
                 errors.append(f"cost-ready configuration {configuration.get('id')} price provenance does not match its normalized run")
 
-    recommendation = publication.get("recommendation", {})
-    recommendation_id = recommendation.get("configurationId") if isinstance(recommendation, dict) else None
     if recommendation_id is not None:
         configuration = configurations_by_id.get(recommendation_id)
         run = runs_by_id.get(configuration.get("runId")) if configuration else None
