@@ -408,6 +408,57 @@ const HomepageConsole = () => {
           ))}
         </Grid>
       </Box>
+
+      <Box
+        sx={{
+          display: "grid",
+          gap: 2,
+          justifyItems: "center",
+          mx: "auto",
+          mt: [5, 6],
+          maxWidth: "42rem",
+          px: 3,
+          textAlign: "center",
+        }}
+      >
+        <Text
+          as="p"
+          lang="sa"
+          sx={{
+            color: "text",
+            fontSize: ["1.35rem", "1.55rem"],
+            letterSpacing: "0.01em",
+            lineHeight: 1.7,
+            mb: 0,
+          }}
+        >
+          रूपं देहि जयं देहि यशो देहि द्विषो जहि॥
+        </Text>
+        <Text
+          as="p"
+          sx={{
+            color: "secondary",
+            fontSize: 1,
+            fontStyle: "italic",
+            letterSpacing: "0.03em",
+            mb: 0,
+          }}
+        >
+          Rūpaṁ dehi, jayaṁ dehi, yaśo dehi, dviṣo jahi.
+        </Text>
+        <Text
+          as="p"
+          sx={{
+            color: "secondary",
+            fontSize: 1,
+            lineHeight: 1.7,
+            maxWidth: "32rem",
+            mb: 0,
+          }}
+        >
+          May I be granted excellence, victory, worthy recognition, and freedom from hostility.
+        </Text>
+      </Box>
     </Box>
   )
 }
