@@ -12,7 +12,7 @@
 
 - Corpus = all `content/posts/**` entries whose frontmatter `tags` do **not** include `autoblog`, plus the 5 fixed project pages in `content/rag-project-pages.json` (subagent-fleet, embenx, ai-toolkit, leanlearn, cc-creativity-skills).
 - Sync trigger: GitHub Actions on push to `main`, scoped to `paths: ["content/posts/**"]` only — config/CI/tooling changes must never trigger a sync.
-- Embedding model: `@cf/baai/bge-small-en-v1.5` (cheapest Workers AI text-embedding model, $0.02/M input tokens, 384 dims).
+- Embedding model: `@cf/qwen/qwen3-embedding-0.6b` ($0.012/M input tokens, 1024 dims, 4096-token context — `bge-small-en-v1.5` is not in AI Search's supported embedding model list).
 - Generation model: `@cf/meta/llama-3.1-8b-instruct-fp8` (small instruct model, not deprecated, cheaper than the non-fp8 variant).
 - Chat is multi-turn, client-side conversation state only — no server persistence.
 - `/ask` route is removed and redirects to `/`.
@@ -559,7 +559,7 @@ Run:
 npx wrangler ai-search create hero-chat \
   --type r2 \
   --source adityakarnam-rag-corpus \
-  --embedding-model @cf/baai/bge-small-en-v1.5 \
+  --embedding-model @cf/qwen/qwen3-embedding-0.6b \
   --generation-model @cf/meta/llama-3.1-8b-instruct-fp8
 ```
 Expected: instance created; if this is the account's first R2-backed AI Search instance, the CLI will prompt to create a service API token for AI Search to read the bucket — follow the prompt (or create it via **Cloudflare dashboard > AI Search > [instance] > Settings > Data source > Service API token** if the CLI directs you there).

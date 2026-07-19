@@ -42,7 +42,7 @@ A script (`scripts/sync-rag-corpus.mjs`) that:
 
 Writing a new post requires no manual step: as long as it isn't tagged `autoblog`, the next push to `main` syncs it to R2 and triggers re-indexing automatically.
 
-**One-time infra setup** (not part of the automatic pipeline, done once): create the R2 bucket, create the AI Search instance connected to it (with the smallest embedding model, `@cf/baai/bge-small-en-v1.5`, and a small instruct model for generation), and configure the R2 service API token AI Search needs to read the bucket.
+**One-time infra setup** (not part of the automatic pipeline, done once): create the R2 bucket, create the AI Search instance connected to it (with `@cf/qwen/qwen3-embedding-0.6b` for embeddings — `bge-small-en-v1.5` is not in AI Search's supported embedding model list — and a small instruct model for generation), and configure the R2 service API token AI Search needs to read the bucket.
 
 ### 2. Query-time retrieval + generation (Cloudflare Pages Function)
 
