@@ -59,7 +59,7 @@
 - Consumes: `siteIdentity`, `systems`, `researchAgenda`, `fieldNotes`, `currentInvestigations`, `operatingPrinciples` from `src/components/world-model/data.ts`.
 - Produces: `buildPortfolioMcpData(input?: Partial<PortfolioMcpBuildInput>): PortfolioMcpData`.
 
-- [ ] **Step 1: Write the failing schema/data tests**
+- [x] **Step 1: Write the failing schema/data tests**
 
 Create `src/components/portfolio-mcp/build-data.test.ts`:
 
@@ -111,13 +111,13 @@ describe("buildPortfolioMcpData", () => {
 })
 ```
 
-- [ ] **Step 2: Run the failing test**
+- [x] **Step 2: Run the failing test**
 
 Run: `rtk npm test -- src/components/portfolio-mcp/build-data.test.ts`
 
 Expected: FAIL because `src/components/portfolio-mcp/build-data.ts` does not exist.
 
-- [ ] **Step 3: Implement schema and data normalization**
+- [x] **Step 3: Implement schema and data normalization**
 
 Create `src/components/portfolio-mcp/schema.ts`:
 
@@ -338,13 +338,13 @@ export const buildPortfolioMcpData = (input: PortfolioMcpBuildInput = {}): Portf
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `rtk npm test -- src/components/portfolio-mcp/build-data.test.ts`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run:
 
@@ -1410,4 +1410,3 @@ Run:
 git add functions/mcp.ts functions/mcp-health.ts functions/_lib/rate-limit.ts functions/_lib/rate-limit.test.ts docs/superpowers/plans/2026-07-19-hosted-portfolio-mcp.md
 git commit -m "Add abuse and DDoS safety hardening to portfolio MCP endpoint"
 ```
-
