@@ -1341,3 +1341,73 @@ rtk git commit -m "Fix portfolio MCP verification issues"
 ```
 
 If no fixes were needed, do not create an empty commit.
+
+---
+
+### Task 8: Abuse and DDoS Safety Hardening
+
+**Why:** `/mcp` and `/mcp-health` are public and unauthenticated. Cloudflare's always-on network-level DDoS protection covers every proxied zone automatically (not something this code controls), but the Function itself should still reject oversized/malformed requests cheaply, avoid doing unbounded work per request, and let static responses be cached at the edge so most traffic never reaches the Function at all. A Cloudflare KV namespace named `portfolio-mcp-rate-limit` (id `6ed8c837ed8d409babc2c3745241f77b`) has already been created in the `Akarnam37@gmail.com` account for optional per-IP throttling; binding it to the Pages project is a manual dashboard step (Pages project → Settings → Functions → KV namespace bindings → bind as `RATE_LIMIT_KV`) that happens after this PR merges, so all code that uses it must fail open (allow the request) when the binding is absent.
+
+**Files:**
+- Modify: `functions/mcp.ts`
+- Modify: `functions/mcp-health.ts`
+- Create: `functions/_lib/rate-limit.ts`
+- Create: `functions/_lib/rate-limit.test.ts` (or colocate under `src/components/portfolio-mcp/` if the project's Vitest config does not cover `functions/`, matching existing test conventions)
+- Modify: `src/components/portfolio-mcp/protocol.ts` only if needed to surface a 413/415 before JSON-RPC parsing
+
+**Interfaces:**
+- Produces: `checkRateLimit(kv: KVNamespace | undefined, clientId: string, opts?: { limit?: number; windowSeconds?: number }): Promise<{ allowed: boolean; remaining: number }>`
+
+- [ ] **Step 1: Write failing rate-limit unit tests**
+
+Create `functions/_lib/rate-limit.test.ts` covering:
+- returns `{ allowed: true }` immediately when `kv` is `undefined` (fail-open, no binding configured yet).
+- allows requests under the limit and increments a counter keyed by `clientId` + current time window.
+- denies requests once the count for the current window meets/exceeds the limit, using a minimal in-memory fake implementing the `KVNamespace` `get`/`put` surface used by the function (no real network calls in tests).
+
+Run: `npm test -- functions/_lib/rate-limit.test.ts`
+
+Expected: FAIL because `rate-limit.ts` does not exist.
+
+- [ ] **Step 2: Implement the fail-open KV rate limiter**
+
+Create `functions/_lib/rate-limit.ts` implementing a fixed-window counter: key `ratelimit:{clientId}:{windowStart}`, default `limit = 60` requests per `windowSeconds = 60`, using `kv.get`/`kv.put` with an expiration around the window boundary. Any thrown error from KV access must be caught and treated as `allowed: true` (never let a KV outage take down the endpoint).
+
+- [ ] **Step 3: Wire the limiter and request hardening into the MCP function**
+
+Modify `functions/mcp.ts`:
+- Read the client IP from `request.headers.get("CF-Connecting-IP")` (fallback to `"unknown"`) as `clientId`.
+- Reject with `413` and a small JSON error body if `request.headers.get("Content-Length")` is present and exceeds `16384` bytes, before reading the body.
+- Reject with `415` and a small JSON error body if the `Content-Type` header is present and does not include `application/json`.
+- Call `checkRateLimit(context.env.RATE_LIMIT_KV, clientId)`; if `allowed` is `false`, return `429` with `Retry-After` and a small JSON error body.
+- Set `Cache-Control: no-store` on all responses from this function (JSON-RPC responses are per-request and must not be cached).
+- Keep existing JSON-RPC behavior otherwise unchanged.
+
+Modify `functions/mcp-health.ts`:
+- Add `Cache-Control: public, max-age=300` to the response headers so the health check can be served from Cloudflare's edge cache instead of invoking the Function on every request.
+
+- [ ] **Step 4: Run tests**
+
+Run: `npm test -- functions/_lib/rate-limit.test.ts && npm test`
+
+Expected: PASS, and no regressions in existing `portfolio-mcp` tests.
+
+- [ ] **Step 5: Run build**
+
+Run: `npm run build`
+
+Expected: PASS or the known configstore EPERM warning only.
+
+- [ ] **Step 6: Document the manual KV binding step**
+
+In `src/components/portfolio-mcp/install-copy.ts` or a short section of `src/pages/mcp-install.tsx`, no visitor-facing text is needed for this (it is an operator step, not a client install step). Instead, add a one-paragraph note to this plan file's top-level summary (or a `docs/superpowers/plans/2026-07-19-hosted-portfolio-mcp.md` "Post-Merge Manual Step" note) stating: bind KV namespace `portfolio-mcp-rate-limit` (id `6ed8c837ed8d409babc2c3745241f77b`) to the `adityakarnam` Pages project as `RATE_LIMIT_KV` in Cloudflare dashboard → Settings → Functions, to activate per-IP throttling. The endpoint is safe to ship without this step (fail-open + Cloudflare's always-on edge DDoS protection + fully static/deterministic compute with no external calls or costs), but binding it hardens against sustained single-IP abuse.
+
+- [ ] **Step 7: Commit**
+
+Run:
+
+```bash
+git add functions/mcp.ts functions/mcp-health.ts functions/_lib/rate-limit.ts functions/_lib/rate-limit.test.ts docs/superpowers/plans/2026-07-19-hosted-portfolio-mcp.md
+git commit -m "Add abuse and DDoS safety hardening to portfolio MCP endpoint"
+```
+
