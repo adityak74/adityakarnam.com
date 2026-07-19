@@ -1455,7 +1455,7 @@ git commit -m "Embed HeroChat in the homepage hero, remove Ask My Work CTA"
 - [ ] **Step 1: Confirm nothing else references the files being deleted**
 
 Run: `grep -rl "pages-ask\|ask-my-work\|research-lens\|AskMyWorkPage" src/ --include="*.ts" --include="*.tsx" | grep -v "src/components/world-model/pages-ask/" | grep -v "src/api/ask-my-work.ts" | grep -v "src/api/research-lens.ts" | grep -v "src/pages/ask.tsx"`
-Expected: empty output (no references from `HomepageConsole.tsx`, `HeroChat.tsx`, or `hero-chat/*` — they were built independently in Tasks 7-10).
+Expected: **`src/components/world-model/ResearchLensPanel.tsx`** — a pre-existing homepage component (unrelated to this plan's Ask My Work removal) that calls `fetch("/api/research-lens", ...)` at runtime via a plain string literal, so it can't be caught by TypeScript imports or a build. Its backing endpoint is deleted in Step 2, so it must be removed too — see Step 6.
 
 - [ ] **Step 2: Delete the superseded files**
 
@@ -1492,6 +1492,24 @@ Expected: build succeeds with no errors about missing `/ask` references.
 ```bash
 git add gatsby-node.ts
 git commit -m "Remove standalone /ask page and superseded OpenRouter-based Q&A code, redirect /ask/ to /"
+```
+
+- [ ] **Step 6: Remove `ResearchLensPanel`, whose backing API was just deleted**
+
+In `src/components/world-model/HomepageConsole.tsx`, remove the import `import ResearchLensPanel from "./ResearchLensPanel"` and remove the `<ResearchLensPanel />` element (it sits at the top of the "Box" containing the "Research Agenda" card — delete just that line, keeping the surrounding `<Box>...</Box>` and its `Research Agenda` content intact).
+
+Then delete the component file:
+
+```bash
+git rm src/components/world-model/ResearchLensPanel.tsx
+```
+
+Run: `grep -rn "ResearchLensPanel\|/api/research-lens" src/` — expected: no output.
+Run: `npx gatsby build` — expected: succeeds, and the function list no longer includes `research-lens` or `ask-my-work`.
+
+```bash
+git add src/components/world-model/HomepageConsole.tsx
+git commit -m "Remove ResearchLensPanel: its backing API was deleted in Task 11"
 ```
 
 ---
