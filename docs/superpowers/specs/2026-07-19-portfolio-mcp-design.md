@@ -241,7 +241,7 @@ Resources should be readable, compact, and safe to quote. They should not duplic
 
 ## Claude Install UX
 
-The documentation page should provide concise setup steps and copy-ready prompts.
+The documentation page should provide concise setup steps, a Claude Code quick-install command, and copy-ready prompts.
 
 Primary install block:
 
@@ -250,8 +250,11 @@ Install Aditya Karnam's Portfolio MCP in Claude
 
 Connector URL:
 https://adityakarnam.com/mcp
+```
 
-Claude setup:
+Claude app setup:
+
+```text
 1. Open Claude.
 2. Go to Settings / Customize.
 3. Open Connectors.
@@ -261,6 +264,18 @@ Claude setup:
 ```
 
 For team accounts, the page should say that an organization owner may need to add the connector first.
+
+Claude Code quick install:
+
+```bash
+claude mcp add --transport http aditya-portfolio https://adityakarnam.com/mcp
+```
+
+The install page should make this command copyable and label it for developers and agent users. It should also include a short verification command:
+
+```bash
+claude mcp list
+```
 
 The page should provide copy-ready recruiter prompts:
 
