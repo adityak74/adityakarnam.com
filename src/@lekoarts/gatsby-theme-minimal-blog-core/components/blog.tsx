@@ -27,7 +27,7 @@ type BlogData = {
 }
 
 export default function Blog({ data }: { data: BlogData }) {
-  const posts = data.allPost.nodes
+  const posts = data.allPost.nodes.filter(post => !post.tags?.some(t => t.name === `autoblog`))
 
   return (
     <Layout>
@@ -55,46 +55,20 @@ export default function Blog({ data }: { data: BlogData }) {
 
         <SectionBlock eyebrow="All Posts" title="Latest first">
           <Grid sx={{ gridTemplateColumns: [`1fr`, `repeat(2, minmax(0, 1fr))`, `repeat(3, minmax(0, 1fr))`], gap: 3 }}>
-            {posts.map(post => {
-              const isAutoblog = post.tags?.some(t => t.name === `autoblog`)
-              return (
-                <ConsoleCard key={post.slug} title={post.date} accent={consoleColors.accentAlt}>
-                  <Box sx={{ display: `flex`, alignItems: `center`, gap: `0.5rem`, flexWrap: `wrap` }}>
-                    <Heading as="h2" sx={{ color: consoleColors.text, fontSize: [2, 3], m: 0, lineHeight: 1.15 }}>
-                      {post.title}
-                    </Heading>
-                    {isAutoblog && (
-                      <Text
-                        as="span"
-                        sx={{
-                          fontSize: `0.65rem`,
-                          fontWeight: 600,
-                          letterSpacing: `0.04em`,
-                          textTransform: `uppercase`,
-                          color: consoleColors.soft,
-                          bg: consoleColors.panelAlt,
-                          border: `1px solid ${consoleColors.border}`,
-                          px: `0.45rem`,
-                          py: `0.1rem`,
-                          borderRadius: `4px`,
-                          fontFamily: `monospace`,
-                          flexShrink: 0,
-                        }}
-                      >
-                        AI Generated
-                      </Text>
-                    )}
-                  </Box>
-                  <Text sx={{ color: consoleColors.muted, mb: 2 }}>{post.description || post.excerpt}</Text>
-                  <Link
-                    to={`${post.slug}/`}
-                    sx={{ color: consoleColors.accent, fontFamily: `monospace`, textDecoration: `none` }}
-                  >
-                    Read post
-                  </Link>
-                </ConsoleCard>
-              )
-            })}
+            {posts.map(post => (
+              <ConsoleCard key={post.slug} title={post.date} accent={consoleColors.accentAlt}>
+                <Heading as="h2" sx={{ color: consoleColors.text, fontSize: [2, 3], m: 0, lineHeight: 1.15 }}>
+                  {post.title}
+                </Heading>
+                <Text sx={{ color: consoleColors.muted, mb: 2 }}>{post.description || post.excerpt}</Text>
+                <Link
+                  to={`${post.slug}/`}
+                  sx={{ color: consoleColors.accent, fontFamily: `monospace`, textDecoration: `none` }}
+                >
+                  Read post
+                </Link>
+              </ConsoleCard>
+            ))}
           </Grid>
         </SectionBlock>
       </Box>
