@@ -41,6 +41,7 @@
     "gray-matter": "^4.0.3",
     "rss-parser": "^3.13.0",
     "typescript": "^5.5.3",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.10",
+    "wrangler": "^4.112.0"
   }
 }
