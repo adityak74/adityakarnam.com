@@ -4,5 +4,5 @@ import { buildPortfolioMcpHealth } from "../src/components/portfolio-mcp/metadat
 export const onRequestGet = async (): Promise<Response> =>
   new Response(JSON.stringify(buildPortfolioMcpHealth(portfolioMcpData), null, 2), {
     status: 200,
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=300" },
   })
