@@ -100,7 +100,7 @@ User types message
 
 ## Open items for the implementation plan
 
-- Exact generation model choice for the AI Search instance (pick smallest instruct model that stays coherent for ~120-200 word grounded answers, e.g. `@cf/meta/llama-3.1-8b-instruct`).
+- Exact generation model choice for the AI Search instance (pick smallest instruct model that stays coherent for ~120-200 word grounded answers, e.g. `@cf/meta/llama-3.1-8b-instruct-fp8`).
 - Confirm the exact AI Search REST query endpoint/response shape against the live API during implementation (docs describe an OpenAI-compatible `messages` request returning `choices` + `chunks`, but the precise endpoint path should be verified with a real call before finalizing).
 - R2 service API token setup for the AI Search instance (one-time, dashboard step per Cloudflare's AI Search R2 data source docs).
 - Whether the per-IP rate limit uses Cloudflare's own rate-limiting rules (if available on the plan) or an in-function counter.
