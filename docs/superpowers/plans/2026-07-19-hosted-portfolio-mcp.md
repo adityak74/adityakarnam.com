@@ -1410,3 +1410,68 @@ Run:
 git add functions/mcp.ts functions/mcp-health.ts functions/_lib/rate-limit.ts functions/_lib/rate-limit.test.ts docs/superpowers/plans/2026-07-19-hosted-portfolio-mcp.md
 git commit -m "Add abuse and DDoS safety hardening to portfolio MCP endpoint"
 ```
+
+---
+
+### Task 9: Streamable HTTP Compliance and Legacy Client Fallback
+
+**Why:** Cloudflare's official remote-MCP guide (https://blog.cloudflare.com/remote-model-context-protocol-servers-mcp/) recommends the `McpAgent`/Durable-Objects/OAuth stack on Workers for stateful, authenticated servers with per-user tool gating. That stack does not apply here — this server is deliberately stateless, public, and unauthenticated (see Global Constraints), so it is correctly built as a minimal JSON-RPC handler on Pages Functions rather than migrated to Workers + Durable Objects + OAuth. Two things from that guide are still worth adopting because they are cheap and improve real client compatibility:
+1. The MCP transport spec includes an `MCP-Protocol-Version` request header clients may send on requests after `initialize`; a compliant server should reject a request that names a protocol version it does not support, rather than silently ignoring it.
+2. Not all current MCP clients support remote HTTP servers natively yet. Cloudflare highlights the third-party `mcp-remote` npm adapter (`npx mcp-remote <url>`) as the standard bridge for clients that only support local/stdio MCP servers (this does not conflict with the "no npm package for v1" constraint, which is about not shipping our own package — `mcp-remote` is an existing, unrelated third-party tool we only document).
+
+**Files:**
+- Modify: `src/components/portfolio-mcp/protocol.ts`
+- Modify: `src/components/portfolio-mcp/protocol.test.ts`
+- Modify: `src/components/portfolio-mcp/install-copy.ts`
+- Modify: `src/components/portfolio-mcp/install-copy.test.ts`
+
+- [ ] **Step 1: Write failing protocol-version tests**
+
+Add to `protocol.test.ts`: a request with header `MCP-Protocol-Version: 1999-01-01` (or similar unsupported value) on any method should get a JSON-RPC error response with code `-32600` and a message mentioning the unsupported protocol version. A request with no `MCP-Protocol-Version` header, or with the header set to `2025-06-18` (or omitted on `initialize`, which is exempt per spec), should behave exactly as before.
+
+Run: `npm test -- src/components/portfolio-mcp/protocol.test.ts`
+
+Expected: FAIL on the new case.
+
+- [ ] **Step 2: Implement protocol version validation**
+
+In `handlePortfolioMcpRequest`, before dispatching on `body.method`, read `request.headers.get("MCP-Protocol-Version")`. If present, non-empty, and not equal to `"2025-06-18"`, return `error(body.id, -32600, "Unsupported protocol version")` immediately. Skip this check when `body.method === "initialize"` (a client's first request may predate version negotiation).
+
+- [ ] **Step 3: Write failing install-copy test for the mcp-remote fallback**
+
+Add to `install-copy.test.ts`: `PORTFOLIO_MCP_INSTALL_MARKDOWN` contains a section mentioning `mcp-remote` and the exact command `npx mcp-remote https://adityakarnam.com/mcp`.
+
+Run: `npm test -- src/components/portfolio-mcp/install-copy.test.ts`
+
+Expected: FAIL because the markdown does not yet mention it.
+
+- [ ] **Step 4: Add the fallback section to the install markdown**
+
+In `install-copy.ts`, add a new `## If Your Client Only Supports Local MCP Servers` section after `## Other Agents`, explaining that clients without native remote MCP support can bridge through the `mcp-remote` adapter:
+
+```bash
+npx mcp-remote https://adityakarnam.com/mcp
+```
+
+Keep this brief — one paragraph plus the command — and note it is a third-party bridge tool, not something this site hosts.
+
+- [ ] **Step 5: Run tests**
+
+Run: `npm test`
+
+Expected: PASS, full suite green.
+
+- [ ] **Step 6: Run build**
+
+Run: `npm run build`
+
+Expected: PASS or the known configstore EPERM warning only.
+
+- [ ] **Step 7: Commit**
+
+Run:
+
+```bash
+git add src/components/portfolio-mcp/protocol.ts src/components/portfolio-mcp/protocol.test.ts src/components/portfolio-mcp/install-copy.ts src/components/portfolio-mcp/install-copy.test.ts docs/superpowers/plans/2026-07-19-hosted-portfolio-mcp.md
+git commit -m "Add MCP protocol version validation and mcp-remote fallback docs"
+```

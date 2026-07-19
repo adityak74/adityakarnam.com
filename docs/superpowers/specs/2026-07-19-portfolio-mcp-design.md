@@ -335,7 +335,7 @@ Implementation should include:
 
 ## Open Decisions for Implementation Planning
 
-- Whether to use Cloudflare's MCP helper package or a minimal direct MCP handler.
-- Whether the MCP route should live beside existing Pages Functions or in a separate Cloudflare Worker if routing conflicts with Gatsby static pages.
+- Whether to use Cloudflare's MCP helper package or a minimal direct MCP handler. **Decided:** minimal direct JSON-RPC handler on Pages Functions. Cloudflare's official remote-MCP guide (https://blog.cloudflare.com/remote-model-context-protocol-servers-mcp/) recommends `McpAgent` + Durable Objects + `workers-oauth-provider` on Workers, but that stack exists to support per-session state and per-user authenticated tool gating — neither applies to this server, which is deliberately stateless, public, and unauthenticated. Adopting it would add Workers/Durable Object infrastructure and an OAuth dependency graph with no corresponding requirement. Two ideas from that guide were still folded in as cheap wins: validating the `MCP-Protocol-Version` request header, and documenting the third-party `mcp-remote` adapter on the install page as a bridge for clients that only support local/stdio MCP servers.
+- Whether the MCP route should live beside existing Pages Functions or in a separate Cloudflare Worker if routing conflicts with Gatsby static pages. **Decided:** beside existing Pages Functions (`functions/mcp.ts`), consistent with the rest of the site's Cloudflare Pages deployment.
 - Exact shape of the build-time JSON generator for MDX post metadata.
 - Whether the first version includes post search or only project/system search.
