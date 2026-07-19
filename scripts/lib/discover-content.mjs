@@ -44,5 +44,15 @@ export function loadProjectPages(projectPagesFile = DEFAULT_PROJECT_PAGES_FILE) 
 }
 
 export function discoverSources(postsDir = DEFAULT_POSTS_DIR, projectPagesFile = DEFAULT_PROJECT_PAGES_FILE) {
-  return [...discoverPosts(postsDir), ...loadProjectPages(projectPagesFile)]
+  const combined = [...discoverPosts(postsDir), ...loadProjectPages(projectPagesFile)]
+  const seenSlugs = new Set()
+  const deduped = []
+
+  for (const source of combined) {
+    if (seenSlugs.has(source.slug)) continue
+    seenSlugs.add(source.slug)
+    deduped.push(source)
+  }
+
+  return deduped
 }

@@ -98,11 +98,11 @@ describe("discoverPosts", () => {
 })
 
 describe("loadProjectPages", () => {
-  it("loads the real project-pages fixture with 5 entries", () => {
+  it("loads the real project-pages fixture with 3 entries", () => {
     const pages = loadProjectPages()
 
-    expect(pages).toHaveLength(5)
-    expect(pages.map((page) => page.slug)).toContain("subagent-fleet-local-ai-compute-control-plane")
+    expect(pages).toHaveLength(3)
+    expect(pages.map((page) => page.slug)).toContain("ai-toolkit")
   })
 
   it("every entry has slug, title, url, and body", () => {
@@ -123,6 +123,27 @@ describe("discoverSources", () => {
     const sources = discoverSources(tempDir)
 
     expect(sources.some((source) => source.slug === "human-post")).toBe(true)
-    expect(sources.some((source) => source.slug === "subagent-fleet-local-ai-compute-control-plane")).toBe(true)
+    expect(sources.some((source) => source.slug === "ai-toolkit")).toBe(true)
+  })
+
+  it("dedupes sources by slug, keeping the post over a colliding project page", () => {
+    const projectPagesFile = path.join(tempDir, "colliding-project-pages.json")
+    fs.writeFileSync(
+      projectPagesFile,
+      JSON.stringify([
+        {
+          slug: "human-post",
+          title: "Human Post Blurb",
+          url: "https://adityakarnam.com/human-post/",
+          body: "This is a short blurb that should not overwrite the full post.",
+        },
+      ])
+    )
+
+    const sources = discoverSources(tempDir, projectPagesFile)
+    const matches = sources.filter((source) => source.slug === "human-post")
+
+    expect(matches).toHaveLength(1)
+    expect(matches[0].body).toBe("This is the body of the human post.")
   })
 })
