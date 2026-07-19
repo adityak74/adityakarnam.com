@@ -1,0 +1,94 @@
+---
+title: "India's Next AI Unicorns Won't Just Build Models — They'll Build the Agent Infrastructure Layer"
+description: "Emergent's unicorn round, HCLTech's ₹3,500 crore data centers, and Karnataka's new policy look like separate stories. Together they point at India's real AI opportunity: the agent execution layer."
+date: 2026-07-18
+slug: "/india-agent-infrastructure-layer"
+canonicalUrl: "https://adityakarnam.com/india-agent-infrastructure-layer/"
+keywords:
+  [
+    "India AI infrastructure",
+    "agent infrastructure",
+    "AI agents India",
+    "sovereign AI",
+    "Emergent unicorn",
+    "HCLTech data centers",
+    "coding agents",
+    "agent evaluation",
+    "MCP",
+    "Claude Code",
+  ]
+tags:
+  - ai
+  - agents
+  - india
+  - infrastructure
+---
+
+_Five stories from one week in July 2026 look unrelated on their own. Read together, they describe a stack India is building without quite naming it — and the layer of that stack that's still wide open._
+
+Between July 11 and July 18, 2026, five things happened in Indian tech that had nothing to do with each other on the surface:
+
+- Bengaluru-based **Emergent** raised a $130 million Series C at a $1.5 billion valuation, becoming a unicorn a little over a year after launch — a five-fold jump from its $300 million valuation six months earlier ([TechCrunch](https://techcrunch.com/2026/07/15/indian-ai-coding-startup-emergent-becomes-a-unicorn-just-over-a-year-after-launch/), [Bloomberg](https://www.bloomberg.com/news/articles/2026-07-15/indian-ai-startup-emergent-valued-at-1-5-billion-in-fundraising)).
+- **HCLTech**'s board approved up to ₹3,500 crore for full-stack AI data centers reaching 50 MW capacity, run through a new subsidiary built specifically for the business ([Times of India](https://timesofindia.indiatimes.com/business/india-business/hcltech-to-up-ai-game-invest-3500-crore-in-data-centres-of-up-to-50-mw/articleshow/132378824.cms), [HCLTech](https://www.hcltech.com/press-releases/hcltech-launches-full-stack-ai-offering-powered-new-ai-data-center-investment)).
+- **Karnataka** confirmed it is finalizing a comprehensive data-center policy — land, power, water, security — alongside plans for India's first public-sector AI university ([Economic Times](https://m.economictimes.com/news/india/karnataka-finalising-comprehensive-data-centre-policy-to-support-ai-infrastructure/articleshow/132418412.cms), [The Federal](https://thefederal.com/category/states/south/karnataka/karnataka-to-roll-out-data-centre-policy-to-power-ai-growth-next-gen-computing-250250)).
+- **TCS** opened an Nvidia-powered Autonomous Engineering Lab in Bengaluru aimed at moving industrial AI in mobility and manufacturing from prototype to production ([Times of India](https://timesofindia.indiatimes.com/technology/tech-news/tcs-launches-nvidia-powered-autonomous-engineering-lab-to-accelerate-ai-led-mobility/articleshow/132411240.cms), [TCS](https://www.tcs.com/who-we-are/newsroom/press-release/tcs-launches-industrial-ai-solutions-lab-bengaluru-powered-nvidia)).
+- **Mandrake Bio**, a Bengaluru biotech startup, raised ₹16 crore pre-seed to design gene-editing enzymes with generative AI rather than relying on natural systems like CRISPR-Cas9 ([Economic Times](https://m.economictimes.com/tech/artificial-intelligence/mandrake-bio-raises-rs-16-crore-to-build-ai-powered-gene-editing-platform-for-agriculture-medicine/articleshow/132431719.cms)).
+
+A funding round, two infrastructure announcements, an industrial lab, and a vertical science bet. Read as isolated headlines, that's just a busy week. Read together, they're the same story told from five angles: India is no longer content supplying the labor underneath other people's AI products. It's assembling the whole stack — application layer, physical infrastructure, and industry-specific deployment — under one roof, in one country, in the same seven days.
+
+What's missing from that stack is the part none of these five stories are actually about: the layer that sits between a model and a working product. That's the part I want to argue about, because it's the part I've spent the last several months building.
+
+## From services to systems
+
+The old India-and-AI story was about talent and throughput: IT services firms staffing AI projects for Western clients, GCCs running offshore engineering for global companies, a large and cheap developer base doing the implementation work that somebody else designed.
+
+That story isn't gone, but this week's news doesn't fit it. Emergent isn't an outsourcing shop — it's a product company building a platform that lets non-developers ship full-stack apps, and investors are pricing it like one, at $1.5 billion less than 18 months after founding. HCLTech isn't quietly running someone else's data center; it's building its own, sized for its own AI offering, funded by its own subsidiary. Karnataka isn't drafting IT-park incentives; it's writing a data-center policy — land, power, water, security — as a named category of state economic policy, alongside a public AI university. TCS isn't customizing someone else's industrial software; it's opening a physical lab, with Nvidia hardware, to take mobility and manufacturing AI from demo to deployment.
+
+The pattern across all four: ownership. Product ownership, infrastructure ownership, and now — with Mandrake Bio designing novel enzymes rather than fine-tuning around CRISPR — scientific IP ownership. That's a different transition than "India does AI now." It's "India owns pieces of the AI stack it used to just implement."
+
+## The layer nobody in this week's news is building
+
+Here's the gap. Emergent proves consumer-grade distribution for AI-built software is real. HCLTech, Karnataka, and TCS prove the compute and physical infrastructure underneath it is getting built at state and enterprise scale. What's still mostly missing — in this week's news and, in my experience building in this space, in the broader market — is the layer between the two: the runtime that turns a model endpoint into a dependable agent that does real work.
+
+Everyone is racing to either train bigger models or build bigger data centers to run them on. Almost nobody is talking about what happens in between: the harness. The part that decides whether an agent actually finishes the task, checks its own work, stays within budget, and fails in a way you can debug instead of a way you can't.
+
+Concretely, that missing middle looks like:
+
+- **Agent evaluation** that measures the harness, not just the model benchmark score attached to it.
+- **Tool and MCP interoperability**, so an agent isn't locked to one vendor's tool-calling format.
+- **Reasoning and execution telemetry** — not just "here's the output" but a trace of what the agent tried, what it called, and why.
+- **Permission and identity boundaries**, so an agent editing files or running shell commands has an explicit, auditable approval model instead of an implicit one.
+- **Cost-aware routing**, so a planning step doesn't burn the same budget as an implementation step.
+- **Human approval gates** that are a real checkpoint, not a rubber stamp on the way to autonomy.
+- **Multilingual reliability**, which matters enormously in a market with 22 scheduled languages and isn't solved by an English-only eval suite.
+- **Reproducible benchmarks**, so "the agent worked in the demo" and "the agent works" stop being treated as the same claim.
+
+None of that shows up in a funding headline or a data-center press release. It shows up when you actually try to run agents in production and watch where they fall over.
+
+## What building this myself has taught me
+
+I've spent the last few months building exactly this layer, at small scale, because I kept running into the same wall: the model isn't the bottleneck, the harness is.
+
+I wrote [QuECTO](https://github.com/adityak74/quecto), a minimal, vendor-neutral execution layer for LLM agents — a 1.3 MB core with zero async and no opinions about which model or provider you use, plus a 3.5 MB coding agent built on top of it with native reasoning-effort controls (`none` through `xhigh`), multi-step tool use, verification gates that run real commands instead of trusting the model's claim that it's done, session persistence with resume/undo/diff, MCP support for both local and remote tool servers, subagent delegation, and OpenTelemetry tracing down to the level of individual tool calls and reasoning tokens. The design principle is in the name: `quecto` is the SI prefix for 10⁻³⁰, and the whole project is a bet that a harness built from the smallest possible composable pieces — one that never hides the model's raw response behind an opinionated abstraction — scales up better than one that starts big.
+
+Separately, I built [subagent-fleet](https://github.com/adityak74/subagent-fleet), a control plane for routing Claude Code-style subagents across local Ollama nodes, because a fleet of machines with different models on them isn't automatically a coordinated backend — someone has to decide which role runs on which model, warm it up before it's needed, and make the routing visible when something goes wrong instead of debugging blind.
+
+The most concrete thing that came out of that second project was a head-to-head eval: the same coding tasks sent to a local model fleet, Claude Sonnet 5, and GPT-4o-mini, judged blind on a 0–10 rubric. The local fleet scored 8.38 against Sonnet 5's 8.88 — 94% of frontier quality at zero marginal model cost — and beat GPT-4o-mini outright. It also had exactly one real miss: pytest unit test generation, where it scored 4.0 against Sonnet 5's 8.0. That's the whole point of running the eval rather than trusting a vibe. The same class of model, wired through different harnesses with different tool access, verification, and context handling, produces genuinely different outcomes on genuinely different tasks — and you only find out where by testing the harness, not just the model card.
+
+That's the practical version of the missing-middle argument above. Evaluating "which LLM is best" is a much easier and much less useful question than "which harness, wired to which model, actually finishes this class of task reliably, inside this budget, with a trace I can audit afterward." India's AI story this week is full of the first kind of investment. It's almost empty of the second.
+
+## Why India specifically might be good at this
+
+There's a case that India's constraints, which usually get framed as limitations, are actually a design advantage for building this layer.
+
+Rupee-denominated cost pressure means an agent architecture optimized for cost-per-task rather than raw benchmark score isn't a nice-to-have, it's the default requirement — which is exactly the discipline the missing middle needs. Twenty-two scheduled languages mean a harness that only reasons reliably in English fails a huge fraction of real deployments immediately, instead of eventually. Variable infrastructure — the same reason subagent-fleet exists at all, machines dropping offline, networks being inconsistent — forces resilience and observability into the design instead of leaving them as a later polish pass. And a developer base this large, building on this much open tooling, is a natural distribution channel for infrastructure that has to be inspectable and cheap to run, not just powerful.
+
+None of this is guaranteed. Constraints don't automatically produce good infrastructure; they just make bad infrastructure fail faster and more visibly, which is its own kind of forcing function.
+
+## The prediction
+
+Emergent shows that AI creation tools can win real distribution in India. HCLTech, Karnataka, and TCS show the compute and physical layer underneath that distribution is being built deliberately, at state and enterprise scale. Mandrake Bio shows the same generative approach reaching into vertical science.
+
+The company that ends up mattering most from this generation of Indian AI startups probably won't be the one with the biggest model. It'll be the one that builds the execution, evaluation, and trust layer — the thing that sits quietly between thousands of models and millions of agents and decides whether they actually do the work they're asked to do, inside budget, in the right language, with a trace you can check afterward.
+
+That's a less exciting headline than "unicorn" or "₹3,500 crore." It's also the part of the stack that's still mostly unclaimed.
