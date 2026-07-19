@@ -40,10 +40,6 @@ const config: GatsbyConfig = {
             slug: `/field-notes`,
           },
           {
-            title: `Ask`,
-            slug: `/ask`,
-          },
-          {
             title: `Now`,
             slug: `/now`,
           },
@@ -156,6 +152,7 @@ const config: GatsbyConfig = {
         open: false,
       },
     },
+    `gatsby-plugin-cloudflare-pages`,
   ].filter(Boolean) as Array<PluginRef>,
 }
 

@@ -38,7 +38,7 @@ const healthTiles: HealthTile[] = [
   {
     name: "Building tools",
     state: "Green",
-    detail: "Ask My Work, Research Lens, and the supporting routes are available.",
+    detail: "The hero chat and supporting routes are available.",
   },
   {
     name: "Tools",
@@ -55,16 +55,10 @@ const serviceStatus: ComponentStatus[] = [
     note: "Updated from the latest local build and previewed in browser QA.",
   },
   {
-    name: "Ask My Work",
+    name: "Hero chat",
     status: "Operational",
-    detail: "The source-grounded research interface is available on the /ask route.",
-    note: "Backend responses stay constrained to the site context and uploaded notes.",
-  },
-  {
-    name: "Research Lens",
-    status: "Operational",
-    detail: "The visitor-lens summaries and adaptive profiles are wired behind server routes.",
-    note: "OpenRouter-backed responses fall back to curated copy when unavailable.",
+    detail: "The multi-turn, persona-adaptive chat on the homepage is grounded via Cloudflare AI Search.",
+    note: "Falls back to curated copy when retrieval or generation is unavailable.",
   },
   {
     name: "Content system",
@@ -94,7 +88,7 @@ const recentChecks = [
 
 const knownIssues = [
   "Gatsby build in this sandbox still ends with the existing `~/.config/gatsby/config.json` EPERM warning.",
-  "OpenRouter-backed answers are still fallback-first unless the API route can reach the server-side model call.",
+  "Hero chat answers fall back to curated copy unless the AI Search route can reach the retrieval and generation backend.",
   "This page is a status-style view, not a live uptime monitor with external probes yet.",
 ]
 
