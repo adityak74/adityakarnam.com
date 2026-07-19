@@ -1516,39 +1516,27 @@ git commit -m "Remove ResearchLensPanel: its backing API was deleted in Task 11"
 
 ### Task 12: End-to-end manual verification
 
-**Files:** none — verification only.
+**Files:** none — verification only. **Actually executed against a real Cloudflare Pages preview deployment, not local dev** (see below for why).
 
-- [ ] **Step 1: Run the full test suite**
+- [x] **Step 1: Run the full test suite** — `npx vitest run`: 21/21 tests pass.
 
-Run: `npx vitest run`
-Expected: all tests pass (Tasks 1, 2, 3, 7 test files).
+- [x] **Step 2 (revised): Deploy to a real Cloudflare Pages preview instead of local dev**
 
-- [ ] **Step 2: Start the dev server**
+Local `gatsby develop`/`gatsby build` cannot validate this feature end-to-end, because verification surfaced a pre-existing gap: **this project has no Cloudflare adapter configured for Gatsby**, so Gatsby Functions (`src/api/*.ts`) and `createRedirect` never actually worked in production — confirmed by finding the pre-existing `/api/ask-my-work` endpoint returned 405 live, and by Cloudflare's own Gatsby deployment guide describing static-output-only support. Fixed by:
+- Migrating the function from `src/api/hero-chat.ts` (Gatsby Function convention) to `functions/api/hero-chat.ts` (Cloudflare Pages' native Functions convention: `onRequestPost`, Fetch API `Request`/`Response`, `context.env` for secrets).
+- Adding `gatsby-plugin-cloudflare-pages` so `createRedirect` produces a real `_redirects` file.
+- Setting `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` as Cloudflare Pages **secrets** on both the Production and Preview environments (separate from the GitHub Actions secrets used by the sync workflow).
 
-Run: `CLOUDFLARE_API_TOKEN=<token> CLOUDFLARE_ACCOUNT_ID=<account-id> npx gatsby develop`
-Expected: starts on `http://localhost:8000` with no build errors.
+Verification going forward should target the PR's Cloudflare Pages preview URL, not local dev.
 
-- [ ] **Step 3: Browser check — chat renders and answers**
+- [x] **Step 3: Browser check — chat renders and answers** — confirmed via real browser automation (cmux) against the live preview: HeroChat panel renders below the hero intro; typed "What is embenx?" and got a grounded answer with the `embenx-python-embedding-toolkit` source link.
 
-Open `http://localhost:8000/`. Confirm:
-- The HeroChat panel renders below the hero intro, above the "World Model Infrastructure Stack" section.
-- Persona chips (AI Researcher, Frontier Lab Recruiter, Founder, Engineer, Open Source Contributor) are visible and clickable.
-- Typing "What is embenx?" and pressing Enter returns an answer with at least one source chip linking to `/embenx-python-embedding-toolkit/`.
+- [x] **Step 4: Multi-turn follow-up** — confirmed via curl against the live preview: a follow-up ("How does that compare to subagent-fleet?") correctly referenced both projects using prior context.
 
-- [ ] **Step 4: Browser check — multi-turn follow-up**
+- [x] **Step 5: Persona switch mid-conversation** — confirmed via real browser click on "Frontier Lab Recruiter" + typed question; response grounded correctly under that persona.
 
-In the same session, ask a follow-up like "How does that compare to subagent-fleet?" without re-stating context. Confirm the answer references both projects coherently (proves conversation history is being sent).
+- [x] **Step 6: Out-of-corpus fallback** — confirmed via curl: an off-topic question ("Whats your favorite pizza topping?") returned the graceful fallback (persona text + default `/systems/`, `/blog/` links), `fallback: true`, no hallucination.
 
-- [ ] **Step 5: Browser check — persona switch mid-conversation**
+- [x] **Step 7: /ask redirect** — confirmed via curl against the live preview: `/ask/` returns a real `301` to `/` (only works on the deployed preview, not local dev, per Step 2's finding).
 
-Switch persona to "Frontier Lab Recruiter" mid-conversation and ask another question. Confirm the response tone shifts (more impact/signal-oriented) without losing prior conversation context.
-
-- [ ] **Step 6: Browser check — out-of-corpus fallback**
-
-Ask something unrelated, e.g. "What's your favorite pizza topping?" Confirm the response is a graceful fallback (persona fallback text + default source links), not a raw error or a hallucinated answer.
-
-- [ ] **Step 7: Browser check — /ask redirect**
-
-Navigate to `http://localhost:8000/ask/`. Confirm it redirects to `/`.
-
-- [ ] **Step 8: No commit for this task** — if any check fails, fix the relevant earlier task's code and re-verify before considering the plan complete.
+- [x] **Step 8: Additional cleanup found during browser verification** — a real browser snapshot of the deployed homepage surfaced two more hardcoded `/ask/` references the grep-based Task 11 check couldn't catch (neither is a TypeScript import): the site-wide footer (`src/@lekoarts/gatsby-theme-minimal-blog/components/footer.tsx`) linked to `/ask/` as "Ask My Work", and `src/pages/status.tsx` described "Ask My Work" and "Research Lens" as live services. Both fixed and reverified with another browser check showing zero remaining "Ask" links anywhere on the page.
