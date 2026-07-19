@@ -10,7 +10,7 @@
 
 ## Global Constraints
 
-- Corpus = all `content/posts/**` entries whose frontmatter `tags` do **not** include `autoblog`, plus the 5 fixed project pages in `content/rag-project-pages.json` (subagent-fleet, embenx, ai-toolkit, leanlearn, cc-creativity-skills).
+- Corpus = all `content/posts/**` entries whose frontmatter `tags` do **not** include `autoblog`, plus the 3 fixed project pages in `content/rag-project-pages.json` (ai-toolkit, leanlearn, cc-creativity-skills — subagent-fleet and embenx are deliberately excluded from this fixture since they already have their own, richer blog posts with the same slug; `discoverSources` dedupes by slug so a colliding entry here would silently overwrite the real post).
 - Sync trigger: GitHub Actions on push to `main`, scoped to `paths: ["content/posts/**"]` only — config/CI/tooling changes must never trigger a sync.
 - Embedding model: `@cf/qwen/qwen3-embedding-0.6b` ($0.012/M input tokens, 1024 dims, 4096-token context — `bge-small-en-v1.5` is not in AI Search's supported embedding model list).
 - Generation model: `@cf/meta/llama-3.1-8b-instruct-fp8` (small instruct model, not deprecated, cheaper than the non-fp8 variant).
@@ -37,7 +37,15 @@ Run: `npm install --save-dev vitest gray-matter`
 
 Expected: `package.json` devDependencies now include `"vitest"` and `"gray-matter"` entries.
 
-- [ ] **Step 2: Add a `test` script to `package.json`**
+- [ ] **Step 2: Pin `wrangler` as a devDependency**
+
+Task 4's sync script and the GitHub Actions workflow in Task 5 both shell out to `npx wrangler`. Without a pinned version, `npx` in a clean CI checkout resolves whatever the npm registry considers current at that moment, which can be an older cached version that predates commands this plan depends on (e.g. `wrangler ai-search jobs create`, added to wrangler after 4.86.0). Pinning avoids that class of failure entirely.
+
+Run: `npm install --save-dev wrangler@4.112.0`
+
+Expected: `package.json` devDependencies now include `"wrangler": "^4.112.0"`. Note: wrangler 4.112.0 requires Node >= 22 — this is why Task 5's workflow uses `node-version: 22`, not 20.
+
+- [ ] **Step 3: Add a `test` script to `package.json`**
 
 In `package.json`, inside `"scripts"`, add:
 
@@ -45,7 +53,7 @@ In `package.json`, inside `"scripts"`, add:
     "test": "vitest run",
 ```
 
-- [ ] **Step 3: Write the failing test for `renderCorpusDoc`**
+- [ ] **Step 4: Write the failing test for `renderCorpusDoc`**
 
 Create `scripts/lib/render-corpus-doc.test.mjs`:
 
@@ -62,12 +70,12 @@ describe("renderCorpusDoc", () => {
 })
 ```
 
-- [ ] **Step 4: Run test to verify it fails**
+- [ ] **Step 5: Run test to verify it fails**
 
 Run: `npx vitest run scripts/lib/render-corpus-doc.test.mjs`
 Expected: FAIL — `Cannot find module './render-corpus-doc.mjs'` or similar.
 
-- [ ] **Step 5: Write the minimal implementation**
+- [ ] **Step 6: Write the minimal implementation**
 
 Create `scripts/lib/render-corpus-doc.mjs`:
 
@@ -77,16 +85,16 @@ export function renderCorpusDoc({ title, body }) {
 }
 ```
 
-- [ ] **Step 6: Run test to verify it passes**
+- [ ] **Step 7: Run test to verify it passes**
 
 Run: `npx vitest run scripts/lib/render-corpus-doc.test.mjs`
 Expected: PASS — 1 test passed.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
 git add package.json package-lock.json scripts/lib/render-corpus-doc.mjs scripts/lib/render-corpus-doc.test.mjs
-git commit -m "Add vitest + gray-matter, first RAG corpus doc renderer"
+git commit -m "Add vitest + gray-matter + wrangler, first RAG corpus doc renderer"
 ```
 
 ---
@@ -304,11 +312,11 @@ Add at the end of the file:
 
 ```js
 describe("loadProjectPages", () => {
-  it("loads the real project-pages fixture with 5 entries", () => {
+  it("loads the real project-pages fixture with 3 entries", () => {
     const pages = loadProjectPages()
 
-    expect(pages).toHaveLength(5)
-    expect(pages.map((page) => page.slug)).toContain("subagent-fleet-local-ai-compute-control-plane")
+    expect(pages).toHaveLength(3)
+    expect(pages.map((page) => page.slug)).toContain("ai-toolkit")
   })
 
   it("every entry has slug, title, url, and body", () => {
@@ -329,7 +337,28 @@ describe("discoverSources", () => {
     const sources = discoverSources(tempDir)
 
     expect(sources.some((source) => source.slug === "human-post")).toBe(true)
-    expect(sources.some((source) => source.slug === "subagent-fleet-local-ai-compute-control-plane")).toBe(true)
+    expect(sources.some((source) => source.slug === "ai-toolkit")).toBe(true)
+  })
+
+  it("dedupes sources by slug, keeping the post over a colliding project page", () => {
+    const projectPagesFile = path.join(tempDir, "colliding-project-pages.json")
+    fs.writeFileSync(
+      projectPagesFile,
+      JSON.stringify([
+        {
+          slug: "human-post",
+          title: "Human Post Blurb",
+          url: "https://adityakarnam.com/human-post/",
+          body: "This is a short blurb that should not overwrite the full post.",
+        },
+      ])
+    )
+
+    const sources = discoverSources(tempDir, projectPagesFile)
+    const matches = sources.filter((source) => source.slug === "human-post")
+
+    expect(matches).toHaveLength(1)
+    expect(matches[0].body).toBe("This is the body of the human post.")
   })
 })
 ```
@@ -341,22 +370,10 @@ Expected: FAIL — `ENOENT: no such file or directory, open '.../content/rag-pro
 
 - [ ] **Step 3: Create the project-pages fixture**
 
-Create `content/rag-project-pages.json`:
+Create `content/rag-project-pages.json`. **Note:** `subagent-fleet` and `embenx` are deliberately excluded here — both already have their own, richer blog posts under `content/posts/**` with the exact same slug (`subagent-fleet-local-ai-compute-control-plane`, `embenx-python-embedding-toolkit`). Including a blurb entry for either here would collide with the real post and — since project pages are appended after posts and uploaded in that order — silently overwrite the full post content with the short blurb in R2. `discoverSources` (Step 5, `discover-content.mjs`) dedupes by slug and keeps the first occurrence (posts before project pages) specifically to guard against this, but the fixture itself should never rely on that safety net for entries that have a real post.
 
 ```json
 [
-  {
-    "slug": "subagent-fleet-local-ai-compute-control-plane",
-    "title": "subagent-fleet: Local AI Compute Control Plane for Coding Agents",
-    "url": "https://adityakarnam.com/subagent-fleet-local-ai-compute-control-plane/",
-    "body": "subagent-fleet is a local AI compute control plane for Claude Code-style subagents. It routes work across Ollama machines using a declarative fleet.yaml topology, generates LiteLLM configuration automatically, runs health checks and model warmup, and exposes a live SSE dashboard for routing visibility. It turns a group of Macs and GPUs into an explicit, inspectable runtime rather than a set of ad-hoc scripts."
-  },
-  {
-    "slug": "embenx-python-embedding-toolkit",
-    "title": "embenx: Unified Embedding Retrieval Toolkit",
-    "url": "https://adityakarnam.com/embenx-python-embedding-toolkit/",
-    "body": "embenx is a Python retrieval library with a unified Collection API across 15+ vector backends. It supports hybrid dense and sparse search, temporal memory, and agentic self-healing, and ships a built-in MCP server so Claude and other agents can use it as a shared memory layer. It treats retrieval and memory as backend-agnostic infrastructure instead of one-off integration code per vector database."
-  },
   {
     "slug": "ai-toolkit",
     "title": "AI Toolkit",
@@ -381,12 +398,35 @@ Create `content/rag-project-pages.json`:
 - [ ] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run scripts/lib/discover-content.test.mjs`
-Expected: PASS — 9 tests passed.
+Expected: PASS — 10 tests passed.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Add a defensive dedupe-by-slug to `discoverSources`**
+
+In `scripts/lib/discover-content.mjs`, replace the `discoverSources` function:
+
+```js
+export function discoverSources(postsDir = DEFAULT_POSTS_DIR, projectPagesFile = DEFAULT_PROJECT_PAGES_FILE) {
+  const combined = [...discoverPosts(postsDir), ...loadProjectPages(projectPagesFile)]
+  const seenSlugs = new Set()
+  const deduped = []
+
+  for (const source of combined) {
+    if (seenSlugs.has(source.slug)) continue
+    seenSlugs.add(source.slug)
+    deduped.push(source)
+  }
+
+  return deduped
+}
+```
+
+Run: `npx vitest run scripts/lib/discover-content.test.mjs`
+Expected: PASS — 10 tests passed (the dedupe test from Step 1 now exercises real logic instead of trivially passing).
+
+- [ ] **Step 6: Commit**
 
 ```bash
-git add content/rag-project-pages.json scripts/lib/discover-content.test.mjs
+git add content/rag-project-pages.json scripts/lib/discover-content.mjs scripts/lib/discover-content.test.mjs
 git commit -m "Add fixed project-page corpus fixture for RAG sync"
 ```
 
@@ -470,7 +510,7 @@ In `package.json`, inside `"scripts"`, add:
 - [ ] **Step 3: Verify the script runs against real content (dry check, no credentials yet)**
 
 Run: `node -e "import('./scripts/lib/discover-content.mjs').then(m => console.log(m.discoverSources().length))"`
-Expected: prints a number around 18 (13 human posts + 5 project pages) — confirms `discoverSources()` works against the real `content/posts` directory before wiring in the network calls.
+Expected: prints `15` (12 human posts with a `slug` field + 3 project pages) — confirms `discoverSources()` works against the real `content/posts` directory before wiring in the network calls.
 
 - [ ] **Step 4: Commit**
 
@@ -504,6 +544,7 @@ on:
     branches: [main]
     paths:
       - "content/posts/**"
+  workflow_dispatch: {}
 
 jobs:
   sync:
@@ -512,13 +553,15 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - run: npm ci
       - run: npm run sync:rag-corpus
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 ```
+
+`workflow_dispatch: {}` allows manually re-running the sync from the GitHub Actions UI or `gh workflow run sync-rag-corpus.yml` — useful for verification and for re-syncing after an infra-only change that doesn't touch `content/posts/**`. It does not weaken the automatic path-based gating: manual runs are opt-in, not something that fires on unrelated pushes.
 
 - [ ] **Step 2: Validate the workflow YAML syntax**
 
@@ -542,17 +585,21 @@ Note: `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repo secrets must be ad
 
 **Files:** none (infra-only task, no repo changes except verifying the sync script end-to-end).
 
-- [ ] **Step 1: Confirm Cloudflare authentication**
+- [ ] **Step 1: Confirm Cloudflare authentication and scopes**
 
 Run: `npx wrangler whoami`
-Expected: prints the logged-in Cloudflare account email/ID. If not logged in, run `npx wrangler login` first (interactive browser flow — requires the user).
+Expected: prints the logged-in Cloudflare account email/ID and a list of OAuth scopes. If not logged in, run `npx wrangler login` first (interactive browser flow — requires the user). If the scope list is missing `ai-search:write` / `ai-search:run` (common if the token predates AI Search), run `npx wrangler login` again to refresh it — wrangler requests the full current scope set on every login, so a fresh login picks up new scopes automatically.
 
-- [ ] **Step 2: Create the R2 bucket**
+- [ ] **Step 2: Enable R2 on the account (one-time, dashboard-only)**
+
+If R2 has never been used on this Cloudflare account, `wrangler r2 bucket create` fails with `Please enable R2 through the Cloudflare Dashboard. [code: 10042]`. If that happens, have the user enable R2 from the Cloudflare dashboard (**R2** in the left sidebar) before continuing — this can't be scripted from the CLI.
+
+- [ ] **Step 3: Create the R2 bucket**
 
 Run: `npx wrangler r2 bucket create adityakarnam-rag-corpus`
 Expected: `Created bucket 'adityakarnam-rag-corpus'`
 
-- [ ] **Step 3: Create the AI Search instance connected to that bucket**
+- [ ] **Step 4: Create the AI Search instance connected to that bucket**
 
 Run:
 ```bash
@@ -562,39 +609,46 @@ npx wrangler ai-search create hero-chat \
   --embedding-model @cf/qwen/qwen3-embedding-0.6b \
   --generation-model @cf/meta/llama-3.1-8b-instruct-fp8
 ```
-Expected: instance created; if this is the account's first R2-backed AI Search instance, the CLI will prompt to create a service API token for AI Search to read the bucket — follow the prompt (or create it via **Cloudflare dashboard > AI Search > [instance] > Settings > Data source > Service API token** if the CLI directs you there).
+Expected: instance created; if this is the account's first R2-backed AI Search instance, the create command fails with `No AI Search API token found. Create one at: https://dash.cloudflare.com/<account_id>/ai/ai-search/tokens` — have the user open that URL, create the token (this is a Cloudflare-managed token AI Search uses internally to read the R2 bucket, separate from the `CLOUDFLARE_API_TOKEN` used in Step 6), then re-run the `create` command.
 
-- [ ] **Step 4: Add GitHub repo secrets**
+- [ ] **Step 5: Add GitHub repo secrets**
 
 In the GitHub repo, go to **Settings > Secrets and variables > Actions** and add:
 - `CLOUDFLARE_API_TOKEN` — an API token with `AI Search:Edit`, `AI Search:Run`, `Workers R2 Storage:Edit` permissions.
 - `CLOUDFLARE_ACCOUNT_ID` — the account ID from Step 1.
 
-- [ ] **Step 5: Run the sync script for real**
+- [ ] **Step 6: Run the sync script for real**
 
 Run: `CLOUDFLARE_API_TOKEN=<token> CLOUDFLARE_ACCOUNT_ID=<account-id> npm run sync:rag-corpus`
-Expected: uploads ~18 markdown files to R2 and prints `Synced 18 sources to r2://adityakarnam-rag-corpus and triggered an AI Search sync job for hero-chat.`
+Expected: uploads 15 markdown files to R2 (12 human posts + 3 project pages, deduped by slug) and prints `Synced 15 sources to r2://adityakarnam-rag-corpus and triggered an AI Search sync job for hero-chat.`
 
-- [ ] **Step 6: Wait for indexing and check stats**
+- [ ] **Step 7: Wait for indexing and check stats**
 
 Run: `npx wrangler ai-search stats hero-chat`
-Expected: shows a nonzero document/chunk count once the sync job finishes (may take a minute — re-run if it still shows 0).
+Expected: `Queued: 0, Processing: 0, Indexed: 15, Errors: 0` once the sync job finishes (may take a minute — re-run if Processing is still nonzero).
 
-- [ ] **Step 7: Smoke-test a real query from the CLI**
+- [ ] **Step 8: Smoke-test a real query from the CLI**
 
 Run: `npx wrangler ai-search search hero-chat --query "What is subagent-fleet?"`
-Expected: a response mentioning subagent-fleet's local Ollama routing, confirming the instance is indexed and queryable.
+Expected: a response mentioning subagent-fleet's local Ollama routing, confirming the instance is indexed and queryable. Note: `wrangler ai-search search` calls the retrieval-only `/search` endpoint (chunks, no generated answer) — this is fine for this smoke test, but Task 8 must use `/chat/completions` instead (see Step 9).
 
-- [ ] **Step 8: Record the exact REST response shape for Task 8**
+- [x] **Step 9: Record the exact REST response shape for Task 8 (already confirmed live)**
 
-Run:
-```bash
-curl -s -X POST "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/ai-search/instances/hero-chat/search" \
-  -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"messages":[{"role":"user","content":"What is subagent-fleet?"}]}' | python3 -m json.tool
+Confirmed against the real instance: the generation endpoint is **`/ai-search/instances/{name}/chat/completions`**, not `/search` (`/search` is retrieval-only — it returns `{success, result: {chunks}}` with no generated answer). `/chat/completions` returns the answer directly, with **no `.result` envelope**:
+
+```json
+{
+  "id": "id-...",
+  "object": "chat.completion",
+  "choices": [{ "index": 0, "message": { "role": "assistant", "content": "..." }, "finish_reason": "stop" }],
+  "usage": { "prompt_tokens": 682, "completion_tokens": 53, "total_tokens": 735 },
+  "chunks": [
+    { "id": "...", "score": 0.62, "text": "...", "item": { "key": "subagent-fleet-local-ai-compute-control-plane.md", "timestamp": 1784446260000, "metadata": {} }, "scoring_details": { "vector_score": 0.62 } }
+  ]
+}
 ```
-Expected: a JSON body. Confirm whether the generated answer lives at `.result.choices[0].message.content` or `.choices[0].message.content` (Cloudflare's standard envelope wraps results under `.result`, but AI Search's dedicated endpoints may or may not follow that — check both), and whether chunks/citations are under `.chunks` or `.result.chunks`. Note the actual shape — Task 8's `ai-search-client.ts` must match it exactly.
+
+So the answer is at `.choices[0].message.content` and citations at `.chunks[].item.key` / `.chunks[].score` — exactly matching Task 7's `buildSourcesFromChunks` and Task 8's `extractAnswer`/`extractChunks`, **except Task 8's endpoint must be `/chat/completions`, not `/search`** (fixed in Task 8 below).
 
 No commit for this task — it is pure infra setup plus a manual verification note to carry into Task 8.
 
@@ -919,7 +973,7 @@ export const queryAiSearch = async (messages: ChatMessage[]): Promise<AiSearchRe
   }
 
   const accountId = process.env.CLOUDFLARE_ACCOUNT_ID
-  const endpoint = `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai-search/instances/${AI_SEARCH_INSTANCE}/search`
+  const endpoint = `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai-search/instances/${AI_SEARCH_INSTANCE}/chat/completions`
 
   const response = await fetch(endpoint, {
     method: "POST",
