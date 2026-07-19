@@ -297,6 +297,30 @@ export const systems: SystemArtifact[] = [
     },
   },
   {
+    name: "antigravity-cmux-skills",
+    slug: "/antigravity-cmux-skills/",
+    tags: ["Claude Code skills", "agent orchestration", "tmux", "parallel agents", "shell"],
+    researchQuestion: "Can tmux-based terminal multiplexing become a practical coordination layer for running multiple AI agent sessions in parallel?",
+    systemBuilt:
+      "A collection of Claude Code skills for orchestrating independent agent sessions in cmux — split panes, monitor agents, automate browsers, and coordinate parallel work across multiple terminal sessions.",
+    whyItMatters:
+      "Multi-agent workflows often require manual context switching between sessions. antigravity-cmux-skills turns tmux into a first-class agent coordination primitive, letting builders run parallel AI sessions with structured visibility and no platform lock-in.",
+    status: "Active experiment",
+    links: [
+      { label: "GitHub", href: "https://github.com/adityak74/antigravity-cmux-skills" },
+    ],
+    explanationModes: {
+      "Research Idea":
+        "antigravity-cmux-skills explores whether a tmux skill layer can serve as lightweight coordination infrastructure for multi-agent workflows without adding platform dependencies or a dedicated orchestration service.",
+      "System Design":
+        "Skills are invocable from within Claude Code sessions and operate on tmux panes directly, opening agents, routing browser automation tasks, and aggregating output across session splits.",
+      "Business Value":
+        "Teams running multiple parallel agent workstreams gain a structured way to orchestrate sessions from the terminal without switching contexts or managing pane layouts manually.",
+      "Code Walkthrough":
+        "Start with the skill definitions, then inspect the pane management logic, agent invocation patterns, browser automation hooks, and the coordination primitives that route work across splits.",
+    },
+  },
+  {
     name: "mcp-scholarly",
     slug: "/mcp-scholarly/",
     tags: ["MCP", "research retrieval", "academic search", "tool interface"],
