@@ -34,7 +34,7 @@ Agents should be able to inspect the portfolio as a structured knowledge source:
 
 ## Product Shape
 
-The site gets two public surfaces:
+The site gets three public surfaces:
 
 ```text
 https://adityakarnam.com/mcp
@@ -47,6 +47,28 @@ https://adityakarnam.com/mcp-install/
 ```
 
 Human install and documentation page. This page explains that the connector is read-only and gives Claude setup instructions. It intentionally uses a separate path so Gatsby trailing-slash behavior cannot collide with the protocol endpoint.
+
+```text
+site-wide top banner
+```
+
+A compact announcement banner appears at the top of the website after the MCP is live. It should make the connector visible to recruiters and agents without turning the portfolio into a landing page.
+
+Banner copy:
+
+```text
+Portfolio MCP is live. Add Aditya's work to Claude.
+```
+
+Primary action:
+
+```text
+Install in Claude
+```
+
+The action links to `/mcp-install/`, not directly to `/mcp`, so human visitors see clear setup instructions before copying the connector URL.
+
+The banner should be dismissible for the current browser session and should not obscure navigation, mobile content, or the first viewport's core portfolio signal.
 
 ## Architecture
 
@@ -219,21 +241,40 @@ Resources should be readable, compact, and safe to quote. They should not duplic
 
 ## Claude Install UX
 
-The documentation page should provide concise setup steps:
+The documentation page should provide concise setup steps and copy-ready prompts.
+
+Primary install block:
 
 ```text
-Claude -> Settings / Customize -> Connectors -> Add custom connector
-URL: https://adityakarnam.com/mcp
+Install Aditya Karnam's Portfolio MCP in Claude
+
+Connector URL:
+https://adityakarnam.com/mcp
+
+Claude setup:
+1. Open Claude.
+2. Go to Settings / Customize.
+3. Open Connectors.
+4. Choose Add custom connector.
+5. Paste https://adityakarnam.com/mcp.
+6. Save the connector.
 ```
 
 For team accounts, the page should say that an organization owner may need to add the connector first.
 
-The page should also provide sample prompts:
+The page should provide copy-ready recruiter prompts:
 
 - "Use Aditya Karnam's portfolio connector. Is he a fit for this AI infrastructure role?"
 - "Which projects show agent runtime or MCP experience?"
 - "Give me a recruiter brief with evidence and source links."
 - "What is his recent work around local inference and evals?"
+- "Compare his work to this role description and list the strongest evidence."
+
+The page should also include a short explanation for non-technical recruiters:
+
+```text
+This connector lets Claude read structured public information from Aditya's portfolio: systems, projects, recent work, research agenda, and source links. It is read-only and does not access private data.
+```
 
 ## Error Handling
 
@@ -262,6 +303,7 @@ Implementation should include:
 - Unit tests for search ranking and filtering.
 - Unit tests for recruiter brief behavior with matching and non-matching role descriptions.
 - Protocol-level tests for MCP initialize, tools/list, tools/call, resources/list, and resources/read.
+- UI checks for the top banner on desktop and mobile viewports.
 - A local smoke test using an MCP inspector or direct Streamable HTTP calls.
 - Build verification with `npm run build`.
 
@@ -270,9 +312,11 @@ Implementation should include:
 1. Add the normalized data contract.
 2. Add the MCP Pages Function at `/mcp`.
 3. Add the human install page at `/mcp-install/`.
-4. Add tests and local smoke verification.
-5. Deploy through the existing Cloudflare Pages flow.
-6. Install in Claude as a custom connector and verify the recruiter prompts.
+4. Add the site-wide top banner that links to `/mcp-install/`.
+5. Add tests and local smoke verification.
+6. Deploy through the existing Cloudflare Pages flow.
+7. Install in Claude as a custom connector and verify the recruiter prompts.
+8. Enable or confirm the banner only after the production MCP endpoint responds successfully.
 
 ## Open Decisions for Implementation Planning
 
