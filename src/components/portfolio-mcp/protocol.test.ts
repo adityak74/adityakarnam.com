@@ -82,4 +82,16 @@ describe("handlePortfolioMcpRequest", () => {
 
     expect(body.result.serverInfo.name).toBe("aditya-portfolio")
   })
+
+  it("returns a JSON-RPC error instead of throwing when a tool rejects its arguments", async () => {
+    const response = await handlePortfolioMcpRequest(
+      postJson({ jsonrpc: "2.0", id: 9, method: "tools/call", params: { name: "search_work", arguments: { query: "   " } } }),
+      data
+    )
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body.error.code).toBe(-32602)
+    expect(body.error.message).toMatch(/query is required/i)
+  })
 })

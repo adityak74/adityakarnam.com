@@ -81,8 +81,13 @@ export const handlePortfolioMcpRequest = async (request: Request, data = buildPo
     const tools = createPortfolioTools(data)
     const name = body.params?.name as PortfolioToolName
     if (!name || !(name in tools)) return error(body.id, -32602, "Unknown tool")
-    const result = tools[name](body.params?.arguments ?? {})
-    return ok(body.id, { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] })
+    try {
+      const result = tools[name](body.params?.arguments ?? {})
+      return ok(body.id, { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] })
+    } catch (toolError) {
+      const message = toolError instanceof Error ? toolError.message : "Invalid tool arguments."
+      return error(body.id, -32602, message)
+    }
   }
 
   if (body.method === "resources/list") return ok(body.id, { resources })
