@@ -2,7 +2,6 @@
 import * as React from "react"
 import { Box, Flex, Grid, Heading, Link as ThemeLink, Text, jsx } from "theme-ui"
 import { Link } from "gatsby"
-import ResearchLensPanel from "./ResearchLensPanel"
 import {
   currentInvestigations,
   fieldNotes,
@@ -151,8 +150,7 @@ const HomepageConsole = () => {
         </Box>
 
         <Box>
-          <ResearchLensPanel />
-          <Box sx={{ ...cardStyles, p: [4, 5], mt: 4 }}>
+          <Box sx={{ ...cardStyles, p: [4, 5] }}>
             <Text sx={sectionLabelStyles}>Research Agenda</Text>
             <Grid columns={1} gap={3}>
               {researchAgenda.map((track, index) => (
