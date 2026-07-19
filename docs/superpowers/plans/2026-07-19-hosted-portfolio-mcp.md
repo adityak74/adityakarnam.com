@@ -1006,7 +1006,7 @@ rtk git commit -m "Add portfolio MCP manifest and health endpoint"
   - `CLAUDE_CODE_VERIFY_COMMAND`
   - `PORTFOLIO_MCP_INSTALL_MARKDOWN`
 
-- [ ] **Step 1: Write failing copy tests**
+- [x] **Step 1: Write failing copy tests**
 
 Create `src/components/portfolio-mcp/install-copy.test.ts`:
 
@@ -1031,13 +1031,13 @@ describe("install copy", () => {
 })
 ```
 
-- [ ] **Step 2: Run failing copy tests**
+- [x] **Step 2: Run failing copy tests**
 
 Run: `rtk npm test -- src/components/portfolio-mcp/install-copy.test.ts`
 
 Expected: FAIL because `install-copy.ts` does not exist.
 
-- [ ] **Step 3: Implement install copy constants**
+- [x] **Step 3: Implement install copy constants**
 
 Create `src/components/portfolio-mcp/install-copy.ts`:
 
@@ -1109,7 +1109,7 @@ If your agent supports custom instructions but not direct MCP installation, ask 
 `
 ```
 
-- [ ] **Step 4: Implement the Gatsby install page**
+- [x] **Step 4: Implement the Gatsby install page**
 
 Create `src/pages/mcp-install.tsx` using existing `Layout`, `Seo`, and `WorldModelPageChrome` primitives. Include:
 
@@ -1132,13 +1132,13 @@ const copyToClipboard = async (value: string, label: string) => {
 }
 ```
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 Run: `rtk npm test -- src/components/portfolio-mcp/install-copy.test.ts`
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 Run:
 
