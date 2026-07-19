@@ -1,0 +1,15 @@
+{
+  "name": "aditya-portfolio",
+  "displayName": "Aditya Karnam Portfolio MCP",
+  "description": "Public read-only MCP server for Aditya Karnam's portfolio, recent work, systems, research agenda, and source links.",
+  "version": "2026.07.19",
+  "transport": "http",
+  "mcpUrl": "https://adityakarnam.com/mcp",
+  "installPageUrl": "https://adityakarnam.com/mcp-install/",
+  "healthUrl": "https://adityakarnam.com/mcp-health",
+  "siteUrl": "https://adityakarnam.com",
+  "dataScope": {
+    "exposes": ["public projects", "public posts", "public systems", "research agenda", "source links"],
+    "doesNotExpose": ["private files", "email", "analytics", "personal data", "availability", "compensation", "immigration status"]
+  }
+}

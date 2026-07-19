@@ -855,7 +855,7 @@ rtk git commit -m "Add hosted portfolio MCP endpoint"
   - `buildPortfolioMcpManifest(data: PortfolioMcpData)`
   - `buildPortfolioMcpHealth(data: PortfolioMcpData)`
 
-- [ ] **Step 1: Write failing metadata tests**
+- [x] **Step 1: Write failing metadata tests**
 
 Create `src/components/portfolio-mcp/metadata.test.ts`:
 
@@ -888,13 +888,13 @@ describe("portfolio MCP metadata", () => {
 })
 ```
 
-- [ ] **Step 2: Run failing tests**
+- [x] **Step 2: Run failing tests**
 
 Run: `rtk npm test -- src/components/portfolio-mcp/metadata.test.ts`
 
 Expected: FAIL because `metadata.ts` does not exist.
 
-- [ ] **Step 3: Implement metadata helpers and health function**
+- [x] **Step 3: Implement metadata helpers and health function**
 
 Create `src/components/portfolio-mcp/metadata.ts`:
 
@@ -976,13 +976,13 @@ Create `static/.well-known/aditya-portfolio-mcp.json`:
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `rtk npm test -- src/components/portfolio-mcp/metadata.test.ts`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run:
 
