@@ -15,4 +15,9 @@ describe("install copy", () => {
     expect(PORTFOLIO_MCP_INSTALL_MARKDOWN).toContain("Antigravity")
     expect(PORTFOLIO_MCP_INSTALL_MARKDOWN).toContain("does not expose private files")
   })
+
+  it("contains an mcp-remote fallback for local-only MCP clients", () => {
+    expect(PORTFOLIO_MCP_INSTALL_MARKDOWN).toContain("mcp-remote")
+    expect(PORTFOLIO_MCP_INSTALL_MARKDOWN).toContain("npx mcp-remote https://adityakarnam.com/mcp")
+  })
 })

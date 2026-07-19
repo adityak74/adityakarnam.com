@@ -1429,7 +1429,7 @@ git commit -m "Add abuse and DDoS safety hardening to portfolio MCP endpoint"
 - Modify: `src/components/portfolio-mcp/install-copy.ts`
 - Modify: `src/components/portfolio-mcp/install-copy.test.ts`
 
-- [ ] **Step 1: Write failing protocol-version tests**
+- [x] **Step 1: Write failing protocol-version tests**
 
 Add to `protocol.test.ts`: a request with header `MCP-Protocol-Version: 1999-01-01` (or similar unsupported value) on any method should get a JSON-RPC error response with code `-32600` and a message mentioning the unsupported protocol version. A request with no `MCP-Protocol-Version` header, or with the header set to `2025-06-18` (or omitted on `initialize`, which is exempt per spec), should behave exactly as before.
 
@@ -1437,11 +1437,11 @@ Run: `npm test -- src/components/portfolio-mcp/protocol.test.ts`
 
 Expected: FAIL on the new case.
 
-- [ ] **Step 2: Implement protocol version validation**
+- [x] **Step 2: Implement protocol version validation**
 
 In `handlePortfolioMcpRequest`, before dispatching on `body.method`, read `request.headers.get("MCP-Protocol-Version")`. If present, non-empty, and not equal to `"2025-06-18"`, return `error(body.id, -32600, "Unsupported protocol version")` immediately. Skip this check when `body.method === "initialize"` (a client's first request may predate version negotiation).
 
-- [ ] **Step 3: Write failing install-copy test for the mcp-remote fallback**
+- [x] **Step 3: Write failing install-copy test for the mcp-remote fallback**
 
 Add to `install-copy.test.ts`: `PORTFOLIO_MCP_INSTALL_MARKDOWN` contains a section mentioning `mcp-remote` and the exact command `npx mcp-remote https://adityakarnam.com/mcp`.
 
@@ -1449,7 +1449,7 @@ Run: `npm test -- src/components/portfolio-mcp/install-copy.test.ts`
 
 Expected: FAIL because the markdown does not yet mention it.
 
-- [ ] **Step 4: Add the fallback section to the install markdown**
+- [x] **Step 4: Add the fallback section to the install markdown**
 
 In `install-copy.ts`, add a new `## If Your Client Only Supports Local MCP Servers` section after `## Other Agents`, explaining that clients without native remote MCP support can bridge through the `mcp-remote` adapter:
 
@@ -1459,19 +1459,19 @@ npx mcp-remote https://adityakarnam.com/mcp
 
 Keep this brief — one paragraph plus the command — and note it is a third-party bridge tool, not something this site hosts.
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 Run: `npm test`
 
 Expected: PASS, full suite green.
 
-- [ ] **Step 6: Run build**
+- [x] **Step 6: Run build**
 
 Run: `npm run build`
 
 Expected: PASS or the known configstore EPERM warning only.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 Run:
 

@@ -21,6 +21,8 @@ const ok = (id: JsonRpcRequest["id"], result: unknown) => json({ jsonrpc: "2.0",
 const error = (id: JsonRpcRequest["id"], code: number, message: string) =>
   json({ jsonrpc: "2.0", id: id ?? null, error: { code, message } })
 
+const SUPPORTED_PROTOCOL_VERSION = "2025-06-18"
+
 const toolDescriptions = [
   { name: "get_profile", description: "Get Aditya Karnam's public profile, focus areas, links, and data scope." },
   { name: "list_projects", description: "List public portfolio projects with tags, status, summaries, and source URLs." },
@@ -60,9 +62,14 @@ export const handlePortfolioMcpRequest = async (request: Request, data = buildPo
   const body = (await request.json().catch(() => null)) as JsonRpcRequest | null
   if (!body || body.jsonrpc !== "2.0" || !body.method) return error(null, -32600, "Invalid Request")
 
+  const protocolVersion = request.headers.get("MCP-Protocol-Version")?.trim()
+  if (body.method !== "initialize" && protocolVersion && protocolVersion !== SUPPORTED_PROTOCOL_VERSION) {
+    return error(body.id, -32600, "Unsupported protocol version")
+  }
+
   if (body.method === "initialize") {
     return ok(body.id, {
-      protocolVersion: "2025-06-18",
+      protocolVersion: SUPPORTED_PROTOCOL_VERSION,
       capabilities: { tools: {}, resources: {} },
       serverInfo: { name: data.name, version: data.dataVersion },
     })

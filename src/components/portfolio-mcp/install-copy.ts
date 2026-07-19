@@ -52,6 +52,14 @@ If your agent supports custom instructions but not direct MCP installation, ask 
 
 > Use the remote MCP server at \`https://adityakarnam.com/mcp\` as \`aditya-portfolio\`. If you can install MCP servers, add it with HTTP transport. If you cannot install MCP servers directly, tell me the exact setup steps for this client.
 
+## If Your Client Only Supports Local MCP Servers
+
+Clients without native remote MCP support can bridge to this HTTP endpoint through the third-party \`mcp-remote\` adapter. This is not a package hosted by this site; it is a compatibility bridge for local/stdio-only clients.
+
+\`\`\`bash
+npx mcp-remote https://adityakarnam.com/mcp
+\`\`\`
+
 ## Try These Prompts
 
 - Use Aditya Karnam's portfolio connector. Is he a fit for this AI infrastructure role?

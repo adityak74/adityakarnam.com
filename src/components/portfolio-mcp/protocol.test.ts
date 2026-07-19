@@ -2,10 +2,10 @@ import { describe, expect, it } from "vitest"
 import { buildPortfolioMcpData } from "./build-data"
 import { handlePortfolioMcpRequest } from "./protocol"
 
-const postJson = (body: unknown) =>
+const postJson = (body: unknown, headers: HeadersInit = {}) =>
   new Request("https://adityakarnam.com/mcp", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...headers },
     body: JSON.stringify(body),
   })
 
@@ -50,5 +50,36 @@ describe("handlePortfolioMcpRequest", () => {
     const body = await response.json()
 
     expect(body.error.code).toBe(-32601)
+  })
+
+  it("rejects unsupported MCP protocol versions after initialize", async () => {
+    const response = await handlePortfolioMcpRequest(
+      postJson({ jsonrpc: "2.0", id: 6, method: "tools/list" }, { "MCP-Protocol-Version": "1999-01-01" }),
+      data
+    )
+    const body = await response.json()
+
+    expect(body.error.code).toBe(-32600)
+    expect(body.error.message).toMatch(/unsupported protocol version/i)
+  })
+
+  it("accepts the supported MCP protocol version after initialize", async () => {
+    const response = await handlePortfolioMcpRequest(
+      postJson({ jsonrpc: "2.0", id: 7, method: "tools/list" }, { "MCP-Protocol-Version": "2025-06-18" }),
+      data
+    )
+    const body = await response.json()
+
+    expect(body.result.tools.map((tool: { name: string }) => tool.name)).toContain("search_work")
+  })
+
+  it("does not require MCP protocol version on initialize", async () => {
+    const response = await handlePortfolioMcpRequest(
+      postJson({ jsonrpc: "2.0", id: 8, method: "initialize", params: {} }, { "MCP-Protocol-Version": "1999-01-01" }),
+      data
+    )
+    const body = await response.json()
+
+    expect(body.result.serverInfo.name).toBe("aditya-portfolio")
   })
 })
