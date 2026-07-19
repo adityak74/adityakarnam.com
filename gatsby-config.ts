@@ -156,6 +156,7 @@ const config: GatsbyConfig = {
         open: false,
       },
     },
+    `gatsby-plugin-cloudflare-pages`,
   ].filter(Boolean) as Array<PluginRef>,
 }
 

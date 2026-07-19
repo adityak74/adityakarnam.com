@@ -13,21 +13,22 @@ export type AiSearchResult = {
 
 const AI_SEARCH_INSTANCE = "hero-chat"
 
-export const hasAiSearchCredentials = (): boolean =>
-  Boolean(process.env.CLOUDFLARE_API_TOKEN) && Boolean(process.env.CLOUDFLARE_ACCOUNT_ID)
+export type AiSearchCredentials = { accountId: string; apiToken: string }
 
-export const queryAiSearch = async (messages: ChatMessage[]): Promise<AiSearchResult | null> => {
-  if (!hasAiSearchCredentials()) {
+export const queryAiSearch = async (
+  messages: ChatMessage[],
+  credentials: AiSearchCredentials
+): Promise<AiSearchResult | null> => {
+  if (!credentials.accountId || !credentials.apiToken) {
     return null
   }
 
-  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID
-  const endpoint = `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai-search/instances/${AI_SEARCH_INSTANCE}/chat/completions`
+  const endpoint = `https://api.cloudflare.com/client/v4/accounts/${credentials.accountId}/ai-search/instances/${AI_SEARCH_INSTANCE}/chat/completions`
 
   const response = await fetch(endpoint, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.CLOUDFLARE_API_TOKEN}`,
+      Authorization: `Bearer ${credentials.apiToken}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ messages }),
