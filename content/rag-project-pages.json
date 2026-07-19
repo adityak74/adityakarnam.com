@@ -1,0 +1,32 @@
+[
+  {
+    "slug": "subagent-fleet-local-ai-compute-control-plane",
+    "title": "subagent-fleet: Local AI Compute Control Plane for Coding Agents",
+    "url": "https://adityakarnam.com/subagent-fleet-local-ai-compute-control-plane/",
+    "body": "subagent-fleet is a local AI compute control plane for Claude Code-style subagents. It routes work across Ollama machines using a declarative fleet.yaml topology, generates LiteLLM configuration automatically, runs health checks and model warmup, and exposes a live SSE dashboard for routing visibility. It turns a group of Macs and GPUs into an explicit, inspectable runtime rather than a set of ad-hoc scripts."
+  },
+  {
+    "slug": "embenx-python-embedding-toolkit",
+    "title": "embenx: Unified Embedding Retrieval Toolkit",
+    "url": "https://adityakarnam.com/embenx-python-embedding-toolkit/",
+    "body": "embenx is a Python retrieval library with a unified Collection API across 15+ vector backends. It supports hybrid dense and sparse search, temporal memory, and agentic self-healing, and ships a built-in MCP server so Claude and other agents can use it as a shared memory layer. It treats retrieval and memory as backend-agnostic infrastructure instead of one-off integration code per vector database."
+  },
+  {
+    "slug": "ai-toolkit",
+    "title": "AI Toolkit",
+    "url": "https://adityakarnam.com/ai-toolkit/",
+    "body": "AI Toolkit is a collection of interactive LLM workflow tools, including prompt composition, grading, and writing utilities. It is less about world-modeling directly and more about the practical operations layer: shaping and evaluating model behavior through usable, repeatable prompt tools rather than ad-hoc prompting."
+  },
+  {
+    "slug": "leanlearn",
+    "title": "leanlearn",
+    "url": "https://github.com/adityak74/leanlearn",
+    "body": "leanlearn is a modern, high-performance learning management system built for speed and simplicity on a Cloudflare-native stack: Pages, D1, Workers, and React Router v7. It provides edge-hosted courses with real-time progress tracking, automated certificate generation, and Google OAuth, built lean so learners get fast pages and teams can ship without heavy infrastructure overhead."
+  },
+  {
+    "slug": "cc-creativity-skills",
+    "title": "cc-creativity-skills",
+    "url": "https://github.com/adityak74/cc-creativity-skills",
+    "body": "cc-creativity-skills is a growing library of composable skills for Claude Code that cover creative and interactive generation workflows Claude Code does not ship with out of the box: generative art, interactive experiences, and creative tooling. It reduces from-scratch prompting time for teams building AI-driven creative features."
+  }
+]

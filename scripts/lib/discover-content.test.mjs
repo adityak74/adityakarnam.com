@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest"
 import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
-import { discoverPosts } from "./discover-content.mjs"
+import { discoverPosts, loadProjectPages, discoverSources } from "./discover-content.mjs"
 
 let tempDir
 
@@ -94,5 +94,35 @@ describe("discoverPosts", () => {
     const humanPost = posts.find((post) => post.title === "Human Post")
 
     expect(humanPost.body).toBe("This is the body of the human post.")
+  })
+})
+
+describe("loadProjectPages", () => {
+  it("loads the real project-pages fixture with 5 entries", () => {
+    const pages = loadProjectPages()
+
+    expect(pages).toHaveLength(5)
+    expect(pages.map((page) => page.slug)).toContain("subagent-fleet-local-ai-compute-control-plane")
+  })
+
+  it("every entry has slug, title, url, and body", () => {
+    const pages = loadProjectPages()
+
+    for (const page of pages) {
+      expect(typeof page.slug).toBe("string")
+      expect(typeof page.title).toBe("string")
+      expect(typeof page.url).toBe("string")
+      expect(typeof page.body).toBe("string")
+      expect(page.body.length).toBeGreaterThan(0)
+    }
+  })
+})
+
+describe("discoverSources", () => {
+  it("combines discovered posts and project pages", () => {
+    const sources = discoverSources(tempDir)
+
+    expect(sources.some((source) => source.slug === "human-post")).toBe(true)
+    expect(sources.some((source) => source.slug === "subagent-fleet-local-ai-compute-control-plane")).toBe(true)
   })
 })
