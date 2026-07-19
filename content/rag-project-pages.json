@@ -16,5 +16,11 @@
     "title": "cc-creativity-skills",
     "url": "https://github.com/adityak74/cc-creativity-skills",
     "body": "cc-creativity-skills is a growing library of composable skills for Claude Code that cover creative and interactive generation workflows Claude Code does not ship with out of the box: generative art, interactive experiences, and creative tooling. It reduces from-scratch prompting time for teams building AI-driven creative features."
+  },
+  {
+    "slug": "antigravity-cmux-skills",
+    "title": "antigravity-cmux-skills",
+    "url": "https://github.com/adityak74/antigravity-cmux-skills",
+    "body": "antigravity-cmux-skills is a collection of Claude Code skills for orchestrating independent agent sessions in cmux: splitting panes, monitoring agents, automating browsers, and coordinating parallel work across multiple terminal sessions. It explores whether tmux-based terminal multiplexing can become a practical coordination layer for running multiple AI agent sessions in parallel, without adding platform dependencies or a dedicated orchestration service."
   }
 ]
