@@ -1275,25 +1275,25 @@ rtk git commit -m "Add portfolio MCP install banner"
 - Consumes all previous tasks.
 - Produces verified build and local endpoint smoke results.
 
-- [ ] **Step 1: Run all unit tests**
+- [x] **Step 1: Run all unit tests**
 
 Run: `rtk npm test`
 
 Expected: PASS.
 
-- [ ] **Step 2: Run production build**
+- [x] **Step 2: Run production build**
 
 Run: `rtk npm run build`
 
 Expected: PASS or known configstore EPERM warning with build output produced. Any new compile, route, or type error must be fixed before continuing.
 
-- [ ] **Step 3: Start local preview**
+- [x] **Step 3: Start local preview**
 
 Run: `rtk npm run serve`
 
 Expected: Gatsby serves the built site. Keep the session running only long enough for smoke checks, then stop it.
 
-- [ ] **Step 4: Smoke test static pages and endpoints**
+- [x] **Step 4: Smoke test static pages and endpoints**
 
 Run these in another shell while preview is running:
 
@@ -1309,7 +1309,7 @@ Expected:
 - manifest returns JSON containing `"name": "aditya-portfolio"`.
 - health returns JSON containing `"ok": true`.
 
-- [ ] **Step 5: Smoke test MCP JSON-RPC**
+- [x] **Step 5: Smoke test MCP JSON-RPC**
 
 Run:
 
@@ -1321,7 +1321,7 @@ rtk curl -s -X POST http://localhost:9000/mcp \
 
 Expected: JSON response includes `get_profile`, `search_work`, and `get_recruiter_brief`.
 
-- [ ] **Step 6: Verify Claude Code command is present**
+- [x] **Step 6: Verify Claude Code command is present**
 
 Run:
 
@@ -1331,7 +1331,7 @@ rtk rg "claude mcp add --transport http aditya-portfolio https://adityakarnam.co
 
 Expected: command is present in generated page output or source.
 
-- [ ] **Step 7: Commit fixes if needed**
+- [x] **Step 7: Commit fixes if needed**
 
 If verification required code changes:
 
