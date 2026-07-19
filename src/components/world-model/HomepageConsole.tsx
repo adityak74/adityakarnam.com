@@ -13,6 +13,7 @@ import {
   systems,
   worldModelStack,
 } from "./data"
+import HeroChat from "./HeroChat"
 
 const cardStyles = {
   border: "1px solid",
@@ -94,26 +95,6 @@ const HomepageConsole = () => {
               >
                 Explore Current Systems
               </Link>
-              <Link
-                to="/ask/"
-                sx={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  color: "text",
-                  border: "1px solid",
-                  borderColor: "divide",
-                  px: 3,
-                  py: 2,
-                  borderRadius: "8px",
-                  textDecoration: "none",
-                  bg: "transparent",
-                  ":hover": {
-                    bg: "muted",
-                  },
-                }}
-              >
-                Ask My Work
-              </Link>
             </Flex>
           </Box>
 
@@ -135,6 +116,8 @@ const HomepageConsole = () => {
           </Box>
         </Grid>
       </Box>
+
+      <HeroChat />
 
       <Grid columns={[1, null, "1.1fr 0.9fr"]} gap={[5, 6]} sx={{ mb: [6, 7] }}>
         <Box sx={{ ...cardStyles, p: [4, 5] }}>
