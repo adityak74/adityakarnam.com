@@ -369,7 +369,7 @@ rtk git commit -m "Add portfolio MCP data contract"
   - `searchWork(data: PortfolioMcpData, input: SearchWorkInput): SearchResult[]`
   - `createPortfolioTools(data: PortfolioMcpData): PortfolioToolRegistry`
 
-- [ ] **Step 1: Write failing search tests**
+- [x] **Step 1: Write failing search tests**
 
 Create `src/components/portfolio-mcp/search.test.ts`:
 
@@ -401,7 +401,7 @@ describe("searchWork", () => {
 })
 ```
 
-- [ ] **Step 2: Write failing tool tests**
+- [x] **Step 2: Write failing tool tests**
 
 Create `src/components/portfolio-mcp/tools.test.ts`:
 
@@ -446,13 +446,13 @@ describe("portfolio tools", () => {
 })
 ```
 
-- [ ] **Step 3: Run failing tests**
+- [x] **Step 3: Run failing tests**
 
 Run: `rtk npm test -- src/components/portfolio-mcp/search.test.ts src/components/portfolio-mcp/tools.test.ts`
 
 Expected: FAIL because `search.ts` and `tools.ts` do not exist.
 
-- [ ] **Step 4: Implement deterministic search**
+- [x] **Step 4: Implement deterministic search**
 
 Create `src/components/portfolio-mcp/search.ts`:
 
@@ -516,7 +516,7 @@ export const searchWork = (data: PortfolioMcpData, input: SearchWorkInput): Sear
 }
 ```
 
-- [ ] **Step 5: Implement tools**
+- [x] **Step 5: Implement tools**
 
 Create `src/components/portfolio-mcp/tools.ts`:
 
@@ -598,13 +598,13 @@ export type PortfolioToolRegistry = ReturnType<typeof createPortfolioTools>
 export type PortfolioToolName = keyof PortfolioToolRegistry
 ```
 
-- [ ] **Step 6: Run tests**
+- [x] **Step 6: Run tests**
 
 Run: `rtk npm test -- src/components/portfolio-mcp/search.test.ts src/components/portfolio-mcp/tools.test.ts`
 
 Expected: PASS.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 Run:
 
