@@ -98,9 +98,13 @@ User types message
 - Manual verification of the Pages Function against the real AI Search instance (once synced) for: a well-covered question, an out-of-corpus question (fallback path), and a persona-switch mid-conversation.
 - Manual browser check of the hero chat: multi-turn follow-up, persona switching, source-chip links resolve to real pages, `/ask` redirects to `/`.
 
+## Resolved during infra setup (Task 6)
+
+- Generation model: `@cf/meta/llama-3.1-8b-instruct-fp8`. Embedding model: `@cf/qwen/qwen3-embedding-0.6b` (tied cheapest AI-Search-supported option, larger context window than the alternative).
+- Confirmed live: the generation-capable endpoint is `POST /accounts/{account_id}/ai-search/instances/{name}/chat/completions`, returning `{choices: [{message: {content}}], chunks: [{item: {key}, score}], usage}` with **no `.result` envelope**. `/search` is retrieval-only (no generated answer) and must not be used for the chat function.
+- R2 service API token: created once via the Cloudflare dashboard (`https://dash.cloudflare.com/<account_id>/ai/ai-search/tokens`), separate from the `CLOUDFLARE_API_TOKEN` GitHub secret.
+- Real corpus size is 15 sources (12 human posts with a `slug` field + 3 project pages), not the originally estimated ~18 — `subagent-fleet` and `embenx` are excluded from the project-pages fixture because they collide with real post slugs of the same name; `discoverSources` now dedupes by slug as a safety net.
+
 ## Open items for the implementation plan
 
-- Exact generation model choice for the AI Search instance (pick smallest instruct model that stays coherent for ~120-200 word grounded answers, e.g. `@cf/meta/llama-3.1-8b-instruct-fp8`).
-- Confirm the exact AI Search REST query endpoint/response shape against the live API during implementation (docs describe an OpenAI-compatible `messages` request returning `choices` + `chunks`, but the precise endpoint path should be verified with a real call before finalizing).
-- R2 service API token setup for the AI Search instance (one-time, dashboard step per Cloudflare's AI Search R2 data source docs).
 - Whether the per-IP rate limit uses Cloudflare's own rate-limiting rules (if available on the plan) or an in-function counter.
