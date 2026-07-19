@@ -1,0 +1,54 @@
+import { describe, expect, it } from "vitest"
+import { buildPortfolioMcpData } from "./build-data"
+import { handlePortfolioMcpRequest } from "./protocol"
+
+const postJson = (body: unknown) =>
+  new Request("https://adityakarnam.com/mcp", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  })
+
+describe("handlePortfolioMcpRequest", () => {
+  const data = buildPortfolioMcpData({ generatedAt: "2026-07-19T12:00:00.000Z" })
+
+  it("handles initialize", async () => {
+    const response = await handlePortfolioMcpRequest(postJson({ jsonrpc: "2.0", id: 1, method: "initialize", params: {} }), data)
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body.result.serverInfo.name).toBe("aditya-portfolio")
+  })
+
+  it("lists tools", async () => {
+    const response = await handlePortfolioMcpRequest(postJson({ jsonrpc: "2.0", id: 2, method: "tools/list" }), data)
+    const body = await response.json()
+
+    expect(body.result.tools.map((tool: { name: string }) => tool.name)).toContain("get_recruiter_brief")
+  })
+
+  it("calls get_profile", async () => {
+    const response = await handlePortfolioMcpRequest(
+      postJson({ jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "get_profile", arguments: {} } }),
+      data
+    )
+    const body = await response.json()
+
+    expect(body.result.content[0].type).toBe("text")
+    expect(body.result.content[0].text).toContain("Aditya Karnam")
+  })
+
+  it("lists resources", async () => {
+    const response = await handlePortfolioMcpRequest(postJson({ jsonrpc: "2.0", id: 4, method: "resources/list" }), data)
+    const body = await response.json()
+
+    expect(body.result.resources.map((resource: { uri: string }) => resource.uri)).toContain("portfolio://profile")
+  })
+
+  it("rejects unsupported methods with JSON-RPC error", async () => {
+    const response = await handlePortfolioMcpRequest(postJson({ jsonrpc: "2.0", id: 5, method: "unknown/method" }), data)
+    const body = await response.json()
+
+    expect(body.error.code).toBe(-32601)
+  })
+})

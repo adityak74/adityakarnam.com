@@ -627,7 +627,7 @@ rtk git commit -m "Add portfolio MCP search and tools"
 - Consumes: `createPortfolioTools(data)` and `PortfolioMcpData`.
 - Produces: `handlePortfolioMcpRequest(request: Request, data?: PortfolioMcpData): Promise<Response>`.
 
-- [ ] **Step 1: Write failing protocol tests**
+- [x] **Step 1: Write failing protocol tests**
 
 Create `src/components/portfolio-mcp/protocol.test.ts`:
 
@@ -688,13 +688,13 @@ describe("handlePortfolioMcpRequest", () => {
 })
 ```
 
-- [ ] **Step 2: Run failing protocol tests**
+- [x] **Step 2: Run failing protocol tests**
 
 Run: `rtk npm test -- src/components/portfolio-mcp/protocol.test.ts`
 
 Expected: FAIL because `protocol.ts` does not exist.
 
-- [ ] **Step 3: Implement MCP protocol handler**
+- [x] **Step 3: Implement MCP protocol handler**
 
 Create `src/components/portfolio-mcp/protocol.ts` with JSON-RPC handling for `initialize`, `tools/list`, `tools/call`, `resources/list`, and `resources/read`. Tool results should be JSON stringified into MCP text content.
 
@@ -824,13 +824,13 @@ export const onRequestGet = async (): Promise<Response> =>
   })
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `rtk npm test -- src/components/portfolio-mcp/protocol.test.ts`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run:
 
