@@ -80,13 +80,11 @@ export const onRequestPost = async (context: { request: Request; env: Env }): Pr
   }
 
   try {
-    console.log("DEBUG hasAccountId", Boolean(env.CLOUDFLARE_ACCOUNT_ID), "hasApiToken", Boolean(env.CLOUDFLARE_API_TOKEN))
     const aiSearchMessages: ChatMessage[] = [buildSystemMessage(persona), ...messages]
     const result = await queryAiSearch(aiSearchMessages, {
       accountId: env.CLOUDFLARE_ACCOUNT_ID,
       apiToken: env.CLOUDFLARE_API_TOKEN,
     })
-    console.log("DEBUG result", JSON.stringify(result)?.slice(0, 300))
     const text = extractAnswer(result)
     const chunks = extractChunks(result)
     const sources = buildSourcesFromChunks(chunks)
@@ -97,7 +95,6 @@ export const onRequestPost = async (context: { request: Request; env: Env }): Pr
     cache.set(cacheKey, { expiresAt: Date.now() + TTL_MS, payload })
     return jsonResponse(payload, 200)
   } catch (_error) {
-    console.log("DEBUG caught error", String(_error))
     return jsonResponse(buildFallback(persona), 200)
   }
 }
