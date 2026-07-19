@@ -40,10 +40,6 @@ const config: GatsbyConfig = {
             slug: `/field-notes`,
           },
           {
-            title: `Ask`,
-            slug: `/ask`,
-          },
-          {
             title: `Now`,
             slug: `/now`,
           },
