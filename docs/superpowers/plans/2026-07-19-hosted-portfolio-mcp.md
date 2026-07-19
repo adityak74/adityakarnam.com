@@ -1158,13 +1158,13 @@ rtk git commit -m "Add portfolio MCP install page"
 **Interfaces:**
 - Produces: `PortfolioMcpBanner` component with session-scoped dismissal.
 
-- [ ] **Step 1: Inspect current header**
+- [x] **Step 1: Inspect current header**
 
 Run: `rtk sed -n '1,220p' src/@lekoarts/gatsby-theme-minimal-blog/components/header.tsx`
 
 Expected: note where the header root component returns site chrome and where the banner can be rendered before nav.
 
-- [ ] **Step 2: Implement banner component**
+- [x] **Step 2: Implement banner component**
 
 Create `src/components/PortfolioMcpBanner.tsx`:
 
@@ -1239,7 +1239,7 @@ export const PortfolioMcpBanner = () => {
 }
 ```
 
-- [ ] **Step 3: Render banner in header**
+- [x] **Step 3: Render banner in header**
 
 Modify `src/@lekoarts/gatsby-theme-minimal-blog/components/header.tsx`:
 
@@ -1249,13 +1249,13 @@ import { PortfolioMcpBanner } from "../../../components/PortfolioMcpBanner"
 
 Render `<PortfolioMcpBanner />` as the first element returned by the header component.
 
-- [ ] **Step 4: Run build**
+- [x] **Step 4: Run build**
 
 Run: `rtk npm run build`
 
 Expected: PASS or the known existing Gatsby configstore EPERM warning after build output. There must be no TypeScript or Gatsby page error from the banner.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run:
 

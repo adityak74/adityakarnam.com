@@ -4,6 +4,7 @@ import useMinimalBlogConfig from "@lekoarts/gatsby-theme-minimal-blog/src/hooks/
 import Navigation from "@lekoarts/gatsby-theme-minimal-blog/src/components/navigation";
 import HeaderTitle from "@lekoarts/gatsby-theme-minimal-blog/src/components/header-title";
 import HeaderExternalLinks from "./header-external-links";
+import { PortfolioMcpBanner } from "../../../components/PortfolioMcpBanner";
 
 type HeaderProps = {
   children?: React.ReactNode;
@@ -14,6 +15,7 @@ const Header = ({ children }: HeaderProps) => {
 
   return (
     <header sx={{ mb: [5, 6], pt: [2, 3] }}>
+      <PortfolioMcpBanner />
       <div
         sx={{
           display: `flex`,
