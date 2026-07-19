@@ -24,6 +24,10 @@ const config: GatsbyConfig = {
       options: {
         navigation: [
           {
+            title: `Thoughts`,
+            slug: `/blog`,
+          },
+          {
             title: `Systems`,
             slug: `/systems`,
           },
