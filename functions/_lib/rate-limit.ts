@@ -31,9 +31,11 @@ export const checkRateLimit = async (
     // though the window itself may have less than 60s left.
     const expirationTtl = Math.max(60, windowStart + windowSeconds - nowSeconds + 5)
     await kv.put(key, String(next), { expirationTtl })
+    console.log(`RATE_LIMIT_DIAG: wrote key=${key} next=${next} ttl=${expirationTtl}`)
 
     return { allowed: true, remaining: Math.max(0, limit - next) }
-  } catch (_error) {
+  } catch (diagError) {
+    console.log(`RATE_LIMIT_DIAG: error ${diagError instanceof Error ? diagError.message : String(diagError)}`)
     return { allowed: true, remaining: limit }
   }
 }
