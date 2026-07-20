@@ -7,7 +7,8 @@
   "license": "0BSD",
   "starter-name": "adityakarnam",
   "scripts": {
-    "build": "gatsby build",
+    "build": "npm run build:mcp-app && gatsby build",
+    "build:mcp-app": "vite build --config src/components/portfolio-mcp/app/vite.config.ts && node scripts/generate-portfolio-app-html.mjs",
     "develop": "gatsby develop",
     "develop:cypress": "cross-env CYPRESS_SUPPORT=y yarn develop",
     "build:cypress": "cross-env CYPRESS_SUPPORT=y yarn build",
@@ -19,6 +20,7 @@
   },
   "dependencies": {
     "@lekoarts/gatsby-theme-minimal-blog": "^6.2.1",
+    "@modelcontextprotocol/ext-apps": "^1.7.4",
     "ajv": "^8.17.1",
     "gatsby": "^5.13.6",
     "gatsby-plugin-cloudflare-pages": "^1.0.3",
@@ -35,13 +37,17 @@
     "react-icons": "^5.5.0"
   },
   "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@types/node": "^20.14.10",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^6.0.3",
     "cross-env": "^7.0.3",
     "gray-matter": "^4.0.3",
     "rss-parser": "^3.13.0",
     "typescript": "^5.5.3",
+    "vite": "^8.1.5",
+    "vite-plugin-singlefile": "^2.3.3",
     "vitest": "^4.1.10",
     "wrangler": "^4.112.0"
   }
