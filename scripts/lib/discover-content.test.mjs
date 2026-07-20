@@ -98,10 +98,10 @@ describe("discoverPosts", () => {
 })
 
 describe("loadProjectPages", () => {
-  it("loads the real project-pages fixture with 3 entries", () => {
+  it("loads the real project-pages fixture with 4 entries", () => {
     const pages = loadProjectPages()
 
-    expect(pages).toHaveLength(3)
+    expect(pages).toHaveLength(4)
     expect(pages.map((page) => page.slug)).toContain("ai-toolkit")
   })
 

@@ -8,6 +8,10 @@
 
 **Tech Stack:** Gatsby 5, React 18, TypeScript, Cloudflare Pages Functions, Vitest, Node ESM scripts, existing world-model page primitives.
 
+## Post-Merge Manual Step
+
+Bind KV namespace `portfolio-mcp-rate-limit` (id `6ed8c837ed8d409babc2c3745241f77b`) to the `adityakarnam` Pages project as `RATE_LIMIT_KV` in Cloudflare dashboard -> Settings -> Functions, to activate per-IP throttling. The endpoint is safe to ship without this step (fail-open + Cloudflare's always-on edge DDoS protection + fully static/deterministic compute with no external calls or costs), but binding it hardens against sustained single-IP abuse.
+
 ## Global Constraints
 
 - Endpoint URL must be `https://adityakarnam.com/mcp`.
@@ -59,7 +63,7 @@
 - Consumes: `siteIdentity`, `systems`, `researchAgenda`, `fieldNotes`, `currentInvestigations`, `operatingPrinciples` from `src/components/world-model/data.ts`.
 - Produces: `buildPortfolioMcpData(input?: Partial<PortfolioMcpBuildInput>): PortfolioMcpData`.
 
-- [ ] **Step 1: Write the failing schema/data tests**
+- [x] **Step 1: Write the failing schema/data tests**
 
 Create `src/components/portfolio-mcp/build-data.test.ts`:
 
@@ -111,13 +115,13 @@ describe("buildPortfolioMcpData", () => {
 })
 ```
 
-- [ ] **Step 2: Run the failing test**
+- [x] **Step 2: Run the failing test**
 
 Run: `rtk npm test -- src/components/portfolio-mcp/build-data.test.ts`
 
 Expected: FAIL because `src/components/portfolio-mcp/build-data.ts` does not exist.
 
-- [ ] **Step 3: Implement schema and data normalization**
+- [x] **Step 3: Implement schema and data normalization**
 
 Create `src/components/portfolio-mcp/schema.ts`:
 
@@ -338,13 +342,13 @@ export const buildPortfolioMcpData = (input: PortfolioMcpBuildInput = {}): Portf
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `rtk npm test -- src/components/portfolio-mcp/build-data.test.ts`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run:
 
@@ -369,7 +373,7 @@ rtk git commit -m "Add portfolio MCP data contract"
   - `searchWork(data: PortfolioMcpData, input: SearchWorkInput): SearchResult[]`
   - `createPortfolioTools(data: PortfolioMcpData): PortfolioToolRegistry`
 
-- [ ] **Step 1: Write failing search tests**
+- [x] **Step 1: Write failing search tests**
 
 Create `src/components/portfolio-mcp/search.test.ts`:
 
@@ -401,7 +405,7 @@ describe("searchWork", () => {
 })
 ```
 
-- [ ] **Step 2: Write failing tool tests**
+- [x] **Step 2: Write failing tool tests**
 
 Create `src/components/portfolio-mcp/tools.test.ts`:
 
@@ -446,13 +450,13 @@ describe("portfolio tools", () => {
 })
 ```
 
-- [ ] **Step 3: Run failing tests**
+- [x] **Step 3: Run failing tests**
 
 Run: `rtk npm test -- src/components/portfolio-mcp/search.test.ts src/components/portfolio-mcp/tools.test.ts`
 
 Expected: FAIL because `search.ts` and `tools.ts` do not exist.
 
-- [ ] **Step 4: Implement deterministic search**
+- [x] **Step 4: Implement deterministic search**
 
 Create `src/components/portfolio-mcp/search.ts`:
 
@@ -516,7 +520,7 @@ export const searchWork = (data: PortfolioMcpData, input: SearchWorkInput): Sear
 }
 ```
 
-- [ ] **Step 5: Implement tools**
+- [x] **Step 5: Implement tools**
 
 Create `src/components/portfolio-mcp/tools.ts`:
 
@@ -598,13 +602,13 @@ export type PortfolioToolRegistry = ReturnType<typeof createPortfolioTools>
 export type PortfolioToolName = keyof PortfolioToolRegistry
 ```
 
-- [ ] **Step 6: Run tests**
+- [x] **Step 6: Run tests**
 
 Run: `rtk npm test -- src/components/portfolio-mcp/search.test.ts src/components/portfolio-mcp/tools.test.ts`
 
 Expected: PASS.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 Run:
 
@@ -627,7 +631,7 @@ rtk git commit -m "Add portfolio MCP search and tools"
 - Consumes: `createPortfolioTools(data)` and `PortfolioMcpData`.
 - Produces: `handlePortfolioMcpRequest(request: Request, data?: PortfolioMcpData): Promise<Response>`.
 
-- [ ] **Step 1: Write failing protocol tests**
+- [x] **Step 1: Write failing protocol tests**
 
 Create `src/components/portfolio-mcp/protocol.test.ts`:
 
@@ -688,13 +692,13 @@ describe("handlePortfolioMcpRequest", () => {
 })
 ```
 
-- [ ] **Step 2: Run failing protocol tests**
+- [x] **Step 2: Run failing protocol tests**
 
 Run: `rtk npm test -- src/components/portfolio-mcp/protocol.test.ts`
 
 Expected: FAIL because `protocol.ts` does not exist.
 
-- [ ] **Step 3: Implement MCP protocol handler**
+- [x] **Step 3: Implement MCP protocol handler**
 
 Create `src/components/portfolio-mcp/protocol.ts` with JSON-RPC handling for `initialize`, `tools/list`, `tools/call`, `resources/list`, and `resources/read`. Tool results should be JSON stringified into MCP text content.
 
@@ -824,13 +828,13 @@ export const onRequestGet = async (): Promise<Response> =>
   })
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `rtk npm test -- src/components/portfolio-mcp/protocol.test.ts`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run:
 
@@ -855,7 +859,7 @@ rtk git commit -m "Add hosted portfolio MCP endpoint"
   - `buildPortfolioMcpManifest(data: PortfolioMcpData)`
   - `buildPortfolioMcpHealth(data: PortfolioMcpData)`
 
-- [ ] **Step 1: Write failing metadata tests**
+- [x] **Step 1: Write failing metadata tests**
 
 Create `src/components/portfolio-mcp/metadata.test.ts`:
 
@@ -888,13 +892,13 @@ describe("portfolio MCP metadata", () => {
 })
 ```
 
-- [ ] **Step 2: Run failing tests**
+- [x] **Step 2: Run failing tests**
 
 Run: `rtk npm test -- src/components/portfolio-mcp/metadata.test.ts`
 
 Expected: FAIL because `metadata.ts` does not exist.
 
-- [ ] **Step 3: Implement metadata helpers and health function**
+- [x] **Step 3: Implement metadata helpers and health function**
 
 Create `src/components/portfolio-mcp/metadata.ts`:
 
@@ -976,13 +980,13 @@ Create `static/.well-known/aditya-portfolio-mcp.json`:
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `rtk npm test -- src/components/portfolio-mcp/metadata.test.ts`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run:
 
@@ -1006,7 +1010,7 @@ rtk git commit -m "Add portfolio MCP manifest and health endpoint"
   - `CLAUDE_CODE_VERIFY_COMMAND`
   - `PORTFOLIO_MCP_INSTALL_MARKDOWN`
 
-- [ ] **Step 1: Write failing copy tests**
+- [x] **Step 1: Write failing copy tests**
 
 Create `src/components/portfolio-mcp/install-copy.test.ts`:
 
@@ -1031,13 +1035,13 @@ describe("install copy", () => {
 })
 ```
 
-- [ ] **Step 2: Run failing copy tests**
+- [x] **Step 2: Run failing copy tests**
 
 Run: `rtk npm test -- src/components/portfolio-mcp/install-copy.test.ts`
 
 Expected: FAIL because `install-copy.ts` does not exist.
 
-- [ ] **Step 3: Implement install copy constants**
+- [x] **Step 3: Implement install copy constants**
 
 Create `src/components/portfolio-mcp/install-copy.ts`:
 
@@ -1109,7 +1113,7 @@ If your agent supports custom instructions but not direct MCP installation, ask 
 `
 ```
 
-- [ ] **Step 4: Implement the Gatsby install page**
+- [x] **Step 4: Implement the Gatsby install page**
 
 Create `src/pages/mcp-install.tsx` using existing `Layout`, `Seo`, and `WorldModelPageChrome` primitives. Include:
 
@@ -1132,13 +1136,13 @@ const copyToClipboard = async (value: string, label: string) => {
 }
 ```
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 Run: `rtk npm test -- src/components/portfolio-mcp/install-copy.test.ts`
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 Run:
 
@@ -1158,13 +1162,13 @@ rtk git commit -m "Add portfolio MCP install page"
 **Interfaces:**
 - Produces: `PortfolioMcpBanner` component with session-scoped dismissal.
 
-- [ ] **Step 1: Inspect current header**
+- [x] **Step 1: Inspect current header**
 
 Run: `rtk sed -n '1,220p' src/@lekoarts/gatsby-theme-minimal-blog/components/header.tsx`
 
 Expected: note where the header root component returns site chrome and where the banner can be rendered before nav.
 
-- [ ] **Step 2: Implement banner component**
+- [x] **Step 2: Implement banner component**
 
 Create `src/components/PortfolioMcpBanner.tsx`:
 
@@ -1239,7 +1243,7 @@ export const PortfolioMcpBanner = () => {
 }
 ```
 
-- [ ] **Step 3: Render banner in header**
+- [x] **Step 3: Render banner in header**
 
 Modify `src/@lekoarts/gatsby-theme-minimal-blog/components/header.tsx`:
 
@@ -1249,13 +1253,13 @@ import { PortfolioMcpBanner } from "../../../components/PortfolioMcpBanner"
 
 Render `<PortfolioMcpBanner />` as the first element returned by the header component.
 
-- [ ] **Step 4: Run build**
+- [x] **Step 4: Run build**
 
 Run: `rtk npm run build`
 
 Expected: PASS or the known existing Gatsby configstore EPERM warning after build output. There must be no TypeScript or Gatsby page error from the banner.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run:
 
@@ -1275,25 +1279,25 @@ rtk git commit -m "Add portfolio MCP install banner"
 - Consumes all previous tasks.
 - Produces verified build and local endpoint smoke results.
 
-- [ ] **Step 1: Run all unit tests**
+- [x] **Step 1: Run all unit tests**
 
 Run: `rtk npm test`
 
 Expected: PASS.
 
-- [ ] **Step 2: Run production build**
+- [x] **Step 2: Run production build**
 
 Run: `rtk npm run build`
 
 Expected: PASS or known configstore EPERM warning with build output produced. Any new compile, route, or type error must be fixed before continuing.
 
-- [ ] **Step 3: Start local preview**
+- [x] **Step 3: Start local preview**
 
 Run: `rtk npm run serve`
 
 Expected: Gatsby serves the built site. Keep the session running only long enough for smoke checks, then stop it.
 
-- [ ] **Step 4: Smoke test static pages and endpoints**
+- [x] **Step 4: Smoke test static pages and endpoints**
 
 Run these in another shell while preview is running:
 
@@ -1309,7 +1313,7 @@ Expected:
 - manifest returns JSON containing `"name": "aditya-portfolio"`.
 - health returns JSON containing `"ok": true`.
 
-- [ ] **Step 5: Smoke test MCP JSON-RPC**
+- [x] **Step 5: Smoke test MCP JSON-RPC**
 
 Run:
 
@@ -1321,7 +1325,7 @@ rtk curl -s -X POST http://localhost:9000/mcp \
 
 Expected: JSON response includes `get_profile`, `search_work`, and `get_recruiter_brief`.
 
-- [ ] **Step 6: Verify Claude Code command is present**
+- [x] **Step 6: Verify Claude Code command is present**
 
 Run:
 
@@ -1331,7 +1335,7 @@ rtk rg "claude mcp add --transport http aditya-portfolio https://adityakarnam.co
 
 Expected: command is present in generated page output or source.
 
-- [ ] **Step 7: Commit fixes if needed**
+- [x] **Step 7: Commit fixes if needed**
 
 If verification required code changes:
 
@@ -1341,3 +1345,137 @@ rtk git commit -m "Fix portfolio MCP verification issues"
 ```
 
 If no fixes were needed, do not create an empty commit.
+
+---
+
+### Task 8: Abuse and DDoS Safety Hardening
+
+**Why:** `/mcp` and `/mcp-health` are public and unauthenticated. Cloudflare's always-on network-level DDoS protection covers every proxied zone automatically (not something this code controls), but the Function itself should still reject oversized/malformed requests cheaply, avoid doing unbounded work per request, and let static responses be cached at the edge so most traffic never reaches the Function at all. A Cloudflare KV namespace named `portfolio-mcp-rate-limit` (id `6ed8c837ed8d409babc2c3745241f77b`) has already been created in the `Akarnam37@gmail.com` account for optional per-IP throttling; binding it to the Pages project is a manual dashboard step (Pages project → Settings → Functions → KV namespace bindings → bind as `RATE_LIMIT_KV`) that happens after this PR merges, so all code that uses it must fail open (allow the request) when the binding is absent.
+
+**Files:**
+- Modify: `functions/mcp.ts`
+- Modify: `functions/mcp-health.ts`
+- Create: `functions/_lib/rate-limit.ts`
+- Create: `functions/_lib/rate-limit.test.ts` (or colocate under `src/components/portfolio-mcp/` if the project's Vitest config does not cover `functions/`, matching existing test conventions)
+- Modify: `src/components/portfolio-mcp/protocol.ts` only if needed to surface a 413/415 before JSON-RPC parsing
+
+**Interfaces:**
+- Produces: `checkRateLimit(kv: KVNamespace | undefined, clientId: string, opts?: { limit?: number; windowSeconds?: number }): Promise<{ allowed: boolean; remaining: number }>`
+
+- [x] **Step 1: Write failing rate-limit unit tests**
+
+Create `functions/_lib/rate-limit.test.ts` covering:
+- returns `{ allowed: true }` immediately when `kv` is `undefined` (fail-open, no binding configured yet).
+- allows requests under the limit and increments a counter keyed by `clientId` + current time window.
+- denies requests once the count for the current window meets/exceeds the limit, using a minimal in-memory fake implementing the `KVNamespace` `get`/`put` surface used by the function (no real network calls in tests).
+
+Run: `npm test -- functions/_lib/rate-limit.test.ts`
+
+Expected: FAIL because `rate-limit.ts` does not exist.
+
+- [x] **Step 2: Implement the fail-open KV rate limiter**
+
+Create `functions/_lib/rate-limit.ts` implementing a fixed-window counter: key `ratelimit:{clientId}:{windowStart}`, default `limit = 60` requests per `windowSeconds = 60`, using `kv.get`/`kv.put` with an expiration around the window boundary. Any thrown error from KV access must be caught and treated as `allowed: true` (never let a KV outage take down the endpoint).
+
+- [x] **Step 3: Wire the limiter and request hardening into the MCP function**
+
+Modify `functions/mcp.ts`:
+- Read the client IP from `request.headers.get("CF-Connecting-IP")` (fallback to `"unknown"`) as `clientId`.
+- Reject with `413` and a small JSON error body if `request.headers.get("Content-Length")` is present and exceeds `16384` bytes, before reading the body.
+- Reject with `415` and a small JSON error body if the `Content-Type` header is present and does not include `application/json`.
+- Call `checkRateLimit(context.env.RATE_LIMIT_KV, clientId)`; if `allowed` is `false`, return `429` with `Retry-After` and a small JSON error body.
+- Set `Cache-Control: no-store` on all responses from this function (JSON-RPC responses are per-request and must not be cached).
+- Keep existing JSON-RPC behavior otherwise unchanged.
+
+Modify `functions/mcp-health.ts`:
+- Add `Cache-Control: public, max-age=300` to the response headers so the health check can be served from Cloudflare's edge cache instead of invoking the Function on every request.
+
+- [x] **Step 4: Run tests**
+
+Run: `npm test -- functions/_lib/rate-limit.test.ts && npm test`
+
+Expected: PASS, and no regressions in existing `portfolio-mcp` tests.
+
+- [x] **Step 5: Run build**
+
+Run: `npm run build`
+
+Expected: PASS or the known configstore EPERM warning only.
+
+- [x] **Step 6: Document the manual KV binding step**
+
+In `src/components/portfolio-mcp/install-copy.ts` or a short section of `src/pages/mcp-install.tsx`, no visitor-facing text is needed for this (it is an operator step, not a client install step). Instead, add a one-paragraph note to this plan file's top-level summary (or a `docs/superpowers/plans/2026-07-19-hosted-portfolio-mcp.md` "Post-Merge Manual Step" note) stating: bind KV namespace `portfolio-mcp-rate-limit` (id `6ed8c837ed8d409babc2c3745241f77b`) to the `adityakarnam` Pages project as `RATE_LIMIT_KV` in Cloudflare dashboard → Settings → Functions, to activate per-IP throttling. The endpoint is safe to ship without this step (fail-open + Cloudflare's always-on edge DDoS protection + fully static/deterministic compute with no external calls or costs), but binding it hardens against sustained single-IP abuse.
+
+- [x] **Step 7: Commit**
+
+Run:
+
+```bash
+git add functions/mcp.ts functions/mcp-health.ts functions/_lib/rate-limit.ts functions/_lib/rate-limit.test.ts docs/superpowers/plans/2026-07-19-hosted-portfolio-mcp.md
+git commit -m "Add abuse and DDoS safety hardening to portfolio MCP endpoint"
+```
+
+---
+
+### Task 9: Streamable HTTP Compliance and Legacy Client Fallback
+
+**Why:** Cloudflare's official remote-MCP guide (https://blog.cloudflare.com/remote-model-context-protocol-servers-mcp/) recommends the `McpAgent`/Durable-Objects/OAuth stack on Workers for stateful, authenticated servers with per-user tool gating. That stack does not apply here — this server is deliberately stateless, public, and unauthenticated (see Global Constraints), so it is correctly built as a minimal JSON-RPC handler on Pages Functions rather than migrated to Workers + Durable Objects + OAuth. Two things from that guide are still worth adopting because they are cheap and improve real client compatibility:
+1. The MCP transport spec includes an `MCP-Protocol-Version` request header clients may send on requests after `initialize`; a compliant server should reject a request that names a protocol version it does not support, rather than silently ignoring it.
+2. Not all current MCP clients support remote HTTP servers natively yet. Cloudflare highlights the third-party `mcp-remote` npm adapter (`npx mcp-remote <url>`) as the standard bridge for clients that only support local/stdio MCP servers (this does not conflict with the "no npm package for v1" constraint, which is about not shipping our own package — `mcp-remote` is an existing, unrelated third-party tool we only document).
+
+**Files:**
+- Modify: `src/components/portfolio-mcp/protocol.ts`
+- Modify: `src/components/portfolio-mcp/protocol.test.ts`
+- Modify: `src/components/portfolio-mcp/install-copy.ts`
+- Modify: `src/components/portfolio-mcp/install-copy.test.ts`
+
+- [x] **Step 1: Write failing protocol-version tests**
+
+Add to `protocol.test.ts`: a request with header `MCP-Protocol-Version: 1999-01-01` (or similar unsupported value) on any method should get a JSON-RPC error response with code `-32600` and a message mentioning the unsupported protocol version. A request with no `MCP-Protocol-Version` header, or with the header set to `2025-06-18` (or omitted on `initialize`, which is exempt per spec), should behave exactly as before.
+
+Run: `npm test -- src/components/portfolio-mcp/protocol.test.ts`
+
+Expected: FAIL on the new case.
+
+- [x] **Step 2: Implement protocol version validation**
+
+In `handlePortfolioMcpRequest`, before dispatching on `body.method`, read `request.headers.get("MCP-Protocol-Version")`. If present, non-empty, and not equal to `"2025-06-18"`, return `error(body.id, -32600, "Unsupported protocol version")` immediately. Skip this check when `body.method === "initialize"` (a client's first request may predate version negotiation).
+
+- [x] **Step 3: Write failing install-copy test for the mcp-remote fallback**
+
+Add to `install-copy.test.ts`: `PORTFOLIO_MCP_INSTALL_MARKDOWN` contains a section mentioning `mcp-remote` and the exact command `npx mcp-remote https://adityakarnam.com/mcp`.
+
+Run: `npm test -- src/components/portfolio-mcp/install-copy.test.ts`
+
+Expected: FAIL because the markdown does not yet mention it.
+
+- [x] **Step 4: Add the fallback section to the install markdown**
+
+In `install-copy.ts`, add a new `## If Your Client Only Supports Local MCP Servers` section after `## Other Agents`, explaining that clients without native remote MCP support can bridge through the `mcp-remote` adapter:
+
+```bash
+npx mcp-remote https://adityakarnam.com/mcp
+```
+
+Keep this brief — one paragraph plus the command — and note it is a third-party bridge tool, not something this site hosts.
+
+- [x] **Step 5: Run tests**
+
+Run: `npm test`
+
+Expected: PASS, full suite green.
+
+- [x] **Step 6: Run build**
+
+Run: `npm run build`
+
+Expected: PASS or the known configstore EPERM warning only.
+
+- [x] **Step 7: Commit**
+
+Run:
+
+```bash
+git add src/components/portfolio-mcp/protocol.ts src/components/portfolio-mcp/protocol.test.ts src/components/portfolio-mcp/install-copy.ts src/components/portfolio-mcp/install-copy.test.ts docs/superpowers/plans/2026-07-19-hosted-portfolio-mcp.md
+git commit -m "Add MCP protocol version validation and mcp-remote fallback docs"
+```
