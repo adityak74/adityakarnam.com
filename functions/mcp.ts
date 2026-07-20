@@ -59,10 +59,7 @@ export const onRequestPost = async (context: McpFunctionContext): Promise<Respon
     return json({ error: "Rate limit exceeded." }, 429, { "Retry-After": "60" })
   }
 
-  return withNoStore(handlePortfolioMcpRequest(context.request, portfolioMcpData)).then((response) => {
-    response.headers.set("X-Debug-Kv-Bound", String(Boolean(context.env.RATE_LIMIT_KV)))
-    return response
-  })
+  return withNoStore(handlePortfolioMcpRequest(context.request, portfolioMcpData))
 }
 
 export const onRequestGet = async (): Promise<Response> =>
