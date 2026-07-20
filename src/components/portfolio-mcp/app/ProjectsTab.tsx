@@ -3,6 +3,7 @@ import { useEffect, useReducer, useState } from "react"
 import { getProject, listProjects } from "./bridge"
 import { ProjectDetail } from "./ProjectDetail"
 import { initialProjectsState, projectsReducer } from "./projectsState"
+import { BodyText, EyebrowLabel, Panel, StatusRow, TagList, themeStyles } from "./theme"
 
 export function ProjectsTab({ app }: { app: App }) {
   const [state, dispatch] = useReducer(projectsReducer, initialProjectsState)
@@ -51,29 +52,54 @@ export function ProjectsTab({ app }: { app: App }) {
       : []
 
   return (
-    <section>
-      <input
-        type="text"
-        value={tagFilter}
-        onChange={(event) => setTagFilter(event.target.value)}
-        placeholder="Filter by tag..."
-      />
+    <section style={{ display: "grid", gap: "1rem" }}>
+      <Panel accent="cyan">
+        <label style={{ display: "grid", gap: "0.55rem" }}>
+          <span style={themeStyles.label}>Tag filter</span>
+          <input
+            type="text"
+            value={tagFilter}
+            onChange={(event) => setTagFilter(event.target.value)}
+            placeholder="Filter by tag..."
+          />
+        </label>
+      </Panel>
 
-      {state.list.status === "loading" && <p>Loading projects…</p>}
-      {state.list.status === "error" && <p role="alert">{state.list.message}</p>}
-      {state.list.status === "results" && visibleProjects.length === 0 && <p>No projects match this filter.</p>}
+      {state.list.status === "loading" && (
+        <Panel accent="green">
+          <BodyText>Loading projects...</BodyText>
+        </Panel>
+      )}
+      {state.list.status === "error" && (
+        <Panel accent="cyan">
+          <BodyText role="alert">{state.list.message}</BodyText>
+        </Panel>
+      )}
+      {state.list.status === "results" && visibleProjects.length === 0 && (
+        <Panel accent="slate">
+          <BodyText>No projects match this filter.</BodyText>
+        </Panel>
+      )}
 
       {state.list.status === "results" && (
-        <ul>
+        <div style={themeStyles.cardGrid}>
           {visibleProjects.map((project) => (
-            <li key={project.slug}>
-              <button type="button" onClick={() => void handleSelectProject(project.slug)}>
+            <Panel accent="slate" key={project.slug}>
+              <button className="title-button" type="button" onClick={() => void handleSelectProject(project.slug)}>
                 {project.name}
               </button>
-              <p>{project.systemBuilt}</p>
-            </li>
+              {project.tags.length > 0 ? (
+                <div style={{ marginTop: "0.85rem" }}>
+                  <TagList items={project.tags} />
+                </div>
+              ) : null}
+              <div style={{ marginTop: "0.9rem" }}>
+                <StatusRow label="Status" value={project.status} />
+              </div>
+              <BodyText style={{ marginTop: "0.9rem" }}>{project.systemBuilt}</BodyText>
+            </Panel>
           ))}
-        </ul>
+        </div>
       )}
 
       <ProjectDetail state={state.detail} onOpenLink={handleOpenLink} onClose={() => dispatch({ type: "detail/close" })} />

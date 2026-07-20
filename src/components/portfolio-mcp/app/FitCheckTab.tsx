@@ -2,6 +2,13 @@ import type { App } from "@modelcontextprotocol/ext-apps"
 import { useReducer, useState } from "react"
 import { getRecruiterBrief } from "./bridge"
 import { fitCheckReducer, initialFitCheckState } from "./fitCheckState"
+import { BodyText, ConsoleList, EyebrowLabel, Panel, SectionHeading, TagList, themeStyles } from "./theme"
+
+const rolePresets = [
+  "Senior AI Infrastructure Engineer focused on agent runtimes, evaluation pipelines, and production MCP integrations.",
+  "Founding Engineer, Agent Systems building memory-aware coding tools, retrieval workflows, and local-first developer infrastructure.",
+  "ML Platform Engineer - Retrieval & Memory owning vector search, context engineering, observability, and applied LLM reliability.",
+]
 
 export function FitCheckTab({ app }: { app: App }) {
   const [state, dispatch] = useReducer(fitCheckReducer, initialFitCheckState)
@@ -34,63 +41,96 @@ export function FitCheckTab({ app }: { app: App }) {
   }
 
   return (
-    <section>
-      <form onSubmit={handleSubmit}>
-        <textarea
-          value={roleDescription}
-          onChange={(event) => setRoleDescription(event.target.value)}
-          placeholder="Paste a role description..."
-          rows={4}
-        />
-        <button type="submit" disabled={state.status === "loading"}>
-          Check fit
-        </button>
-      </form>
+    <section style={{ display: "grid", gap: "1rem" }}>
+      <Panel accent="cyan">
+        <form onSubmit={handleSubmit} style={{ display: "grid", gap: "0.9rem" }}>
+          <label style={{ display: "grid", gap: "0.55rem" }}>
+            <span style={themeStyles.label}>Role description</span>
+            <textarea
+              value={roleDescription}
+              onChange={(event) => setRoleDescription(event.target.value)}
+              placeholder="Paste a role description..."
+              rows={5}
+            />
+          </label>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <button className="primary-button" type="submit" disabled={state.status === "loading"}>
+              Check fit
+            </button>
+          </div>
+        </form>
+      </Panel>
 
-      {state.status === "empty" && <p>Paste a role description to see fit evidence.</p>}
-      {state.status === "loading" && <p>Checking fit…</p>}
+      {state.status === "empty" && (
+        <Panel accent="green">
+          <EyebrowLabel>Examples</EyebrowLabel>
+          <SectionHeading style={{ fontSize: "1.35rem" }}>Start from a realistic hiring brief</SectionHeading>
+          <BodyText style={{ marginTop: "0.7rem" }}>Pick a preset to populate the role field, then press Check fit.</BodyText>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.55rem", marginTop: "1rem" }}>
+            {rolePresets.map((preset) => (
+              <button className="pill-button" key={preset} type="button" onClick={() => setRoleDescription(preset)}>
+                {preset.split(" focused ")[0].split(" building ")[0].split(" owning ")[0]}
+              </button>
+            ))}
+          </div>
+        </Panel>
+      )}
+      {state.status === "loading" && (
+        <Panel accent="green">
+          <EyebrowLabel>Working</EyebrowLabel>
+          <BodyText>Checking fit...</BodyText>
+        </Panel>
+      )}
 
       {state.status === "error" && (
-        <p role="alert">
-          {state.message}{" "}
-          <button type="button" onClick={handleRetry}>
+        <Panel accent="cyan">
+          <EyebrowLabel>Error</EyebrowLabel>
+          <BodyText role="alert">{state.message}</BodyText>
+          <button className="secondary-button" type="button" onClick={handleRetry} style={{ marginTop: "1rem" }}>
             Retry
           </button>
-        </p>
+        </Panel>
       )}
 
       {state.status === "results" && (
-        <div>
-          <p>{state.brief.fitSummary}</p>
+        <div style={{ display: "grid", gap: "1rem" }}>
+          <Panel accent="cyan">
+            <EyebrowLabel>Fit summary</EyebrowLabel>
+            <SectionHeading style={{ fontSize: "1.35rem" }}>{state.brief.fitSummary}</SectionHeading>
+          </Panel>
 
           {state.brief.evidence.length === 0 ? (
-            <p>No strong public evidence matched this role.</p>
+            <Panel accent="slate">
+              <BodyText>No strong public evidence matched this role.</BodyText>
+            </Panel>
           ) : (
-            <ul>
+            <div style={themeStyles.cardGrid}>
               {state.brief.evidence.map((item) => (
-                <li key={item.url}>
-                  <button type="button" onClick={() => handleOpenLink(item.url)}>
+                <Panel accent="slate" key={item.url}>
+                  <button className="title-button" type="button" onClick={() => handleOpenLink(item.url)}>
                     {item.title}
                   </button>
-                  <p>{item.matchReason}</p>
-                </li>
+                  <BodyText style={{ marginTop: "0.65rem" }}>{item.matchReason}</BodyText>
+                  {item.tags.length > 0 ? (
+                    <div style={{ marginTop: "0.9rem" }}>
+                      <TagList items={item.tags} />
+                    </div>
+                  ) : null}
+                </Panel>
               ))}
-            </ul>
+            </div>
           )}
 
-          <h3>Interview topics</h3>
-          <ul>
-            {state.brief.interviewTopics.map((topic) => (
-              <li key={topic}>{topic}</li>
-            ))}
-          </ul>
-
-          <h3>Gaps</h3>
-          <ul>
-            {state.brief.gaps.map((gap) => (
-              <li key={gap}>{gap}</li>
-            ))}
-          </ul>
+          <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
+            <Panel accent="green">
+              <EyebrowLabel>Interview topics</EyebrowLabel>
+              <ConsoleList items={state.brief.interviewTopics} />
+            </Panel>
+            <Panel accent="slate">
+              <EyebrowLabel>Gaps</EyebrowLabel>
+              <ConsoleList items={state.brief.gaps} />
+            </Panel>
+          </div>
         </div>
       )}
     </section>
