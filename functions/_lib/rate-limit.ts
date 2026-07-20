@@ -16,13 +16,17 @@ export const checkRateLimit = async (
   const limit = opts.limit ?? 60
   const windowSeconds = opts.windowSeconds ?? 60
 
-  if (!kv) return { allowed: true, remaining: limit }
+  if (!kv) {
+    console.log("RATE_LIMIT_DIAG: kv binding missing")
+    return { allowed: true, remaining: limit }
+  }
 
   try {
     const nowSeconds = Math.floor(Date.now() / 1000)
     const windowStart = Math.floor(nowSeconds / windowSeconds) * windowSeconds
     const key = `ratelimit:${clientId}:${windowStart}`
     const current = Number.parseInt((await kv.get(key)) ?? "0", 10)
+    console.log(`RATE_LIMIT_DIAG: key=${key} current=${current}`)
 
     if (current >= limit) return { allowed: false, remaining: 0 }
 
@@ -31,7 +35,8 @@ export const checkRateLimit = async (
     await kv.put(key, String(next), { expirationTtl })
 
     return { allowed: true, remaining: Math.max(0, limit - next) }
-  } catch (_error) {
+  } catch (diagError) {
+    console.log(`RATE_LIMIT_DIAG: error ${diagError instanceof Error ? diagError.message : String(diagError)}`)
     return { allowed: true, remaining: limit }
   }
 }
