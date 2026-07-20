@@ -46,7 +46,7 @@ npm run sync:rag-corpus  # manually trigger a RAG corpus sync (requires Cloudfla
 ## Connect
 
 - [LinkedIn](https://www.linkedin.com/in/adityakarnamgrao/)
-- [Twitter](https://twitter.com/aditya_karnam)
+- [X (Twitter)](https://twitter.com/aditya_karnam)
 - [GitHub](https://github.com/adityak74)
 - [Google Scholar](https://scholar.google.com/citations?user=WujCeDkAAAAJ&hl=en)
 
