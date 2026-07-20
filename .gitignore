@@ -63,6 +63,7 @@ typings/
 .cache
 **/.cache
 public
+src/components/portfolio-mcp/app/dist
 .worktrees/
 .superpowers/
 
