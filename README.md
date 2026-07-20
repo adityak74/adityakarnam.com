@@ -11,6 +11,7 @@ Source for [adityakarnam.com](https://adityakarnam.com) — Aditya Karnam's pers
 - **[Now](https://adityakarnam.com/now/)** / **[About](https://adityakarnam.com/about/)** — current focus and background.
 - **Hero chat** — a retrieval-augmented chat assistant on the homepage (`functions/api/hero-chat.ts`) that answers questions about the work using the site's own content as grounding, with persona support and multi-turn conversation.
 - **[AI Toolkit](https://adityakarnam.com/ai-toolkit/)** — small standalone tools: an [Intelligent Prompt Composer](https://adityakarnam.com/ai-toolkit/intelligent-prompt-composer), a [Prompt Grader & Rewriter](https://adityakarnam.com/ai-toolkit/prompt-grader), and a [Tweet Thread Generator](https://adityakarnam.com/ai-toolkit/tweet-thread-generator).
+- **[Portfolio MCP](https://adityakarnam.com/mcp-install/)** — a hosted, read-only [Model Context Protocol](https://modelcontextprotocol.io) server (`/mcp`) that lets MCP clients query the site's projects and recent work as structured data.
 - **Blog** — technical writing on AI/ML, agentic systems, Rust, and distributed systems, syndicated to [DZone](https://dzone.com/users/5236541/adityakarnam.html), [Medium](https://medium.com/@adityakarnam), and [Level Up Coding](https://levelup.gitconnected.com/@adityakarnam).
 
 ## Architecture
