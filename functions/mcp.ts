@@ -8,12 +8,19 @@ type McpFunctionContext = {
   }
 }
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, MCP-Protocol-Version",
+}
+
 const json = (body: unknown, status: number, extraHeaders: HeadersInit = {}) =>
   new Response(JSON.stringify(body), {
     status,
     headers: {
       "Content-Type": "application/json",
       "Cache-Control": "no-store",
+      ...corsHeaders,
       ...extraHeaders,
     },
   })
@@ -22,12 +29,18 @@ const withNoStore = async (responsePromise: Promise<Response>) => {
   const response = await responsePromise
   const headers = new Headers(response.headers)
   headers.set("Cache-Control", "no-store")
+  for (const [key, value] of Object.entries(corsHeaders)) {
+    headers.set(key, value)
+  }
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
     headers,
   })
 }
+
+export const onRequestOptions = async (): Promise<Response> =>
+  new Response(null, { status: 204, headers: corsHeaders })
 
 export const onRequestPost = async (context: McpFunctionContext): Promise<Response> => {
   const contentLength = context.request.headers.get("Content-Length")
@@ -50,7 +63,4 @@ export const onRequestPost = async (context: McpFunctionContext): Promise<Respon
 }
 
 export const onRequestGet = async (): Promise<Response> =>
-  new Response(JSON.stringify({ error: "MCP endpoint expects POST JSON-RPC requests.", install: "https://adityakarnam.com/mcp-install/" }), {
-    status: 405,
-    headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
-  })
+  json({ error: "MCP endpoint expects POST JSON-RPC requests.", install: "https://adityakarnam.com/mcp-install/" }, 405)
