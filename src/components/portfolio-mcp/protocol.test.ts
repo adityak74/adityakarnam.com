@@ -45,6 +45,43 @@ describe("handlePortfolioMcpRequest", () => {
     expect(body.result.resources.map((resource: { uri: string }) => resource.uri)).toContain("portfolio://profile")
   })
 
+  it("lists the open_portfolio_app tool with its UI resource metadata", async () => {
+    const response = await handlePortfolioMcpRequest(postJson({ jsonrpc: "2.0", id: 10, method: "tools/list" }), data)
+    const body = await response.json()
+    const tool = body.result.tools.find((entry: { name: string }) => entry.name === "open_portfolio_app")
+
+    expect(tool).toBeDefined()
+    expect(tool._meta.ui.resourceUri).toBe("ui://portfolio-app")
+  })
+
+  it("calls open_portfolio_app", async () => {
+    const response = await handlePortfolioMcpRequest(
+      postJson({ jsonrpc: "2.0", id: 11, method: "tools/call", params: { name: "open_portfolio_app", arguments: {} } }),
+      data
+    )
+    const body = await response.json()
+
+    expect(JSON.parse(body.result.content[0].text)).toEqual({ opened: true })
+  })
+
+  it("lists the ui://portfolio-app resource", async () => {
+    const response = await handlePortfolioMcpRequest(postJson({ jsonrpc: "2.0", id: 12, method: "resources/list" }), data)
+    const body = await response.json()
+
+    expect(body.result.resources.map((resource: { uri: string }) => resource.uri)).toContain("ui://portfolio-app")
+  })
+
+  it("reads the ui://portfolio-app resource as self-contained HTML", async () => {
+    const response = await handlePortfolioMcpRequest(
+      postJson({ jsonrpc: "2.0", id: 13, method: "resources/read", params: { uri: "ui://portfolio-app" } }),
+      data
+    )
+    const body = await response.json()
+
+    expect(body.result.contents[0].mimeType).toBe("text/html;profile=mcp-app")
+    expect(body.result.contents[0].text).toContain("<div id=\"root\">")
+  })
+
   it("rejects unsupported methods with JSON-RPC error", async () => {
     const response = await handlePortfolioMcpRequest(postJson({ jsonrpc: "2.0", id: 5, method: "unknown/method" }), data)
     const body = await response.json()

@@ -1,4 +1,5 @@
 import { buildPortfolioMcpData } from "./build-data"
+import { PORTFOLIO_APP_HTML } from "./generated/portfolio-app-html"
 import type { PortfolioMcpData } from "./schema"
 import { createPortfolioTools, type PortfolioToolName } from "./tools"
 
@@ -22,6 +23,9 @@ const error = (id: JsonRpcRequest["id"], code: number, message: string) =>
   json({ jsonrpc: "2.0", id: id ?? null, error: { code, message } })
 
 const SUPPORTED_PROTOCOL_VERSION = "2025-06-18"
+
+const PORTFOLIO_APP_RESOURCE_URI = "ui://portfolio-app"
+const PORTFOLIO_APP_MIME_TYPE = "text/html;profile=mcp-app"
 
 const toolDescriptions = [
   {
@@ -95,6 +99,15 @@ const toolDescriptions = [
       additionalProperties: false,
     },
   },
+  {
+    name: "open_portfolio_app",
+    description: "Open an interactive dashboard to check role fit and browse Aditya Karnam's public projects.",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+    _meta: {
+      ui: { resourceUri: PORTFOLIO_APP_RESOURCE_URI },
+      "ui/resourceUri": PORTFOLIO_APP_RESOURCE_URI,
+    },
+  },
 ]
 
 const resources = [
@@ -103,9 +116,10 @@ const resources = [
   { uri: "portfolio://research-agenda", name: "Research Agenda", mimeType: "application/json" },
   { uri: "portfolio://recent-work", name: "Recent Work", mimeType: "application/json" },
   { uri: "portfolio://recruiter-guide", name: "Recruiter Guide", mimeType: "application/json" },
+  { uri: PORTFOLIO_APP_RESOURCE_URI, name: "Portfolio App", mimeType: PORTFOLIO_APP_MIME_TYPE },
 ]
 
-const readResource = (data: PortfolioMcpData, uri: string) => {
+const readJsonResource = (data: PortfolioMcpData, uri: string) => {
   if (uri === "portfolio://profile") return data.profile
   if (uri === "portfolio://systems") return data.projects
   if (uri === "portfolio://research-agenda") return data.researchAgenda
@@ -119,6 +133,15 @@ const readResource = (data: PortfolioMcpData, uri: string) => {
     }
   }
   throw new Error("Resource not found")
+}
+
+const readResource = (data: PortfolioMcpData, uri: string): { mimeType: string; text: string } => {
+  if (uri === PORTFOLIO_APP_RESOURCE_URI) {
+    return { mimeType: PORTFOLIO_APP_MIME_TYPE, text: PORTFOLIO_APP_HTML }
+  }
+
+  const jsonResource = readJsonResource(data, uri)
+  return { mimeType: "application/json", text: JSON.stringify(jsonResource, null, 2) }
 }
 
 export const handlePortfolioMcpRequest = async (request: Request, data = buildPortfolioMcpData()): Promise<Response> => {
@@ -159,8 +182,8 @@ export const handlePortfolioMcpRequest = async (request: Request, data = buildPo
 
   if (body.method === "resources/read") {
     try {
-      const resource = readResource(data, body.params?.uri)
-      return ok(body.id, { contents: [{ uri: body.params.uri, mimeType: "application/json", text: JSON.stringify(resource, null, 2) }] })
+      const { mimeType, text } = readResource(data, body.params?.uri)
+      return ok(body.id, { contents: [{ uri: body.params.uri, mimeType, text }] })
     } catch (_error) {
       return error(body.id, -32602, "Resource not found")
     }

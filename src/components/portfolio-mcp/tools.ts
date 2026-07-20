@@ -71,6 +71,8 @@ export const createPortfolioTools = (data: PortfolioMcpData) => ({
       sourceUrls: Array.from(new Set(evidence.flatMap((entry) => entry.sourceUrls))),
     }
   },
+
+  open_portfolio_app: (_input: JsonObject) => ({ opened: true }),
 })
 
 export type PortfolioToolRegistry = ReturnType<typeof createPortfolioTools>
