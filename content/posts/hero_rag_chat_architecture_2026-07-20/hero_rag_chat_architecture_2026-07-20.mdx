@@ -135,6 +135,17 @@ That message list goes to AI Search's `chat/completions` endpoint for the `hero-
 
 If the AI Search call fails, or nothing clears that relevance threshold, the response is a static per-persona fallback string plus a safe default source list (`/systems/`, `/blog/`) with `fallback: true` set on the payload — never a raw error, and never an invented answer dressed up as a real one.
 
+## Security Notes
+
+Running this on Cloudflare's edge instead of a server I manage changes what the actual attack surface looks like, worth being explicit about:
+
+- **Cloudflare credentials never reach the browser.** `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` live only in the Pages Function's environment. The client talks to `/api/hero-chat`, never to AI Search's API directly, so there's no token to leak out of a bundled JS file.
+- **No CORS headers are set on `/api/hero-chat`.** Unlike the [portfolio MCP endpoint](/portfolio-mcp-server/), which needs permissive CORS because external MCP clients call it directly, hero-chat has no `Access-Control-Allow-Origin` header at all — the omission means browsers block cross-origin reads of the response by default, so only same-origin requests from this site can actually use it.
+- **The rate limiter is honest about being best-effort, not a hard cap.** It's an in-memory `Map`, scoped to whatever isolate handles a given request — not the KV-backed limiter the portfolio MCP endpoint uses. The design spec flagged this explicitly as an open question rather than a settled decision: an in-function counter versus Cloudflare's own rate-limiting rules. At current traffic it doesn't matter; it would need revisiting before this endpoint saw meaningful abuse.
+- **Prompt injection is a live risk with a low ceiling.** Nothing stops someone from pasting adversarial instructions into the chat input, and the system prompt is the only defense against a model that tries to comply with them. But the blast radius is capped by design: this path is read-only, makes no tool calls, and takes no actions — the entire retrieval corpus is already public content on this site. A successful injection gets you, at worst, a weird answer sourced from information anyone could already read on the page it cites.
+- **AI-generated text can't XSS the page.** Answers render through a plain React `<Text>` component, not `dangerouslySetInnerHTML`, so React's default escaping applies to model output the same as any other string — there's no path from "the model was tricked into emitting HTML" to a rendered script tag.
+- **Failures never leak detail.** Every error path — a failed AI Search call, a request below the relevance threshold, an unparseable body — collapses into the same static fallback response. Nothing about Cloudflare's internal error, timeout behavior, or account state is ever visible to a client.
+
 ## What Broke Along the Way
 
 The bug worth mentioning: this project had no Cloudflare adapter configured for Gatsby at all. Gatsby Functions under `src/api/*.ts` and `createRedirect` had never actually worked in production — confirmed by the fact that the pre-existing `/api/ask-my-work` endpoint was live-returning 405 the whole time. The fix was migrating `hero-chat` to Cloudflare Pages' native Functions format (`functions/api/hero-chat.ts`, Fetch API `Request`/`Response`, no Gatsby-specific wrapper) and adding `gatsby-plugin-cloudflare-pages` so redirects actually generate a real `_redirects` file — that's also what makes `/ask/` → `/` resolve as a genuine 301 now instead of a client-side no-op.
@@ -152,6 +163,7 @@ A few things made that possible:
 - **The spec absorbed the pivot, not a rewrite.** Switching from a hand-rolled Vectorize approach to managed AI Search happened at the design stage, before implementation, so it never became a mid-build detour.
 - **Tests scaled with the feature, not after it.** 9 tests covered the corpus pipeline in PR #67; by PR #71 the full feature — protocol wiring, rate limiter, source mapping, persona prompts — had 21/21 passing, and every claim in both PR descriptions was checked against a real Cloudflare Pages preview deploy, not just local dev.
 - **The one real bug was infrastructural, not RAG-specific.** The missing Cloudflare Pages adapter would have broken any Gatsby Function on this site, not just this one — finding it here just meant every future Pages Function on this site now actually works, for free.
+- **It costs nothing at this traffic level.** Pay-as-you-go Cloudflare, no plan fee floor — R2 storage, Pages Functions, and AI Search's embedding and generation calls all stay inside their free-tier allocations for a personal portfolio's actual traffic (see below).
 
 ## Observability and Cost
 
@@ -172,6 +184,8 @@ And the Search playground shows retrieval working exactly as designed — a raw 
 The part that closes the loop cleanly: total cost for all of it — AI Search, R2 storage, embedding, generation, Pages Functions — is $0.00, comfortably inside Cloudflare's free tier at this traffic level:
 
 ![Cloudflare billing showing $0.00 total cost and $0.00 projected cycle cost for the account running this RAG stack](./rag-cost-zero.png)
+
+Worth being precise about what that number means: this is a pay-as-you-go Cloudflare account, not a fixed subscription — the billing page's own budget-alert banner confirms that. There's no plan fee floor to clear. At the traffic a personal portfolio site actually gets, every piece of this stack — R2 storage, Pages Functions invocations, AI Search's embedding and generation calls — stays under its free-tier allocation, so the bill stays at zero. It doesn't scale to zero if this hero chat suddenly gets popular; it scales to whatever Cloudflare charges past those thresholds. But for the actual use case — a chat surface for people evaluating one person's work, not a public high-traffic product — it's a genuinely free stack, not a "free trial" that flips to a bill next month.
 
 ## Try It
 
