@@ -141,6 +141,42 @@ The bug worth mentioning: this project had no Cloudflare adapter configured for 
 
 The rest was verification discipline: temporary debug logging added specifically to confirm the AI Search fallback path was triggering correctly on a preview deploy, then removed once confirmed. End-to-end checks ran against a real Cloudflare Pages preview, not just local dev — grounded answers with correct source links for in-corpus questions, multi-turn follow-ups correctly using prior context, persona switching producing genuinely different framing on the same retrieved content, and out-of-corpus questions falling back gracefully instead of hallucinating.
 
+## Highlights: How Little of This Was Hard
+
+What stands out in hindsight is how small the actual surface area was. The whole feature — spec, plan, content pipeline, UI, query path, and the infra fix — went from first commit to fully verified live in about 14 hours in a single day: [PR #67](https://github.com/adityak74/adityakarnam.com/pull/67) (spec, plan, corpus pipeline) merged at 07:15 UTC on July 19, [PR #71](https://github.com/adityak74/adityakarnam.com/pull/71) (chat UI, query function, `/ask` removal) merged at 21:22 UTC the same day, with two small follow-up fixes ([#68](https://github.com/adityak74/adityakarnam.com/pull/68), [#69](https://github.com/adityak74/adityakarnam.com/pull/69)) shortly after.
+
+A few things made that possible:
+
+- **No backend to provision.** Every piece — Pages Function, R2 bucket, AI Search instance — is managed Cloudflare infrastructure. There's no server, no container, no queue to run; the entire runtime is `functions/api/hero-chat.ts` plus config.
+- **AI Search collapsed the hardest part into one API call.** Chunking, embedding, indexing, retrieval, and generation all happen behind a single `chat/completions` endpoint. The custom code is the parts that are actually specific to this site: which sources to include, how to frame answers per persona, and how to fail safely — not a hand-rolled retrieval pipeline.
+- **The spec absorbed the pivot, not a rewrite.** Switching from a hand-rolled Vectorize approach to managed AI Search happened at the design stage, before implementation, so it never became a mid-build detour.
+- **Tests scaled with the feature, not after it.** 9 tests covered the corpus pipeline in PR #67; by PR #71 the full feature — protocol wiring, rate limiter, source mapping, persona prompts — had 21/21 passing, and every claim in both PR descriptions was checked against a real Cloudflare Pages preview deploy, not just local dev.
+- **The one real bug was infrastructural, not RAG-specific.** The missing Cloudflare Pages adapter would have broken any Gatsby Function on this site, not just this one — finding it here just meant every future Pages Function on this site now actually works, for free.
+
+## Observability and Cost
+
+Closing the loop: what does this actually look like from inside Cloudflare, and what does it cost?
+
+The `hero-chat` instance overview shows exactly what the corpus sync pipeline produced — 17 items indexed, 0 errors, and the raw sync job log (`Finished indexing data source, got 1 pages/batches, 17 files seen`, `Finished embedding files`) from the last run triggered by the GitHub Actions workflow:
+
+![Cloudflare AI Search overview for the hero-chat instance showing 17 indexed items, 0 errors, and the raw sync job log](./rag-instance-overview.png)
+
+The Items tab lists every corpus file individually — `subagent-fleet` at 25 chunks, `india-agent-infrastructure-layer` at 25 chunks, `embenx` at 25 chunks, all sourced from R2 and fully indexed:
+
+![Cloudflare AI Search items table listing indexed corpus files with chunk counts, file sizes, and R2 as the source](./rag-indexed-items.png)
+
+And the Search playground shows retrieval working exactly as designed — a raw query for "what is subagent-fleet" pulls the actual chunk text back with a relevance score (0.624, 0.566), the same score threshold logic that `buildSourcesFromChunks` uses in production to decide what counts as a real citation versus what gets dropped:
+
+![Cloudflare AI Search playground showing retrieved chunks for a live query, each with a relevance score](./rag-live-retrieval.png)
+
+The part that closes the loop cleanly: total cost for all of it — AI Search, R2 storage, embedding, generation, Pages Functions — is $0.00, comfortably inside Cloudflare's free tier at this traffic level:
+
+![Cloudflare billing showing $0.00 total cost and $0.00 projected cycle cost for the account running this RAG stack](./rag-cost-zero.png)
+
 ## Try It
 
 It's live in the hero at [adityakarnam.com](https://adityakarnam.com). Pick a lens, ask something about the work, and the answer — and its sources — should tell you whether the retrieval actually found something or is honestly telling you it didn't.
+
+Here it is in action — switching personas mid-session and asking follow-up questions against the live corpus:
+
+<LazyVideo src="/videos/hero-rag-chat-demo.mp4" poster="/banner-aditya.png" />
