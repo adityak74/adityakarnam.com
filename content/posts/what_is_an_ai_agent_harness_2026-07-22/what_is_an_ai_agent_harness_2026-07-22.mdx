@@ -1,0 +1,291 @@
+---
+title: "What Is an AI Agent Harness? A Systems Guide to Building and Evaluating Reliable AI Agents"
+description: "Learn what an AI agent harness is, how it controls tools, context, memory, retries, verification, cost, and reliability, and how agent harnesses can be evaluated systematically."
+date: 2026-07-22
+slug: "/ai-research/what-is-an-ai-agent-harness"
+canonicalUrl: "https://adityakarnam.com/ai-research/what-is-an-ai-agent-harness/"
+banner: "./ai-agent-harness-banner.jpg"
+keywords:
+  [
+    "ai agent harness",
+    "agent runtime",
+    "agent evaluation",
+    "quecto",
+    "budgetbench",
+    "agentabi",
+    "ai research explained",
+    "agent architecture",
+    "llm agents",
+    "agent reliability",
+  ]
+---
+
+_A foundational guide in [AI Research Explained](/ai-research/) — how models, tools, memory, context, verification, and runtime policies combine to determine agent behavior, with examples from QuECTO, BudgetBench, and AgentABI._
+
+Most discussions about AI agents begin with the model. Which model reasons better? Which model writes better code? Which model tops the latest benchmark? But users never interact with a model in isolation. They interact with a system that constructs context, exposes tools, executes commands, preserves state, handles failures, verifies results, and decides when the work is complete. That surrounding system is the agent harness — and it may determine agent performance as much as the model itself.
+
+## The core idea
+
+A model generates possible actions. The harness turns those actions into a functioning software system. The full loop runs through eight stages, and the recovery stage can loop back into reasoning before the harness ever produces a final result.
+
+<svg viewBox="0 0 900 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="loopDiagramTitle loopDiagramDesc" fontFamily="'JetBrains Mono','Fira Code',Consolas,monospace" style={{width: "100%", height: "auto"}}>
+  <title id="loopDiagramTitle">The agent harness loop</title>
+  <desc id="loopDiagramDesc">Eight-stage loop. Top row, left to right: Model proposes candidate actions, Context assembles what it can see, Reasoning plans the next step, Tool execution runs the chosen action. An arrow drops down to the bottom row, which reads right to left: Observation captures the result, Verification checks it against success criteria, Recovery retries or replans, Final result returns or halts. A dashed feedback arrow loops from Recovery back up to Reasoning, showing that failed verification can trigger another pass through the loop.</desc>
+  <rect x="0" y="0" width="900" height="340" fill="#FAF9F7"/>
+  <text x="20" y="30" fontSize="12" letterSpacing="0.08em" fill="#C2522D" fontWeight="700">STAGES 1–4 · GENERATE AND ACT</text>
+  <line x1="20" y1="42" x2="880" y2="42" stroke="#D8D4CC" strokeWidth="1"/>
+  <text x="20" y="200" fontSize="12" letterSpacing="0.08em" fill="#C2522D" fontWeight="700">STAGES 5–8 · CHECK AND DECIDE</text>
+  <line x1="20" y1="212" x2="880" y2="212" stroke="#D8D4CC" strokeWidth="1"/>
+  <defs>
+    <marker id="loopArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6B6B63"/>
+    </marker>
+    <marker id="loopArrowAccent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#C2522D"/>
+    </marker>
+  </defs>
+
+  <rect x="20" y="60" width="190" height="64" rx="10" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="34" y="84" fontSize="13" fill="#1A1A18" fontWeight="700">1. Model</text>
+  <text x="34" y="102" fontSize="10" fill="#6B6B63">proposes candidate actions</text>
+
+  <rect x="234" y="60" width="190" height="64" rx="10" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="248" y="84" fontSize="13" fill="#1A1A18" fontWeight="700">2. Context</text>
+  <text x="248" y="102" fontSize="10" fill="#6B6B63">assembles what it can see</text>
+
+  <rect x="448" y="60" width="190" height="64" rx="10" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="462" y="84" fontSize="13" fill="#1A1A18" fontWeight="700">3. Reasoning</text>
+  <text x="462" y="102" fontSize="10" fill="#6B6B63">plans the next step</text>
+
+  <rect x="662" y="60" width="190" height="64" rx="10" fill="#FFFFFF" stroke="#D8D4CC" strokeWidth="2"/>
+  <text x="676" y="84" fontSize="13" fill="#1A1A18" fontWeight="700">4. Tool execution</text>
+  <text x="676" y="102" fontSize="10" fill="#6B6B63">runs the chosen action</text>
+
+  <path d="M210,92 H234" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#loopArrow)"/>
+  <path d="M424,92 H448" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#loopArrow)"/>
+  <path d="M638,92 H662" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#loopArrow)"/>
+  <path d="M757,124 V210" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#loopArrow)"/>
+
+  <rect x="662" y="210" width="190" height="64" rx="10" fill="#FFFFFF" stroke="#D8D4CC" strokeWidth="2"/>
+  <text x="676" y="234" fontSize="13" fill="#1A1A18" fontWeight="700">5. Observation</text>
+  <text x="676" y="252" fontSize="10" fill="#6B6B63">captures the result</text>
+
+  <rect x="448" y="210" width="190" height="64" rx="10" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="462" y="234" fontSize="13" fill="#1A1A18" fontWeight="700">6. Verification</text>
+  <text x="462" y="252" fontSize="10" fill="#6B6B63">checks success criteria</text>
+
+  <rect x="234" y="210" width="190" height="64" rx="10" fill="#F2F0EC" stroke="#C2522D" strokeWidth="2"/>
+  <text x="248" y="234" fontSize="13" fill="#1A1A18" fontWeight="700">7. Recovery</text>
+  <text x="248" y="252" fontSize="10" fill="#6B6B63">retries or replans</text>
+
+  <rect x="20" y="210" width="190" height="64" rx="10" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="34" y="234" fontSize="13" fill="#1A1A18" fontWeight="700">8. Final result</text>
+  <text x="34" y="252" fontSize="10" fill="#6B6B63">returns or halts</text>
+
+  <path d="M662,242 H638" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#loopArrow)"/>
+  <path d="M448,242 H424" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#loopArrow)"/>
+  <path d="M234,242 H210" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#loopArrow)"/>
+
+  <path d="M329,210 V180 H543 V124" fill="none" stroke="#C2522D" strokeWidth="1.5" strokeDasharray="3 3" markerEnd="url(#loopArrowAccent)"/>
+  <text x="336" y="176" fontSize="10" fill="#C2522D">failed verification → retry</text>
+</svg>
+
+Two systems using the same model can produce very different results because the harness controls what the model sees, what it can do, how failures are handled, and when execution stops.
+
+## 1. What is an AI agent harness?
+
+An AI agent harness is the software layer that surrounds a language model and manages its interaction with tools, memory, files, environments, users, and evaluators.
+
+Claude Code, Codex, coding-agent frameworks, browser agents, and research agents all contain some form of harness. The model is swappable; the harness is what actually decides how an agent behaves in practice.
+
+## 2. The anatomy of an agent harness
+
+Every harness, regardless of domain, breaks down into eight components:
+
+<svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="anatomyDiagramTitle anatomyDiagramDesc" fontFamily="'JetBrains Mono','Fira Code',Consolas,monospace" style={{width: "100%", height: "auto"}}>
+  <title id="anatomyDiagramTitle">The eight components of an agent harness</title>
+  <desc id="anatomyDiagramDesc">A four-by-two grid of eight cards: Model interface (provider, model, params), Context manager (history, files, compression), Tool layer (schemas, permissions, errors), State and memory (what persists across steps), Control loop (observe, reason, act, repeat), Verification layer (tests, judges, checks), Recovery policy (retries, fallback models), and Budget manager (tokens, turns, time, cost).</desc>
+  <rect x="0" y="0" width="900" height="320" fill="#FAF9F7"/>
+  <text x="20" y="28" fontSize="12" letterSpacing="0.08em" fill="#C2522D" fontWeight="700">EIGHT COMPONENTS · SAME HARNESS</text>
+  <line x1="20" y1="40" x2="880" y2="40" stroke="#D8D4CC" strokeWidth="1"/>
+
+  {[
+    { n: 1, x: 20, y: 54, title: "Model interface", desc: "provider, model, params" },
+    { n: 2, x: 240, y: 54, title: "Context manager", desc: "history, files, compression" },
+    { n: 3, x: 460, y: 54, title: "Tool layer", desc: "schemas, permissions, errors" },
+    { n: 4, x: 680, y: 54, title: "State & memory", desc: "what persists across steps" },
+    { n: 5, x: 20, y: 194, title: "Control loop", desc: "observe, reason, act, repeat" },
+    { n: 6, x: 240, y: 194, title: "Verification layer", desc: "tests, judges, checks" },
+    { n: 7, x: 460, y: 194, title: "Recovery policy", desc: "retries, fallback models" },
+    { n: 8, x: 680, y: 194, title: "Budget manager", desc: "tokens, turns, time, cost" },
+  ].map(card => (
+    <g key={card.n}>
+      <rect x={card.x} y={card.y} width="200" height="110" rx="10" fill="#FFFFFF" stroke="#D8D4CC"/>
+      <circle cx={card.x + 26} cy={card.y + 26} r="12" fill="#C2522D"/>
+      <text x={card.x + 26} y={card.y + 30} fontSize="11" fill="#FFFFFF" fontWeight="700" textAnchor="middle">{card.n}</text>
+      <text x={card.x + 16} y={card.y + 60} fontSize="13" fill="#1A1A18" fontWeight="700">{card.title}</text>
+      <text x={card.x + 16} y={card.y + 82} fontSize="10" fill="#6B6B63">{card.desc}</text>
+    </g>
+  ))}
+</svg>
+
+1. **Model interface** — provider, model, reasoning mode and parameters
+2. **Context manager** — instructions, history, retrieved files and compression
+3. **Tool layer** — schemas, permissions, execution and error responses
+4. **State and memory** — what persists across steps or sessions
+5. **Control loop** — observe, reason, act and repeat
+6. **Verification layer** — tests, judges, linters and success checks
+7. **Recovery policy** — retries, replanning and fallback models
+8. **Budget manager** — tokens, turns, time and monetary cost
+
+Swap any one of these and you get a different agent, even with an identical model underneath.
+
+## 3. Why the same model behaves differently across harnesses
+
+Consider a simple controlled comparison:
+
+- Same model
+- Same coding task
+- Same repository
+- Different tool descriptions
+- Different context policy
+- Different test feedback
+- Different retry limits
+
+One harness finishes successfully. Another loops, edits the wrong file, or stops prematurely. Nothing about the model changed — only the system around it did.
+
+This is the key shift: agent performance is an **emergent systems property**, not a property of the model alone.
+
+## 4. A minimal harness versus a research-grade harness
+
+| Minimal harness | Research-grade harness |
+| --- | --- |
+| Sends prompt to model | Versions the complete execution contract |
+| Exposes tools | Records every tool request and response |
+| Stops on model response | Uses explicit completion criteria |
+| Reports pass or fail | Classifies failure modes |
+| Measures token usage | Measures cost, latency and reliable completion |
+| Runs once | Repeats trials and reports variance |
+
+Most agent demos live in the left column. Most production systems need the right column.
+
+## 5. QuECTO as a running example
+
+I built QuECTO to study agent behavior as a system rather than treating the model as the only experimental variable. It's designed to compare:
+
+- Models and providers
+- Reasoning configurations
+- Tool implementations
+- Harness policies
+- Execution budgets
+- Failure and recovery behavior
+- Behavioral changes under runtime substitution
+
+[quecto](/quecto/) is a concrete instance of the anatomy above, so it's worth showing what those eight components look like when they're actually built: a 1.2 MB core with no async runtime, and a 3.3 MB agent built on top of it that adds the tool loop, approval gating, a sandbox denylist, a verification gate, and a SQLite-backed session store — with every layer configurable through plain environment variables instead of hardcoded to one vendor or model.
+
+<svg viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="quectoDiagramTitle quectoDiagramDesc" fontFamily="'JetBrains Mono','Fira Code',Consolas,monospace" style={{width: "100%", height: "auto"}}>
+  <title id="quectoDiagramTitle">QuECTO agent architecture</title>
+  <desc id="quectoDiagramDesc">Left column: five bring-your-own-config inputs — QUECTO_SYSTEM, QUECTO_BASE_URL and QUECTO_MODEL, .quecto/flavors/*.toml manifests, QUECTO_VERIFY, and QUECTO_STATE_DB / QUECTO_TRUST_FILE — feed into the quecto core, a 1.2 megabyte binary with no async runtime built on ureq and serde_json. The core feeds quecto-agent, a 3.3 megabyte binary that adds a tool loop for read, write, patch, search, git, and shell; approval gating before disk writes; a sandbox denylist blocking destructive commands; a verification gate running QUECTO_VERIFY as a post-edit check with a dashed retry loop back into the tool loop; and a SQLite session store for resume, undo, and diff. The agent exchanges prompts and tool results with any OpenAI-compatible model endpoint, local or cloud, on the right.</desc>
+  <rect x="0" y="0" width="900" height="400" fill="#FAF9F7"/>
+  <text x="20" y="26" fontSize="12" letterSpacing="0.08em" fill="#C2522D" fontWeight="700">QUECTO · BUILT FROM THE SAME EIGHT COMPONENTS</text>
+  <line x1="20" y1="36" x2="880" y2="36" stroke="#D8D4CC" strokeWidth="1"/>
+  <defs>
+    <marker id="qArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6B6B63"/>
+    </marker>
+    <marker id="qArrowAccent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#C2522D"/>
+    </marker>
+  </defs>
+
+  <text x="20" y="56" fontSize="10" letterSpacing="0.06em" fill="#6B6B63">BYOC · ENV VARS &amp; FILES</text>
+  <rect x="20" y="64" width="190" height="50" rx="8" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="32" y="94" fontSize="11" fill="#1A1A18">QUECTO_SYSTEM</text>
+  <rect x="20" y="124" width="190" height="50" rx="8" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="32" y="154" fontSize="11" fill="#1A1A18">QUECTO_BASE_URL / MODEL</text>
+  <rect x="20" y="184" width="190" height="50" rx="8" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="32" y="214" fontSize="11" fill="#1A1A18">.quecto/flavors/*.toml</text>
+  <rect x="20" y="244" width="190" height="50" rx="8" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="32" y="274" fontSize="11" fill="#1A1A18">QUECTO_VERIFY</text>
+  <rect x="20" y="304" width="190" height="50" rx="8" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="32" y="326" fontSize="11" fill="#1A1A18">QUECTO_STATE_DB /</text>
+  <text x="32" y="342" fontSize="11" fill="#1A1A18">QUECTO_TRUST_FILE</text>
+
+  <path d="M210,89 H234 V185 H250" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#qArrow)"/>
+  <path d="M210,149 H234 V185 H250" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#qArrow)"/>
+  <path d="M210,209 H250" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#qArrow)"/>
+  <path d="M210,269 H234 V185 H250" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#qArrow)"/>
+  <path d="M210,329 H234 V185 H250" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#qArrow)"/>
+
+  <rect x="250" y="140" width="170" height="90" rx="10" fill="#FFFFFF" stroke="#D8D4CC" strokeWidth="2"/>
+  <text x="264" y="164" fontSize="10" letterSpacing="0.06em" fill="#6B6B63">CORE</text>
+  <text x="264" y="186" fontSize="13" fill="#1A1A18" fontWeight="700">quecto — 1.2 MB</text>
+  <text x="264" y="204" fontSize="10" fill="#6B6B63">ureq + serde_json</text>
+  <text x="264" y="218" fontSize="10" fill="#6B6B63">no async runtime</text>
+
+  <path d="M420,185 H450" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#qArrow)"/>
+
+  <rect x="450" y="70" width="250" height="230" rx="10" fill="#FFFFFF" stroke="#D8D4CC" strokeWidth="2"/>
+  <text x="464" y="94" fontSize="10" letterSpacing="0.06em" fill="#6B6B63">AGENT</text>
+  <text x="464" y="114" fontSize="13" fill="#1A1A18" fontWeight="700">quecto-agent — 3.3 MB</text>
+  <line x1="464" y1="126" x2="686" y2="126" stroke="#D8D4CC" strokeWidth="1"/>
+  <text x="464" y="148" fontSize="10.5" fill="#1A1A18">Tool loop: read/write/patch/git</text>
+  <text x="464" y="170" fontSize="10.5" fill="#1A1A18">Approval gating pre-disk-write</text>
+  <text x="464" y="192" fontSize="10.5" fill="#1A1A18">Sandbox denylist blocks danger</text>
+  <text x="464" y="214" fontSize="10.5" fill="#C2522D">Verify gate: QUECTO_VERIFY</text>
+  <text x="464" y="236" fontSize="10.5" fill="#1A1A18">SQLite sessions: resume, undo</text>
+  <text x="464" y="258" fontSize="10.5" fill="#1A1A18">Flavor manifests (.toml)</text>
+  <path d="M660,210 C685,210 685,150 660,150" fill="none" stroke="#C2522D" strokeWidth="1.5" strokeDasharray="3 3" markerEnd="url(#qArrowAccent)"/>
+  <text x="668" y="184" fontSize="9" fill="#C2522D" transform="rotate(90 668 184)">retry</text>
+
+  <path d="M700,170 H730" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#qArrow)"/>
+  <text x="700" y="164" fontSize="9" fill="#6B6B63">prompt + tool results</text>
+  <path d="M730,205 H700" fill="none" stroke="#C2522D" strokeWidth="1.5" strokeDasharray="2 3" markerEnd="url(#qArrowAccent)"/>
+  <text x="700" y="219" fontSize="9" fill="#C2522D">actions + tool calls</text>
+
+  <rect x="730" y="140" width="150" height="90" rx="10" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="742" y="164" fontSize="10" letterSpacing="0.06em" fill="#6B6B63">MODEL ENDPOINT</text>
+  <text x="742" y="184" fontSize="10.5" fill="#1A1A18">Any OpenAI-compatible</text>
+  <text x="742" y="198" fontSize="10.5" fill="#1A1A18">endpoint</text>
+  <text x="742" y="216" fontSize="9.5" fill="#6B6B63">local: Ollama, vLLM</text>
+  <text x="742" y="228" fontSize="9.5" fill="#6B6B63">cloud: OpenAI-shaped API</text>
+</svg>
+
+Every one of those component boundaries — the BYOC inputs on the left, the core-to-agent split, the verification gate's retry loop, the swappable model endpoint on the right — is also a QuECTO experiment variable. A single trial swaps one boundary at a time and records the outcome, cost, latency, and behavior trace that results. That's what makes harness differences legible instead of anecdotal.
+
+## 6. BudgetBench: why budget is part of the harness
+
+BudgetBench began from a related observation: memory strategies cannot be compared fairly without accounting for the resource budget under which they operate.
+
+The "best" memory or reasoning strategy can change depending on:
+
+- Context-window limits
+- Token budget
+- Hardware constraints
+- Latency requirements
+- Local versus hosted inference
+
+A strategy that wins under a generous token budget can lose badly under a constrained one — which means budget isn't a side detail, it's part of the harness definition itself.
+
+## 7. From harness evaluation to AgentABI
+
+QuECTO measures agent-runtime behavior. AgentABI asks a different question: whether one runtime can safely replace another without introducing behavioral breaking changes.
+
+That question comes up constantly in practice — replacing one model with another, one provider with another, one reasoning mode with another, one harness version with another, or a hosted model with a local one.
+
+The important question isn't only:
+
+> "Does the new system pass the benchmark?"
+
+It's also:
+
+> "Does it preserve the behavior that users and downstream systems depend on?"
+
+That distinction — benchmark passing versus behavioral compatibility — is where harness evaluation is heading next.
+
+_Banner photo by [procopiopi](https://unsplash.com/@procopiopi) on [Unsplash](https://unsplash.com/photos/ai-chip-illustration-for-technological-advancement-tDhXm_WuqrA)._
+
+## Related reading
+
+- [AI Research Explained](/ai-research/) — the section this guide lives in, with more papers and experiments on the way
+- [Field Notes](/field-notes/) — infrastructure-focused notes on memory, routing, and local inference
