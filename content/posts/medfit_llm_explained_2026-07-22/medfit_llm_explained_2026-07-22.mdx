@@ -1,9 +1,10 @@
 ---
 title: "MEDFIT-LLM Explained: Fine-Tuning Small Language Models for Medical Tasks"
-description: "A plain-language walkthrough of my paper MEDFIT-LLM: how domain-focused fine-tuning lets small language models compete with much larger general-purpose models on medical tasks."
+description: "A detailed walkthrough of my paper MEDFIT-LLM: a controlled, multi-architecture study of how domain-focused fine-tuning lets small language models compete with much larger general-purpose models on medical tasks."
 date: 2026-07-22
 slug: "/medfit-llm-explained"
 canonicalUrl: "https://adityakarnam.com/medfit-llm-explained/"
+banner: "./medfit-llm-banner.jpg"
 keywords:
   [
     "medfit-llm",
@@ -14,6 +15,8 @@ keywords:
     "llm research",
     "ai research explained",
     "healthcare ai",
+    "lora",
+    "mlx",
   ]
 ---
 
@@ -21,27 +24,196 @@ _The first entry in [AI Research Explained](/ai-research/) — my own papers and
 
 ## The paper
 
-[**MEDFIT-LLM: Medical Enhancements through Domain-Focused Fine Tuning of Small Language Models**](https://ieeexplore.ieee.org/abstract/document/11042816), published at the 2025 International Conference on Research Methodologies in Knowledge Management, AI and Telecommunication Engineering. It's picked up 5 citations since publication.
+[**MEDFIT-LLM: Medical Enhancements through Domain-Focused Fine Tuning of Small Language Models**](https://ieeexplore.ieee.org/abstract/document/11042816), co-authored with Arjun Jaggi and Sonam Naidu, published at the 2025 2nd International Conference on Research Methodologies in Knowledge Management, AI and Telecommunication Engineering (RMKMATE). It's picked up 5 citations since publication. Code, dataset splits, and the full evaluation harness are open source at [github.com/adityak74/medfit-llm](https://github.com/adityak74/medfit-llm).
 
-> **TL;DR:** General-purpose LLMs are large, expensive, and not built for medical language. MEDFIT-LLM shows that fine-tuning a *small* language model on domain-focused medical data closes most of that gap — at a fraction of the compute cost of running a frontier model.
+> **TL;DR:** We fine-tuned four small open-weight LLMs (3B–9B parameters) on an identical synthetic healthcare Q&A dataset using LoRA on MLX, then scored base vs. fine-tuned on the same 50 held-out questions with the same weighted rubric. Model size did not predict outcome: the smallest model, Llama-3.2-3B, produced the largest overall improvement (108.2 points) and the most dramatic behavioral fix — it stopped degenerating into repeated sentences — while two larger 7B–9B models barely moved.
+
+## Why this is more than a single fine-tuning demo
+
+Most public "I fine-tuned an LLM" write-ups test one model against one dataset and report a win. MEDFIT-LLM is a controlled, head-to-head study across four different model families under one identical protocol — same synthetic dataset, same LoRA recipe, same held-out validation set, same scoring rubric — which is what turns "fine-tuning helped" into a comparable, falsifiable result instead of an anecdote.
+
+That distinction matters for the broader research question the field is actively arguing about: is parameter count the main lever for domain performance, or is it adaptation quality? Prior healthcare-chatbot work — a reliability study for Hajj-pilgrim health chatbots, a comparative sweep of BERT/DistilBERT/RoBERTa/DialoGPT/TinyLlama/GPT-2 for women's healthcare apps, and PharmaLLM's work on medicine-prescription chatbots — each demonstrated domain fine-tuning works, but largely as single-architecture case studies. MEDFIT-LLM's contribution is the controlled comparison: run the identical recipe across four architectures and let the divergence in outcomes tell you something about *why* fine-tuning works, not just *that* it does.
 
 ## The problem it addresses
 
 Large language models are good generalists, but medical text has its own vocabulary, abbreviations, and reasoning patterns that general training data underrepresents. The usual fix is to reach for a bigger model or heavier prompting — both of which raise cost and latency without addressing the underlying mismatch between training data and domain.
 
-Small language models are cheaper to run and easier to deploy on constrained infrastructure, but out of the box they underperform on specialized domains like medicine. The open question: how much of that gap can be closed with focused fine-tuning instead of raw scale?
+Small language models are cheaper to run and easier to deploy on constrained infrastructure, but out of the box some of them don't just ramble — as the results below show, one of them degenerated into repeating the same sentence verbatim until it hit the token limit. That's not a style problem, it's a reliability failure a healthcare chatbot cannot ship with. The open question we set out to test: how much of that gap closes with focused fine-tuning instead of raw scale?
 
-## The approach
+## Study design
 
-MEDFIT-LLM's core idea is domain-focused fine-tuning: rather than training on broad, generic corpora, the model is adapted specifically on medical-domain data so its parameters concentrate on the vocabulary, structure, and reasoning patterns that matter for medical tasks.
+We generated a synthetic dataset with Phi-4 rather than relying on scarce, expensive expert-annotated medical Q&A pairs — 10,000 healthcare-related question/answer pairs focused on the future impact of LLMs in healthcare. After deduplication, 6,444 unique questions remained, split into 5,155 training, 645 test, and 644 validation examples. Four small open-weight models — spanning three different model families and three quantization/precision configurations — were each LoRA-fine-tuned on MLX independently, then evaluated against their own un-tuned base checkpoint on the identical 50 held-out validation questions, using the identical prompts for base and fine-tuned runs.
 
-The result is a small model that punches above its parameter count on medical evaluation tasks — not by getting bigger, but by getting more targeted.
+<svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pipelineDiagramTitle pipelineDiagramDesc" fontFamily="'JetBrains Mono','Fira Code',Consolas,monospace" style={{width: "100%", height: "auto"}}>
+  <title id="pipelineDiagramTitle">MEDFIT-LLM study pipeline</title>
+  <desc id="pipelineDiagramDesc">Phi-4 generates 10,000 synthetic healthcare question and answer pairs, which are deduplicated to 6,444 unique questions, then split into 5,155 training, 645 test, and 644 validation samples. Each of four models — Gemma-2-9B 4bit, Llama-3.2-3B Instruct, Mistral-7B Instruct v0.3, and Qwen2-7B Instruct 8bit — is LoRA fine-tuned on MLX. All four fine-tuned models and their base counterparts are then evaluated on the same 50 held-out validation questions.</desc>
+  <rect x="0" y="0" width="900" height="300" fill="#FAF9F7"/>
+  <defs>
+    <marker id="pArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6B6B63"/>
+    </marker>
+  </defs>
+
+  <rect x="20" y="50" width="190" height="70" rx="10" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="34" y="76" fontSize="13" fill="#1A1A18" fontWeight="700">Phi-4 generation</text>
+  <text x="34" y="94" fontSize="10" fill="#6B6B63">10,000 synthetic</text>
+  <text x="34" y="107" fontSize="10" fill="#6B6B63">healthcare Q&amp;A pairs</text>
+
+  <rect x="234" y="50" width="190" height="70" rx="10" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="248" y="76" fontSize="13" fill="#1A1A18" fontWeight="700">Dedupe filter</text>
+  <text x="248" y="94" fontSize="10" fill="#6B6B63">6,444 unique</text>
+  <text x="248" y="107" fontSize="10" fill="#6B6B63">questions remain</text>
+
+  <rect x="448" y="50" width="190" height="70" rx="10" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="462" y="76" fontSize="13" fill="#1A1A18" fontWeight="700">Train / test / val split</text>
+  <text x="462" y="94" fontSize="10" fill="#6B6B63">5,155 · 645 · 644</text>
+  <text x="462" y="107" fontSize="10" fill="#6B6B63">samples respectively</text>
+
+  <rect x="662" y="50" width="190" height="70" rx="10" fill="#FFFFFF" stroke="#D8D4CC" strokeWidth="2"/>
+  <text x="676" y="76" fontSize="13" fill="#1A1A18" fontWeight="700">LoRA fine-tune</text>
+  <text x="676" y="94" fontSize="10" fill="#6B6B63">on MLX, 4 models</text>
+  <text x="676" y="107" fontSize="10" fill="#6B6B63">trained independently</text>
+
+  <path d="M210,85 H234" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#pArrow)"/>
+  <path d="M424,85 H448" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#pArrow)"/>
+  <path d="M638,85 H662" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#pArrow)"/>
+  <path d="M757,120 V145" fill="none" stroke="#6B6B63" strokeWidth="1.5"/>
+  <path d="M757,145 H83" fill="none" stroke="#6B6B63" strokeWidth="1.5"/>
+  <path d="M83,145 V160" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#pArrow)"/>
+  <path d="M297,145 V160" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#pArrow)"/>
+  <path d="M511,145 V160" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#pArrow)"/>
+  <path d="M757,145 V160" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#pArrow)"/>
+
+  <rect x="20" y="160" width="190" height="50" rx="8" fill="#FFFFFF" stroke="#C2522D"/>
+  <text x="32" y="190" fontSize="10.5" fill="#1A1A18">Gemma-2-9B · 4bit</text>
+  <rect x="234" y="160" width="190" height="50" rx="8" fill="#FFFFFF" stroke="#C2522D"/>
+  <text x="246" y="190" fontSize="10.5" fill="#1A1A18">Llama-3.2-3B Instruct</text>
+  <rect x="448" y="160" width="190" height="50" rx="8" fill="#FFFFFF" stroke="#C2522D"/>
+  <text x="460" y="190" fontSize="10.5" fill="#1A1A18">Mistral-7B v0.3</text>
+  <rect x="662" y="160" width="190" height="50" rx="8" fill="#FFFFFF" stroke="#C2522D"/>
+  <text x="674" y="190" fontSize="10.5" fill="#1A1A18">Qwen2-7B · 8bit</text>
+
+  <path d="M115,210 V222 H757 V210" fill="none" stroke="#6B6B63" strokeWidth="1.5"/>
+  <path d="M436,222 V240" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#pArrow)"/>
+
+  <rect x="20" y="240" width="860" height="46" rx="10" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="450" y="268" fontSize="12" fill="#1A1A18" textAnchor="middle" fontWeight="700">Evaluate: 50 held-out validation questions, base model vs. fine-tuned, same prompts</text>
+</svg>
+
+The four models weren't chosen arbitrarily — they span three model families (Llama, Mistral, Qwen, Gemma) and three different precision/quantization setups (4-bit, full-precision, 8-bit), so the comparison stresses architecture and quantization as variables alongside fine-tuning itself, not just "does fine-tuning help" in isolation.
+
+## Full results
+
+Every model moved on at least one axis, but no two models moved the same way. The full metrics, including question-repetition and bullet-point usage (not shown in the earlier summary), make that divergence explicit:
+
+| Model | Size | Direct answer | Generation time | Length | Question repetition | Numbered lists | Bold text | Bullet points |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Llama-3.2-3B | 3B | 6.0% → 36.0% (+30.0) | 6.95s → 7.06s (+1.6%) | +2.8% | −8.0% | +18.0% | −34.0% | −24.0% |
+| Mistral-7B | 7B | 10.0% → 30.0% (+20.0) | 15.46s → 12.02s (−22.2%) | −22.6% | 0.0% | −4.0% | +12.0% | −2.0% |
+| Gemma-2-9B | 9B | 0.0% → 0.0% (0.0) | 6.24s → 5.95s (−4.7%) | −2.7% | 0.0% | +6.0% | 0.0% | +4.0% |
+| Qwen2-7B | 7B | 42.0% → 42.0% (0.0) | 7.91s → 7.25s (−8.3%) | −9.1% | 0.0% | −6.0% | −10.0% | −2.0% |
+
+## Direct-answer rate: the clearest signal
+
+The most interpretable metric is how often a model led with a direct answer instead of general preamble. Llama-3.2-3B jumped 30 points; Mistral-7B jumped 20. Gemma-2-9B didn't move at all, and Qwen2-7B was already answering directly 42% of the time before fine-tuning and stayed there.
+
+<svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="directAnswerDiagramTitle directAnswerDiagramDesc" fontFamily="'JetBrains Mono','Fira Code',Consolas,monospace" style={{width: "100%", height: "auto"}}>
+  <title id="directAnswerDiagramTitle">Direct answer percentage, base vs fine-tuned</title>
+  <desc id="directAnswerDiagramDesc">Bar chart. Llama-3.2-3B: 6 percent base, 36 percent fine-tuned. Mistral-7B: 10 percent base, 30 percent fine-tuned. Gemma-2-9B: 0 percent base, 0 percent fine-tuned. Qwen2-7B: 42 percent base, 42 percent fine-tuned.</desc>
+  <rect x="0" y="0" width="900" height="300" fill="#FAF9F7"/>
+  <rect x="20" y="20" width="14" height="14" fill="#D8D4CC"/>
+  <text x="40" y="32" fontSize="11" fill="#6B6B63">Base model</text>
+  <rect x="150" y="20" width="14" height="14" fill="#C2522D"/>
+  <text x="170" y="32" fontSize="11" fill="#6B6B63">Fine-tuned</text>
+  <line x1="20" y1="260" x2="880" y2="260" stroke="#D8D4CC" strokeWidth="1"/>
+
+  <rect x="45" y="231" width="65" height="29" fill="#D8D4CC"/>
+  <text x="77" y="224" fontSize="11" fill="#1A1A18" textAnchor="middle">6%</text>
+  <rect x="120" y="89" width="65" height="171" fill="#C2522D"/>
+  <text x="152" y="82" fontSize="11" fill="#1A1A18" textAnchor="middle">36%</text>
+  <text x="115" y="278" fontSize="10.5" fill="#6B6B63">Llama-3.2-3B</text>
+
+  <rect x="269" y="212" width="65" height="48" fill="#D8D4CC"/>
+  <text x="301" y="205" fontSize="11" fill="#1A1A18" textAnchor="middle">10%</text>
+  <rect x="344" y="117" width="65" height="143" fill="#C2522D"/>
+  <text x="376" y="110" fontSize="11" fill="#1A1A18" textAnchor="middle">30%</text>
+  <text x="330" y="278" fontSize="10.5" fill="#6B6B63">Mistral-7B</text>
+
+  <text x="558" y="255" fontSize="11" fill="#6B6B63" textAnchor="middle">0%</text>
+  <text x="633" y="255" fontSize="11" fill="#6B6B63" textAnchor="middle">0%</text>
+  <text x="565" y="278" fontSize="10.5" fill="#6B6B63">Gemma-2-9B</text>
+
+  <rect x="717" y="60" width="65" height="200" fill="#D8D4CC"/>
+  <text x="749" y="53" fontSize="11" fill="#1A1A18" textAnchor="middle">42%</text>
+  <rect x="792" y="60" width="65" height="200" fill="#C2522D"/>
+  <text x="824" y="53" fontSize="11" fill="#1A1A18" textAnchor="middle">42%</text>
+  <text x="783" y="278" fontSize="10.5" fill="#6B6B63">Qwen2-7B</text>
+</svg>
+
+Mistral-7B got both more accurate *and* nearly 22% faster — the fine-tuned version cut 60–70% of the verbose preamble the base model produced, which is why generation time dropped even though nothing about the hardware or decoding settings changed. Llama-3.2-3B moved structurally in the opposite direction: fine-tuning pushed it toward numbered lists (+18%) and away from bold text (−34%) and bullet points (−24%), a shift toward the kind of organized, scannable formatting that reads well in a healthcare chat interface rather than dense markdown.
+
+## Overall improvement score: size didn't predict the winner
+
+We combined direct-answer improvement, response structure, generation efficiency, and question-repetition reduction into a single weighted score per model. Llama-3.2-3B — the smallest model in the study, at 3B parameters — came out on top by a wide margin, more than the 7B and 9B models' scores combined.
+
+<svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="scoreDiagramTitle scoreDiagramDesc" fontFamily="'JetBrains Mono','Fira Code',Consolas,monospace" style={{width: "100%", height: "auto"}}>
+  <title id="scoreDiagramTitle">Overall improvement score after fine-tuning</title>
+  <desc id="scoreDiagramDesc">Bar chart of composite improvement scores: Llama-3.2-3B 108.2, Mistral-7B 83.6, Gemma-2-9B 12.0, Qwen2-7B 1.8.</desc>
+  <rect x="0" y="0" width="900" height="300" fill="#FAF9F7"/>
+  <line x1="20" y1="260" x2="880" y2="260" stroke="#D8D4CC" strokeWidth="1"/>
+
+  <rect x="65" y="63" width="100" height="197" rx="6" fill="#C2522D"/>
+  <text x="115" y="52" fontSize="13" fill="#1A1A18" fontWeight="700" textAnchor="middle">108.2</text>
+  <text x="115" y="278" fontSize="10.5" fill="#6B6B63" textAnchor="middle">Llama-3.2-3B — 3B</text>
+
+  <rect x="279" y="108" width="100" height="152" rx="6" fill="#D4A574"/>
+  <text x="329" y="97" fontSize="13" fill="#1A1A18" fontWeight="700" textAnchor="middle">83.6</text>
+  <text x="329" y="278" fontSize="10.5" fill="#6B6B63" textAnchor="middle">Mistral-7B — 7B</text>
+
+  <rect x="493" y="238" width="100" height="22" rx="6" fill="#D8D4CC"/>
+  <text x="543" y="228" fontSize="13" fill="#1A1A18" fontWeight="700" textAnchor="middle">12.0</text>
+  <text x="543" y="278" fontSize="10.5" fill="#6B6B63" textAnchor="middle">Gemma-2-9B — 9B</text>
+
+  <rect x="707" y="257" width="100" height="3" rx="1.5" fill="#D8D4CC"/>
+  <text x="757" y="247" fontSize="13" fill="#1A1A18" fontWeight="700" textAnchor="middle">1.8</text>
+  <text x="757" y="278" fontSize="10.5" fill="#6B6B63" textAnchor="middle">Qwen2-7B — 7B</text>
+</svg>
+
+That inversion — the smallest model improving the most — is the paper's central empirical claim: parameter count is not the primary determinant of fine-tuning payoff. What predicts payoff instead is how much headroom a base model has to begin with, and Llama-3.2-3B, as the next section shows, had the most obvious failure mode to fix.
+
+## The degenerate loop: what a 3B base model actually does wrong
+
+Question-repetition reduction is the least glamorous metric in the table, but it's the most concrete evidence of what fine-tuning actually fixed. Asked *"Can AI tools provide real-time feedback during clinical procedures to improve outcomes?"*, the **base** Llama-3.2-3B model produced this:
+
+> "AI tools can provide real-time feedback during clinical procedures to improve outcomes. AI tools can provide real-time feedback during clinical procedures to improve outcomes. AI tools can provide real-time feedback during clinical procedures to improve outcomes. AI tools can provide real-time feedback during clinical procedures to improve outcomes. AI tools can provide…" *(continues verbatim until the token limit)*
+
+That's a degenerate repetition loop, not an answer — a known small-model failure mode, and one that's disqualifying for a product that has to hold a clinician's or patient's trust. The **fine-tuned** version of the same model, same prompt:
+
+> "Yes, AI tools can offer real-time feedback during clinical procedures. These tools use machine learning algorithms to analyze data from various sources such as images, videos, and sensor readings. They can help healthcare professionals identify potential issues or errors before they become critical, thereby improving patient safety and outcomes."
+
+— followed by four concrete categories (computer vision, wearables, virtual assistants, robotics), each with a one-line explanation. Only Llama-3.2-3B showed any question-repetition change in the study (−8%); the other three models never repeated in the first place. That's the real story behind its 108.2 improvement score: fine-tuning didn't just make Llama-3.2-3B *more accurate*, it fixed a structural failure mode that no amount of prompt engineering reliably resolves.
+
+## Where fine-tuning didn't move the needle
+
+A rigorous comparison has to report the null results too. Gemma-2-9B's overall improvement score was 12.0, and Qwen2-7B's was 1.8 — both fine-tuned on the identical dataset and recipe as Llama-3.2-3B and Mistral-7B. For Qwen2-7B specifically, base and fine-tuned responses were frequently near-identical in substance. Asked *"Do AI systems help streamline electronic health record (EHR) management?"*, both versions opened with "Yes, AI systems can help streamline EHR management by automating tasks such as data entry, documenta…" — the fine-tuned model trimmed some verbosity but didn't change what it said.
+
+The likely explanation: both Gemma-2-9B and Qwen2-7B were already well-aligned instruction-tuned checkpoints with no repetition problem and a reasonable direct-answer baseline (Qwen2-7B in particular was already answering directly 42% of the time). There was less broken behavior for the same LoRA recipe to fix. That's a meaningful negative result on its own — it suggests fine-tuning payoff correlates with how much headroom a base model has, not with how large it is.
+
+## Limitations and what's next
+
+The paper is explicit about scope: this is a 50-question held-out validation set, one synthetic dataset generated by a single model (Phi-4), and one fine-tuning recipe (LoRA on MLX) applied uniformly across four architectures rather than tuned per-model. Two directions follow directly from that:
+
+- **Retrieval-augmented generation.** Fine-tuning shapes *how* a model answers; it doesn't govern *what facts* it's allowed to answer with. Layering RAG on top would let a fine-tuned model stay current and grounded instead of relying on parametric memory for medical facts, which is the harder reliability problem in a domain that changes as fast as healthcare guidance does.
+- **Generalizability across subdomains and populations.** A synthetic Q&A set built around one framing ("the future impact of LLMs in healthcare") doesn't establish whether the same fine-tuning payoff holds for other healthcare subdomains or across more diverse patient populations and phrasing styles — that's flagged directly as future work.
 
 ## Why it matters
 
-This connects directly to the local-first, infrastructure-minded thesis running through the rest of this site: you don't always need the biggest model — you need the *right* model for the domain, tuned well and run cheaply. Domain-focused fine-tuning is one of the more practical levers available for teams that can't afford to run frontier-scale models for every request.
+This connects directly to the local-first, infrastructure-minded thesis running through the rest of this site: you don't always need the biggest model — you need the *right* model for the domain, tuned well and run cheaply. A 3B model that stops degenerating and starts leading with the answer beats a larger model that never had that failure mode fixed for it, and LoRA fine-tuning on MLX makes that adaptation cheap enough to run on a laptop rather than a cluster. That's the same efficiency argument behind [quecto](/quecto/) and the rest of the infrastructure work on this site, applied to a domain — healthcare — where getting the answer wrong isn't just an inconvenience.
+
+_Banner photo by [8machine_](https://unsplash.com/@8machine_) on [Unsplash](https://unsplash.com/photos/a-tablet-with-medical-symbols-on-it-and-a-stethoscope-next-to-it-gtrQCS8-tzo)._
 
 ## Related reading
 
 - [AI Research Explained](/ai-research/) — the section this explainer lives in, with more papers and experiments on the way
+- [What Is an AI Agent Harness?](/ai-research/what-is-an-ai-agent-harness/) — the systems layer that decides how a fine-tuned model like this actually gets deployed and evaluated in production
 - [Field Notes](/field-notes/) — infrastructure-focused notes on memory, routing, and local inference
