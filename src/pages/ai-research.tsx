@@ -109,6 +109,31 @@ engineering notes`}
         </ConsoleShell>
 
         <SectionBlock
+          eyebrow="Foundational Guides"
+          title="Start here"
+          description="Systems-level explainers that teach the fundamentals behind the research below."
+        >
+          <ConsoleCard title="Guide" accent={consoleColors.accent}>
+            <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [3, 4], mt: 0, mb: 2, lineHeight: 1.15 }}>
+              What Is an AI Agent Harness?
+            </Heading>
+            <Text sx={{ color: consoleColors.soft, fontSize: 1, mb: 2 }}>
+              A Systems Guide to Building and Evaluating Reliable AI Agents
+            </Text>
+            <Text sx={{ color: consoleColors.muted, mb: 3 }}>
+              How models, tools, memory, context, verification, and runtime policies combine to determine agent
+              behavior — with examples from QuECTO, BudgetBench, and AgentABI.
+            </Text>
+            <Link
+              to="/ai-research/what-is-an-ai-agent-harness/"
+              sx={{ color: consoleColors.accent, fontFamily: `monospace`, textDecoration: `none` }}
+            >
+              Read the guide
+            </Link>
+          </ConsoleCard>
+        </SectionBlock>
+
+        <SectionBlock
           eyebrow="My Papers"
           title="Published and in-progress research"
           description="Peer-reviewed and academic work I've authored, with more papers in progress or submitted to arXiv on the way."

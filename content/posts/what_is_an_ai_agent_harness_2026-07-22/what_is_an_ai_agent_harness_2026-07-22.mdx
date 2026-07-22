@@ -1,0 +1,151 @@
+---
+title: "What Is an AI Agent Harness? A Systems Guide to Building and Evaluating Reliable AI Agents"
+description: "Learn what an AI agent harness is, how it controls tools, context, memory, retries, verification, cost, and reliability, and how agent harnesses can be evaluated systematically."
+date: 2026-07-22
+slug: "/ai-research/what-is-an-ai-agent-harness"
+canonicalUrl: "https://adityakarnam.com/ai-research/what-is-an-ai-agent-harness/"
+keywords:
+  [
+    "ai agent harness",
+    "agent runtime",
+    "agent evaluation",
+    "quecto",
+    "budgetbench",
+    "agentabi",
+    "ai research explained",
+    "agent architecture",
+    "llm agents",
+    "agent reliability",
+  ]
+---
+
+_A foundational guide in [AI Research Explained](/ai-research/) — how models, tools, memory, context, verification, and runtime policies combine to determine agent behavior, with examples from QuECTO, BudgetBench, and AgentABI._
+
+Most discussions about AI agents begin with the model. Which model reasons better? Which model writes better code? Which model tops the latest benchmark? But users never interact with a model in isolation. They interact with a system that constructs context, exposes tools, executes commands, preserves state, handles failures, verifies results, and decides when the work is complete. That surrounding system is the agent harness — and it may determine agent performance as much as the model itself.
+
+## The core idea
+
+A model generates possible actions. The harness turns those actions into a functioning software system.
+
+The full loop looks like this:
+
+```text
+Model → Context → Reasoning → Tool execution → Observation → Verification → Recovery → Final result
+```
+
+Two systems using the same model can produce very different results because the harness controls what the model sees, what it can do, how failures are handled, and when execution stops.
+
+## 1. What is an AI agent harness?
+
+An AI agent harness is the software layer that surrounds a language model and manages its interaction with tools, memory, files, environments, users, and evaluators.
+
+Claude Code, Codex, coding-agent frameworks, browser agents, and research agents all contain some form of harness. The model is swappable; the harness is what actually decides how an agent behaves in practice.
+
+## 2. The anatomy of an agent harness
+
+Every harness, regardless of domain, breaks down into eight components:
+
+1. **Model interface** — provider, model, reasoning mode and parameters
+2. **Context manager** — instructions, history, retrieved files and compression
+3. **Tool layer** — schemas, permissions, execution and error responses
+4. **State and memory** — what persists across steps or sessions
+5. **Control loop** — observe, reason, act and repeat
+6. **Verification layer** — tests, judges, linters and success checks
+7. **Recovery policy** — retries, replanning and fallback models
+8. **Budget manager** — tokens, turns, time and monetary cost
+
+Swap any one of these and you get a different agent, even with an identical model underneath.
+
+## 3. Why the same model behaves differently across harnesses
+
+Consider a simple controlled comparison:
+
+- Same model
+- Same coding task
+- Same repository
+- Different tool descriptions
+- Different context policy
+- Different test feedback
+- Different retry limits
+
+One harness finishes successfully. Another loops, edits the wrong file, or stops prematurely. Nothing about the model changed — only the system around it did.
+
+This is the key shift: agent performance is an **emergent systems property**, not a property of the model alone.
+
+## 4. A minimal harness versus a research-grade harness
+
+| Minimal harness | Research-grade harness |
+| --- | --- |
+| Sends prompt to model | Versions the complete execution contract |
+| Exposes tools | Records every tool request and response |
+| Stops on model response | Uses explicit completion criteria |
+| Reports pass or fail | Classifies failure modes |
+| Measures token usage | Measures cost, latency and reliable completion |
+| Runs once | Repeats trials and reports variance |
+
+Most agent demos live in the left column. Most production systems need the right column.
+
+## 5. QuECTO as a running example
+
+I built QuECTO to study agent behavior as a system rather than treating the model as the only experimental variable. It's designed to compare:
+
+- Models and providers
+- Reasoning configurations
+- Tool implementations
+- Harness policies
+- Execution budgets
+- Failure and recovery behavior
+- Behavioral changes under runtime substitution
+
+A single trial traces through the same loop described above, but every stage is recorded:
+
+```text
+Task
+  ↓
+Versioned execution contract
+  ↓
+Agent runtime
+  ↓
+Model and tool interactions
+  ↓
+Verifier
+  ↓
+Outcome, cost, latency and behavior trace
+```
+
+That trace is what makes harness differences legible instead of anecdotal.
+
+## 6. BudgetBench: why budget is part of the harness
+
+BudgetBench began from a related observation: memory strategies cannot be compared fairly without accounting for the resource budget under which they operate.
+
+The "best" memory or reasoning strategy can change depending on:
+
+- Context-window limits
+- Token budget
+- Hardware constraints
+- Latency requirements
+- Local versus hosted inference
+
+A strategy that wins under a generous token budget can lose badly under a constrained one — which means budget isn't a side detail, it's part of the harness definition itself.
+
+## 7. From harness evaluation to AgentABI
+
+QuECTO measures agent-runtime behavior. AgentABI asks a different question: whether one runtime can safely replace another without introducing behavioral breaking changes.
+
+That question comes up constantly in practice — replacing one model with another, one provider with another, one reasoning mode with another, one harness version with another, or a hosted model with a local one.
+
+The important question isn't only:
+
+> "Does the new system pass the benchmark?"
+
+It's also:
+
+> "Does it preserve the behavior that users and downstream systems depend on?"
+
+That distinction — benchmark passing versus behavioral compatibility — is where harness evaluation is heading next.
+
+## Related reading
+
+- [AI Research Explained](/ai-research/) — the section this guide lives in, with more papers and experiments on the way
+- [Field Notes](/field-notes/) — infrastructure-focused notes on memory, routing, and local inference
