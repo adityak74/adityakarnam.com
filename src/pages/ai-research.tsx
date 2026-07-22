@@ -22,6 +22,7 @@ type MyPaper = {
   detail: string
   url: string
   explainerSlug?: string
+  pdfUrl?: string
 }
 
 const myPapers: MyPaper[] = [
@@ -43,6 +44,7 @@ const myPapers: MyPaper[] = [
     detail:
       "A genetic algorithm framework for community detection in complex networks that removes structural assumptions and requires no prior knowledge of community count, applied to benchmark datasets and Alzheimer's disease genetic networks.",
     url: "https://irl.umsl.edu/thesis/331/",
+    pdfUrl: "/papers/efficient-reduced-bias-genetic-algorithm-community-detection.pdf",
   },
 ]
 
@@ -137,6 +139,15 @@ engineering notes`}
                     >
                       Read the explainer
                     </Link>
+                  ) : null}
+                  {paper.pdfUrl ? (
+                    <a
+                      href={paper.pdfUrl}
+                      download
+                      sx={{ color: consoleColors.accentAlt, fontFamily: `monospace`, textDecoration: `none` }}
+                    >
+                      Download PDF
+                    </a>
                   ) : null}
                 </Box>
               </ConsoleCard>
