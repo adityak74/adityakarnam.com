@@ -1,0 +1,47 @@
+---
+title: "MEDFIT-LLM Explained: Fine-Tuning Small Language Models for Medical Tasks"
+description: "A plain-language walkthrough of my paper MEDFIT-LLM: how domain-focused fine-tuning lets small language models compete with much larger general-purpose models on medical tasks."
+date: 2026-07-22
+slug: "/medfit-llm-explained"
+canonicalUrl: "https://adityakarnam.com/medfit-llm-explained/"
+keywords:
+  [
+    "medfit-llm",
+    "small language models",
+    "fine-tuning",
+    "medical ai",
+    "domain adaptation",
+    "llm research",
+    "ai research explained",
+    "healthcare ai",
+  ]
+---
+
+_The first entry in [AI Research Explained](/ai-research/) — my own papers and other researchers' work, broken down in plain language._
+
+## The paper
+
+[**MEDFIT-LLM: Medical Enhancements through Domain-Focused Fine Tuning of Small Language Models**](https://ieeexplore.ieee.org/abstract/document/11042816), published at the 2025 International Conference on Research Methodologies in Knowledge Management, AI and Telecommunication Engineering. It's picked up 5 citations since publication.
+
+> **TL;DR:** General-purpose LLMs are large, expensive, and not built for medical language. MEDFIT-LLM shows that fine-tuning a *small* language model on domain-focused medical data closes most of that gap — at a fraction of the compute cost of running a frontier model.
+
+## The problem it addresses
+
+Large language models are good generalists, but medical text has its own vocabulary, abbreviations, and reasoning patterns that general training data underrepresents. The usual fix is to reach for a bigger model or heavier prompting — both of which raise cost and latency without addressing the underlying mismatch between training data and domain.
+
+Small language models are cheaper to run and easier to deploy on constrained infrastructure, but out of the box they underperform on specialized domains like medicine. The open question: how much of that gap can be closed with focused fine-tuning instead of raw scale?
+
+## The approach
+
+MEDFIT-LLM's core idea is domain-focused fine-tuning: rather than training on broad, generic corpora, the model is adapted specifically on medical-domain data so its parameters concentrate on the vocabulary, structure, and reasoning patterns that matter for medical tasks.
+
+The result is a small model that punches above its parameter count on medical evaluation tasks — not by getting bigger, but by getting more targeted.
+
+## Why it matters
+
+This connects directly to the local-first, infrastructure-minded thesis running through the rest of this site: you don't always need the biggest model — you need the *right* model for the domain, tuned well and run cheaply. Domain-focused fine-tuning is one of the more practical levers available for teams that can't afford to run frontier-scale models for every request.
+
+## Related reading
+
+- [AI Research Explained](/ai-research/) — the section this explainer lives in, with more papers and experiments on the way
+- [Field Notes](/field-notes/) — infrastructure-focused notes on memory, routing, and local inference
