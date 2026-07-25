@@ -113,24 +113,45 @@ engineering notes`}
           title="Start here"
           description="Systems-level explainers that teach the fundamentals behind the research below."
         >
-          <ConsoleCard title="Guide" accent={consoleColors.accent}>
-            <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [3, 4], mt: 0, mb: 2, lineHeight: 1.15 }}>
-              What Is an AI Agent Harness?
-            </Heading>
-            <Text sx={{ color: consoleColors.soft, fontSize: 1, mb: 2 }}>
-              A Systems Guide to Building and Evaluating Reliable AI Agents
-            </Text>
-            <Text sx={{ color: consoleColors.muted, mb: 3 }}>
-              How models, tools, memory, context, verification, and runtime policies combine to determine agent
-              behavior — with examples from QuECTO, BudgetBench, and AgentABI.
-            </Text>
-            <Link
-              to="/ai-research/what-is-an-ai-agent-harness/"
-              sx={{ color: consoleColors.accent, fontFamily: `monospace`, textDecoration: `none` }}
-            >
-              Read the guide
-            </Link>
-          </ConsoleCard>
+          <Grid sx={{ gridTemplateColumns: [`1fr`, `repeat(2, minmax(0, 1fr))`], gap: 3 }}>
+            <ConsoleCard title="Guide" accent={consoleColors.accent}>
+              <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [3, 4], mt: 0, mb: 2, lineHeight: 1.15 }}>
+                What Is an AI Agent Harness?
+              </Heading>
+              <Text sx={{ color: consoleColors.soft, fontSize: 1, mb: 2 }}>
+                A Systems Guide to Building and Evaluating Reliable AI Agents
+              </Text>
+              <Text sx={{ color: consoleColors.muted, mb: 3 }}>
+                How models, tools, memory, context, verification, and runtime policies combine to determine agent
+                behavior — with examples from QuECTO, BudgetBench, and AgentABI.
+              </Text>
+              <Link
+                to="/ai-research/what-is-an-ai-agent-harness/"
+                sx={{ color: consoleColors.accent, fontFamily: `monospace`, textDecoration: `none` }}
+              >
+                Read the guide
+              </Link>
+            </ConsoleCard>
+
+            <ConsoleCard title="Build Series · Part 2" accent={consoleColors.accentAlt}>
+              <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [3, 4], mt: 0, mb: 2, lineHeight: 1.15 }}>
+                Building QuECTO
+              </Heading>
+              <Text sx={{ color: consoleColors.soft, fontSize: 1, mb: 2 }}>
+                From Minimal Agent Harness to Evaluable Coding Agent
+              </Text>
+              <Text sx={{ color: consoleColors.muted, mb: 3 }}>
+                How QuECTO grew into a small but measurable coding-agent runtime with reasoning controls, telemetry,
+                subagents, multimodal input, releases, and native evals.
+              </Text>
+              <Link
+                to="/ai-research/building-quecto-from-minimal-harness-to-evaluable-agent/"
+                sx={{ color: consoleColors.accentAlt, fontFamily: `monospace`, textDecoration: `none` }}
+              >
+                Read part two
+              </Link>
+            </ConsoleCard>
+          </Grid>
         </SectionBlock>
 
         <SectionBlock
