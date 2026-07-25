@@ -289,6 +289,19 @@ The companion-crate boundary follows directly from that:
 | OpenTelemetry | optional `otel` feature in `quecto-agent` | Tracing is valuable, but the default build should not pay for exporter/runtime machinery. |
 | Native evals | `quecto-eval` | Evaluation should run the agent as a subject and consume traces, not become part of runtime transport. |
 
+The decision trail is visible in the `docs/superpowers` folder itself:
+
+| Decision doc | Architectural conclusion |
+| --- | --- |
+| `2026-07-09-full-harness-reference.md` | Capture the maximal coding-agent harness first, so QuECTO can choose what to compress and what to exclude. |
+| `2026-07-09-quecto-harness-design.md` | Define `quecto` as the model adapter only: arbitrary JSON in, arbitrary JSON out, with convenience helpers layered above the raw primitive. |
+| `2026-07-10-quecto-core.md` | Lock the core implementation constraints: two source files, two dependencies, four public functions, no async runtime, no framework. |
+| `2026-07-10-quecto-agent-architecture.md` | Move the loop, tools, sandbox, context, verification, renderer, and SQLite sessions into `quecto-agent`. |
+| `2026-07-10-quecto-agent-flavors-design.md` | Keep extensibility above the core by making flavors configure the agent library and default binary. |
+| `2026-07-15-quecto-mcp-design.md` | Put MCP in a separate library and optional agent feature so `tokio`, JSON-RPC transports, and server trust never enter the default core. |
+| `2026-07-14-quecto-agent-otel-design.md` | Keep tracing behind an optional feature, with exporter machinery outside the synchronous default path. |
+| `2026-07-19-quecto-evals-sota-design.md` | Run evaluation as an external harness around `quecto-agent`, using trace files and graders instead of bloating runtime transport. |
+
 This is also why later specs keep repeating the same pattern. Reasoning modes live at request construction, not in the agent loop. Provider-specific Anthropic details live in `provider.rs`, not in the core. Markdown, Mermaid, and spinner behavior stay in the renderer, not in the model layer. MCP isolates async transport behind a synchronous public API and a feature flag. OTEL can spawn a small background runtime only when tracing is enabled.
 
 So QuECTO's architecture was not "start tiny, then bolt everything on." It was closer to:
