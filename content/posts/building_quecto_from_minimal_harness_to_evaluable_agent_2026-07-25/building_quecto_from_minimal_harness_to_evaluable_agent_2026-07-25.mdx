@@ -252,6 +252,55 @@ There is a second important separation: tool-call transport and tool execution a
 
 That is the technical version of "minimal but observable": the harness avoids a large framework core, but it does not avoid boundaries. It names them.
 
+## How the lean-core decision was made
+
+The important architectural move was made before the first implementation task: define the maximal harness, then compress against it.
+
+QuECTO's `docs/superpowers` notes include a full coding-agent harness reference: CLI session, model adapter, instruction loader, repository context engine, tool registry, coding tools, agent loop, edit engine, sandbox, verification loop, session state, renderer, MCP, observability, and evaluation. Instead of putting that whole list into the `quecto` crate, the design asks a stricter question:
+
+> Which of these responsibilities must live in the smallest possible core?
+
+The answer was exactly one: **model transport**.
+
+That is why the core implementation plan was so constrained:
+
+- Four public functions: `quecto_raw`, `quecto_stream`, `quecto_to`, `quecto`
+- Two source files: `src/lib.rs` and `src/main.rs`
+- Two direct dependencies: `ureq` and `serde_json`
+- No `tokio`
+- No `reqwest`
+- No CLI framework
+- No custom error enum
+- No typed provider abstraction in the core
+- Public `serde_json::Value` instead of a bespoke model-response struct
+
+Those constraints are not arbitrary size golf. They are architectural pressure. `serde_json::Value` stays in the public API because `quecto_raw` is supposed to carry any provider-shaped JSON body and return the complete JSON response. If an agent wants tool calls, usage metadata, reasoning traces, or provider-specific fields, the core should preserve them rather than prematurely normalize them away.
+
+The companion-crate boundary follows directly from that:
+
+| Harness concern | Where it went | Why it stayed out of `quecto` core |
+| --- | --- | --- |
+| Tool loop and step limits | `quecto-agent` | Requires state, policies, renderer, repeated-action guards, and task outcomes. |
+| Tool schemas and dispatch | `quecto-agent` | The model transport can carry `tools`, but execution belongs to the runtime. |
+| Approval and sandbox policy | `quecto-agent` | Security policy depends on repo paths, interactivity, denylist rules, and command execution. |
+| Session persistence | `quecto-agent` | Resume, undo, diff, and chat history require SQLite and file-change recording. |
+| Flavors and trust | `quecto-agent` | Project config can declare commands and loosen approvals, so it needs TOFU and explicit precedence. |
+| MCP | `quecto-mcp` / optional agent feature | MCP needs transports, JSON-RPC, server trust, and sometimes async internals; none belong in the default core. |
+| OpenTelemetry | optional `otel` feature in `quecto-agent` | Tracing is valuable, but the default build should not pay for exporter/runtime machinery. |
+| Native evals | `quecto-eval` | Evaluation should run the agent as a subject and consume traces, not become part of runtime transport. |
+
+This is also why later specs keep repeating the same pattern. Reasoning modes live at request construction, not in the agent loop. Provider-specific Anthropic details live in `provider.rs`, not in the core. Markdown, Mermaid, and spinner behavior stay in the renderer, not in the model layer. MCP isolates async transport behind a synchronous public API and a feature flag. OTEL can spawn a small background runtime only when tracing is enabled.
+
+So QuECTO's architecture was not "start tiny, then bolt everything on." It was closer to:
+
+1. Draw the full harness.
+2. Assign each responsibility a home.
+3. Let the core own only the JSON transport primitive.
+4. Let the agent own policy-rich execution.
+5. Let evals observe the agent from outside.
+
+That is the real lean-core decision: the core remains small because the system already knows where complexity is allowed to live.
+
 ## 1. Keep the core boring
 
 The `quecto` crate is intentionally narrow: send a prompt to an OpenAI-compatible endpoint and return a response, buffered or streamed. It can talk to local systems like Ollama, LM Studio, and vLLM, or to cloud endpoints with the same API shape.
