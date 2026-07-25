@@ -95,6 +95,163 @@ There are three phases hiding inside that diagram:
 
 The third phase is where a harness becomes research infrastructure.
 
+## Technical architecture
+
+QuECTO's current architecture is a deliberately layered Rust workspace. The core crate stays a synchronous JSON transport primitive; the agent crate owns the control loop, policy, tools, state, rendering, and provider normalization; the eval crate runs the agent as an instrumented subject under repeatable tasks.
+
+<svg viewBox="0 0 980 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="technicalArchitectureTitle technicalArchitectureDesc" fontFamily="'JetBrains Mono','Fira Code',Consolas,monospace" style={{width: "100%", height: "auto"}}>
+  <title id="technicalArchitectureTitle">QuECTO technical architecture</title>
+  <desc id="technicalArchitectureDesc">A detailed architecture diagram showing quecto core transport underneath quecto-agent. Inputs such as CLI flags, environment variables, flavors, AGENTS instructions, and MCP servers feed configuration, context, and tools into the agent. The agent loop builds messages, calls provider adapters, executes normalized tool calls through policy and sandbox gates, records sessions and telemetry, and is driven by quecto-eval for repeatable evaluation.</desc>
+  <rect x="0" y="0" width="980" height="640" fill="#FAF9F7"/>
+  <defs>
+    <marker id="archArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6B6B63"/>
+    </marker>
+    <marker id="archAccentArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#C2522D"/>
+    </marker>
+    <marker id="archDataArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#32706C"/>
+    </marker>
+  </defs>
+
+  <text x="22" y="30" fontSize="12" fill="#C2522D" fontWeight="700">QUECTO TECHNICAL ARCHITECTURE · SYNC CORE, POLICY-RICH AGENT, REPLAYABLE EVALS</text>
+  <line x1="22" y1="42" x2="958" y2="42" stroke="#D8D4CC" strokeWidth="1"/>
+
+  <rect x="22" y="70" width="180" height="112" rx="10" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="36" y="96" fontSize="12" fill="#1A1A18" fontWeight="700">Configuration inputs</text>
+  <text x="36" y="120" fontSize="10" fill="#6B6B63">CLI flags &gt; env vars</text>
+  <text x="36" y="136" fontSize="10" fill="#6B6B63">flavor.toml manifests</text>
+  <text x="36" y="152" fontSize="10" fill="#6B6B63">trust hashes, max steps</text>
+  <text x="36" y="168" fontSize="10" fill="#6B6B63">reasoning + approval mode</text>
+
+  <rect x="22" y="212" width="180" height="112" rx="10" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="36" y="238" fontSize="12" fill="#1A1A18" fontWeight="700">Context inputs</text>
+  <text x="36" y="262" fontSize="10" fill="#6B6B63">AGENTS.md / CLAUDE.md</text>
+  <text x="36" y="278" fontSize="10" fill="#6B6B63">repo root, git snapshot</text>
+  <text x="36" y="294" fontSize="10" fill="#6B6B63">chat history, observations</text>
+  <text x="36" y="310" fontSize="10" fill="#6B6B63">optional image payloads</text>
+
+  <rect x="22" y="354" width="180" height="112" rx="10" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="36" y="380" fontSize="12" fill="#1A1A18" fontWeight="700">External tool sources</text>
+  <text x="36" y="404" fontSize="10" fill="#6B6B63">built-in Rust tools</text>
+  <text x="36" y="420" fontSize="10" fill="#6B6B63">MCP STDIO / HTTP</text>
+  <text x="36" y="436" fontSize="10" fill="#6B6B63">subagent registry</text>
+  <text x="36" y="452" fontSize="10" fill="#6B6B63">flavor allow-list filter</text>
+
+  <rect x="250" y="70" width="300" height="396" rx="12" fill="#FFFFFF" stroke="#D8D4CC" strokeWidth="2"/>
+  <text x="270" y="98" fontSize="12" fill="#C2522D" fontWeight="700">quecto-agent crate</text>
+  <line x1="270" y1="110" x2="530" y2="110" stroke="#D8D4CC"/>
+
+  <rect x="270" y="130" width="120" height="70" rx="8" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="282" y="154" fontSize="11" fill="#1A1A18" fontWeight="700">main.rs / chat</text>
+  <text x="282" y="174" fontSize="9.5" fill="#6B6B63">clap, REPL, slash</text>
+  <text x="282" y="188" fontSize="9.5" fill="#6B6B63">commands, renderer</text>
+
+  <rect x="410" y="130" width="120" height="70" rx="8" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="422" y="154" fontSize="11" fill="#1A1A18" fontWeight="700">flavor / trust</text>
+  <text x="422" y="174" fontSize="9.5" fill="#6B6B63">manifest merge</text>
+  <text x="422" y="188" fontSize="9.5" fill="#6B6B63">TOFU hash gate</text>
+
+  <rect x="270" y="224" width="260" height="92" rx="8" fill="#FFFFFF" stroke="#C2522D" strokeWidth="2"/>
+  <text x="284" y="250" fontSize="12" fill="#1A1A18" fontWeight="700">agent.rs control loop</text>
+  <text x="284" y="272" fontSize="9.5" fill="#6B6B63">build_messages(system + history + observations)</text>
+  <text x="284" y="288" fontSize="9.5" fill="#6B6B63">buffered model turn -> parse_assistant()</text>
+  <text x="284" y="304" fontSize="9.5" fill="#6B6B63">tool dispatch -> observation -> verify -> retry</text>
+
+  <rect x="270" y="340" width="120" height="86" rx="8" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="282" y="364" fontSize="11" fill="#1A1A18" fontWeight="700">policy.rs</text>
+  <text x="282" y="384" fontSize="9.5" fill="#6B6B63">allow / ask / deny</text>
+  <text x="282" y="398" fontSize="9.5" fill="#6B6B63">approval presets</text>
+  <text x="282" y="412" fontSize="9.5" fill="#6B6B63">interactive fallback</text>
+
+  <rect x="410" y="340" width="120" height="86" rx="8" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="422" y="364" fontSize="11" fill="#1A1A18" fontWeight="700">tool registry</text>
+  <text x="422" y="384" fontSize="9.5" fill="#6B6B63">JSON schemas</text>
+  <text x="422" y="398" fontSize="9.5" fill="#6B6B63">native or text calls</text>
+  <text x="422" y="412" fontSize="9.5" fill="#6B6B63">structured errors</text>
+
+  <path d="M202,126 H250" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#archArrow)"/>
+  <path d="M202,268 H250" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#archArrow)"/>
+  <path d="M202,410 H250" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#archArrow)"/>
+  <path d="M330,200 V224" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#archArrow)"/>
+  <path d="M470,200 V224" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#archArrow)"/>
+  <path d="M400,316 V340" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#archArrow)"/>
+
+  <rect x="600" y="70" width="160" height="112" rx="10" fill="#FFFFFF" stroke="#D8D4CC"/>
+  <text x="614" y="96" fontSize="12" fill="#1A1A18" fontWeight="700">provider.rs</text>
+  <text x="614" y="120" fontSize="10" fill="#6B6B63">OpenAI-compatible</text>
+  <text x="614" y="136" fontSize="10" fill="#6B6B63">Anthropic Messages</text>
+  <text x="614" y="152" fontSize="10" fill="#6B6B63">reasoning mapping</text>
+  <text x="614" y="168" fontSize="10" fill="#6B6B63">tool_use normalization</text>
+
+  <rect x="800" y="70" width="160" height="112" rx="10" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="814" y="96" fontSize="12" fill="#1A1A18" fontWeight="700">model endpoints</text>
+  <text x="814" y="120" fontSize="10" fill="#6B6B63">OpenAI / compatible</text>
+  <text x="814" y="136" fontSize="10" fill="#6B6B63">Ollama, vLLM, LM Studio</text>
+  <text x="814" y="152" fontSize="10" fill="#6B6B63">Anthropic native</text>
+  <text x="814" y="168" fontSize="10" fill="#6B6B63">vision-capable models</text>
+
+  <rect x="600" y="226" width="160" height="92" rx="10" fill="#FFFFFF" stroke="#C2522D" strokeWidth="2"/>
+  <text x="614" y="252" fontSize="12" fill="#1A1A18" fontWeight="700">quecto core</text>
+  <text x="614" y="276" fontSize="10" fill="#6B6B63">quecto_raw()</text>
+  <text x="614" y="292" fontSize="10" fill="#6B6B63">quecto_stream()</text>
+  <text x="614" y="308" fontSize="10" fill="#6B6B63">blocking ureq + JSON</text>
+
+  <path d="M530,270 H600" fill="none" stroke="#C2522D" strokeWidth="1.5" markerEnd="url(#archAccentArrow)"/>
+  <path d="M680,226 V182" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#archArrow)"/>
+  <path d="M760,126 H800" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#archArrow)"/>
+  <path d="M800,154 H760" fill="none" stroke="#32706C" strokeWidth="1.5" strokeDasharray="3 3" markerEnd="url(#archDataArrow)"/>
+
+  <rect x="600" y="354" width="160" height="112" rx="10" fill="#FFFFFF" stroke="#D8D4CC"/>
+  <text x="614" y="380" fontSize="12" fill="#1A1A18" fontWeight="700">sandbox.rs</text>
+  <text x="614" y="404" fontSize="10" fill="#6B6B63">repo-scoped cwd</text>
+  <text x="614" y="420" fontSize="10" fill="#6B6B63">denylist beats full</text>
+  <text x="614" y="436" fontSize="10" fill="#6B6B63">timeout + process group</text>
+  <text x="614" y="452" fontSize="10" fill="#6B6B63">output cap + redaction</text>
+
+  <rect x="800" y="354" width="160" height="112" rx="10" fill="#FFFFFF" stroke="#D8D4CC"/>
+  <text x="814" y="380" fontSize="12" fill="#1A1A18" fontWeight="700">state + telemetry</text>
+  <text x="814" y="404" fontSize="10" fill="#6B6B63">session.rs SQLite</text>
+  <text x="814" y="420" fontSize="10" fill="#6B6B63">recorder.rs TraceEvent</text>
+  <text x="814" y="436" fontSize="10" fill="#6B6B63">OTEL spans, token usage</text>
+  <text x="814" y="452" fontSize="10" fill="#6B6B63">resume / undo / diff</text>
+
+  <path d="M530,383 H600" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#archArrow)"/>
+  <path d="M760,410 H800" fill="none" stroke="#32706C" strokeWidth="1.5" markerEnd="url(#archDataArrow)"/>
+  <path d="M530,290 C608,332 736,332 800,386" fill="none" stroke="#32706C" strokeWidth="1.5" markerEnd="url(#archDataArrow)"/>
+
+  <rect x="250" y="512" width="300" height="88" rx="10" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="270" y="538" fontSize="12" fill="#1A1A18" fontWeight="700">quecto-eval crate</text>
+  <text x="270" y="562" fontSize="10" fill="#6B6B63">eval.yaml discovery, workspace setup, agent child process</text>
+  <text x="270" y="578" fontSize="10" fill="#6B6B63">ScriptGrader, TelemetryGrader, LlmRubricGrader</text>
+  <text x="270" y="594" fontSize="10" fill="#6B6B63">SQLite run history for regression and compatibility analysis</text>
+
+  <path d="M400,512 V466" fill="none" stroke="#C2522D" strokeWidth="1.5" strokeDasharray="3 3" markerEnd="url(#archAccentArrow)"/>
+  <path d="M800,438 C690,500 620,536 550,556" fill="none" stroke="#32706C" strokeWidth="1.5" markerEnd="url(#archDataArrow)"/>
+  <text x="570" y="526" fontSize="10" fill="#32706C">JSONL traces + graded outcomes</text>
+</svg>
+
+At the implementation level, the technical shape is:
+
+| Boundary | Concrete mechanism | Reason it exists |
+| --- | --- | --- |
+| Model transport | `quecto_raw(url, headers, body)` and `quecto_stream(...)` over blocking `ureq` | The core can carry arbitrary provider payloads without learning agent semantics. |
+| Provider normalization | `provider.rs` maps OpenAI-compatible chat completions and Anthropic Messages into the same assistant/tool-call shape | Provider swaps become a controlled variable instead of a rewrite of the agent loop. |
+| Control loop | `agent.rs` builds messages, calls the model, parses assistant output, dispatches tools, appends observations, and enforces `max_steps` | The agent remains a sequential, inspectable state machine. |
+| Tool ABI | `Tool { name, description, schema, run }` plus registry filtering from flavor allow-lists | Built-ins, MCP tools, and future custom tools share one dispatch surface. |
+| Safety gate | `policy.rs` decides `allow | ask | deny`; `sandbox.rs` enforces repo cwd, denylist, timeout, process group, output caps, and redaction | The model can propose actions, but the harness decides which actions reach the OS. |
+| Edit semantics | `apply_patch` uses exact search/replace blocks, ambiguity rejection, line-ending preservation, and prior-content recording | File mutations are replayable and undoable rather than vague text edits. |
+| Persistence | `session.rs` records messages, file changes, reasoning settings, and session metadata in SQLite | Chat, `resume`, `diff`, and `undo` are runtime features, not terminal scrollback. |
+| Observability | `recorder.rs` emits JSONL `TraceEvent`s; optional OTEL spans cover runs, steps, tool dispatches, completions, and reasoning traces | Eval graders can reason over turns, tokens, latency, and tool usage, not just final text. |
+| Evaluation | `quecto-eval` runs task workspaces from `eval.yaml`, injects trace output, grades with scripts/telemetry/rubrics, and stores results | Harness changes can be compared across versions, models, providers, and policies. |
+
+The core loop is still synchronous on purpose. Tool-call turns use buffered model responses because the harness needs the complete `tool_calls` array before dispatch; streaming deltas are useful for final text output, but partial function-call assembly is the least portable part of OpenAI-compatible local serving stacks. The optional MCP feature can bring in an async runtime for MCP clients, but the primary agent loop does not become async as a side effect.
+
+There is a second important separation: tool-call transport and tool execution are different layers. A model response can use native tool calls or a text-based fallback protocol, but both normalize into the same internal tool call structure. Only after that does the policy layer decide whether the call is allowed, the registry route it, the sandbox constrain it, the session recorder persist it, and the renderer summarize it to the user.
+
+That is the technical version of "minimal but observable": the harness avoids a large framework core, but it does not avoid boundaries. It names them.
+
 ## 1. Keep the core boring
 
 The `quecto` crate is intentionally narrow: send a prompt to an OpenAI-compatible endpoint and return a response, buffered or streamed. It can talk to local systems like Ollama, LM Studio, and vLLM, or to cloud endpoints with the same API shape.
