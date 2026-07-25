@@ -288,7 +288,7 @@ Looking back through the specs, I can see the lean design came from a handful of
 | **Treat execution as policy** | Tools, approval, sandboxing, verification, trust, and persistence are runtime decisions, not model-transport concerns. |
 | **Evaluate from outside** | `quecto-eval` drives `quecto-agent` as a subject and consumes traces, instead of mixing benchmark logic into the agent loop. |
 
-That is how the harness stays lean while still becoming capable. It is not lean because features are missing; it is lean because every feature has to justify the layer it enters.
+That is how the harness stays lean while still becoming capable. It is not lean because features are missing; it is lean because every feature has to justify both its existence and the layer it enters.
 
 The companion-crate boundary follows directly from that:
 
