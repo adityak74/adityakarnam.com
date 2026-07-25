@@ -1,0 +1,269 @@
+---
+title: "Building QuECTO: From Minimal Agent Harness to Evaluable Coding Agent"
+description: "The second entry in the QuECTO build series: how a 1.3 MB core grew into a 3.5 MB coding agent with reasoning controls, verification gates, session persistence, subagents, multimodal input, telemetry, and a native evaluation harness."
+date: 2026-07-25
+slug: "/ai-research/building-quecto-from-minimal-harness-to-evaluable-agent"
+canonicalUrl: "https://adityakarnam.com/ai-research/building-quecto-from-minimal-harness-to-evaluable-agent/"
+keywords:
+  [
+    "quecto",
+    "ai agent harness",
+    "coding agent",
+    "agent evaluation",
+    "agent telemetry",
+    "terminal-bench",
+    "opentelemetry",
+    "mcp",
+    "anthropic api",
+    "ai research explained",
+  ]
+---
+
+_Part two of the QuECTO build series. Start with [What Is an AI Agent Harness?](/ai-research/what-is-an-ai-agent-harness/) if you want the conceptual map first._
+
+The first post defined the harness as the software layer that turns a language model into an acting system: context, tools, state, policies, verification, recovery, and budgets. Since then, QuECTO has moved from a compact proof of concept into a real coding-agent runtime. The interesting part is not just the feature list. It is the order in which the system had to grow.
+
+QuECTO started with a deliberately tiny question:
+
+> How much agent infrastructure can we build before the harness stops feeling minimal?
+
+The answer, so far, is more than I expected: a **1.3 MB** core, a **3.5 MB** coding agent, no async runtime, first official releases, native reasoning controls, verification, persistence, OpenTelemetry, MCP, subagents, multimodal image input, and a native Rust evaluation harness.
+
+That sounds like a lot. The design pressure was to keep each piece small enough to remain observable.
+
+## The build arc
+
+<svg viewBox="0 0 900 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="buildArcTitle buildArcDesc" fontFamily="'JetBrains Mono','Fira Code',Consolas,monospace" style={{width: "100%", height: "auto"}}>
+  <title id="buildArcTitle">QuECTO build arc from core to evaluation harness</title>
+  <desc id="buildArcDesc">A left-to-right timeline showing QuECTO's build arc: core transport, coding agent, chat and persistence, observability, subagents, multimodal support, releases, and native evals. The eval layer loops back into the agent, showing that measurement informs the next runtime changes.</desc>
+  <rect x="0" y="0" width="900" height="360" fill="#FAF9F7"/>
+  <defs>
+    <marker id="arcArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6B6B63"/>
+    </marker>
+    <marker id="arcAccentArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#C2522D"/>
+    </marker>
+  </defs>
+
+  <text x="20" y="30" fontSize="12" fill="#C2522D" fontWeight="700">QUECTO BUILD SERIES · PART TWO</text>
+  <line x1="20" y1="42" x2="880" y2="42" stroke="#D8D4CC" strokeWidth="1"/>
+
+  {[
+    { x: 20, y: 70, w: 175, title: "Core", body1: "OpenAI-compatible", body2: "sync transport", note: "1.3 MB" },
+    { x: 245, y: 70, w: 175, title: "Agent loop", body1: "tools, approvals,", body2: "sandbox, verify", note: "3.5 MB" },
+    { x: 470, y: 70, w: 175, title: "Stateful UX", body1: "chat, resume,", body2: "undo, flavors", note: "usable" },
+    { x: 695, y: 70, w: 175, title: "Observability", body1: "traces, tokens,", body2: "turns, latency", note: "measurable" },
+  ].map(card => (
+    <g key={card.title}>
+      <rect x={card.x} y={card.y} width={card.w} height="112" rx="10" fill="#FFFFFF" stroke="#D8D4CC"/>
+      <text x={card.x + 14} y={card.y + 26} fontSize="13" fill="#1A1A18" fontWeight="700">{card.title}</text>
+      <text x={card.x + 14} y={card.y + 52} fontSize="10.5" fill="#6B6B63">{card.body1}</text>
+      <text x={card.x + 14} y={card.y + 68} fontSize="10.5" fill="#6B6B63">{card.body2}</text>
+      <text x={card.x + 14} y={card.y + 94} fontSize="10" fill="#C2522D">{card.note}</text>
+    </g>
+  ))}
+
+  <path d="M195,126 H245" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#arcArrow)"/>
+  <path d="M420,126 H470" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#arcArrow)"/>
+  <path d="M645,126 H695" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#arcArrow)"/>
+
+  <rect x="20" y="228" width="250" height="86" rx="10" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="34" y="254" fontSize="13" fill="#1A1A18" fontWeight="700">Runtime expansion</text>
+  <text x="34" y="278" fontSize="10.5" fill="#6B6B63">Anthropic provider, MCP, subagents,</text>
+  <text x="34" y="294" fontSize="10.5" fill="#6B6B63">image input, markdown and Mermaid chat</text>
+
+  <rect x="325" y="228" width="250" height="86" rx="10" fill="#F2F0EC" stroke="#C2522D" strokeWidth="2"/>
+  <text x="339" y="254" fontSize="13" fill="#1A1A18" fontWeight="700">Native eval harness</text>
+  <text x="339" y="278" fontSize="10.5" fill="#6B6B63">eval.yaml, script graders, telemetry</text>
+  <text x="339" y="294" fontSize="10.5" fill="#6B6B63">thresholds, SQLite run history</text>
+
+  <rect x="630" y="228" width="250" height="86" rx="10" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="644" y="254" fontSize="13" fill="#1A1A18" fontWeight="700">Release surface</text>
+  <text x="644" y="278" fontSize="10.5" fill="#6B6B63">quecto v0.1.0 and quecto-agent</text>
+  <text x="644" y="294" fontSize="10.5" fill="#6B6B63">v0.1.0 with macOS arm64 binaries</text>
+
+  <path d="M450,228 C450,198 782,198 782,182" fill="none" stroke="#C2522D" strokeWidth="1.5" strokeDasharray="3 3" markerEnd="url(#arcAccentArrow)"/>
+  <text x="494" y="206" fontSize="10" fill="#C2522D">evals turn runtime behavior into feedback</text>
+</svg>
+
+There are three phases hiding inside that diagram:
+
+1. **Transport:** make model calls boring, synchronous, inspectable, and vendor-neutral.
+2. **Agency:** add tools, approvals, verification, state, and UX without hiding the loop.
+3. **Measurement:** record enough traces to make behavior comparable across models, providers, policies, and releases.
+
+The third phase is where a harness becomes research infrastructure.
+
+## 1. Keep the core boring
+
+The `quecto` crate is intentionally narrow: send a prompt to an OpenAI-compatible endpoint and return a response, buffered or streamed. It can talk to local systems like Ollama, LM Studio, and vLLM, or to cloud endpoints with the same API shape.
+
+That core is not where the agent magic lives. That is the point.
+
+By keeping the transport layer tiny, the rest of the system has fewer places to hide behavior. If a task succeeds or fails, I want the explanation to live in the model, the prompt, the tools, the runtime policy, the verifier, or the budget, not in a thick framework layer whose choices are hard to inspect.
+
+This is why QuECTO's minimalism is not only aesthetic. It is an experimental control.
+
+## 2. Add agency as explicit policy
+
+`quecto-agent` turns the core into a coding agent by adding the familiar pieces: file tools, search, patching, shell commands, git inspection, approval presets, a hard denylist sandbox, verification commands, and SQLite-backed sessions.
+
+The important design choice is that those features are treated as policies, not ambient powers. Writes and commands are gated. Dangerous commands are denied even under permissive approval. Project-local flavor manifests use trust-on-first-use. Session state can be resumed, diffed, or undone. Verification is a first-class stop condition, not something remembered after the final answer.
+
+The UAT pass was a good sign: 41 black-box scenarios, 41 passes, no blocking defects. But the more useful result was qualitative. The harness had become legible enough that testers could isolate behavior by area: CLI, tools and safety, persistence, and flavors.
+
+That is what I want from an agent harness. Not just "it works," but "when it fails, the failure has an address."
+
+## 3. Make the chat loop useful enough to live in
+
+After the first usable agent landed, a surprising amount of work went into the terminal experience: bracketed paste, clearer activity summaries, slash commands, session-scoped `/reasoning`, markdown rendering, inline Mermaid rendering, better `/status` and `/context`, and quieter non-TTY output.
+
+This sounds like polish, but for coding agents it is closer to instrumentation. If the user cannot see what the agent did, or cannot tell whether a tool call created 1 line or changed 449 lines, the harness is less trustworthy.
+
+The chat UI now exposes more of the loop:
+
+- Which tool ran
+- What changed
+- Whether verification passed
+- Which reasoning mode is active
+- Whether a session can be resumed or undone
+- Whether a project flavor is trusted
+
+The user interface is part of the harness because it shapes supervision.
+
+## 4. Support provider differences without pretending they are the same
+
+QuECTO started with OpenAI-compatible endpoints because that API shape is common across local and hosted runtimes. The next provider step was native Anthropic Messages API support.
+
+That was not just a URL change. Anthropic has different wire concepts: `system` extraction, `tool_use` and `tool_result` content blocks, `x-api-key` auth, required `max_tokens`, and optional thinking budgets. QuECTO maps its `reasoning_mode` onto Anthropic's `thinking.budget_tokens`, while keeping the rest of the agent loop intact.
+
+This is exactly the kind of boundary I care about for AgentABI-style questions. If the model changes, the provider changes, or the reasoning control changes, what behavior stays stable? What breaks? What becomes more expensive? What takes more turns?
+
+Provider support is not only compatibility work. It creates more controlled substitutions to measure.
+
+## 5. Add subagents without losing observability
+
+The first subagent tool was synchronous: `invoke_subagent` runs another agent and waits. The newer concurrent path is more interesting. `spawn_subagent` starts a background agent and returns an id. `monitor_subagents` reports status, elapsed time, and recent activity. `cancel_subagent` stops one early. A capped buffer records progress, and background runs render to a null renderer so their output does not corrupt the foreground session.
+
+The constraint matters: concurrency is useful only if the supervisor can still tell what is happening.
+
+So the subagent design exposes monitoring as a read-only tool, caps concurrency, and keeps cancellation explicit. In a larger agent system, this becomes the difference between "the agent delegated work" and "the agent lost control of the runtime."
+
+## 6. Treat multimodal input as another harness boundary
+
+The new `--image` flag lets `quecto-agent` send base64-encoded images into a vision-capable model. It was verified end-to-end against a local vision model.
+
+Again, the interesting thing is the boundary. Image support is not just a model feature. The harness must decide:
+
+- How the image is represented
+- How it enters the request payload
+- Which providers can receive it
+- Whether the rest of the tool loop still behaves normally
+- How eval tasks can grade visual understanding
+
+This gives QuECTO a way to test coding-adjacent visual tasks: reading screenshots, identifying UI states, inspecting rendered assets, or grounding a bug report in an image.
+
+## 7. Move from demos to evals
+
+The biggest shift since the first post is `quecto-eval`, the native Rust evaluation harness.
+
+The earlier eval layer included a 10-task TerminalBench-style smoke suite and a Harbor adapter for Terminal-Bench 2.x. The native harness makes the system more self-contained: tasks are described with `eval.yaml`, setup runs in isolated workspaces, graders are composable, telemetry is parsed from JSONL trace events, and SQLite stores historical run data.
+
+<svg viewBox="0 0 900 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="evalLoopTitle evalLoopDesc" fontFamily="'JetBrains Mono','Fira Code',Consolas,monospace" style={{width: "100%", height: "auto"}}>
+  <title id="evalLoopTitle">QuECTO evaluation loop</title>
+  <desc id="evalLoopDesc">Evaluation YAML files define tasks, setup scripts, graders, and telemetry thresholds. quecto-eval creates a workspace, runs quecto-agent with trace output enabled, grades the result using script, telemetry, or LLM rubric graders, stores the run in SQLite, and feeds results back into runtime changes.</desc>
+  <rect x="0" y="0" width="900" height="330" fill="#FAF9F7"/>
+  <defs>
+    <marker id="evalArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6B6B63"/>
+    </marker>
+    <marker id="evalAccentArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#C2522D"/>
+    </marker>
+  </defs>
+
+  <text x="20" y="30" fontSize="12" fill="#C2522D" fontWeight="700">NATIVE EVAL LOOP · BEHAVIOR BECOMES DATA</text>
+  <line x1="20" y1="42" x2="880" y2="42" stroke="#D8D4CC" strokeWidth="1"/>
+
+  <rect x="20" y="78" width="160" height="80" rx="10" fill="#FFFFFF" stroke="#D8D4CC"/>
+  <text x="34" y="104" fontSize="13" fill="#1A1A18" fontWeight="700">eval.yaml</text>
+  <text x="34" y="128" fontSize="10.5" fill="#6B6B63">prompt, setup,</text>
+  <text x="34" y="144" fontSize="10.5" fill="#6B6B63">graders, thresholds</text>
+
+  <rect x="220" y="78" width="160" height="80" rx="10" fill="#FFFFFF" stroke="#D8D4CC"/>
+  <text x="234" y="104" fontSize="13" fill="#1A1A18" fontWeight="700">Workspace</text>
+  <text x="234" y="128" fontSize="10.5" fill="#6B6B63">setup script creates</text>
+  <text x="234" y="144" fontSize="10.5" fill="#6B6B63">task state</text>
+
+  <rect x="420" y="78" width="160" height="80" rx="10" fill="#FFFFFF" stroke="#C2522D" strokeWidth="2"/>
+  <text x="434" y="104" fontSize="13" fill="#1A1A18" fontWeight="700">quecto-agent</text>
+  <text x="434" y="128" fontSize="10.5" fill="#6B6B63">runs task with</text>
+  <text x="434" y="144" fontSize="10.5" fill="#6B6B63">trace output</text>
+
+  <rect x="620" y="78" width="160" height="80" rx="10" fill="#FFFFFF" stroke="#D8D4CC"/>
+  <text x="634" y="104" fontSize="13" fill="#1A1A18" fontWeight="700">Graders</text>
+  <text x="634" y="128" fontSize="10.5" fill="#6B6B63">script, telemetry,</text>
+  <text x="634" y="144" fontSize="10.5" fill="#6B6B63">LLM rubric</text>
+
+  <path d="M180,118 H220" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#evalArrow)"/>
+  <path d="M380,118 H420" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#evalArrow)"/>
+  <path d="M580,118 H620" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#evalArrow)"/>
+
+  <rect x="420" y="218" width="160" height="80" rx="10" fill="#F2F0EC" stroke="#D8D4CC"/>
+  <text x="434" y="244" fontSize="13" fill="#1A1A18" fontWeight="700">SQLite history</text>
+  <text x="434" y="268" fontSize="10.5" fill="#6B6B63">runs, tokens,</text>
+  <text x="434" y="284" fontSize="10.5" fill="#6B6B63">turns, latency</text>
+
+  <path d="M700,158 V190 H500 V218" fill="none" stroke="#6B6B63" strokeWidth="1.5" markerEnd="url(#evalArrow)"/>
+  <path d="M500,218 C500,182 500,182 500,158" fill="none" stroke="#C2522D" strokeWidth="1.5" strokeDasharray="3 3" markerEnd="url(#evalAccentArrow)"/>
+  <text x="515" y="196" fontSize="10" fill="#C2522D">regression signal</text>
+</svg>
+
+This changes the development loop. A harness feature is no longer done when a demo passes. It is done when it can be run again, graded, traced, and compared.
+
+The smoke suite already showed 10/10 deterministic passes on tasks like git conflict resolution, package refactoring, advanced shell text processing, OpenSSL workflows, Docker builds, debugging a C crash, SQLite queries, and fixing a Rust build. The next step is less about adding more tasks randomly and more about sorting tasks by purpose:
+
+- **Regression tasks:** things the harness should keep passing at near 100%.
+- **Capability tasks:** harder tasks for hill-climbing.
+- **Compatibility tasks:** same prompt, same workspace, different runtime or provider.
+- **Telemetry tasks:** tasks where the pass/fail result is not enough without turns, tokens, latency, and tool usage.
+
+This is where QuECTO connects back to the research question from the first post: agent performance is an emergent systems property. The eval harness is how that property becomes observable.
+
+## What has shipped so far
+
+Here is the compressed changelog view:
+
+| Date | Milestone | Why it matters |
+| --- | --- | --- |
+| 2026-07-10 | Core crate and size-optimized build | Proved the tiny synchronous transport layer and release profile. |
+| 2026-07-12 | Full `quecto-agent` M1-M7b | Added tools, editing, sandbox policy, verification, persistence, and flavors. |
+| 2026-07-14 | UAT and bug-fix pass | Turned rough edges into clean behavior across 41 scenarios. |
+| 2026-07-15 | Smoke evals, Harbor adapter, OTEL | Started measuring behavior through tests and traces. |
+| 2026-07-16 | Chat and delegation improvements | Made the live loop easier to supervise. |
+| 2026-07-18 | Anthropic provider, reasoning, Mermaid, subagents | Expanded provider/runtime substitution and concurrent delegation. |
+| 2026-07-19 | Native `quecto-eval` and image support | Made evaluation and multimodal inputs first-class. |
+| 2026-07-22 | `quecto` and `quecto-agent` v0.1.0 | Published the first official releases with macOS arm64 binaries. |
+
+The through-line is not "add every feature." It is "make each harness boundary explicit enough to test."
+
+## The lesson so far
+
+I went into QuECTO thinking the hard part would be making a small agent feel capable.
+
+That was only half true. The harder part is making the capability inspectable. Tool calls need summaries. State needs a database. Trust needs hashes. Provider support needs a stable internal shape. Subagents need monitors. Images need a request representation. Reasoning needs controls and traces. Evals need graders and telemetry.
+
+Minimalism did not mean avoiding those pieces. It meant adding them in a way that keeps the system understandable.
+
+That is the build principle for the next phase:
+
+> A harness is not complete when it can act. It is complete when its actions can be replayed, measured, compared, and trusted.
+
+The next posts in this series will go deeper into the individual layers: reasoning controls, subagent orchestration, multimodal evals, and behavioral compatibility across providers and harness versions.
+
+## Related reading
+
+- [What Is an AI Agent Harness?](/ai-research/what-is-an-ai-agent-harness/) — the foundation for this build series
+- [QuECTO on GitHub](https://github.com/adityak74/quecto) — source code, changelog, releases, and eval docs
+- [AI Research Explained](/ai-research/) — the broader section this series lives in
