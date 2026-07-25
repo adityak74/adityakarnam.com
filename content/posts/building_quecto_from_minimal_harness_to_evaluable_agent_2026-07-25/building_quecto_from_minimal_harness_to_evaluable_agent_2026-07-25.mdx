@@ -276,6 +276,20 @@ That is why the core implementation plan was so constrained:
 
 Those constraints are not arbitrary size golf. They are architectural pressure. `serde_json::Value` stays in the public API because `quecto_raw` is supposed to carry any provider-shaped JSON body and return the complete JSON response. If an agent wants tool calls, usage metadata, reasoning traces, or provider-specific fields, the core should preserve them rather than prematurely normalize them away.
 
+Looking back through the specs, I can see the lean design came from a handful of repeated decisions:
+
+| Lean-harness move | What it means in QuECTO |
+| --- | --- |
+| **Compress against the maximal system** | I first described the whole coding-agent harness, then let the core implement only the irreducible transport piece. |
+| **Preserve raw provider shape** | `quecto_raw` returns `serde_json::Value`, so the core does not need typed abstractions for every provider feature. |
+| **Normalize one layer up** | OpenAI vs. Anthropic differences belong in `quecto-agent/src/provider.rs`, where they can change without touching the core. |
+| **Make sync the default** | The common path is blocking, sequential, and easy to inspect; async runtimes appear only behind boundaries that genuinely need them. |
+| **Quarantine dependencies** | MCP, OTEL, rendering, SQLite, and eval machinery live outside the core or behind feature flags, so they do not tax the smallest build. |
+| **Treat execution as policy** | Tools, approval, sandboxing, verification, trust, and persistence are runtime decisions, not model-transport concerns. |
+| **Evaluate from outside** | `quecto-eval` drives `quecto-agent` as a subject and consumes traces, instead of mixing benchmark logic into the agent loop. |
+
+That is how the harness stays lean while still becoming capable. It is not lean because features are missing; it is lean because every feature has to justify the layer it enters.
+
 The companion-crate boundary follows directly from that:
 
 | Harness concern | Where it went | Why it stayed out of `quecto` core |
