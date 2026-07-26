@@ -25,6 +25,21 @@ describe("THOUGHTS_POSTS", () => {
     }
   })
 
+  it("covers posts that derive their slug from the title instead of frontmatter", () => {
+    // These three carry no `slug` in frontmatter (and a stale `canonicalUrl` that 404s),
+    // so they are only reachable if the generator uses the theme's slugify.
+    const slugs = THOUGHTS_POSTS.map((post) => post.slug)
+    expect(slugs).toContain("prompt-grader-vs-prompt-libraries-when-to-use-each")
+    expect(slugs).toContain("how-to-diagnose-a-bad-prompt-with-free-grader-tool")
+    expect(slugs).toContain("unlock-your-true-purpose-ancient-wisdom-for-a-meaningful-life-stop-postponing-yourself")
+  })
+
+  it("derives every URL from the published slug", () => {
+    for (const post of THOUGHTS_POSTS) {
+      expect(post.url).toBe(`https://adityakarnam.com/${post.slug}/`)
+    }
+  })
+
   it("is sorted newest first", () => {
     const dates = THOUGHTS_POSTS.map((post) => post.date)
     expect(dates).toEqual([...dates].sort((left, right) => right.localeCompare(left)))
