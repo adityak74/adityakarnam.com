@@ -323,6 +323,22 @@ const HomepageConsole = () => {
               </Box>
             ))}
           </Grid>
+
+          <Box sx={{ borderTop: "1px solid", borderColor: "divide", mt: 4, pt: 3 }}>
+            <Text sx={{ color: "primary", fontFamily: "monospace", fontSize: 0, mb: 1 }}>Also Writing</Text>
+            <ThemeLink
+              href="https://calltothink.com"
+              target="_blank"
+              rel="noreferrer"
+              sx={{ color: "text", textDecoration: "none", fontSize: 3, fontWeight: 500 }}
+            >
+              Call to Think ↗
+            </ThemeLink>
+            <Text sx={{ color: "secondary", lineHeight: 1.65, mt: 2, fontSize: "17px" }}>
+              A separate essay practice on technology, AI, and society — longer arguments about how these systems
+              change the way we think, written slowly on purpose.
+            </Text>
+          </Box>
         </Box>
 
         <Box>

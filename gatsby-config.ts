@@ -86,6 +86,10 @@ const config: GatsbyConfig = {
             url: `https://scholar.google.com/citations?user=WujCeDkAAAAJ&hl=en`,
           },
           {
+            name: `Call to Think`,
+            url: `https://calltothink.com`,
+          },
+          {
             name: `Homepage`,
             url: `https://www.adityakarnam.com`,
           },
