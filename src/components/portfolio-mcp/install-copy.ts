@@ -5,7 +5,7 @@ export const CLAUDE_CODE_VERIFY_COMMAND = "claude mcp list"
 
 export const PORTFOLIO_MCP_INSTALL_MARKDOWN = `# Install Aditya Karnam's Portfolio MCP
 
-Use this public, read-only MCP server to query Aditya Karnam's portfolio, recent work, systems, research agenda, and source links.
+Use this public, read-only MCP server to query Aditya Karnam's portfolio, recent work, systems, blog posts, research agenda, and source links.
 
 MCP name: \`aditya-portfolio\`
 Transport: \`http\`
@@ -13,7 +13,7 @@ URL: \`https://adityakarnam.com/mcp\`
 Discovery manifest: \`https://adityakarnam.com/.well-known/aditya-portfolio-mcp.json\`
 Health check: \`https://adityakarnam.com/mcp-health\`
 
-This MCP exposes only public portfolio data: projects, posts, systems, research agenda, and source links. It does not expose private files, email, analytics, personal data, availability, compensation, immigration status, or references.
+This MCP exposes only public portfolio data: projects, blog posts from the Thoughts feed (including full post text), systems, research agenda, and source links. It does not expose private files, email, analytics, personal data, availability, compensation, immigration status, or references.
 
 ## Claude App
 
@@ -70,4 +70,7 @@ npx mcp-remote https://adityakarnam.com/mcp
 - Act as a hiring manager. What should I ask him about based on public evidence?
 - Act as an engineer. Which systems should I inspect first?
 - Act as a researcher. What is his clearest research wedge?
+- List his latest blog posts from Thoughts.
+- Read his post on building QuECTO and summarize the argument.
+- Which of his posts discuss agent harnesses?
 `

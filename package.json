@@ -7,9 +7,10 @@
   "license": "0BSD",
   "starter-name": "adityakarnam",
   "scripts": {
-    "build": "npm run build:mcp-app && gatsby build",
+    "build": "npm run build:mcp-data && npm run build:mcp-app && gatsby build",
+    "build:mcp-data": "node scripts/generate-thoughts-data.mjs",
     "build:mcp-app": "vite build --config src/components/portfolio-mcp/app/vite.config.ts && node scripts/generate-portfolio-app-html.mjs",
-    "develop": "gatsby develop",
+    "develop": "npm run build:mcp-data && gatsby develop",
     "develop:cypress": "cross-env CYPRESS_SUPPORT=y yarn develop",
     "build:cypress": "cross-env CYPRESS_SUPPORT=y yarn build",
     "start": "gatsby develop",

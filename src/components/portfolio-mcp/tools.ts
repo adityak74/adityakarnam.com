@@ -1,4 +1,4 @@
-import type { PortfolioMcpData } from "./schema"
+import type { PortfolioMcpData, PortfolioRecentWork } from "./schema"
 import { searchWork, type SearchWorkInput } from "./search"
 
 type JsonObject = Record<string, unknown>
@@ -47,10 +47,44 @@ export const createPortfolioTools = (data: PortfolioMcpData) => ({
     results: searchWork(data, input),
   }),
 
-  get_recent_work: (input: { limit?: number }) => ({
+  get_recent_work: (input: { limit?: number; type?: PortfolioRecentWork["type"] }) => ({
     dataVersion: data.dataVersion,
-    recentWork: data.recentWork.slice(0, Math.max(1, Math.min(input.limit ?? 10, 30))),
+    recentWork: data.recentWork
+      .filter((item) => (input.type ? item.type === input.type : true))
+      .slice(0, Math.max(1, Math.min(input.limit ?? 10, 30))),
   }),
+
+  list_thoughts: (input: { tags?: string[]; query?: string; limit?: number }) => {
+    const wantedTags = (input.tags ?? []).map((tag) => tag.toLowerCase())
+    const query = input.query?.trim().toLowerCase() ?? ""
+    const limit = Math.max(1, Math.min(input.limit ?? 20, 50))
+
+    const posts = data.thoughts
+      .filter((post) =>
+        wantedTags.length === 0 ? true : wantedTags.some((tag) => post.tags.map((value) => value.toLowerCase()).includes(tag))
+      )
+      .filter((post) =>
+        query ? [post.title, post.description, post.excerpt, post.tags.join(" ")].join(" ").toLowerCase().includes(query) : true
+      )
+      .slice(0, limit)
+      .map(({ body: _body, ...summary }) => summary)
+
+    return { dataVersion: data.dataVersion, total: data.thoughts.length, posts }
+  },
+
+  get_thought: (input: { slug_or_title: string }) => {
+    const lookup = normalizeText(input.slug_or_title ?? "")
+    const post = data.thoughts.find(
+      (entry) => normalizeText(entry.slug) === lookup || normalizeText(entry.title) === lookup
+    )
+    if (post) return { found: true, post }
+
+    return {
+      found: false,
+      error: "Post not found.",
+      suggestions: data.thoughts.slice(0, 5).map((entry) => ({ title: entry.title, slug: entry.slug })),
+    }
+  },
 
   get_recruiter_brief: (input: { role_description?: string; limit?: number }) => {
     const query = input.role_description?.trim() || "AI infrastructure MCP retrieval memory evals agent runtime"

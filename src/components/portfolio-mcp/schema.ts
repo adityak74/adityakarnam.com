@@ -6,7 +6,7 @@ export const PORTFOLIO_MCP_INSTALL_URL = "https://adityakarnam.com/mcp-install/"
 export const PORTFOLIO_MCP_HEALTH_URL = "https://adityakarnam.com/mcp-health"
 export const PORTFOLIO_MCP_MANIFEST_URL = "https://adityakarnam.com/.well-known/aditya-portfolio-mcp.json"
 export const PORTFOLIO_SITE_URL = "https://adityakarnam.com"
-export const PORTFOLIO_DATA_VERSION = "2026.07.19"
+export const PORTFOLIO_DATA_VERSION = "2026.07.26"
 
 export type PublicDataScope = {
   exposes: string[]
@@ -39,6 +39,19 @@ export type PortfolioProject = {
   sourceUrls: string[]
 }
 
+/** A curated "Thoughts" blog post (everything on /blog/, i.e. excluding autoblog entries). */
+export type PortfolioThought = {
+  slug: string
+  title: string
+  date: string
+  description: string
+  excerpt: string
+  tags: string[]
+  url: string
+  wordCount: number
+  body: string
+}
+
 export type PortfolioRecentWork = {
   title: string
   type: "project" | "field-note" | "post" | "project-page"
@@ -66,6 +79,7 @@ export type PortfolioMcpData = {
   dataScope: PublicDataScope
   profile: PortfolioProfile
   projects: PortfolioProject[]
+  thoughts: PortfolioThought[]
   researchAgenda: Array<{ title: string; question: string; sourceUrls: string[] }>
   recentWork: PortfolioRecentWork[]
   operatingPrinciples: string[]

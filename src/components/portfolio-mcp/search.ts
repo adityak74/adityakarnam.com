@@ -29,10 +29,13 @@ export const searchWork = (data: PortfolioMcpData, input: SearchWorkInput): Sear
 
   const queryTokens = tokenize(query)
   const limit = Math.max(1, Math.min(input.limit ?? 5, 20))
+  const bodyBySlug = new Map(data.thoughts.map((post) => [post.slug, post.body.toLowerCase()]))
 
   return data.recentWork
     .map((item) => {
-      const haystack = [item.title, item.summary, item.tags.join(" "), item.type].join(" ").toLowerCase()
+      // Blog posts are searched full-text; everything else only has summary-level data.
+      const body = item.type === "post" ? (bodyBySlug.get(item.slug) ?? "") : ""
+      const haystack = [item.title, item.summary, item.tags.join(" "), item.type, body].join(" ").toLowerCase()
       const tagMatches = item.tags.filter((tag) => queryTokens.some((token) => tag.toLowerCase().includes(token)))
       const tokenMatches = queryTokens.filter((token) => haystack.includes(token))
       const titleMatches = queryTokens.some((token) => item.title.toLowerCase().includes(token))
