@@ -1,9 +1,13 @@
-import { handlePortfolioMcpRequest, portfolioMcpData } from "../src/components/portfolio-mcp"
+import {
+  buildPortfolioMcpDataForRequest,
+  handlePortfolioMcpRequest,
+  type PortfolioMcpEnv,
+} from "../src/components/portfolio-mcp"
 import { checkRateLimit } from "./_lib/rate-limit"
 
 type McpFunctionContext = {
   request: Request
-  env: {
+  env: PortfolioMcpEnv & {
     RATE_LIMIT_KV?: Parameters<typeof checkRateLimit>[0]
   }
 }
@@ -59,7 +63,7 @@ export const onRequestPost = async (context: McpFunctionContext): Promise<Respon
     return json({ error: "Rate limit exceeded." }, 429, { "Retry-After": "60" })
   }
 
-  return withNoStore(handlePortfolioMcpRequest(context.request, portfolioMcpData))
+  return withNoStore(handlePortfolioMcpRequest(context.request, buildPortfolioMcpDataForRequest(context.env)))
 }
 
 export const onRequestGet = async (): Promise<Response> =>
