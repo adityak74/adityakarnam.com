@@ -496,9 +496,7 @@ const HeroSection: React.FC = () => {
 
           {/* quecto */}
           <a
-            href="https://github.com/adityak74/quecto"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/quecto/"
             style={{
               display: "flex",
               alignItems: "flex-start",

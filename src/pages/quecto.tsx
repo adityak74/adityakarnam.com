@@ -265,7 +265,7 @@ const QuectoPage = (_props: PageProps) => (
           The leanest, fastest, smallest AI harness — and the coding agent built on it.
         </p>
         <p style={{ color: labPalette.body, fontFamily: sans, fontSize: "17px", lineHeight: 1.65, margin: "1rem 0 0", maxWidth: "46rem" }}>
-          One endpoint. Zero async. A 1.2 MB core, a 3.3 MB agent — both shipped, both statically linked,
+          One endpoint. Zero async. A 1.3 MB core, a 5.5 MB agent — both shipped, both statically linked,
           neither carrying a runtime.
         </p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.85rem", marginTop: "1.6rem" }}>
@@ -312,14 +312,14 @@ const QuectoPage = (_props: PageProps) => (
       {/* The Moat */}
       <WorldModelSection
         eyebrow="The Moat"
-        title="1.2 MB core, 3.3 MB agent"
-        description="Both binaries are self-contained: no runtime, no interpreter, statically-linked rustls TLS. Two direct dependencies on the core (ureq + serde_json), ~30 transitive crates, no tokio, no reqwest, no async runtime. The agent adds a full tool loop, sandbox, SQLite-backed session store, and manifest parsing, and still fits in 3.3 MB."
+        title="1.3 MB core, 5.5 MB agent"
+        description="Both binaries are self-contained: no runtime, no interpreter, statically-linked rustls TLS. Two direct dependencies on the core (ureq + serde_json), ~30 transitive crates, no tokio, no reqwest, no async runtime. The agent adds a full tool loop, sandbox, SQLite-backed session store, and manifest parsing, and still fits in 5.5 MB."
       >
         <Panel accent="cyan">
           <SizeRuler label="quecto — default --release" valueLabel="2.6 MB" pct={40} accent={labPalette.slate} />
           <SizeRuler label="quecto — stripped" valueLabel="2.3 MB" pct={35} accent={labPalette.slate} />
-          <SizeRuler label="quecto — size-optimized (shipped)" valueLabel="~1.2 MB" pct={18} accent={labPalette.cyan} />
-          <SizeRuler label="quecto-agent — size-optimized (shipped)" valueLabel="~3.3 MB" pct={50} accent={labPalette.green} />
+          <SizeRuler label="quecto — size-optimized (shipped)" valueLabel="~1.3 MB" pct={20} accent={labPalette.cyan} />
+          <SizeRuler label="quecto-agent — size-optimized (shipped)" valueLabel="~5.5 MB" pct={84} accent={labPalette.green} />
         </Panel>
       </WorldModelSection>
 
@@ -398,7 +398,7 @@ const QuectoPage = (_props: PageProps) => (
         <div style={{ marginTop: "1.5rem" }}>
           <TerminalPanel>
 {`$ git clone https://github.com/adityak74/quecto && cd quecto
-$ cargo build --release              # -> target/release/quecto (~1.2 MB)
+$ cargo build --release              # -> target/release/quecto (~1.3 MB)
 $ cargo install --path . --force
 $ quecto "write me a haiku about small things"
 
@@ -406,7 +406,7 @@ $ export QUECTO_BASE_URL="http://localhost:11434/v1"
 $ export QUECTO_MODEL="qwen2.5-coder"
 $ quecto "refactor this function"    # local, no API key
 
-$ cargo build --release -p quecto-agent   # -> target/release/quecto-agent (~3.3 MB)
+$ cargo build --release -p quecto-agent   # -> target/release/quecto-agent (~5.5 MB)
 $ quecto-agent "add a test for the parse_args function"
 $ quecto-agent chat`}
           </TerminalPanel>
@@ -447,7 +447,7 @@ export default QuectoPage
 export const Head: HeadFC = () => (
   <Seo
     title="Quecto"
-    description="quecto: the leanest, fastest, smallest AI harness, and quecto-agent, the coding agent built on it — a 1.2 MB core and a 3.3 MB agent, both statically linked with zero async runtime."
+    description="quecto: the leanest, fastest, smallest AI harness, and quecto-agent, the coding agent built on it — a 1.3 MB core and a 5.5 MB agent, both statically linked with zero async runtime."
     pathname="/quecto/"
   />
 )

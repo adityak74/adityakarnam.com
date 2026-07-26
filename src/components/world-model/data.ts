@@ -125,9 +125,9 @@ export const systems: SystemArtifact[] = [
     name: "quecto",
     slug: "/quecto-rust-ai-harness/",
     tags: ["agent runtime", "local inference", "Rust", "zero-dependency", "coding agent"],
-    researchQuestion: "Can a fully functional AI coding agent harness be statically-linked, zero-async, and fit under 4 MB without sacrificing core functionality?",
+    researchQuestion: "Can a fully functional AI coding agent harness be statically-linked, zero-async, and fit under 6 MB without sacrificing core functionality?",
     systemBuilt:
-      "A Rust-native AI harness with a 1.2 MB core and a 3.3 MB coding agent, compiled to a single statically-linked binary with zero async overhead and no runtime dependencies.",
+      "A Rust-native AI harness with a 1.3 MB core and a 5.5 MB coding agent, compiled to a single statically-linked binary with zero async overhead and no runtime dependencies.",
     whyItMatters:
       "Most AI agent frameworks bring heavy runtimes, async schedulers, and bloated dependency trees. quecto explores the opposite: minimal, auditable, locally-deployable harness infrastructure that can run anywhere a binary can run.",
     status: "Active experiment",
@@ -136,9 +136,9 @@ export const systems: SystemArtifact[] = [
     ],
     explanationModes: {
       "Research Idea":
-        "quecto asks whether the AI agent harness layer can be radically compressed: a statically-linked binary under 4 MB that still exposes the core primitives needed to drive a coding agent.",
+        "quecto asks whether the AI agent harness layer can be radically compressed: a statically-linked binary under 6 MB that still exposes the core primitives needed to drive a coding agent.",
       "System Design":
-        "The harness separates a 1.2 MB core (model interface, tool dispatch, state) from a 3.3 MB coding agent shell, compiled with no async executor so the execution model is fully predictable.",
+        "The harness separates a 1.3 MB core (model interface, tool dispatch, state) from a 5.5 MB coding agent shell, compiled with no async executor so the execution model is fully predictable.",
       "Business Value":
         "A zero-dependency binary means agents can be embedded in CI pipelines, edge systems, or airgapped machines without Python runtimes, async event loops, or platform-specific installs.",
       "Code Walkthrough":
@@ -398,7 +398,7 @@ export const systems: SystemArtifact[] = [
     tags: ["Rust", "agent runtime", "local inference", "coding agent", "zero async"],
     researchQuestion: "How small and fast can a fully capable AI agent harness be when built in Rust with zero async overhead?",
     systemBuilt:
-      "A minimal Rust AI interface framework: a ~1.2 MB synchronous core library for OpenAI-compatible endpoints, plus quecto-agent — a full coding agent with multi-step tool use, SQLite-backed session persistence, and an approval-gated sandbox.",
+      "A minimal Rust AI interface framework: a ~1.3 MB synchronous core library for OpenAI-compatible endpoints, plus quecto-agent — a full coding agent with multi-step tool use, SQLite-backed session persistence, and an approval-gated sandbox.",
     whyItMatters:
       "Most agent runtimes carry heavyweight async stacks and large dependency trees. quecto proves that a self-contained, statically-linked binary with only two direct dependencies can still deliver a complete coding agent with resume, undo, and diff.",
     status: "Shipped / active",
