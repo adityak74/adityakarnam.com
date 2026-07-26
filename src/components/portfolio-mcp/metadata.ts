@@ -6,12 +6,15 @@ export const portfolioToolNames = [
   "get_project",
   "search_work",
   "get_recent_work",
+  "list_thoughts",
+  "get_thought",
   "get_recruiter_brief",
 ]
 
 export const portfolioResourceUris = [
   "portfolio://profile",
   "portfolio://systems",
+  "portfolio://thoughts",
   "portfolio://research-agenda",
   "portfolio://recent-work",
   "portfolio://recruiter-guide",

@@ -27,6 +27,49 @@ describe("handlePortfolioMcpRequest", () => {
     expect(body.result.tools.map((tool: { name: string }) => tool.name)).toContain("get_recruiter_brief")
   })
 
+  it("advertises the Thoughts tools and resource", async () => {
+    const toolsResponse = await handlePortfolioMcpRequest(postJson({ jsonrpc: "2.0", id: 20, method: "tools/list" }), data)
+    const toolNames = (await toolsResponse.json()).result.tools.map((tool: { name: string }) => tool.name)
+    expect(toolNames).toContain("list_thoughts")
+    expect(toolNames).toContain("get_thought")
+
+    const resourcesResponse = await handlePortfolioMcpRequest(
+      postJson({ jsonrpc: "2.0", id: 21, method: "resources/list" }),
+      data
+    )
+    const uris = (await resourcesResponse.json()).result.resources.map((resource: { uri: string }) => resource.uri)
+    expect(uris).toContain("portfolio://thoughts")
+  })
+
+  it("reads the Thoughts resource as a body-free index", async () => {
+    const response = await handlePortfolioMcpRequest(
+      postJson({ jsonrpc: "2.0", id: 22, method: "resources/read", params: { uri: "portfolio://thoughts" } }),
+      data
+    )
+    const body = await response.json()
+    const posts = JSON.parse(body.result.contents[0].text)
+
+    expect(posts.length).toBeGreaterThan(0)
+    expect(posts.every((post: Record<string, unknown>) => !("body" in post))).toBe(true)
+    expect(posts[0].url).toContain("adityakarnam.com")
+  })
+
+  it("calls get_thought over JSON-RPC", async () => {
+    const response = await handlePortfolioMcpRequest(
+      postJson({
+        jsonrpc: "2.0",
+        id: 23,
+        method: "tools/call",
+        params: { name: "get_thought", arguments: { slug_or_title: "portfolio-mcp-server" } },
+      }),
+      data
+    )
+    const body = await response.json()
+
+    expect(body.result.content[0].text).toContain("\"found\": true")
+    expect(body.result.content[0].text).toContain("Model Context Protocol")
+  })
+
   it("calls get_profile", async () => {
     const response = await handlePortfolioMcpRequest(
       postJson({ jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "get_profile", arguments: {} } }),

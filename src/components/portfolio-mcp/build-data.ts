@@ -6,6 +6,7 @@ import {
   siteIdentity,
   systems,
 } from "../world-model/data"
+import { THOUGHTS_POSTS } from "./generated/thoughts-posts"
 import {
   PORTFOLIO_DATA_VERSION,
   PORTFOLIO_MCP_DISPLAY_NAME,
@@ -61,6 +62,8 @@ export const buildPortfolioMcpData = (input: PortfolioMcpBuildInput = {}): Portf
     }
   })
 
+  const thoughts = THOUGHTS_POSTS
+
   const recentWork = [
     ...projects.map((project) => ({
       title: project.name,
@@ -71,6 +74,16 @@ export const buildPortfolioMcpData = (input: PortfolioMcpBuildInput = {}): Portf
       summary: project.systemBuilt,
       tags: project.tags,
       sourceUrls: project.sourceUrls,
+    })),
+    ...thoughts.map((post) => ({
+      title: post.title,
+      type: "post" as const,
+      slug: post.slug,
+      dateOrStatus: post.date,
+      url: post.url,
+      summary: post.description,
+      tags: post.tags.length > 0 ? post.tags : ["thoughts"],
+      sourceUrls: [post.url],
     })),
     ...fieldNotes.map((note) => ({
       title: note.title,
@@ -90,7 +103,7 @@ export const buildPortfolioMcpData = (input: PortfolioMcpBuildInput = {}): Portf
     name: PORTFOLIO_MCP_NAME,
     displayName: PORTFOLIO_MCP_DISPLAY_NAME,
     description:
-      "Public read-only MCP server for Aditya Karnam's portfolio, recent work, systems, research agenda, and source links.",
+      "Public read-only MCP server for Aditya Karnam's portfolio, recent work, systems, blog posts, research agenda, and source links.",
     transport: PORTFOLIO_MCP_TRANSPORT,
     mcpUrl: PORTFOLIO_MCP_URL,
     installPageUrl: PORTFOLIO_MCP_INSTALL_URL,
@@ -101,7 +114,13 @@ export const buildPortfolioMcpData = (input: PortfolioMcpBuildInput = {}): Portf
     generatedAt,
     sourceCommit,
     dataScope: {
-      exposes: ["public projects", "public posts", "public systems", "research agenda", "source links"],
+      exposes: [
+        "public projects",
+        "public blog posts (Thoughts), including full post text",
+        "public systems",
+        "research agenda",
+        "source links",
+      ],
       doesNotExpose: [
         "private files",
         "email",
@@ -132,6 +151,7 @@ export const buildPortfolioMcpData = (input: PortfolioMcpBuildInput = {}): Portf
         "The strongest engineering signal is practical systems work around local-first agent infrastructure, backend-agnostic retrieval, model routing, and evaluation tooling.",
     },
     projects,
+    thoughts,
     researchAgenda: researchAgenda.map((track) => ({ ...track, sourceUrls: [`${PORTFOLIO_SITE_URL}/stack/`] })),
     recentWork,
     operatingPrinciples,

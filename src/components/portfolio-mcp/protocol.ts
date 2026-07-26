@@ -78,12 +78,43 @@ const toolDescriptions = [
   },
   {
     name: "get_recent_work",
-    description: "Get recent public work across systems and field notes.",
+    description: "Get recent public work across systems, blog posts, and field notes.",
     inputSchema: {
       type: "object",
       properties: {
         limit: { type: "number", description: "Max items to return (1-30, default 10)." },
+        type: {
+          type: "string",
+          enum: ["project", "post", "field-note", "project-page"],
+          description: "Optional filter to one kind of work item.",
+        },
       },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "list_thoughts",
+    description:
+      "List Aditya Karnam's public blog posts from the Thoughts feed (adityakarnam.com/blog/) with dates, tags, excerpts, and URLs.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        tags: { type: "array", items: { type: "string" }, description: "Filter to posts matching any of these tags." },
+        query: { type: "string", description: "Filter to posts whose title, description, or tags contain this text." },
+        limit: { type: "number", description: "Max posts to return (1-50, default 20)." },
+      },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "get_thought",
+    description: "Get the full text of one blog post from the Thoughts feed by slug or title.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        slug_or_title: { type: "string", description: "The post's slug or title." },
+      },
+      required: ["slug_or_title"],
       additionalProperties: false,
     },
   },
@@ -113,6 +144,7 @@ const toolDescriptions = [
 const resources = [
   { uri: "portfolio://profile", name: "Profile", mimeType: "application/json" },
   { uri: "portfolio://systems", name: "Systems", mimeType: "application/json" },
+  { uri: "portfolio://thoughts", name: "Thoughts (Blog Posts)", mimeType: "application/json" },
   { uri: "portfolio://research-agenda", name: "Research Agenda", mimeType: "application/json" },
   { uri: "portfolio://recent-work", name: "Recent Work", mimeType: "application/json" },
   { uri: "portfolio://recruiter-guide", name: "Recruiter Guide", mimeType: "application/json" },
@@ -122,6 +154,8 @@ const resources = [
 const readJsonResource = (data: PortfolioMcpData, uri: string) => {
   if (uri === "portfolio://profile") return data.profile
   if (uri === "portfolio://systems") return data.projects
+  // The resource is an index; full post text is served by the get_thought tool.
+  if (uri === "portfolio://thoughts") return data.thoughts.map(({ body: _body, ...post }) => post)
   if (uri === "portfolio://research-agenda") return data.researchAgenda
   if (uri === "portfolio://recent-work") return data.recentWork
   if (uri === "portfolio://recruiter-guide") {
