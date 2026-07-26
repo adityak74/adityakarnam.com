@@ -2,6 +2,7 @@ import fs from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import matter from "gray-matter"
+import { slugify } from "@lekoarts/themes-utils"
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(dirname, "..")
@@ -15,6 +16,17 @@ const SITE_URL = "https://adityakarnam.com"
 const isAutoblog = (tags) => tags.some((tag) => String(tag).toLowerCase() === "autoblog")
 
 const absoluteUrl = (slug) => `${SITE_URL}/${slug}/`
+
+/**
+ * Resolves the URL Gatsby actually publishes a post at.
+ *
+ * Posts without a `slug` in frontmatter get one derived from the title, so this
+ * defers to the theme's own `slugify` rather than reimplementing it. Frontmatter
+ * `canonicalUrl` is deliberately not trusted: several posts carry a stale one
+ * that points at the source directory name and 404s.
+ */
+const resolveSlug = (frontmatter) =>
+  slugify({ slug: frontmatter.slug, title: frontmatter.title }, "").replace(/^\/+|\/+$/g, "")
 
 /**
  * MDX bodies carry imports and JSX component calls that are meaningless as prose.
@@ -61,7 +73,7 @@ export const collectThoughtsPosts = (dir = postsDir) => {
     )
     if (isAutoblog(tags)) continue
 
-    const slug = String(data.slug || "").replace(/^\/+|\/+$/g, "")
+    const slug = resolveSlug(data)
     if (!slug) continue
 
     const body = toPlainBody(content)
@@ -73,7 +85,7 @@ export const collectThoughtsPosts = (dir = postsDir) => {
       description: String(data.description || "").trim() || toExcerpt(body),
       excerpt: toExcerpt(body),
       tags: tags.filter(Boolean),
-      url: String(data.canonicalUrl || absoluteUrl(slug)).replace(/([^:]\/)\/+/g, "$1"),
+      url: absoluteUrl(slug),
       wordCount: body.split(/\s+/).filter(Boolean).length,
       body,
     })
