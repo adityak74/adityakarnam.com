@@ -155,6 +155,28 @@ engineering notes`}
         </SectionBlock>
 
         <SectionBlock
+          eyebrow="Books"
+          title="AI Systems Design Field Guide"
+          description="A field guide to model APIs, agent runtimes, MCP, A2A, and production engineering — free to read online."
+        >
+          <ConsoleCard title="Book · 2026" accent={consoleColors.accent}>
+            <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [3, 4], mt: 0, mb: 2, lineHeight: 1.15 }}>
+              AI Systems Design Field Guide
+            </Heading>
+            <Text sx={{ color: consoleColors.muted, mb: 3 }}>
+              A short field guide covering model APIs, agent runtimes, MCP, A2A, and the production engineering that
+              ties them together.
+            </Text>
+            <Link
+              to="/field-guide/"
+              sx={{ color: consoleColors.accent, fontFamily: `monospace`, textDecoration: `none` }}
+            >
+              Read the field guide
+            </Link>
+          </ConsoleCard>
+        </SectionBlock>
+
+        <SectionBlock
           eyebrow="My Papers"
           title="Published and in-progress research"
           description="Peer-reviewed and academic work I've authored, with more papers in progress or submitted to arXiv on the way."
