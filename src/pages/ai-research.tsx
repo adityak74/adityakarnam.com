@@ -163,13 +163,13 @@ engineering notes`}
             <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [3, 4], mt: 0, mb: 2, lineHeight: 1.15 }}>
               AI Systems Design Field Guide
             </Heading>
-            <Text sx={{ color: consoleColors.muted, mb: 3 }}>
+            <Text sx={{ display: `block`, color: consoleColors.muted, mb: 3 }}>
               A short field guide covering model APIs, agent runtimes, MCP, A2A, and the production engineering that
               ties them together.
             </Text>
             <Link
               to="/ai-systems-design-field-guide/"
-              sx={{ color: consoleColors.accent, fontFamily: `monospace`, textDecoration: `none` }}
+              sx={{ display: `inline-block`, color: consoleColors.accent, fontFamily: `monospace`, textDecoration: `none` }}
             >
               Read the field guide
             </Link>

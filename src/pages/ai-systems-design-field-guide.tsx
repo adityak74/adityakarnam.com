@@ -35,10 +35,10 @@ const AiSystemsDesignFieldGuidePage = () => {
               >
                 AI Systems Design Field Guide
               </Heading>
-              <Text sx={{ color: consoleColors.muted, fontSize: [2, 2, 3], maxWidth: `60ch`, mb: 3 }}>
+              <Text sx={{ display: `block`, color: consoleColors.muted, fontSize: [2, 2, 3], maxWidth: `60ch`, mb: 3 }}>
                 A field guide to model APIs, agent runtimes, MCP, A2A, and production engineering.
               </Text>
-              <Text sx={{ color: consoleColors.soft, fontSize: [1, 2], maxWidth: `62ch` }}>
+              <Text sx={{ display: `block`, color: consoleColors.soft, fontSize: [1, 2], maxWidth: `62ch` }}>
                 Read it below, or open it in a new tab / download it if your browser can't render it inline.
               </Text>
               <Box sx={{ display: `flex`, gap: 3, flexWrap: `wrap`, mt: 3 }}>
