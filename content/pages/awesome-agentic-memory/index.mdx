@@ -73,6 +73,60 @@ slug: "/awesome-agentic-memory"
       </div>
     </div>
 
+    {/* Related on adityakarnam.com */}
+    <div style={{
+      background: "#1F1D16",
+      border: "1px solid #2B291F",
+      borderRadius: "12px",
+      padding: "2rem",
+      marginBottom: "3rem"
+    }}>
+      <h2 style={{ fontSize: "1.35rem", fontWeight: "700", color: "#E5E1D8", marginBottom: "0.5rem" }}>
+        🔗 Building agent memory yourself? Start here
+      </h2>
+      <p style={{ color: "#928D7E", marginBottom: "1.25rem", lineHeight: "1.7" }}>
+        If this list is useful, these deep-dives on adityakarnam.com cover the harness, retrieval, and MCP layers that agentic memory plugs into.
+      </p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1rem" }}>
+        {[
+          { title: "What Is an AI Agent Harness?", desc: "How memory, tools, retries, and verification fit into an agent's runtime.", url: "/ai-research/what-is-an-ai-agent-harness/" },
+          { title: "Building QuECTO", desc: "From a 1.3 MB minimal harness to an evaluable coding agent with session persistence.", url: "/ai-research/building-quecto-from-minimal-harness-to-evaluable-agent/" },
+          { title: "Persona-Adaptive RAG Chat", desc: "Grounded, multi-turn retrieval architecture built on Cloudflare AI Search.", url: "/hero-rag-chat-architecture/" },
+          { title: "I Turned My Portfolio Into an MCP Server", desc: "A hosted, read-only MCP server exposing my site's content to any MCP client.", url: "/portfolio-mcp-server/" },
+          { title: "subagent-fleet: Local AI Compute Control Plane", desc: "Routing coding-agent subagents across local Ollama machines.", url: "/subagent-fleet-local-ai-compute-control-plane/" },
+          { title: "AI Research Hub", desc: "All research posts on agents, harnesses, and reasoning systems in one place.", url: "/ai-research/" },
+        ].map(({ title, desc, url }) => (
+          <a key={url} href={url} style={{
+            display: "block",
+            background: "#15140F",
+            borderRadius: "8px",
+            padding: "1rem",
+            border: "1px solid #2B291F",
+            textDecoration: "none",
+            transition: "border-color 0.2s"
+          }}>
+            <div style={{ fontWeight: "600", color: "#E5E1D8", marginBottom: "0.35rem", fontSize: "0.95rem" }}>{title} →</div>
+            <div style={{ fontSize: "0.82rem", color: "#928D7E", lineHeight: "1.5" }}>{desc}</div>
+          </a>
+        ))}
+      </div>
+      <div style={{ marginTop: "1.25rem", textAlign: "center" }}>
+        <a href="/ai-toolkit/" style={{
+          display: "inline-block",
+          background: "#2B291F",
+          color: "#E5E1D8",
+          padding: "0.6rem 1.25rem",
+          borderRadius: "8px",
+          textDecoration: "none",
+          fontSize: "0.9rem",
+          fontWeight: "600",
+          border: "1px solid #2B291F"
+        }}>
+          Try the free AI Toolkit (prompt graders, composer, thread generator) →
+        </a>
+      </div>
+    </div>
+
     {/* Why It Matters */}
     <div style={{
       background: "#1F1D16",
@@ -689,8 +743,11 @@ slug: "/awesome-agentic-memory"
 
     {/* Footer */}
     <div style={{ textAlign: "center", paddingTop: "2rem", borderTop: "1px solid #2B291F" }}>
-      <p style={{ color: "#928D7E", fontSize: "0.85rem" }}>
+      <p style={{ color: "#928D7E", fontSize: "0.85rem", marginBottom: "0.75rem" }}>
         Curated with ❤️ · <a href="https://github.com/aviskaar/awesome-agentic-memory/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" style={{ color: "#E5E1D8", textDecoration: "none" }}>Contribute a project</a> · Licensed CC0
+      </p>
+      <p style={{ color: "#928D7E", fontSize: "0.85rem" }}>
+        More from adityakarnam.com: <a href="/ai-research/" style={{ color: "#E5E1D8", textDecoration: "underline" }}>AI Research</a> · <a href="/ai-toolkit/" style={{ color: "#E5E1D8", textDecoration: "underline" }}>AI Toolkit</a> · <a href="/field-notes/" style={{ color: "#E5E1D8", textDecoration: "underline" }}>Field Notes</a> · <a href="/about/" style={{ color: "#E5E1D8", textDecoration: "underline" }}>About</a>
       </p>
     </div>
 

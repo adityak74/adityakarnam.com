@@ -2,6 +2,7 @@ import * as React from "react";
 import LazyVideo from "./src/components/LazyVideo";
 import PromptComposer from "./src/components/PromptComposer";
 import PromptGrader from "./src/components/PromptGrader";
+import FablePromptGrader from "./src/components/FablePromptGrader";
 import TweetThreadGenerator from "./src/components/TweetThreadGenerator";
 
 // Global MDX components mapping for MDXProvider wrapping at runtime
@@ -14,6 +15,7 @@ export const wrapRootElement = ({ element }) => {
         LazyVideo,
         PromptComposer,
         PromptGrader,
+        FablePromptGrader,
         TweetThreadGenerator,
       }}
     >

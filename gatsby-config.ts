@@ -28,6 +28,10 @@ const config: GatsbyConfig = {
             slug: `/ai-research`,
           },
           {
+            title: `AI Toolkit`,
+            slug: `/ai-toolkit`,
+          },
+          {
             title: `Thoughts`,
             slug: `/blog`,
           },

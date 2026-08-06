@@ -278,6 +278,125 @@ slug: "/ai-toolkit"
         </div>
       </div>
 
+      {/* Fable Prompt Grader Card */}
+      <div style={{
+        backgroundColor: "#1F1D16",
+        borderRadius: "16px",
+        padding: "2rem",
+        border: "1px solid #2B291F",
+        boxShadow: "0 10px 25px rgba(0, 0, 0, 0.3)",
+        cursor: "pointer",
+        transition: "all 0.3s ease"
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = "translateY(-5px)";
+        e.currentTarget.style.boxShadow = "0 20px 40px rgba(0, 0, 0, 0.4)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = "0 10px 25px rgba(0, 0, 0, 0.3)";
+      }}
+      onClick={() => window.open('/ai-toolkit/fable-prompt-grader', '_blank')}
+      >
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          marginBottom: "1rem"
+        }}>
+          <div style={{
+            fontSize: "2.5rem",
+            marginRight: "0.75rem"
+          }}>
+            📖
+          </div>
+          <h3 style={{
+            fontSize: "1.5rem",
+            fontWeight: "600",
+            color: "#E5E1D8",
+            margin: 0
+          }}>
+            Fable Prompt Grader
+          </h3>
+        </div>
+
+        <p style={{
+          color: "#E5E1D8",
+          fontSize: "1rem",
+          lineHeight: "1.6",
+          marginBottom: "1.5rem"
+        }}>
+          Score and rewrite creative writing prompts for Claude's Fable model. Get feedback on voice, structure, and constraints for better short stories.
+        </p>
+
+        <div style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "0.5rem",
+          marginBottom: "1.5rem"
+        }}>
+          <span style={{
+            background: "#2B291F",
+            color: "#E5E1D8",
+            padding: "0.25rem 0.75rem",
+            borderRadius: "12px",
+            fontSize: "0.8rem",
+            fontWeight: "500"
+          }}>
+            Score 0-100
+          </span>
+          <span style={{
+            background: "#2B291F",
+            color: "#E5E1D8",
+            padding: "0.25rem 0.75rem",
+            borderRadius: "12px",
+            fontSize: "0.8rem",
+            fontWeight: "500"
+          }}>
+            Story Rewrites
+          </span>
+          <span style={{
+            background: "#2B291F",
+            color: "#E5E1D8",
+            padding: "0.25rem 0.75rem",
+            borderRadius: "12px",
+            fontSize: "0.8rem",
+            fontWeight: "500"
+          }}>
+            Scene Outlines
+          </span>
+        </div>
+
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between"
+        }}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            color: "#928D7E",
+            fontSize: "0.9rem"
+          }}>
+            <span>⚡</span>
+            <span>Free to Use</span>
+          </div>
+          <div style={{
+            background: "#E5E1D8",
+            color: "#15140F",
+            padding: "0.5rem 1rem",
+            borderRadius: "8px",
+            fontSize: "0.9rem",
+            fontWeight: "500",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem"
+          }}>
+            Try Now →
+          </div>
+        </div>
+      </div>
+
       {/* Tweet Thread Generator Card */}
       <div style={{
         backgroundColor: "#1F1D16",
