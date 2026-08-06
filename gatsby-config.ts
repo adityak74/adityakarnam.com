@@ -160,7 +160,19 @@ const config: GatsbyConfig = {
         open: false,
       },
     },
-    `gatsby-plugin-cloudflare-pages`,
+    {
+      resolve: `gatsby-plugin-cloudflare-pages`,
+      options: {
+        headers: {
+          // Cloudflare Pages merges headers from every matching rule rather than letting a more
+          // specific path override a less specific one, so a path-scoped override for /books/*
+          // would combine with this DENY into an invalid "DENY, SAMEORIGIN" value (still blocked).
+          // SAMEORIGIN site-wide still blocks cross-origin framing (clickjacking protection intact)
+          // while allowing the /ai-systems-design-field-guide/ page to embed its own PDF.
+          [`/*`]: [`X-Frame-Options: SAMEORIGIN`],
+        },
+      },
+    },
   ].filter(Boolean) as Array<PluginRef>,
 }
 
