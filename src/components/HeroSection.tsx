@@ -494,6 +494,97 @@ const HeroSection: React.FC = () => {
             </div>
           </a>
 
+          {/* quecto */}
+          <a
+            href="/quecto/"
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: "1rem",
+              padding: "1rem 1.25rem",
+              backgroundColor: colors.cardBg,
+              border: `1px solid ${colors.cardBorder}`,
+              borderRadius: "8px",
+              textDecoration: "none",
+              color: "inherit",
+              marginBottom: "2rem",
+              transition: "border-color 0.15s ease, transform 0.15s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = colors.accent;
+              e.currentTarget.style.transform = "translateY(-1px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = colors.cardBorder;
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.375rem", flexWrap: "wrap" }}>
+                <span
+                  style={{
+                    fontSize: "0.7rem",
+                    fontWeight: "600",
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    color: colors.accent,
+                    backgroundColor: isDark ? "rgba(224, 138, 107, 0.12)" : "rgba(217, 119, 87, 0.08)",
+                    padding: "0.15rem 0.5rem",
+                    borderRadius: "4px",
+                  }}
+                >
+                  Also Building
+                </span>
+                <span
+                  style={{
+                    fontSize: "0.95rem",
+                    fontWeight: "600",
+                    color: colors.heading,
+                    fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                  }}
+                >
+                  quecto
+                </span>
+              </div>
+              <p style={{ fontSize: "0.875rem", color: colors.secondary, margin: "0 0 0.5rem", lineHeight: "1.55" }}>
+                A minimal, vendor-neutral execution layer for LLM agents. One endpoint, zero async — a 1.3 MB core that scales to a 5.5 MB coding agent with reasoning controls, tools, verification, capsules, and OpenTelemetry tracing built in.
+              </p>
+              <code
+                style={{
+                  fontSize: "0.8rem",
+                  fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                  color: colors.accent,
+                  backgroundColor: isDark ? "rgba(224, 138, 107, 0.1)" : "rgba(217, 119, 87, 0.06)",
+                  padding: "0.15rem 0.5rem",
+                  borderRadius: "4px",
+                }}
+              >
+                Rust · LLM · OpenTelemetry
+              </code>
+            </div>
+            <div style={{ display: "flex", gap: "0.5rem", flexShrink: 0, alignItems: "center", paddingTop: "2px" }}>
+              <a
+                href="https://github.com/adityak74/quecto"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                title="GitHub"
+                style={{
+                  color: colors.secondary,
+                  fontSize: "1rem",
+                  display: "flex",
+                  alignItems: "center",
+                  transition: "color 0.15s ease",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = colors.heading; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = colors.secondary; }}
+              >
+                {React.createElement(FaGithubIcon)}
+              </a>
+              {React.createElement(FaExternalLinkAlt, { style: { color: colors.secondary, fontSize: "0.75rem" } })}
+            </div>
+          </a>
+
           {/* CTA */}
           <a
             href="/ai-toolkit"
