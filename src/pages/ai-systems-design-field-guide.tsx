@@ -14,7 +14,7 @@ import {
 
 const PDF_URL = "/books/ai-systems-design-field-guide.pdf"
 
-const FieldGuidePage = () => {
+const AiSystemsDesignFieldGuidePage = () => {
   return (
     <Layout>
       <Box sx={{ display: `grid`, gap: [3, 4], my: [3, 4] }}>
@@ -113,12 +113,12 @@ production engineering`}
   )
 }
 
-export default FieldGuidePage
+export default AiSystemsDesignFieldGuidePage
 
 export const Head: HeadFC = () => (
   <Seo
     title="AI Systems Design Field Guide | Aditya Karnam"
     description="A field guide to model APIs, agent runtimes, MCP, A2A, and production engineering — read online, free."
-    pathname="/field-guide/"
+    pathname="/ai-systems-design-field-guide/"
   />
 )

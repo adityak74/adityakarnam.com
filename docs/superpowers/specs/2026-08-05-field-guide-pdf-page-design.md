@@ -6,8 +6,8 @@ Aditya has a new short book, *AI Systems Design Field Guide* (37 pages, PDF, ~31
 
 ## Placement
 
-- New dedicated page at `/field-guide/` (`src/pages/field-guide.tsx`).
-- One cross-link added from `/ai-research/` (a `ConsoleCard` pointing to `/field-guide/`), so it's discoverable from the page where the rest of Aditya's writing/research lives.
+- New dedicated page at `/ai-systems-design-field-guide/` (`src/pages/ai-systems-design-field-guide.tsx`).
+- One cross-link added from `/ai-research/` (a `ConsoleCard` pointing to `/ai-systems-design-field-guide/`), so it's discoverable from the page where the rest of Aditya's writing/research lives.
 - No homepage or nav changes.
 
 ## Asset
@@ -15,7 +15,7 @@ Aditya has a new short book, *AI Systems Design Field Guide* (37 pages, PDF, ~31
 - Copy the PDF from `/Users/adityakarnam/Documents/Codex/2026-08-05/referenced-chatgpt-conversation-this-is-an/outputs/AI_Systems_Design_Field_Guide.pdf` into `static/books/ai-systems-design-field-guide.pdf` (new `static/books/` directory, parallel to the existing `static/papers/`).
 - Served at `/books/ai-systems-design-field-guide.pdf` in production (Gatsby copies `static/` verbatim to site root).
 
-## Page content (`/field-guide/`)
+## Page content (`/ai-systems-design-field-guide/`)
 
 Reuses the existing shared primitives from `src/components/world-model/pages-field-notes-about/primitives` (`ConsoleShell`, `SectionBlock`, `ConsoleCard`, `HeroStat`, `SignalPill`, `consoleColors`) so the page matches the visual language of `/ai-research/` and `/field-notes/`.
 
@@ -32,11 +32,11 @@ Reuses the existing shared primitives from `src/components/world-model/pages-fie
 3. **SEO** (`Head` export):
    - Title: "AI Systems Design Field Guide | Aditya Karnam"
    - Description: the book's subtitle
-   - `pathname="/field-guide/"`
+   - `pathname="/ai-systems-design-field-guide/"`
 
 ## Cross-link on `/ai-research/`
 
-Add one `ConsoleCard` (in the existing "Start here" section or a new small section) linking to `/field-guide/`, titled "AI Systems Design Field Guide" with a one-line description, using the same `Link`/card pattern already used for the other guide cards on that page (`what-is-an-ai-agent-harness`, `building-quecto`).
+Add one `ConsoleCard` (in the existing "Start here" section or a new small section) linking to `/ai-systems-design-field-guide/`, titled "AI Systems Design Field Guide" with a one-line description, using the same `Link`/card pattern already used for the other guide cards on that page (`what-is-an-ai-agent-harness`, `building-quecto`).
 
 ## Out of scope
 

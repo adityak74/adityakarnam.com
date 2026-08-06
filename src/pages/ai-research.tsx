@@ -168,7 +168,7 @@ engineering notes`}
               ties them together.
             </Text>
             <Link
-              to="/field-guide/"
+              to="/ai-systems-design-field-guide/"
               sx={{ color: consoleColors.accent, fontFamily: `monospace`, textDecoration: `none` }}
             >
               Read the field guide
