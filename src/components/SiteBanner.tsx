@@ -1,7 +1,6 @@
 import * as React from "react"
 import { Link } from "gatsby"
 
-const DISMISS_KEY = "site-banner-dismissed"
 const ROTATION_KEY = "site-banner-rotation"
 
 /** How long each promo stays on screen, and how long the crossfade takes. */
@@ -73,7 +72,6 @@ export const SiteBanner = () => {
   const [reducedMotion, setReducedMotion] = React.useState(false)
 
   React.useEffect(() => {
-    if (window.sessionStorage.getItem(DISMISS_KEY) === "true") return
     setReducedMotion(prefersReducedMotion())
     setIndex(openingIndex())
   }, [])
@@ -102,13 +100,6 @@ export const SiteBanner = () => {
   if (index === null) return null
 
   const promo = promos[index]
-
-  const dismiss = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-    event.stopPropagation()
-    window.sessionStorage.setItem(DISMISS_KEY, "true")
-    setIndex(null)
-  }
 
   const jumpTo = (target: number) => (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
@@ -192,23 +183,6 @@ export const SiteBanner = () => {
           />
         ))}
       </span>
-
-      <button
-        type="button"
-        onClick={dismiss}
-        aria-label="Dismiss banner"
-        style={{
-          background: "transparent",
-          border: "1px solid rgba(250,249,247,0.35)",
-          borderRadius: "6px",
-          color: "#FAF9F7",
-          cursor: "pointer",
-          fontSize: "0.8rem",
-          padding: "0.3rem 0.5rem",
-        }}
-      >
-        Dismiss
-      </button>
     </Link>
   )
 }
