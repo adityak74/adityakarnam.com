@@ -6,6 +6,7 @@ import HeaderTitle from "@lekoarts/gatsby-theme-minimal-blog/src/components/head
 import HeaderExternalLinks from "./header-external-links";
 import { PortfolioMcpBanner } from "../../../components/PortfolioMcpBanner";
 import { FablePromptGraderBanner } from "../../../components/FablePromptGraderBanner";
+import { FieldGuideBanner } from "../../../components/FieldGuideBanner";
 
 type HeaderProps = {
   children?: React.ReactNode;
@@ -18,6 +19,7 @@ const Header = ({ children }: HeaderProps) => {
     <header sx={{ mb: [5, 6], pt: [2, 3] }}>
       <PortfolioMcpBanner />
       <FablePromptGraderBanner />
+      <FieldGuideBanner />
       <div
         sx={{
           display: `flex`,
