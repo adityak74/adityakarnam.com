@@ -4,6 +4,10 @@ import { Link } from "gatsby"
 const DISMISS_KEY = "site-banner-dismissed"
 const ROTATION_KEY = "site-banner-rotation"
 
+/** How long each promo stays on screen, and how long the crossfade takes. */
+const SLIDE_MS = 6000
+const FADE_MS = 260
+
 type Promo = {
   key: string
   to: string
@@ -14,8 +18,8 @@ type Promo = {
 }
 
 /**
- * One promo shows at a time, advancing on each page load. Add or remove
- * entries here; ordering drives the rotation.
+ * The banner cycles through these on a timer. Add or remove entries here;
+ * ordering drives the rotation.
  */
 export const promos: Promo[] = [
   {
@@ -45,12 +49,11 @@ export const promos: Promo[] = [
 ]
 
 /**
- * Advances to the next promo on every page load, so every promo gets seen
- * within a few pageviews rather than needing a fresh browser session. The
- * counter lives in localStorage so the rotation continues across visits
- * instead of restarting at the first promo each time.
+ * Which promo the carousel opens on. Advancing a stored counter each page load
+ * means repeat visitors don't always start on the same promo, so no single
+ * entry monopolises the first impression.
  */
-const advanceIndex = (): number => {
+const openingIndex = (): number => {
   const previous = Number.parseInt(window.localStorage.getItem(ROTATION_KEY) ?? "", 10)
   const next = (Number.isInteger(previous) ? previous + 1 : 0) % promos.length
 
@@ -58,13 +61,43 @@ const advanceIndex = (): number => {
   return next
 }
 
+const prefersReducedMotion = () =>
+  typeof window.matchMedia === `function` && window.matchMedia(`(prefers-reduced-motion: reduce)`).matches
+
 export const SiteBanner = () => {
   const [index, setIndex] = React.useState<number | null>(null)
+  const [visible, setVisible] = React.useState(true)
+  // Paused while the visitor is reading (hover) or tabbing through (focus), so
+  // the promo they are about to click can't slide out from under them.
+  const [paused, setPaused] = React.useState(false)
+  const [reducedMotion, setReducedMotion] = React.useState(false)
 
   React.useEffect(() => {
     if (window.sessionStorage.getItem(DISMISS_KEY) === "true") return
-    setIndex(advanceIndex())
+    setReducedMotion(prefersReducedMotion())
+    setIndex(openingIndex())
   }, [])
+
+  const showing = index !== null
+  const autoRotating = showing && !paused && !reducedMotion && promos.length > 1
+
+  React.useEffect(() => {
+    if (!autoRotating) return undefined
+
+    let swapTimer: ReturnType<typeof setTimeout>
+    const tick = setInterval(() => {
+      setVisible(false)
+      swapTimer = setTimeout(() => {
+        setIndex((current) => (current === null ? current : (current + 1) % promos.length))
+        setVisible(true)
+      }, FADE_MS)
+    }, SLIDE_MS)
+
+    return () => {
+      clearInterval(tick)
+      clearTimeout(swapTimer)
+    }
+  }, [autoRotating])
 
   if (index === null) return null
 
@@ -77,9 +110,24 @@ export const SiteBanner = () => {
     setIndex(null)
   }
 
+  const jumpTo = (target: number) => (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    event.stopPropagation()
+    setIndex(target)
+    setVisible(true)
+  }
+
   return (
     <Link
       to={promo.to}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
+      // Touch devices have no hover, so without this a tap could land just as
+      // the promo swaps and send the visitor somewhere they didn't choose.
+      onTouchStart={() => setPaused(true)}
+      aria-label={`${promo.message} ${promo.cta}`}
       style={{
         alignItems: "center",
         background: promo.background,
@@ -91,26 +139,64 @@ export const SiteBanner = () => {
         padding: "0.7rem 1rem",
         position: "relative",
         textDecoration: "none",
+        transition: `background ${FADE_MS}ms ease`,
         zIndex: 20,
       }}
     >
-      <span style={{ fontSize: "0.95rem", lineHeight: 1.4 }}>{promo.message}</span>
       <span
         style={{
-          background: "#FAF9F7",
-          borderRadius: "6px",
-          color: promo.background,
-          fontSize: "0.85rem",
-          fontWeight: 600,
-          padding: "0.35rem 0.65rem",
+          alignItems: "center",
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "0.75rem",
+          justifyContent: "center",
+          opacity: visible ? 1 : 0,
+          transition: `opacity ${FADE_MS}ms ease`,
         }}
       >
-        {promo.cta}
+        <span style={{ fontSize: "0.95rem", lineHeight: 1.4 }}>{promo.message}</span>
+        <span
+          style={{
+            background: "#FAF9F7",
+            borderRadius: "6px",
+            color: promo.background,
+            fontSize: "0.85rem",
+            fontWeight: 600,
+            padding: "0.35rem 0.65rem",
+            transition: `color ${FADE_MS}ms ease`,
+            whiteSpace: "nowrap",
+          }}
+        >
+          {promo.cta}
+        </span>
       </span>
+
+      <span style={{ alignItems: "center", display: "flex", gap: "0.4rem" }} aria-hidden>
+        {promos.map((entry, position) => (
+          <button
+            key={entry.key}
+            type="button"
+            tabIndex={-1}
+            onClick={jumpTo(position)}
+            title={entry.label}
+            style={{
+              background: position === index ? "#FAF9F7" : "rgba(250,249,247,0.35)",
+              border: "none",
+              borderRadius: "50%",
+              cursor: "pointer",
+              height: "6px",
+              padding: 0,
+              transition: `background ${FADE_MS}ms ease`,
+              width: "6px",
+            }}
+          />
+        ))}
+      </span>
+
       <button
         type="button"
         onClick={dismiss}
-        aria-label={`Dismiss ${promo.label} banner`}
+        aria-label="Dismiss banner"
         style={{
           background: "transparent",
           border: "1px solid rgba(250,249,247,0.35)",
