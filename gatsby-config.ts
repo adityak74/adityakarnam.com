@@ -40,20 +40,8 @@ const config: GatsbyConfig = {
             slug: `/systems`,
           },
           {
-            title: `Stack`,
-            slug: `/stack`,
-          },
-          {
             title: `Field Notes`,
             slug: `/field-notes`,
-          },
-          {
-            title: `Now`,
-            slug: `/now`,
-          },
-          {
-            title: `Status`,
-            slug: `/status`,
           },
           {
             title: `Quecto`,

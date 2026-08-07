@@ -25,11 +25,15 @@ const Footer = () => {
       }}
     >
       <div>&copy; {new Date().getFullYear()} Aditya Karnam. World Model Infrastructure Lab.</div>
-      <div>
+      <div sx={{ display: `flex`, flexWrap: `wrap`, gap: 2, rowGap: 1 }}>
+        <Link href="/now/">Now</Link>
+        <span aria-hidden>·</span>
+        <Link href="/stack/">Stack</Link>
+        <span aria-hidden>·</span>
         <Link href="/field-notes/">Field Notes</Link>
-        {` · `}
+        <span aria-hidden>·</span>
         <Link href="/systems/">Current Systems</Link>
-        {` · `}
+        <span aria-hidden>·</span>
         <Link href="/status/">Status</Link>
       </div>
     </footer>
