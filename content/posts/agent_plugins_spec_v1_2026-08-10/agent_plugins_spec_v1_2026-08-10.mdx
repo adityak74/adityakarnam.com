@@ -1,6 +1,6 @@
 ---
 title: "Agent Plugins v1.0.0: One Plugin Format Instead of Five"
-description: "A close read of the Agent Plugins specification — what the portable core actually standardizes, what it deliberately leaves out, and what it means if you already ship plugins for Claude Code, Codex, or Cursor."
+description: "Agent Plugins v1.0.0 standardizes just 2 component types across 7 clients. What the portable core fixes, what it defers, and why Claude Code is missing."
 date: 2026-08-10
 slug: "/agent-plugins-spec-v1"
 canonicalUrl: "https://adityakarnam.com/agent-plugins-spec-v1/"
@@ -149,13 +149,15 @@ That graded-failure principle runs through the whole document, and it is the par
 
 Expansion is a single non-recursive textual pass, and text introduced by a replacement is never rescanned. No other variables expand. Unrecognized `${...}` text stays literal. This is the correct amount of templating — enough to write an absolute path you don't know at authoring time, not enough to become a language.
 
+Having [run an MCP server as a portfolio interface](/portfolio-mcp-server), the `PLUGIN_DATA` guarantee is the part I would have wanted most: a writable directory the client promises to preserve across updates removes the awkward question of where a server is allowed to keep its own state.
+
 **`command` is one token, never a shell string.** It is either a bare executable name resolved by platform search rules, or a plugin-relative `./` path. No interpolation. If you bundle a binary, you must use the relative form. The spec is candid that bare-name resolution differs across clients and tells conforming plugins not to depend on it.
 
 **`streamable-http` and `sse` are distinct declared transports, with no fallback.** Each server entry states its transport and the client uses that for the initial attempt. `sse` means specifically the deprecated MCP 2024-11-05 HTTP+SSE transport, not SSE responses inside Streamable HTTP — a distinction current client configs routinely blur. Clients must support at least one of stdio or Streamable HTTP; `sse` is optional.
 
 **Headers and `env` are explicitly not a secret mechanism.** The spec states outright that both are visible package data and that plugins must not embed credentials in either. There is no portable OAuth or credential-reference field in v1. Authorization is entirely client-managed, and an auth failure is a connection failure — not invalid configuration.
 
-## What is deliberately not in v1
+## What does v1 deliberately leave out?
 
 Two component types. Skills and MCP servers. That's the whole surface.
 
@@ -167,7 +169,7 @@ I think that is the right call and it is also the part that will frustrate peopl
 
 That is a real gap, not a footnote. A format that makes it one step easier to install a directory containing an executable and an MCP server config, while explicitly deferring provenance and permissions, has moved the distribution problem forward and the trust problem sideways. The spec doesn't pretend otherwise, which is better than most standards manage — but "clients handle it" is doing heavy lifting in the meantime.
 
-## Migrating is additive, not a rewrite
+## How do you migrate an existing plugin?
 
 The [example repository](https://github.com/agentplugins/agent-plugins-example) is the practical artifact here, and it ships a `migrate-agent-plugin` skill that encodes the workflow. The sequence it recommends:
 
@@ -193,8 +195,28 @@ Three things will tell us whether this held.
 
 For a spec written by five companies with competing products, v1.0.0 is remarkably restrained. It standardizes the parts that were genuinely the same everywhere, refuses to standardize the parts that weren't, and writes down its reasoning for both. I'd rather have a small correct floor than a large speculative one.
 
+## FAQ
+
+**What is the Agent Plugins specification?**
+An open, vendor-neutral standard for packaging reusable AI agent components into portable plugins. Version 1.0.0 was published on August 6, 2026. A plugin is a directory containing a required `plugin.json` manifest, plus optional `skills/` and `mcp.json` at fixed locations. It defines a package format only — there is no runtime, CLI, or registry.
+
+**Which clients support Agent Plugins?**
+Seven are listed as compatible: GitHub Copilot, ChatGPT & Codex, VS Code, Hermes Agent, Kiro, Cursor, and OpenClaw. All seven load Agent Skills and MCP servers; they differ only in which MCP transports they accept. Google is also shipping support in its Agents CLI and Data Agent Kit.
+
+**Does Claude Code support Agent Plugins?**
+Claude Code is not on the compatible-clients list as of this writing. This is notable because the spec adopts Agent Skills — the format Anthropic originated — verbatim for its skills component. The skill format already matches; the packaging format has not converged.
+
+**What component types does Agent Plugins v1 support?**
+Exactly two: Agent Skills and MCP servers. Hooks, slash commands, subagents, rules, and LSP servers are all excluded, because their formats are still considered too client-specific for a stable portable contract. Those live in client-owned reverse-domain extension directories that other clients ignore.
+
+**Does Agent Plugins v1 handle plugin security or signing?**
+No. v1.0.0 defines no trust model, permission declarations, sandboxing, signature or provenance verification, or secrets handling. All of these are listed as possible future work with nothing committed. The spec states explicitly that MCP `headers` and `env` are visible package data and must not carry credentials.
+
+**Do I have to rewrite my plugin to adopt it?**
+No — the recommended migration is additive. You add a root `plugin.json` and move reusable skills into `skills/<name>/SKILL.md` without deleting anything that currently works. A package can be a valid Agent Plugin and a valid client-native plugin simultaneously for as long as it needs to be.
+
 ---
 
-**Read the primary sources:** the [specification](https://agent-plugins.org/specification) (a single readable document — sections 4 through 9 are the substance), the [spec repository](https://github.com/agentplugins/agent-plugins-spec), the [example plugin](https://github.com/agentplugins/agent-plugins-example), and the [Vercel](https://vercel.com/blog/introducing-agent-plugins) and [Google](https://developers.googleblog.com/agent-plugins-package-your-skills-tools-and-more/) announcements.
+**Read the primary sources:** the specification itself is a single readable document — sections 4 through 9 are the substance — alongside the [spec repository](https://github.com/agentplugins/agent-plugins-spec) and the [Vercel announcement](https://vercel.com/blog/introducing-agent-plugins).
 
-If you're thinking about agent packaging more broadly, I've written about [what an AI agent harness actually is](/ai-research/what-is-an-ai-agent-harness), [building a minimal harness you can evaluate](/ai-research/building-quecto-from-minimal-harness-to-evaluable-agent), and [running an MCP server as a portfolio interface](/portfolio-mcp-server).
+If you're thinking about agent packaging more broadly, I've written about [what an AI agent harness actually is](/ai-research/what-is-an-ai-agent-harness) and [building a minimal harness you can evaluate](/ai-research/building-quecto-from-minimal-harness-to-evaluable-agent).
