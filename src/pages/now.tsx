@@ -7,9 +7,7 @@ import {
   Divider,
   InlineLink,
   Panel,
-  StatusRow,
   TagList,
-  ThreeColumnGrid,
   TwoColumnGrid,
   WorldModelHero,
   WorldModelPageShell,
@@ -176,33 +174,6 @@ const NowPage = (_props: PageProps) => (
       </WorldModelSection>
 
       <WorldModelSection
-        eyebrow="System Questions"
-        title="Questions that feel live right now"
-        description="These are not generic AI questions. They are the concrete design tensions implied by the current codebase and writing."
-      >
-        <ThreeColumnGrid>
-          <Panel accent="cyan">
-            <StatusRow
-              label="Routing"
-              value="When should a planner, implementer, and reviewer share a model, and when should runtime topology force specialization?"
-            />
-          </Panel>
-          <Panel accent="green">
-            <StatusRow
-              label="Memory"
-              value="What belongs in retrieval, what belongs in persistent state, and how should recency and feedback alter ranking over time?"
-            />
-          </Panel>
-          <Panel accent="slate">
-            <StatusRow
-              label="Evaluation"
-              value="How much visibility is enough for operators to trust multi-step agent behavior without drowning in traces?"
-            />
-          </Panel>
-        </ThreeColumnGrid>
-      </WorldModelSection>
-
-      <WorldModelSection
         eyebrow="Reading Path"
         title="If you want to understand the current wedge"
         description="This is the shortest path through the existing work if you want the thesis before the broader site catches up."
@@ -225,27 +196,6 @@ const NowPage = (_props: PageProps) => (
               writing likely expands next.
             </p>
             <ConsoleList items={plannedArtifacts.map(item => `planned field note: ${item}`)} />
-          </Panel>
-        </TwoColumnGrid>
-      </WorldModelSection>
-
-      <WorldModelSection
-        eyebrow="Cross Links"
-        title="Other pages in this lab slice"
-        description="The new pages are designed to work together rather than exist as isolated navigational stubs."
-      >
-        <TwoColumnGrid>
-          <Panel accent="cyan">
-            <p style={{ color: labPalette.body }}>
-              <InlineLink to="/systems/">Systems</InlineLink> is the artifact index. It reframes
-              projects into runtime, retrieval, memory, and operator-surface layers.
-            </p>
-          </Panel>
-          <Panel accent="green">
-            <p style={{ color: labPalette.body }}>
-              <InlineLink to="/stack/">Stack</InlineLink> defines the AI agent infrastructure
-              category and maps each layer to the existing body of work.
-            </p>
           </Panel>
         </TwoColumnGrid>
       </WorldModelSection>

@@ -6,12 +6,9 @@ import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
 import {
   ConsoleList,
   Divider,
-  InlineLink,
   Panel,
   StatusRow,
   TagList,
-  ThreeColumnGrid,
-  TwoColumnGrid,
   WorldModelHero,
   WorldModelPageShell,
   WorldModelSection,
@@ -163,40 +160,6 @@ const SystemsPage = (_props: PageProps) => (
       <Divider />
 
       <WorldModelSection
-        eyebrow="Stack Fit"
-        title="The systems ladder"
-        description="The projects do different jobs, but they fit together as one thesis. Local runtime control, durable retrieval, operator-facing interfaces, and memory research are separate layers of the same emerging stack."
-      >
-        <ThreeColumnGrid>
-          <Panel accent="cyan">
-            <h3 style={{ marginTop: 0, color: labPalette.heading }}>Runtime + routing</h3>
-            <p style={{ color: labPalette.body }}>
-              <InlineLink to="/subagent-fleet-local-ai-compute-control-plane">
-                subagent-fleet
-              </InlineLink>{" "}
-              is the clearest runtime artifact: role-aware routing, warmup, health checks, and a
-              visible control plane for local coding agents.
-            </p>
-          </Panel>
-          <Panel accent="green">
-            <h3 style={{ marginTop: 0, color: labPalette.heading }}>Memory + retrieval</h3>
-            <p style={{ color: labPalette.body }}>
-              <InlineLink to="/embenx-python-embedding-toolkit">embenx</InlineLink> and{" "}
-              <InlineLink to="/awesome-agentic-memory/">awesome-agentic-memory</InlineLink> cover
-              the retrieval and memory layer from two sides: implementation and landscape mapping.
-            </p>
-          </Panel>
-          <Panel accent="slate">
-            <h3 style={{ marginTop: 0, color: labPalette.heading }}>Interfaces + eval hints</h3>
-            <p style={{ color: labPalette.body }}>
-              <InlineLink to="/ai-toolkit">AI Toolkit</InlineLink> keeps human operators in the
-              loop with explicit structure, scoring heuristics, and reproducible prompt surfaces.
-            </p>
-          </Panel>
-        </ThreeColumnGrid>
-      </WorldModelSection>
-
-      <WorldModelSection
         eyebrow="Artifact Index"
         title="Current systems"
         description="Each page below is framed as a system with a question, a build artifact, and a claim about what the next AI infrastructure layer needs."
@@ -282,29 +245,6 @@ const SystemsPage = (_props: PageProps) => (
             </Panel>
           ))}
         </div>
-      </WorldModelSection>
-
-      <WorldModelSection
-        eyebrow="Next Reads"
-        title="Continue through the lab"
-        description="The systems page is the artifact index. The other two pages in this slice explain the architecture and what is currently being pushed forward."
-      >
-        <TwoColumnGrid>
-          <Panel accent="cyan">
-            <h3 style={{ marginTop: 0, color: labPalette.heading }}>Read the stack</h3>
-            <p style={{ color: labPalette.body }}>
-              The <InlineLink to="/stack/">stack page</InlineLink> turns the thesis into a concrete
-              systems map: runtime, memory, retrieval, simulation, tools, routing, and evaluation.
-            </p>
-          </Panel>
-          <Panel accent="green">
-            <h3 style={{ marginTop: 0, color: labPalette.heading }}>Read the now board</h3>
-            <p style={{ color: labPalette.body }}>
-              The <InlineLink to="/now/">now page</InlineLink> captures the current active fronts:
-              local compute orchestration, memory infrastructure, and practical builder tooling.
-            </p>
-          </Panel>
-        </TwoColumnGrid>
       </WorldModelSection>
     </WorldModelPageShell>
   </Layout>

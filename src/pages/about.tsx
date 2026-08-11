@@ -14,34 +14,6 @@ import {
   TwoColumnGrid,
   consoleColors,
 } from "../components/world-model/pages-field-notes-about/primitives"
-import { Panel } from "../components/world-model/pages-systems-stack-now/WorldModelPageChrome"
-
-const operatingLoop = [
-  {
-    step: "Observe",
-    detail: "Capture signals from users, tools, files, environments, and execution traces before acting.",
-  },
-  {
-    step: "Model",
-    detail: "Maintain an explicit state of goals, constraints, resources, and prior decisions instead of relying on one prompt window.",
-  },
-  {
-    step: "Simulate",
-    detail: "Evaluate routes, tool choices, and likely outcomes before spending tokens, time, or trust.",
-  },
-  {
-    step: "Act",
-    detail: "Use runtimes, tools, and model interfaces that make agent behavior legible rather than mysterious.",
-  },
-  {
-    step: "Evaluate",
-    detail: "Score outputs over time: correctness, traceability, cost, recovery behavior, and system drift.",
-  },
-  {
-    step: "Update",
-    detail: "Write learnings back into memory and routing policy so the system gets better with use.",
-  },
-]
 
 const proofPoints = [
   {
@@ -184,38 +156,6 @@ status: ready`}
               </Text>
             </ConsoleCard>
           </ThreeColumnGrid>
-        </SectionBlock>
-
-        <SectionBlock
-          eyebrow="Operating Loop"
-          title="Observe -> Model -> Simulate -> Act -> Evaluate -> Update"
-          description="This is the recurring frame behind the site. It is how I think agent systems move from prompt chains toward stateful, inspectable behavior."
-        >
-          <Grid sx={{ gridTemplateColumns: [`1fr`, `repeat(2, minmax(0, 1fr))`, `repeat(3, minmax(0, 1fr))`], gap: 3 }}>
-            {operatingLoop.map((item, index) => (
-              <Panel key={item.step} accent={index % 2 === 0 ? consoleColors.accent : consoleColors.accentAlt}>
-                <div style={{ display: "grid", gap: "0.75rem" }}>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: "0.75rem", flexWrap: "wrap" }}>
-                    <span
-                      style={{
-                        color: consoleColors.soft,
-                        fontFamily: "monospace",
-                        fontSize: "0.74rem",
-                        letterSpacing: "0.08em",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      0{index + 1}
-                    </span>
-                    <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [2, 3], m: 0, lineHeight: 1.15 }}>
-                      {item.step}
-                    </Heading>
-                  </div>
-                  <Text sx={{ color: consoleColors.muted, lineHeight: 1.7 }}>{item.detail}</Text>
-                </div>
-              </Panel>
-            ))}
-          </Grid>
         </SectionBlock>
 
         <SectionBlock
