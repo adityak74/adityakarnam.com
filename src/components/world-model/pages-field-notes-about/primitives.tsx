@@ -67,7 +67,7 @@ export const ConsoleShell = ({ children }: ShellProps) => (
           textTransform: `uppercase`,
         }}
       >
-        Aditya Karnam · World Model Infrastructure Lab
+        Aditya Karnam · AI Research Notes
       </Text>
     </Box>
     <Box sx={{ p: [2, 3, 4] }}>{children}</Box>
