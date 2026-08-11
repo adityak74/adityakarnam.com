@@ -1,27 +1,22 @@
 ---
-title: "embenx Guide: The Ultimate Python Library for Vector Search"
-description: "Learn how embenx provides a unified API for 15+ vector backends like FAISS and pgvector, featuring temporal memory for 71% better retrieval performance."
 date: 2026-04-05
 slug: "/embenx-python-embedding-toolkit"
-canonicalUrl: "https://adityakarnam.com/embenx-python-embedding-toolkit/"
 banner: "./embenx.png"
+title: "embenx: One Python API for 15+ Vector DBs"
+description: "embenx gives one Collection API over 15+ vector backends including FAISS, pgvector and Qdrant, plus hybrid search, temporal memory and a built-in MCP server."
 keywords:
   [
     "embenx",
-    "vector search",
-    "embeddings",
-    "python library",
-    "faiss",
-    "rag",
-    "hybrid search",
-    "agentic memory",
-    "temporal memory",
-    "mcp server",
-    "vector database",
-    "semantic search",
-    "retrieval",
-    "ai engineering",
+    "python vector search library",
+    "unified vector database api",
+    "faiss pgvector qdrant python",
+    "hybrid search python",
+    "temporal memory retrieval",
+    "agentic memory python",
+    "vector search mcp server",
+    "rag retrieval library",
   ]
+canonicalUrl: "https://adityakarnam.com/embenx-python-embedding-toolkit/"
 ---
 
 _A deep dive into embenx — the Python toolkit I built to stop rewriting vector search glue code every time I switch backends._
@@ -29,8 +24,6 @@ _A deep dive into embenx — the Python toolkit I built to stop rewriting vector
 Every RAG pipeline I've built started the same way: index some vectors with FAISS, get it working, then hit a wall. The data grows too big for in-memory search. Or the team wants to move to pgvector because they're already on Postgres. Or some benchmark shows ScaNN is 3× faster for the access pattern in question. Then begins the painful migration — different APIs, different index formats, different metadata handling, different reranking hooks.
 
 I got tired of it. So I built **embenx**.
-
-[Read more: Why agentic RAG is redefining our world → /ais-wild-ride-autonomous-agents-advanced-reasoning]
 
 ---
 
@@ -283,8 +276,6 @@ The adjusted score for `relevant` going negative is intentional — the system i
 
 {/* [ORIGINAL DATA] */}
 > **My observation from testing:** Running 10 feedback iterations on a collection of 1,000 synthetic documents improved P@5 from ~0.42 to ~0.71 after just 20 feedback signals. The self-healing mechanism is surprisingly data-efficient because it operates directly on retrieval scores rather than retraining weights.
-
-[Deep dive: How AI agents are redefining the exponential leap → /ai-exponential-leap-advanced-reasoning-ai-agents]
 
 ---
 
