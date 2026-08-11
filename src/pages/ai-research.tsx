@@ -302,7 +302,7 @@ export default AiResearchPage
 
 export const Head: HeadFC = () => (
   <Seo
-    title="AI Research Explained: Papers, Experiments & Engineering | Aditya Karnam"
+    title="AI Research Explained: Papers, Experiments & Engineering"
     description="Making AI papers, experiments, and engineering ideas easier to understand — my own research, explainers of other papers, and hands-on experiments from Aditya Karnam."
     pathname="/ai-research/"
   />
