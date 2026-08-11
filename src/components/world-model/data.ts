@@ -155,7 +155,7 @@ export const systems: SystemArtifact[] = [
     systemBuilt:
       "A Python retrieval library with a unified Collection API across 15+ vector backends, plus metadata filtering, reranking, hybrid search, temporal recall, and an MCP server.",
     whyItMatters:
-      "World-model-driven agents need a swappable and inspectable memory substrate. embenx reduces retrieval glue code while preserving the ability to choose the right storage backend per workload.",
+      "AI agents need a swappable and inspectable memory substrate. embenx reduces retrieval glue code while preserving the ability to choose the right storage backend per workload.",
     status: "Shipping / active",
     links: [
       { label: "Write-up", href: "/embenx-python-embedding-toolkit/" },
