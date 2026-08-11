@@ -70,3 +70,6 @@ src/components/portfolio-mcp/app/dist
 .idea
 .vscode
 .DS_Store
+
+# Synthetic benchmark dry-run output — never commit; real results are kept.
+scripts/benchmarks/results/*__DRYRUN.*
