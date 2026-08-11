@@ -5,10 +5,8 @@ import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
 import {
   ConsoleList,
   Divider,
-  InlineLink,
   Panel,
   StatusRow,
-  ThreeColumnGrid,
   TwoColumnGrid,
   WorldModelHero,
   WorldModelPageShell,
@@ -22,30 +20,6 @@ type ComponentStatus = {
   detail: string
   note: string
 }
-
-type HealthTile = {
-  name: string
-  state: string
-  detail: string
-}
-
-const healthTiles: HealthTile[] = [
-  {
-    name: "Research paper",
-    state: "Green",
-    detail: "The published thesis and field notes are online and reachable.",
-  },
-  {
-    name: "Building tools",
-    state: "Green",
-    detail: "The hero chat and supporting routes are available.",
-  },
-  {
-    name: "Tools",
-    state: "Green",
-    detail: "The systems pages, stack maps, and project artifacts are intact.",
-  },
-]
 
 const serviceStatus: ComponentStatus[] = [
   {
@@ -123,41 +97,6 @@ const StatusPage = (_props: PageProps) => (
       <Divider />
 
       <WorldModelSection
-        eyebrow="Current State"
-        title="All monitored site surfaces are green"
-        description="The status board highlights the pieces the site actually depends on: published content, tools, APIs, and the build/publish path."
-      >
-        <ThreeColumnGrid>
-          {healthTiles.map((tile) => (
-            <Panel key={tile.name} accent="green">
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.6rem",
-                  marginBottom: "0.8rem",
-                }}
-              >
-                <span
-                  aria-hidden="true"
-                  style={{
-                    width: "10px",
-                    height: "10px",
-                    borderRadius: "999px",
-                    background: "#2f8f4e",
-                    boxShadow: "0 0 0 4px rgba(47, 143, 78, 0.12)",
-                    flexShrink: 0,
-                  }}
-                />
-                <StatusRow label={tile.name} value={tile.state} />
-              </div>
-              <p style={{ color: labPalette.body, lineHeight: 1.7, margin: 0 }}>{tile.detail}</p>
-            </Panel>
-          ))}
-        </ThreeColumnGrid>
-      </WorldModelSection>
-
-      <WorldModelSection
         eyebrow="Service Map"
         title="What is up right now"
         description="These are the components that matter for visitors and for the publication workflow behind the site."
@@ -210,25 +149,6 @@ const StatusPage = (_props: PageProps) => (
           </Panel>
         </TwoColumnGrid>
       </WorldModelSection>
-
-      <WorldModelSection
-        eyebrow="Related"
-        title="Where to go next"
-        description="The status page is a lightweight operations view. The other pages explain the systems and the active work behind it."
-      >
-        <TwoColumnGrid>
-          <Panel accent="cyan">
-            <p style={{ color: labPalette.body, marginTop: 0 }}>
-              Read <InlineLink to="/systems/">Systems</InlineLink> for the artifact index and research-backed project map.
-            </p>
-          </Panel>
-          <Panel accent="green">
-            <p style={{ color: labPalette.body, marginTop: 0 }}>
-              Read <InlineLink to="/now/">Now</InlineLink> for the active fronts and current wedges in motion.
-            </p>
-          </Panel>
-        </TwoColumnGrid>
-      </WorldModelSection>
     </WorldModelPageShell>
   </Layout>
 )
@@ -238,7 +158,7 @@ export default StatusPage
 export const Head: HeadFC = () => (
   <Seo
     title="Status"
-    description="Service status page for Aditya Karnam's World Model Infrastructure Lab."
+    description="Service status page for Aditya Karnam, AI researcher."
     pathname="/status/"
   />
 )

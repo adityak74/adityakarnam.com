@@ -5,11 +5,7 @@ import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
 import {
   ConsoleList,
   Divider,
-  InlineLink,
   Panel,
-  TagList,
-  ThreeColumnGrid,
-  TwoColumnGrid,
   WorldModelHero,
   WorldModelPageShell,
   WorldModelSection,
@@ -18,7 +14,7 @@ import {
 
 const stackLayers = [
   {
-    layer: "World-model applications",
+    layer: "Applied systems",
     note: "Applications that need durable context, tool use, and long-horizon behavior instead of a single prompt-response loop.",
     work: "The public expression here is still emerging, but the supporting layers below are already visible in the codebase.",
   },
@@ -59,26 +55,17 @@ const stackLayers = [
   },
 ]
 
-const researchTracks = [
-  "How should agents maintain durable state about users, tasks, tools, and environments?",
-  "How should memory be retrieved, compressed, forgotten, and updated over long horizons?",
-  "How can agents test possible actions before acting instead of relying on single-shot generation?",
-  "How should systems route between local models, cloud models, tools, and specialized interfaces?",
-  "How do we evaluate systems that act over time rather than answer one prompt?",
-  "How can serious agent infrastructure remain local-first and inspectable for builders?",
-]
-
 const StackPage = (_props: PageProps) => (
   <Layout>
     <WorldModelPageShell>
       <WorldModelHero
-        eyebrow="World Model Stack"
+        eyebrow="Systems Stack"
         title="Building the systems layer between models and reliable agency."
         description="The next frontier is not just better conversation. It is infrastructure that lets models maintain state, retrieve memory, route intelligently, use tools, and remain inspectable while acting over time."
         aside={
           <ConsoleList
             items={[
-              "world-model applications",
+              "applied systems",
               "agent runtime",
               "state + memory",
               "retrieval + context",
@@ -95,7 +82,7 @@ const StackPage = (_props: PageProps) => (
 
       <WorldModelSection
         eyebrow="Stack Map"
-        title="The world model infrastructure stack"
+        title="The systems stack"
         description="This page defines the category through concrete layers and ties each layer back to work already published on this site."
       >
         <div style={{ display: "grid", gap: "1rem" }}>
@@ -144,85 +131,6 @@ const StackPage = (_props: PageProps) => (
           ))}
         </div>
       </WorldModelSection>
-
-      <WorldModelSection
-        eyebrow="Recurring Loop"
-        title="Observe → Model → Simulate → Act → Evaluate → Update"
-        description="This loop is the conceptual bridge between the current agent stack and more durable world-model systems. The site should keep returning to it because it makes the research direction legible."
-      >
-        <ThreeColumnGrid>
-          <Panel accent="cyan">
-            <h3 style={{ marginTop: 0, color: labPalette.heading }}>Observe + model</h3>
-            <p style={{ color: labPalette.body }}>
-              Retrieval and memory are the substrate for observation.{" "}
-              <InlineLink to="/embenx-python-embedding-toolkit">embenx</InlineLink> and{" "}
-              <InlineLink to="/awesome-agentic-memory/">awesome-agentic-memory</InlineLink> both
-              sit here.
-            </p>
-          </Panel>
-          <Panel accent="green">
-            <h3 style={{ marginTop: 0, color: labPalette.heading }}>Simulate + act</h3>
-            <p style={{ color: labPalette.body }}>
-              Runtime design and routing determine how the system turns plans into execution.{" "}
-              <InlineLink to="/subagent-fleet-local-ai-compute-control-plane">
-                subagent-fleet
-              </InlineLink>{" "}
-              is the local control-plane proof point.
-            </p>
-          </Panel>
-          <Panel accent="slate">
-            <h3 style={{ marginTop: 0, color: labPalette.heading }}>Evaluate + update</h3>
-            <p style={{ color: labPalette.body }}>
-              Behavior has to be visible enough to improve. Published fleet evals and prompt
-              scoring tooling are the current concrete signals in this repo.
-            </p>
-          </Panel>
-        </ThreeColumnGrid>
-      </WorldModelSection>
-
-      <WorldModelSection
-        eyebrow="Research Agenda"
-        title="The questions behind the stack"
-        description="The stack is useful only if it points at real questions. These are the six recurring research tracks suggested by the current body of work."
-      >
-        <TwoColumnGrid>
-          <Panel accent="cyan">
-            <ConsoleList items={researchTracks.slice(0, 3)} />
-          </Panel>
-          <Panel accent="green">
-            <ConsoleList items={researchTracks.slice(3)} />
-          </Panel>
-        </TwoColumnGrid>
-      </WorldModelSection>
-
-      <WorldModelSection
-        eyebrow="Grounding"
-        title="Where the current proof lives"
-        description="This stack page is only credible if it points back to real artifacts. These links are the current proof surfaces inside the site."
-      >
-        <TwoColumnGrid>
-          <Panel accent="cyan">
-            <h3 style={{ marginTop: 0, color: labPalette.heading }}>Primary artifacts</h3>
-            <TagList items={["runtime", "memory", "retrieval", "routing", "mcp", "evals"]} />
-            <div style={{ display: "grid", gap: "0.65rem", marginTop: "1rem" }}>
-              <InlineLink to="/subagent-fleet-local-ai-compute-control-plane">
-                subagent-fleet write-up
-              </InlineLink>
-              <InlineLink to="/embenx-python-embedding-toolkit">embenx guide</InlineLink>
-              <InlineLink to="/awesome-agentic-memory/">awesome-agentic-memory</InlineLink>
-              <InlineLink to="/ai-toolkit">AI Toolkit</InlineLink>
-            </div>
-          </Panel>
-          <Panel accent="green">
-            <h3 style={{ marginTop: 0, color: labPalette.heading }}>Related pages in this slice</h3>
-            <p style={{ color: labPalette.body }}>
-              <InlineLink to="/systems/">Systems</InlineLink> reframes projects as research
-              artifacts, while <InlineLink to="/now/">Now</InlineLink> captures the active fronts
-              that currently matter most.
-            </p>
-          </Panel>
-        </TwoColumnGrid>
-      </WorldModelSection>
     </WorldModelPageShell>
   </Layout>
 )
@@ -232,7 +140,7 @@ export default StackPage
 export const Head: HeadFC = () => (
   <Seo
     title="Stack"
-    description="A world model infrastructure stack page mapping runtime, memory, retrieval, routing, interfaces, and evaluation to Aditya Karnam's published work."
+    description="An AI agent infrastructure stack mapping runtime, memory, retrieval, routing, interfaces, and evaluation to Aditya Karnam's published work."
     pathname="/stack/"
   />
 )

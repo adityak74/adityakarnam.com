@@ -10,7 +10,6 @@ import {
   HeroStat,
   SectionBlock,
   SignalPill,
-  ThreeColumnGrid,
   consoleColors,
 } from "../components/world-model/pages-field-notes-about/primitives"
 
@@ -31,7 +30,7 @@ type FieldNotesData = {
 
 const plannedEssays = [
   {
-    title: "The Missing Infrastructure Layer for World-Model AI",
+    title: "The Missing Infrastructure Layer for Reliable AI Agents",
     status: "Priority draft",
     thesis:
       "Foundation models are not enough for real-world agency. The next category is the infrastructure around them: state, memory, simulation, routing, and evaluation.",
@@ -71,28 +70,6 @@ const plannedEssays = [
   },
 ]
 
-const readingPaths = [
-  {
-    topic: "World models",
-    steps: [
-      "Start with the infrastructure thesis below.",
-      "Read subagent-fleet for the runtime and routing angle.",
-      "Follow with embenx for retrieval and memory interfaces.",
-      "Use the Apple Silicon eval note for the local-serving and runtime-behavior layer.",
-      "Treat the remaining essays as the planned research map.",
-    ],
-  },
-  {
-    topic: "Local inference",
-    steps: [
-      "Begin with subagent-fleet for fleet orchestration and model routing.",
-      "Read the Ollama vs vLLM vs SGLang eval note for measured serving behavior on Apple Silicon.",
-      "Use MLX non-determinism as the reliability counterweight.",
-      "Then connect both to the planned local-first infrastructure essay.",
-    ],
-  },
-]
-
 const highlightedSlugs = [
   "/subagent-fleet-local-ai-compute-control-plane",
   "/benchmarking-local-llms-ollama-vllm-sglang-apple-silicon",
@@ -124,7 +101,7 @@ const FieldNotesPage = ({ data }: PageProps<FieldNotesData>) => {
         <ConsoleShell>
           <Grid sx={{ gridTemplateColumns: [`1fr`, `1fr`, `1.35fr 0.95fr`], gap: 3, alignItems: `start` }}>
             <Box>
-              <SignalPill>Field Notes / World Model Infrastructure Lab</SignalPill>
+              <SignalPill>Field Notes / AI Research</SignalPill>
               <Heading
                 as="h1"
                 sx={{
@@ -174,36 +151,9 @@ observability + evals`}
         </ConsoleShell>
 
         <SectionBlock
-          eyebrow="Publishing Thesis"
-          title="What this section is for"
-          description="Field Notes replaces a generic blog framing. The goal is to make the site read like an engineering research notebook rather than a list of disconnected posts."
-        >
-          <ThreeColumnGrid>
-            <ConsoleCard title="Thesis" accent={consoleColors.accent}>
-              <Text sx={{ color: consoleColors.muted }}>
-                The next frontier of AI is not conversation alone. It is systems that can model the world: maintain
-                state, remember context, route choices, and act through tools with less brittleness.
-              </Text>
-            </ConsoleCard>
-            <ConsoleCard title="Why now" accent={consoleColors.accentAlt}>
-              <Text sx={{ color: consoleColors.muted }}>
-                Bigger base models keep improving, but the missing layer is increasingly obvious when teams try to ship
-                persistent, multi-step, tool-using agents in practice.
-              </Text>
-            </ConsoleCard>
-            <ConsoleCard title="Editorial bar" accent={consoleColors.warning}>
-              <Text sx={{ color: consoleColors.muted }}>
-                Each note should make one strong claim, tie it to system design, and point back to public artifacts or
-                experiments already visible on the site.
-              </Text>
-            </ConsoleCard>
-          </ThreeColumnGrid>
-        </SectionBlock>
-
-        <SectionBlock
           eyebrow="Grounded Signals"
           title="Existing posts that already support the story"
-          description="These are the current notes and project write-ups that map most directly to the world model infrastructure framing."
+          description="These are the current notes and project write-ups that map most directly to the AI-researcher framing."
         >
           <Grid sx={{ gridTemplateColumns: [`1fr`, `repeat(2, minmax(0, 1fr))`], gap: 3 }}>
             {groundedPosts.map(post => (
@@ -245,51 +195,6 @@ observability + evals`}
           </Grid>
         </SectionBlock>
 
-        <SectionBlock
-          eyebrow="Reading Paths"
-          title="How to navigate the material"
-          description="Static reading paths keep the section useful before any dynamic AI layer or RAG interface is added."
-        >
-          <Grid sx={{ gridTemplateColumns: [`1fr`, `repeat(2, minmax(0, 1fr))`], gap: 3 }}>
-            {readingPaths.map(path => (
-              <ConsoleCard key={path.topic} title={path.topic}>
-                <Box as="ol" sx={{ pl: 3, my: 0, color: consoleColors.muted }}>
-                  {path.steps.map(step => (
-                    <li key={step} sx={{ mb: 2, pl: 1 }}>
-                      <Text sx={{ color: consoleColors.muted }}>{step}</Text>
-                    </li>
-                  ))}
-                </Box>
-              </ConsoleCard>
-            ))}
-          </Grid>
-        </SectionBlock>
-
-        <Box
-          sx={{
-            borderTop: `1px solid`,
-            borderColor: `divide`,
-            pt: 4,
-            display: `grid`,
-            gap: 2,
-          }}
-        >
-          <Heading as="h2" sx={{ fontSize: [3, 4] }}>
-            Next moves
-          </Heading>
-          <Text sx={{ color: `secondary`, maxWidth: `70ch` }}>
-            The highest-leverage publication sequence is the infrastructure thesis, then memory/state, then local-first
-            routing. That creates a coherent narrative arc before expanding into observability, MCP, or evaluation.
-          </Text>
-          <Box sx={{ display: `flex`, gap: 3, flexWrap: `wrap`, mt: 2 }}>
-            <Link to="/about/" sx={{ fontFamily: `monospace`, color: `accent`, textDecoration: `none` }}>
-              Read the positioning
-            </Link>
-            <Link to="/subagent-fleet-local-ai-compute-control-plane/" sx={{ fontFamily: `monospace`, color: `accent`, textDecoration: `none` }}>
-              Start with subagent-fleet
-            </Link>
-          </Box>
-        </Box>
       </Box>
     </Layout>
   )
@@ -300,7 +205,7 @@ export default FieldNotesPage
 export const Head: HeadFC = () => (
   <Seo
     title="Field Notes"
-    description="Field Notes for Aditya Karnam's World Model Infrastructure Lab: essays and source-grounded notes on memory, routing, local inference, and agent systems."
+    description="Field notes from Aditya Karnam, AI researcher: essays and source-grounded notes on memory, routing, local inference, and agent systems."
     pathname="/field-notes/"
   />
 )

@@ -15,8 +15,8 @@ export default Homepage
 
 export const Head: HeadFC = () => (
   <Seo
-    title="World Model Infrastructure Lab"
-    description="Aditya Karnam builds the infrastructure layer for world-model-driven AI: agents, memory, retrieval, local inference, model routing, and evals."
+    title="AI Researcher"
+    description="Aditya Karnam is an AI researcher building the infrastructure layer for reliable agents: memory, retrieval, local inference, model routing, and evals."
     pathname="/"
   />
 )

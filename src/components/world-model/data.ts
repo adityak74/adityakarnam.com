@@ -33,16 +33,16 @@ export type FieldNote = {
 
 export const siteIdentity = {
   name: "Aditya Karnam",
-  title: "World Model Infrastructure Builder",
-  labName: "World Model Infrastructure Lab",
-  tagline: "Building the infrastructure layer for world-model-driven AI.",
-  supportingLine: "Building the systems layer for agents that remember, simulate, and act.",
+  title: "AI Researcher",
+  labName: "AI Research Notes",
+  tagline: "Researching the infrastructure behind reliable AI agents.",
+  supportingLine: "Studying how agents remember, retrieve, route, and act — and building the systems that let them do it reliably.",
   subtitle: "Agents · Memory · Retrieval · Simulation · Local Inference · Evals",
   loop: ["Observe", "Model", "Simulate", "Act", "Evaluate", "Update"],
 }
 
 export const heroBootSequence = [
-  "initializing world model stack...",
+  "initializing systems stack...",
   "loading memory layer...",
   "routing local + cloud models...",
   "attaching tool interfaces...",
@@ -52,7 +52,7 @@ export const heroBootSequence = [
 
 export const worldModelStack: WorldModelLayer[] = [
   {
-    name: "World-Model Applications",
+    name: "Applied Systems",
     description: "Interfaces where persistent, stateful AI systems surface to users and operators.",
     relevantWork: ["Applied agent workflows", "AI Toolkit utilities", "Research notes"],
   },
@@ -122,78 +122,6 @@ export const researchAgenda: ResearchTrack[] = [
 
 export const systems: SystemArtifact[] = [
   {
-    name: "quecto",
-    slug: "/quecto-rust-ai-harness/",
-    tags: ["agent runtime", "local inference", "Rust", "zero-dependency", "coding agent"],
-    researchQuestion: "Can a fully functional AI coding agent harness be statically-linked, zero-async, and fit under 6 MB without sacrificing core functionality?",
-    systemBuilt:
-      "A Rust-native AI harness with a 1.3 MB core and a 5.5 MB coding agent, compiled to a single statically-linked binary with zero async overhead and no runtime dependencies.",
-    whyItMatters:
-      "Most AI agent frameworks bring heavy runtimes, async schedulers, and bloated dependency trees. quecto explores the opposite: minimal, auditable, locally-deployable harness infrastructure that can run anywhere a binary can run.",
-    status: "Active experiment",
-    links: [
-      { label: "GitHub", href: "https://github.com/adityak74/quecto" },
-    ],
-    explanationModes: {
-      "Research Idea":
-        "quecto asks whether the AI agent harness layer can be radically compressed: a statically-linked binary under 6 MB that still exposes the core primitives needed to drive a coding agent.",
-      "System Design":
-        "The harness separates a 1.3 MB core (model interface, tool dispatch, state) from a 5.5 MB coding agent shell, compiled with no async executor so the execution model is fully predictable.",
-      "Business Value":
-        "A zero-dependency binary means agents can be embedded in CI pipelines, edge systems, or airgapped machines without Python runtimes, async event loops, or platform-specific installs.",
-      "Code Walkthrough":
-        "Start with the Rust core crate, then inspect the tool dispatch layer, the agent shell that wraps it, and the static linking configuration that produces the final binary.",
-    },
-  },
-  {
-    name: "locobench",
-    slug: "/locobench-local-coding-model-benchmark/",
-    tags: ["evals", "benchmarks", "local inference", "coding models", "observability"],
-    researchQuestion: "How do local coding models actually compare on real coding tasks when measured with a standardized, reproducible benchmark?",
-    systemBuilt:
-      "LoCoBench, an open benchmark harness for evaluating local coding language models across standardized code-generation and problem-solving tasks with structured result output.",
-    whyItMatters:
-      "Choosing a local coding model today means guessing from blog posts. LoCoBench makes the tradeoffs measurable so builders can select the right model for their local-first agent stack based on real task performance.",
-    status: "Active experiment",
-    links: [
-      { label: "GitHub", href: "https://github.com/adityak74/locobench" },
-    ],
-    explanationModes: {
-      "Research Idea":
-        "LoCoBench asks whether a lightweight, reproducible harness can produce actionable comparisons between local coding models so teams pick based on evidence instead of benchmarks run on different hardware.",
-      "System Design":
-        "It defines a task corpus, a structured eval loop, and a result schema so benchmark runs are comparable across model versions, quantization levels, and inference runtimes.",
-      "Business Value":
-        "Teams building local-first agent stacks can use LoCoBench output directly to choose the model-size-to-quality tradeoff that fits their hardware budget and latency requirements.",
-      "Code Walkthrough":
-        "Start with the task definitions, then inspect the eval loop, runtime adapters, and the output schema that captures pass rate, latency, and token throughput per model.",
-    },
-  },
-  {
-    name: "learn-anything-24h",
-    slug: "/learn-anything-24h-claude-code-skill/",
-    tags: ["agent skills", "Claude Code", "active learning", "education", "prompt engineering"],
-    researchQuestion: "Can an AI agent scaffold a complete, structured 24-hour active-learning curriculum from any complex topic using only a single skill invocation?",
-    systemBuilt:
-      "A Claude Code / Codex skill that transforms any topic into a structured 24-hour sprint with active recall exercises, curated materials, and research paper integration.",
-    whyItMatters:
-      "Learning infrastructure for AI builders is underexplored. This skill bridges LLM tool-use and structured pedagogy, turning a model's knowledge synthesis capability into a repeatable onboarding harness for any technical domain.",
-    status: "Shipping",
-    links: [
-      { label: "GitHub", href: "https://github.com/adityak74/learn-anything-24h" },
-    ],
-    explanationModes: {
-      "Research Idea":
-        "learn-anything-24h explores whether agent skills can compress expert-level topic onboarding into a reproducible workflow, using active recall and spaced repetition principles rather than passive reading.",
-      "System Design":
-        "The skill decomposes a topic into learning modules, generates active-recall prompts per module, identifies canonical research papers, and structures the output as a timed 24-hour sprint.",
-      "Business Value":
-        "Builders entering a new technical domain (a new model architecture, a new backend, a new protocol) can use the skill to accelerate productive contribution from days to hours.",
-      "Code Walkthrough":
-        "Start with the skill entry point, then inspect the topic decomposition prompt, the active-recall generation step, the research paper lookup, and the final sprint structure assembly.",
-    },
-  },
-  {
     name: "subagent-fleet",
     slug: "/subagent-fleet-local-ai-compute-control-plane/",
     tags: ["local inference", "model routing", "coding agents", "Ollama", "LiteLLM"],
@@ -227,7 +155,7 @@ export const systems: SystemArtifact[] = [
     systemBuilt:
       "A Python retrieval library with a unified Collection API across 15+ vector backends, plus metadata filtering, reranking, hybrid search, temporal recall, and an MCP server.",
     whyItMatters:
-      "World-model-driven agents need a swappable and inspectable memory substrate. embenx reduces retrieval glue code while preserving the ability to choose the right storage backend per workload.",
+      "AI agents need a swappable and inspectable memory substrate. embenx reduces retrieval glue code while preserving the ability to choose the right storage backend per workload.",
     status: "Shipping / active",
     links: [
       { label: "Write-up", href: "/embenx-python-embedding-toolkit/" },
@@ -420,7 +348,7 @@ export const systems: SystemArtifact[] = [
 
 export const fieldNotes: FieldNote[] = [
   {
-    title: "The Missing Infrastructure Layer for World-Model AI",
+    title: "The Missing Infrastructure Layer for Reliable AI Agents",
     status: "planned field note",
     thesis:
       "Foundation models are not enough for reliable real-world agency. The next category is the infrastructure around them: state, memory, routing, simulation, and evals.",
@@ -470,7 +398,7 @@ export const lensOptions = [
 
 export const lensFallbacks: Record<string, string> = {
   "AI Researcher":
-    "Aditya's work sits in the infrastructure layer around world-model agents: memory, retrieval, model routing, local inference, and tool orchestration. The strongest research signal is the push from prompt chains toward inspectable, stateful systems.",
+    "Aditya's work sits in the infrastructure layer around AI agents: memory, retrieval, model routing, local inference, and tool orchestration. The strongest research signal is the push from prompt chains toward inspectable, stateful systems.",
   "Frontier Lab Recruiter":
     "Aditya's signal is the ability to turn emerging AI infrastructure ideas into usable systems: agent runtimes, retrieval layers, model routing, and local-first inference tooling grounded in real code.",
   Founder:
@@ -483,7 +411,7 @@ export const lensFallbacks: Record<string, string> = {
 
 export const askPromptSuggestions = [
   "What is Aditya's strongest AI infrastructure signal?",
-  "How does his work relate to world models?",
+  "What's the throughline across his systems work?",
   "Which project best shows agent systems depth?",
   "Explain subagent-fleet to a Staff Engineer.",
   "What should a frontier AI lab interview him for?",

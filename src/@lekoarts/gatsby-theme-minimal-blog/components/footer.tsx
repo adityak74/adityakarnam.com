@@ -8,7 +8,7 @@ const Footer = () => {
         boxSizing: `border-box`,
         display: `flex`,
         justifyContent: `space-between`,
-        mt: [7, 8],
+        mt: [5, 6],
         pt: 4,
         color: `secondary`,
         borderTop: `1px solid`,
@@ -24,7 +24,7 @@ const Footer = () => {
         gap: 2,
       }}
     >
-      <div>&copy; {new Date().getFullYear()} Aditya Karnam. World Model Infrastructure Lab.</div>
+      <div>&copy; {new Date().getFullYear()} Aditya Karnam. AI Researcher.</div>
       <div sx={{ display: `flex`, flexWrap: `wrap`, gap: 2, rowGap: 1 }}>
         <Link href="/now/">Now</Link>
         <span aria-hidden>·</span>

@@ -28,7 +28,7 @@ const Header = ({ children }: HeaderProps) => {
         <div>
           <HeaderTitle />
           <div sx={{ color: `secondary`, fontSize: 1, mt: 1, maxWidth: `26rem`, letterSpacing: `-0.01em` }}>
-            Building the infrastructure layer for world-model-driven AI.
+            AI researcher building the infrastructure layer for reliable agents.
           </div>
         </div>
       </div>

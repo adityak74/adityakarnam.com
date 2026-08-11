@@ -9,10 +9,10 @@ const config: GatsbyConfig = {
     // You can also add new values here to query them like usual
     // See all options: https://github.com/LekoArts/gatsby-themes/blob/main/themes/gatsby-theme-minimal-blog/gatsby-config.mjs
     siteTitle: `Aditya Karnam`,
-    siteTitleAlt: `Aditya Karnam — World Model Infrastructure Lab`,
-    siteHeadline: `Aditya Karnam builds the infrastructure layer for world-model-driven AI: memory, retrieval, model routing, local inference, agent runtimes, and evals.`,
+    siteTitleAlt: `Aditya Karnam — AI Researcher`,
+    siteHeadline: `Aditya Karnam is an AI researcher building the infrastructure layer around agents: memory, retrieval, model routing, local inference, agent runtimes, and evals.`,
     siteUrl: `https://adityakarnam.com`,
-    siteDescription: `Aditya Karnam is a world model infrastructure builder focused on agent runtimes, memory, retrieval, model routing, local inference, and evaluation systems.`,
+    siteDescription: `Aditya Karnam is an AI researcher focused on agent runtimes, memory, retrieval, model routing, local inference, and evaluation systems.`,
     siteImage: `/banner-aditya.png`,
     siteLanguage: `en`,
     author: `@aditya_karnam`,
@@ -105,9 +105,9 @@ const config: GatsbyConfig = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `Aditya Karnam - World Model Infrastructure Lab`,
+        name: `Aditya Karnam - AI Researcher`,
         short_name: `adityakarnam`,
-        description: `World model infrastructure, agent runtimes, memory, retrieval, routing, and evaluation systems by Aditya Karnam.`,
+        description: `AI research and infrastructure: agent runtimes, memory, retrieval, routing, and evaluation systems by Aditya Karnam.`,
         start_url: `/`,
         background_color: `#02090d`,
         display: `standalone`,

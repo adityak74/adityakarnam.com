@@ -14,34 +14,6 @@ import {
   TwoColumnGrid,
   consoleColors,
 } from "../components/world-model/pages-field-notes-about/primitives"
-import { Panel } from "../components/world-model/pages-systems-stack-now/WorldModelPageChrome"
-
-const operatingLoop = [
-  {
-    step: "Observe",
-    detail: "Capture signals from users, tools, files, environments, and execution traces before acting.",
-  },
-  {
-    step: "Model",
-    detail: "Maintain an explicit state of goals, constraints, resources, and prior decisions instead of relying on one prompt window.",
-  },
-  {
-    step: "Simulate",
-    detail: "Evaluate routes, tool choices, and likely outcomes before spending tokens, time, or trust.",
-  },
-  {
-    step: "Act",
-    detail: "Use runtimes, tools, and model interfaces that make agent behavior legible rather than mysterious.",
-  },
-  {
-    step: "Evaluate",
-    detail: "Score outputs over time: correctness, traceability, cost, recovery behavior, and system drift.",
-  },
-  {
-    step: "Update",
-    detail: "Write learnings back into memory and routing policy so the system gets better with use.",
-  },
-]
 
 const proofPoints = [
   {
@@ -102,7 +74,7 @@ const AboutPage = () => {
         <ConsoleShell>
           <Grid sx={{ gridTemplateColumns: [`1fr`, `1fr`, `1.45fr 0.95fr`], gap: 3, alignItems: `start` }}>
             <Box>
-              <SignalPill>Aditya Karnam - World Model Infrastructure Builder</SignalPill>
+              <SignalPill>Aditya Karnam - AI Researcher</SignalPill>
               <Heading
                 as="h1"
                 sx={{
@@ -121,7 +93,7 @@ const AboutPage = () => {
                 reliable over time.
               </Text>
               <Text sx={{ color: consoleColors.soft, fontSize: [1, 2], maxWidth: `62ch` }}>
-                World model infrastructure is the systems layer that lets AI maintain state, retrieve memory,
+                The systems layer around AI agents lets them maintain state, retrieve memory,
                 simulate outcomes, route between models, use tools, and interact with environments without collapsing
                 back into a one-shot prompt.
               </Text>
@@ -140,7 +112,7 @@ const AboutPage = () => {
               </Text>
               <Box as="pre" sx={{ m: 0, p: 0, bg: `transparent`, border: `none`, color: consoleColors.text, fontSize: 1 }}>
                 <code>
-                  {`initializing world model stack...
+                  {`initializing systems stack...
 loading memory layer...
 attaching retrieval interfaces...
 routing local + cloud models...
@@ -184,38 +156,6 @@ status: ready`}
               </Text>
             </ConsoleCard>
           </ThreeColumnGrid>
-        </SectionBlock>
-
-        <SectionBlock
-          eyebrow="Operating Loop"
-          title="Observe -> Model -> Simulate -> Act -> Evaluate -> Update"
-          description="This is the recurring frame behind the site. It is how I think agent systems move from prompt chains toward world-model behavior."
-        >
-          <Grid sx={{ gridTemplateColumns: [`1fr`, `repeat(2, minmax(0, 1fr))`, `repeat(3, minmax(0, 1fr))`], gap: 3 }}>
-            {operatingLoop.map((item, index) => (
-              <Panel key={item.step} accent={index % 2 === 0 ? consoleColors.accent : consoleColors.accentAlt}>
-                <div style={{ display: "grid", gap: "0.75rem" }}>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: "0.75rem", flexWrap: "wrap" }}>
-                    <span
-                      style={{
-                        color: consoleColors.soft,
-                        fontFamily: "monospace",
-                        fontSize: "0.74rem",
-                        letterSpacing: "0.08em",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      0{index + 1}
-                    </span>
-                    <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [2, 3], m: 0, lineHeight: 1.15 }}>
-                      {item.step}
-                    </Heading>
-                  </div>
-                  <Text sx={{ color: consoleColors.muted, lineHeight: 1.7 }}>{item.detail}</Text>
-                </div>
-              </Panel>
-            ))}
-          </Grid>
         </SectionBlock>
 
         <SectionBlock
@@ -314,7 +254,7 @@ export default AboutPage
 export const Head: HeadFC = () => (
   <Seo
     title="About"
-    description="Aditya Karnam builds world model infrastructure: memory, retrieval, routing, local inference, and evaluation systems for agents that operate over time."
+    description="Aditya Karnam is an AI researcher building the infrastructure layer for agents: memory, retrieval, routing, local inference, and evaluation systems."
     pathname="/about/"
   />
 )
