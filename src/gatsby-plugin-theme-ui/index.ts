@@ -7,6 +7,17 @@ const theme = merge(tailwind, {
     initialColorModeName: `light`,
     useColorSchemeMediaQuery: false,
   },
+  space: [
+    "0",
+    "0.25rem",
+    "0.5rem",
+    "1rem",
+    "2rem",
+    "3rem",
+    "4.5rem",
+    "7rem",
+    "32rem",
+  ],
   colors: {
     text: `#1A1A18`,
     background: `#FAF9F7`,
@@ -18,6 +29,8 @@ const theme = merge(tailwind, {
     divide: `#D8D4CC`,
     muted: `#F2F0EC`,
     highlightLineBg: `rgba(194, 82, 45, 0.06)`,
+    emphasisBg: `#1B1914`,
+    emphasisText: `#EDE8DD`,
     ...lightThemeVars,
     modes: {
       dark: {
@@ -31,6 +44,8 @@ const theme = merge(tailwind, {
         divide: `#D8D4CC`,
         muted: `#F2F0EC`,
         highlightLineBg: `rgba(194, 82, 45, 0.06)`,
+        emphasisBg: `#1B1914`,
+        emphasisText: `#EDE8DD`,
         ...darkThemeVars,
       },
     },
@@ -39,6 +54,7 @@ const theme = merge(tailwind, {
     body: `'Styrene A', 'Styrene B', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif`,
     heading: `'Styrene A', 'Styrene B', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif`,
     monospace: `'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, 'Courier New', monospace`,
+    serif: `Fraunces, Georgia, serif`,
   },
   fontWeights: {
     body: 400,
