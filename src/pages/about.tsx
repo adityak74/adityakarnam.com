@@ -121,7 +121,7 @@ const AboutPage = () => {
                 reliable over time.
               </Text>
               <Text sx={{ color: consoleColors.soft, fontSize: [1, 2], maxWidth: `62ch` }}>
-                World model infrastructure is the systems layer that lets AI maintain state, retrieve memory,
+                The systems layer around AI agents lets them maintain state, retrieve memory,
                 simulate outcomes, route between models, use tools, and interact with environments without collapsing
                 back into a one-shot prompt.
               </Text>
@@ -140,7 +140,7 @@ const AboutPage = () => {
               </Text>
               <Box as="pre" sx={{ m: 0, p: 0, bg: `transparent`, border: `none`, color: consoleColors.text, fontSize: 1 }}>
                 <code>
-                  {`initializing world model stack...
+                  {`initializing systems stack...
 loading memory layer...
 attaching retrieval interfaces...
 routing local + cloud models...
@@ -189,7 +189,7 @@ status: ready`}
         <SectionBlock
           eyebrow="Operating Loop"
           title="Observe -> Model -> Simulate -> Act -> Evaluate -> Update"
-          description="This is the recurring frame behind the site. It is how I think agent systems move from prompt chains toward world-model behavior."
+          description="This is the recurring frame behind the site. It is how I think agent systems move from prompt chains toward stateful, inspectable behavior."
         >
           <Grid sx={{ gridTemplateColumns: [`1fr`, `repeat(2, minmax(0, 1fr))`, `repeat(3, minmax(0, 1fr))`], gap: 3 }}>
             {operatingLoop.map((item, index) => (
@@ -314,7 +314,7 @@ export default AboutPage
 export const Head: HeadFC = () => (
   <Seo
     title="About"
-    description="Aditya Karnam builds world model infrastructure: memory, retrieval, routing, local inference, and evaluation systems for agents that operate over time."
+    description="Aditya Karnam is an AI researcher building the infrastructure layer for agents: memory, retrieval, routing, local inference, and evaluation systems that operate over time."
     pathname="/about/"
   />
 )

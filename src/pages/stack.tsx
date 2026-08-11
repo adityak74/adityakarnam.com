@@ -18,7 +18,7 @@ import {
 
 const stackLayers = [
   {
-    layer: "World-model applications",
+    layer: "Applied systems",
     note: "Applications that need durable context, tool use, and long-horizon behavior instead of a single prompt-response loop.",
     work: "The public expression here is still emerging, but the supporting layers below are already visible in the codebase.",
   },
@@ -78,7 +78,7 @@ const StackPage = (_props: PageProps) => (
         aside={
           <ConsoleList
             items={[
-              "world-model applications",
+              "applied systems",
               "agent runtime",
               "state + memory",
               "retrieval + context",
@@ -95,7 +95,7 @@ const StackPage = (_props: PageProps) => (
 
       <WorldModelSection
         eyebrow="Stack Map"
-        title="The world model infrastructure stack"
+        title="The systems stack"
         description="This page defines the category through concrete layers and ties each layer back to work already published on this site."
       >
         <div style={{ display: "grid", gap: "1rem" }}>
@@ -148,7 +148,7 @@ const StackPage = (_props: PageProps) => (
       <WorldModelSection
         eyebrow="Recurring Loop"
         title="Observe → Model → Simulate → Act → Evaluate → Update"
-        description="This loop is the conceptual bridge between the current agent stack and more durable world-model systems. The site should keep returning to it because it makes the research direction legible."
+        description="This loop is the conceptual bridge between the current agent stack and more durable, stateful systems. The site should keep returning to it because it makes the research direction legible."
       >
         <ThreeColumnGrid>
           <Panel accent="cyan">
@@ -232,7 +232,7 @@ export default StackPage
 export const Head: HeadFC = () => (
   <Seo
     title="Stack"
-    description="A world model infrastructure stack page mapping runtime, memory, retrieval, routing, interfaces, and evaluation to Aditya Karnam's published work."
+    description="A systems stack page mapping runtime, memory, retrieval, routing, interfaces, and evaluation to Aditya Karnam's published work."
     pathname="/stack/"
   />
 )

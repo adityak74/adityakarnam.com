@@ -31,7 +31,7 @@ type FieldNotesData = {
 
 const plannedEssays = [
   {
-    title: "The Missing Infrastructure Layer for World-Model AI",
+    title: "The Missing Infrastructure Layer for Reliable AI Agents",
     status: "Priority draft",
     thesis:
       "Foundation models are not enough for real-world agency. The next category is the infrastructure around them: state, memory, simulation, routing, and evaluation.",
@@ -203,7 +203,7 @@ observability + evals`}
         <SectionBlock
           eyebrow="Grounded Signals"
           title="Existing posts that already support the story"
-          description="These are the current notes and project write-ups that map most directly to the world model infrastructure framing."
+          description="These are the current notes and project write-ups that map most directly to the AI-researcher framing."
         >
           <Grid sx={{ gridTemplateColumns: [`1fr`, `repeat(2, minmax(0, 1fr))`], gap: 3 }}>
             {groundedPosts.map(post => (

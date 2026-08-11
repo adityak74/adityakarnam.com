@@ -77,7 +77,7 @@ const activeTracks: ActiveTrack[] = [
 ]
 
 const plannedArtifacts = [
-  "Missing infrastructure layer for world-model AI",
+  "Missing infrastructure layer for reliable AI agents",
   "From RAG to state: why agent memory is not just retrieval",
   "Local-first AI infrastructure for agent builders",
 ]
@@ -145,7 +145,7 @@ const NowPage = (_props: PageProps) => (
                   >
                     {track.title}
                   </h3>
-                  <TagList items={[track.status, "world model infrastructure"]} />
+                  <TagList items={[track.status, "AI agent infrastructure"]} />
                 </div>
                 <div>
                   <p style={{ color: labPalette.body, lineHeight: 1.75, margin: 0 }}>{track.detail}</p>
@@ -243,7 +243,7 @@ const NowPage = (_props: PageProps) => (
           </Panel>
           <Panel accent="green">
             <p style={{ color: labPalette.body }}>
-              <InlineLink to="/stack/">Stack</InlineLink> defines the world model infrastructure
+              <InlineLink to="/stack/">Stack</InlineLink> defines the AI agent infrastructure
               category and maps each layer to the existing body of work.
             </p>
           </Panel>

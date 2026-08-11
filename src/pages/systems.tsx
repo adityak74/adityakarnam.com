@@ -71,7 +71,7 @@ const systems: SystemEntry[] = [
     systemBuilt:
       "A Python retrieval library with a unified Collection API across 15+ vector backends, plus hybrid search, metadata filtering, reranking, temporal memory, self-healing retrieval, and a built-in MCP server.",
     whyItMatters:
-      "World-model systems need a memory layer that survives backend changes and exposes retrieval behavior explicitly instead of burying it in one-off adapters.",
+      "AI agent systems need a memory layer that survives backend changes and exposes retrieval behavior explicitly instead of burying it in one-off adapters.",
     status: "Shipping library · active development",
     proof: [
       "One API spans FAISS, pgvector, LanceDB, Milvus, Qdrant, and more.",
