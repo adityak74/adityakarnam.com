@@ -17,19 +17,18 @@ import HeroChat from "./HeroChat"
 const cardStyles = {
   border: "1px solid",
   borderColor: "divide",
-  borderRadius: "16px",
+  borderRadius: "10px",
   background: "#FFFFFF",
-  boxShadow: "0 1px 2px rgba(26,26,24,0.06)",
 }
 
 const sectionLabelStyles = {
   display: "inline-block",
-  color: "primary",
+  color: "secondary",
   fontFamily: "monospace",
-  fontSize: 0,
-  letterSpacing: "0.04em",
+  fontSize: "11px",
+  letterSpacing: "0.08em",
   textTransform: "uppercase" as const,
-  mb: 3,
+  mb: 2,
 }
 
 const HomepageConsole = () => {
@@ -40,9 +39,9 @@ const HomepageConsole = () => {
           position: "relative",
           overflow: "hidden",
           borderRadius: "16px",
-          px: [4, 5, 6],
-          py: [5, 6, 7],
-          mb: [6, 7],
+          px: [4, 5, 5],
+          py: [5, 5, 6],
+          mb: [5, 6],
           background:
             "radial-gradient(circle at top left, rgba(212, 165, 116, 0.16), transparent 26%), linear-gradient(180deg, #ffffff 0%, #faf9f7 100%)",
           border: "1px solid",
@@ -56,21 +55,22 @@ const HomepageConsole = () => {
             <Heading
               as="h1"
               sx={{
+                fontFamily: "serif",
                 fontSize: ["2.75rem", "3.75rem", "4.6rem"],
                 lineHeight: 1.04,
-                mb: 3,
+                mb: 2,
                 maxWidth: "11ch",
                 fontWeight: 500,
               }}
             >
               {siteIdentity.tagline}
             </Heading>
-            <Text sx={{ color: "secondary", fontSize: "17px", lineHeight: 1.65, maxWidth: "44rem", mb: 3 }}>
+            <Text sx={{ color: "secondary", fontSize: "17px", lineHeight: 1.65, maxWidth: "44rem", mb: 2 }}>
               I work on the systems layer behind next-generation AI agents: memory, retrieval, model routing,
               evaluation, local inference, and runtimes that help agents maintain state, simulate outcomes, and act
               reliably.
             </Text>
-            <Text sx={{ color: "secondary", fontSize: "17px", lineHeight: 1.65, maxWidth: "42rem", mb: 4 }}>
+            <Text sx={{ color: "secondary", fontSize: "17px", lineHeight: 1.65, maxWidth: "42rem", mb: 3 }}>
               The future of AI is not just larger language models. It is infrastructure that lets models understand
               environments, reason across time, and interact with the world.
             </Text>
@@ -93,6 +93,27 @@ const HomepageConsole = () => {
                 }}
               >
                 Explore Current Systems
+              </Link>
+              <Link
+                to="/ai-research/"
+                sx={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  color: "text",
+                  border: "1px solid",
+                  borderColor: "divide",
+                  px: 3,
+                  py: 2,
+                  borderRadius: "8px",
+                  textDecoration: "none",
+                  fontWeight: 500,
+                  ":hover": {
+                    borderColor: "primary",
+                    color: "primary",
+                  },
+                }}
+              >
+                Published Research
               </Link>
             </Flex>
           </Box>
@@ -118,12 +139,12 @@ const HomepageConsole = () => {
 
       <HeroChat />
 
-      <Grid columns={[1, null, "1.1fr 0.9fr"]} gap={[5, 6]} sx={{ mb: [6, 7] }}>
-        <Box sx={{ ...cardStyles, p: [4, 5] }}>
-          <Text sx={sectionLabelStyles}>The World Model Infrastructure Stack</Text>
-          <Text sx={{ color: "secondary", lineHeight: 1.65, mb: 4, fontSize: "17px" }}>
-            World-model-driven AI needs more than a foundation model. It needs infrastructure for state, memory,
-            retrieval, simulation, tool use, model routing, and evaluation. My work explores that connective tissue
+      <Grid columns={[1, null, "1.1fr 0.9fr"]} gap={[5, 6]} sx={{ mb: [5, 6] }}>
+        <Box sx={{ bg: "emphasisBg", color: "emphasisText", borderRadius: "10px", p: [4, 5] }}>
+          <Text sx={{ ...sectionLabelStyles, color: "#B8B2A0" }}>The Systems Layer</Text>
+          <Text sx={{ color: "#B8B2A0", lineHeight: 1.65, mb: 3, fontSize: "17px" }}>
+            AI agents need more than a foundation model. They need infrastructure for state, memory, retrieval,
+            simulation, tool use, model routing, and evaluation. My research explores that connective tissue
             between models and reliable action.
           </Text>
           <Grid columns={1} gap={3}>
@@ -132,18 +153,18 @@ const HomepageConsole = () => {
                 key={layer.name}
                 sx={{
                   borderTop: "1px solid",
-                  borderColor: index === 0 ? "divide" : "divide",
+                  borderColor: "rgba(237,232,221,0.16)",
                   pt: 3,
                 }}
               >
-                <Text sx={{ color: "primary", fontFamily: "monospace", fontSize: 0, mb: 1 }}>
+                <Text sx={{ color: "primary", fontFamily: "monospace", fontSize: "11px", mb: 1 }}>
                   Layer 0{index + 1}
                 </Text>
-                <Heading as="h3" sx={{ fontSize: ["1.35rem", "1.55rem"], mb: 2, fontWeight: 500 }}>
+                <Heading as="h3" sx={{ fontSize: ["1.35rem", "1.55rem"], mb: 2, fontWeight: 500, color: "emphasisText" }}>
                   {layer.name}
                 </Heading>
-                <Text sx={{ color: "secondary", lineHeight: 1.65, mb: 2, fontSize: "17px" }}>{layer.description}</Text>
-                <Text sx={{ color: "text", fontSize: 1 }}>Relevant work: {layer.relevantWork.join(" · ")}</Text>
+                <Text sx={{ color: "#B8B2A0", lineHeight: 1.65, mb: 2, fontSize: "17px" }}>{layer.description}</Text>
+                <Text sx={{ color: "#B8B2A0", fontSize: "14px" }}>Relevant work: {layer.relevantWork.join(" · ")}</Text>
               </Box>
             ))}
           </Grid>
@@ -166,13 +187,13 @@ const HomepageConsole = () => {
         </Box>
       </Grid>
 
-      <Box sx={{ ...cardStyles, p: [4, 5], mb: [6, 7] }}>
+      <Box sx={{ ...cardStyles, p: [4, 5], mb: [5, 6] }}>
         <Flex sx={{ justifyContent: "space-between", alignItems: "flex-end", gap: 3, flexWrap: "wrap", mb: 4 }}>
           <Box>
             <Text sx={sectionLabelStyles}>Current Systems</Text>
             <Text sx={{ color: "secondary", lineHeight: 1.65, maxWidth: "46rem", fontSize: "17px" }}>
-              Projects are framed here as research artifacts: each one explores a concrete question in the world-model
-              stack and makes the systems layer more legible.
+              Projects are framed here as research artifacts: each one explores a concrete question in the systems
+              layer around AI agents.
             </Text>
           </Box>
           <Link to="/systems/" sx={{ color: "primary", textDecoration: "none", fontFamily: "monospace", fontSize: 0 }}>
@@ -250,7 +271,7 @@ const HomepageConsole = () => {
         </Grid>
       </Box>
 
-      <Box sx={{ ...cardStyles, p: [4, 5], mb: [6, 7], background: "#F7F4EE" }}>
+      <Box sx={{ ...cardStyles, p: [4, 5], mb: [5, 6], background: "#F7F4EE" }}>
         <Flex sx={{ justifyContent: "space-between", alignItems: "flex-end", gap: 3, flexWrap: "wrap", mb: 4 }}>
           <Box>
             <Text sx={sectionLabelStyles}>New Eval</Text>
@@ -301,7 +322,7 @@ const HomepageConsole = () => {
         </Text>
       </Box>
 
-      <Grid columns={[1, null, "0.95fr 1.05fr"]} gap={[5, 6]} sx={{ mb: [6, 7] }}>
+      <Grid columns={[1, null, "0.95fr 1.05fr"]} gap={[5, 6]} sx={{ mb: [5, 6] }}>
         <Box sx={{ ...cardStyles, p: [4, 5] }}>
           <Text sx={sectionLabelStyles}>Field Notes</Text>
           <Text sx={{ color: "secondary", lineHeight: 1.65, mb: 4, fontSize: "17px" }}>
@@ -355,7 +376,7 @@ const HomepageConsole = () => {
           <Box sx={{ ...cardStyles, p: [4, 5] }}>
             <Text sx={sectionLabelStyles}>Open Research Channel</Text>
             <Text sx={{ color: "secondary", lineHeight: 1.65, mb: 3, fontSize: "17px" }}>
-              Current threads I am actively pushing forward across the world-model stack.
+              Current threads I am actively pushing forward in agent infrastructure research.
             </Text>
             <Grid columns={1} gap={3}>
               {currentInvestigations.map((item) => (
