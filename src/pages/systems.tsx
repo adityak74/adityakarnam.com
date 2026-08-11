@@ -133,7 +133,7 @@ const SystemsPage = (_props: PageProps) => (
       <WorldModelHero
         eyebrow="Current Systems"
         title="Research artifacts, not portfolio cards."
-        description="These systems map to the infrastructure layer behind reliable AI agents: runtime control, memory, retrieval, interface design, and practical evaluation. Each one is grounded in work already published in this codebase."
+        description="These systems map to the infrastructure layer behind reliable AI agents: runtime control, memory, retrieval, interface design, and practical evaluation."
         aside={
           <div>
             <div

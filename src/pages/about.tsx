@@ -314,7 +314,7 @@ export default AboutPage
 export const Head: HeadFC = () => (
   <Seo
     title="About"
-    description="Aditya Karnam is an AI researcher building the infrastructure layer for agents: memory, retrieval, routing, local inference, and evaluation systems that operate over time."
+    description="Aditya Karnam is an AI researcher building the infrastructure layer for agents: memory, retrieval, routing, local inference, and evaluation systems."
     pathname="/about/"
   />
 )
