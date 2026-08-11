@@ -42,7 +42,7 @@ export const siteIdentity = {
 }
 
 export const heroBootSequence = [
-  "initializing world model stack...",
+  "initializing systems stack...",
   "loading memory layer...",
   "routing local + cloud models...",
   "attaching tool interfaces...",
@@ -420,7 +420,7 @@ export const systems: SystemArtifact[] = [
 
 export const fieldNotes: FieldNote[] = [
   {
-    title: "The Missing Infrastructure Layer for World-Model AI",
+    title: "The Missing Infrastructure Layer for Reliable AI Agents",
     status: "planned field note",
     thesis:
       "Foundation models are not enough for reliable real-world agency. The next category is the infrastructure around them: state, memory, routing, simulation, and evals.",
@@ -483,7 +483,7 @@ export const lensFallbacks: Record<string, string> = {
 
 export const askPromptSuggestions = [
   "What is Aditya's strongest AI infrastructure signal?",
-  "How does his work relate to world models?",
+  "What's the throughline across his systems work?",
   "Which project best shows agent systems depth?",
   "Explain subagent-fleet to a Staff Engineer.",
   "What should a frontier AI lab interview him for?",
