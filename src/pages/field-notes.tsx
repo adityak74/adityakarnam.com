@@ -124,7 +124,7 @@ const FieldNotesPage = ({ data }: PageProps<FieldNotesData>) => {
         <ConsoleShell>
           <Grid sx={{ gridTemplateColumns: [`1fr`, `1fr`, `1.35fr 0.95fr`], gap: 3, alignItems: `start` }}>
             <Box>
-              <SignalPill>Field Notes / World Model Infrastructure Lab</SignalPill>
+              <SignalPill>Field Notes / AI Research Notes</SignalPill>
               <Heading
                 as="h1"
                 sx={{
@@ -300,7 +300,7 @@ export default FieldNotesPage
 export const Head: HeadFC = () => (
   <Seo
     title="Field Notes"
-    description="Field Notes for Aditya Karnam's World Model Infrastructure Lab: essays and source-grounded notes on memory, routing, local inference, and agent systems."
+    description="Field notes from Aditya Karnam, AI researcher: essays and source-grounded notes on memory, routing, local inference, and agent systems."
     pathname="/field-notes/"
   />
 )

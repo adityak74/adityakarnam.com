@@ -72,7 +72,7 @@ const StackPage = (_props: PageProps) => (
   <Layout>
     <WorldModelPageShell>
       <WorldModelHero
-        eyebrow="World Model Stack"
+        eyebrow="Systems Stack"
         title="Building the systems layer between models and reliable agency."
         description="The next frontier is not just better conversation. It is infrastructure that lets models maintain state, retrieve memory, route intelligently, use tools, and remain inspectable while acting over time."
         aside={

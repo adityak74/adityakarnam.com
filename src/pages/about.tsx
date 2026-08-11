@@ -102,7 +102,7 @@ const AboutPage = () => {
         <ConsoleShell>
           <Grid sx={{ gridTemplateColumns: [`1fr`, `1fr`, `1.45fr 0.95fr`], gap: 3, alignItems: `start` }}>
             <Box>
-              <SignalPill>Aditya Karnam - World Model Infrastructure Builder</SignalPill>
+              <SignalPill>Aditya Karnam - AI Researcher</SignalPill>
               <Heading
                 as="h1"
                 sx={{

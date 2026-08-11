@@ -238,7 +238,7 @@ export default StatusPage
 export const Head: HeadFC = () => (
   <Seo
     title="Status"
-    description="Service status page for Aditya Karnam's World Model Infrastructure Lab."
+    description="Service status page for Aditya Karnam, AI researcher."
     pathname="/status/"
   />
 )
