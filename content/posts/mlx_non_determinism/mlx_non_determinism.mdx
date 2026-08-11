@@ -144,6 +144,8 @@ Each strategy is locally optimal for performance but produces slightly different
 
 **Switch to Ollama**: For applications requiring determinism, use Ollama instead of MLX-based inference.
 
+> **Update, August 2026 — this recommendation needs revisiting.** Ollama shipped an [MLX backend in v0.19](https://ollama.com/blog/mlx) (March 2026) and promoted it to the default fast path on capable Apple Silicon Macs in v0.30 (May 2026). On a current Ollama with ≥32GB of unified memory, "switch to Ollama" may no longer route around MLX — it may now *be* MLX, in which case this mitigation does nothing for you. I have not yet re-measured determinism under Ollama's MLX backend, so treat this bullet as unverified for Ollama ≥0.30 until I publish numbers. The other mitigations below are unaffected.
+
 **Maintain Consistent Batch Sizes**: When using MLX, keep fixed batch sizes throughout your pipeline.
 
 **Consider CPU Inference**: For critical applications, use NumPy-based CPU inference.

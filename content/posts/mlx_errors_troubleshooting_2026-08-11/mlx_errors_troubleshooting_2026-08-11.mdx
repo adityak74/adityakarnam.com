@@ -1,0 +1,186 @@
+---
+title: "MLX Errors on Apple Silicon: A Reference"
+description: "Verbatim MLX and mlx-lm error strings with verified causes: model type not supported, Metal insufficient memory, quantize group size, and float16 NaN."
+date: 2026-08-11
+slug: "/mlx-errors-apple-silicon-troubleshooting/"
+canonicalUrl: "https://adityakarnam.com/mlx-errors-apple-silicon-troubleshooting/"
+keywords:
+  [
+    "mlx model type not supported",
+    "mlx_lm.server unknown model",
+    "METAL Command buffer execution failed Insufficient Memory",
+    "metal::malloc maximum allowed buffer size",
+    "mlx no safetensors found",
+    "mlx quantize group size",
+    "mlx float16 nan",
+    "mlx dtype error apple silicon",
+  ]
+tags:
+  - ai
+  - local-llms
+  - open-source
+---
+
+Every MLX error I have hit on this machine took longer to diagnose than it should have, because the answer was always sitting in a GitHub issue that Google would not surface, or in a C++ file nobody thinks to read.
+
+So this is a lookup table. One heading per literal error string. For each: what emits it, what actually causes it, and what to do. Every message below is copied from the source that raises it — `ml-explore/mlx` and `ml-explore/mlx-lm` on `main`, checked August 2026 — not from memory. Where I could not verify something, I say so rather than filling the gap.
+
+## `ValueError: Model type <name> not supported.`
+
+This is the single most common MLX failure, and it regenerates every time a lab ships a new architecture.
+
+The message comes from `_get_classes()` in [`mlx_lm/utils.py`](https://github.com/ml-explore/mlx-lm/blob/main/mlx_lm/utils.py):
+
+```python
+model_type = config["model_type"]
+model_type = MODEL_REMAPPING.get(model_type, model_type)
+try:
+    arch = importlib.import_module(f"mlx_lm.models.{model_type}")
+except ImportError:
+    msg = f"Model type {model_type} not supported."
+    raise ValueError(msg)
+```
+
+That is the whole mechanism. mlx-lm reads `model_type` out of the model's `config.json` and tries to `import mlx_lm.models.<model_type>`. If no such module exists, you get the error. There is no plugin system, no fallback, no generic transformer path.
+
+The `MODEL_REMAPPING` dict above it is a hand-maintained alias table:
+
+```python
+MODEL_REMAPPING = {
+    "mistral": "llama",
+    "llava": "mistral3",
+    "phi-msft": "phixtral",
+    "falcon_mamba": "mamba",
+    "kimi_k2": "deepseek_v3",
+    "qwen2_5_vl": "qwen2_vl",
+    ...
+}
+```
+
+So a "supported" model is one of two things: a file in `mlx_lm/models/`, or an alias pointing at one.
+
+**The fix.** In order of effort:
+
+1. Upgrade first — `pip install -U mlx-lm`. Architecture support lands constantly, and a large share of these reports are people running a release from two months ago.
+2. Check whether an alias would do. If the new architecture is structurally an existing one, add a `MODEL_REMAPPING` entry locally and see if the weights load. This is exactly what the maintainers do for cases like `kimi_k2` → `deepseek_v3`.
+3. Check open issues and PRs for your architecture before writing anything. [Issue #1378](https://github.com/ml-explore/mlx-lm/issues/1378) (`Model type laguna not supported.`) was filed purely because two implementation PRs existed with no discoverable issue attached to them. [Issue #1391](https://github.com/ml-explore/mlx-lm/issues/1391) covers `diffusion_gemma`. Your architecture may already be half-shipped.
+
+**Avoiding it.** Do not assume "there is an MLX build on Hugging Face" means mlx-lm can load it. The converted weights and the architecture implementation are separate things, and `mlx-community` uploads regularly precede library support.
+
+## The same error, but as an HTTP 404 from `mlx_lm.server`
+
+If you are driving MLX through the OpenAI-compatible server rather than the CLI, this failure does not look like a traceback. It looks like a 404 with a JSON body:
+
+```json
+{ "error": "Model type qwen3_5 not supported." }
+```
+
+That is because `server.py` wraps generation in a bare handler that swallows the exception type and reports the message with a 404 status:
+
+```python
+except Exception as e:
+    self._set_completion_headers(404)
+    self.end_headers()
+    self.wfile.write(json.dumps({"error": str(e)}).encode())
+    return
+```
+
+A 404 from an OpenAI-compatible endpoint normally means "wrong route." Here it can mean "your model architecture is not implemented," "your adapter path is wrong," or almost anything else that raised during load. Read the `error` field, not the status code. If you are wrapping `mlx_lm.server` behind your own `llm_server.py` and only logging status codes, you will lose the actual cause.
+
+## `FileNotFoundError: No safetensors found in <path>`
+
+From `load_model()` in the same file. It fires when the resolved model directory contains no `*.safetensors` and `strict=True`.
+
+In practice this is almost never a missing-support problem. It is one of:
+
+- A partially completed Hugging Face download. Check for `.incomplete` files in `~/.cache/huggingface/hub`.
+- A repo that only ships `.bin` / `.gguf` weights. mlx-lm wants safetensors; convert with `mlx_lm.convert` or pick an `mlx-community` upload.
+- A local path pointing one directory too high or too low.
+
+## `The model at <path> requires importing and running a custom module`
+
+The full message:
+
+> The model at `<path>` requires importing and running a custom module (`<file>`) to build its architecture. This is disabled by default. Pass `trust_remote_code=True` if you trust this model.
+
+This is a deliberate gate, not a bug. The model's config names a Python file that mlx-lm would have to execute to construct the architecture. Pass `--trust-remote-code` (CLI) or `trust_remote_code=True` (API) only when you have actually read that file. It runs with your user's permissions.
+
+## `[METAL] Command buffer execution failed: Insufficient Memory.`
+
+I hit this one myself while [benchmarking Ollama, vLLM Metal and SGLang on one machine](/benchmarking-local-llms-ollama-vllm-sglang-apple-silicon/). `vllm-metal` died with it the moment SGLang had already reserved a large MLX KV pool on the same 48 GB box.
+
+The string is assembled in `mlx/backend/metal/device.cpp`:
+
+```cpp
+error_ = std::make_shared<std::string>(fmt::format(
+    "[METAL] Command buffer execution failed: {}.",
+    cbuf->error()->localizedDescription()->utf8String()));
+```
+
+Two things follow from that. First, `Insufficient Memory` is not MLX's text — it is Metal's `localizedDescription`, passed through verbatim. MLX is the messenger. Second, the error is captured in the command-buffer completion handler and rethrown later from `CommandEncoder::synchronize()`, which is why the traceback often points at an innocent-looking `mx.eval()` rather than the op that actually exhausted memory.
+
+**The fix.** On unified memory, the fix is nearly always to stop competing with yourself. Run one inference runtime at a time; cap the other one's budget. In my case that meant stopping SGLang, lowering `VLLM_METAL_MEMORY_FRACTION`, and reducing max model length. Within MLX itself, `mx.set_memory_limit()` and `mx.clear_cache()` are the relevant levers.
+
+## `[metal::malloc] Attempting to allocate N bytes which is greater than the maximum allowed buffer size of M bytes.`
+
+Different error, different cause, and people conflate the two constantly. From `mlx/backend/metal/allocator.cpp`:
+
+```cpp
+if (size > device_->maxBufferLength()) { ... }
+```
+
+This is not "you are out of memory." It is "one single tensor exceeds Metal's per-buffer ceiling." You can have 100 GB free and still hit it. The usual trigger is an oversized intermediate — a long-context attention matrix, or a batch dimension multiplied out further than you intended. Reduce the batch or sequence length, or chunk the op. Raising memory limits will not help.
+
+Two neighbours from the same file, for completeness:
+
+- `[metal::malloc] Resource limit (N) exceeded.` — too many live buffers, not too many bytes.
+- `[metal::set_wired_limit] Setting a wired limit larger than the maximum working set size is not allowed.` — you passed `mx.set_wired_limit()` a value above the device's recommended working set.
+
+## `[quantize] The last dimension of the matrix needs to be divisible by the quantization group size 64.`
+
+From `mlx/ops.cpp`. The neighbouring checks are worth knowing verbatim, because they define the entire legal space:
+
+- `[quantize] The requested group size <N> is not supported. The supported group sizes are 32, 64, and 128.`
+- `[quantize] The requested number of bits <N> is not supported. The supported bits are 2, 3, 4, 5, 6 and 8.` (7 is explicitly excluded.)
+- `[quantize] Only real floating types can be quantized but w has type <dtype>.`
+- `[quantize] The matrix to be quantized must have at least 2 dimension but it has only <N>.`
+
+If a custom model fails to quantize, check the last dimension of every weight against the group size before assuming MLX is broken.
+
+## `ValueError: Received N parameters not in model:` / `Missing N parameters:`
+
+From `Module.load_weights()` in `python/mlx/nn/layers/base.py`, under `strict=True`. The third member of the family is `Expected shape (...) but received shape (...) for parameter <k>`.
+
+These are almost always a `sanitize()` problem: the checkpoint's key naming does not match your module tree, or a transposed weight slipped through. Load with `strict=False` to enumerate the mismatch, fix the mapping, then put strict mode back. Do not ship with `strict=False` — that silently ignores every weight it cannot place.
+
+## Float16 producing NaN with wide value ranges
+
+This is not an exception. It is worse: it succeeds and returns garbage.
+
+When I [measured MLX non-determinism on Apple Silicon](/mlx-non-determinism-apple-silicon/), the dtype breakdown was the most actionable result. bfloat16 was inconsistent — sometimes exact, up to 1% relative error with extreme values. float32 was the reliable middle. float16 was, in my notes, the danger zone: catastrophically unstable with large value ranges, and frequently NaN with extreme values.
+
+The arithmetic explains it. IEEE 754 binary16 tops out at 65,504. A 4096-length dot product over values spanning ±1000 blows through that during accumulation, long before the result is written. On the same tests, matmul discrepancies at 4096×4096 reached roughly 1771 in absolute terms — and chaining 100 sequential matmuls hit complete numerical breakdown (NaN) by operation 80.
+
+**The fix.** Use bfloat16 or float32 for anything with wide dynamic range. bfloat16 has float32's exponent range, which is exactly the property you need here. Reserve float16 for weights you know are bounded.
+
+## On `dtype(val, size)` and the word "vulnerability"
+
+People search for this phrase paired with "vulnerability," so let me be direct: **there is no known MLX security vulnerability involving dtype construction.** No CVE, no advisory, nothing.
+
+What `dtype(val, size)` actually is: the sole constructor of MLX's `Dtype` struct, in `mlx/dtype.h`.
+
+```cpp
+constexpr explicit Dtype(Val val, uint8_t size) : val_(val), size_(size) {}
+```
+
+It is not exposed to Python. The nanobind binding in `python/src/array.cpp` declares `nb::class_<mx::Dtype>` with a `size` property, `__repr__`, `__eq__` and `__hash__` — and no `init`. The pybind11-era binding had none either. So `mx.Dtype(...)` from Python cannot work; dtypes come from module attributes like `mx.float16`. If that signature appears in an error you are looking at, it is a type-conversion failure — passing a string or a NumPy dtype where an `mlx.core.Dtype` is expected. Write `x.astype(mx.float16)`, not `x.astype("float16")`.
+
+I could not reproduce a verbatim MLX error message containing the literal text `dtype(val, size)`, and I am not going to invent one to fill the slot.
+
+MLX does have two published security advisories, both from 21 November 2025 and both rated Moderate (CVSS v4 5.5): [GHSA-w6vg-jg77-2qg6](https://github.com/advisories/GHSA-w6vg-jg77-2qg6) / CVE-2025-62608, a heap-buffer-overflow in `mlx::core::load()` caused by unchecked `.npy` header parsing in `mlx/io/load.cpp`, and [GHSA-j842-xgm4-wf88](https://github.com/advisories/GHSA-j842-xgm4-wf88) / CVE-2025-62609, a wild pointer dereference in `load_gguf()` that segfaults on a malicious GGUF file. Both affect MLX ≤ 0.29.3 and are fixed in 0.29.4. Both are about parsing untrusted model files. Neither has anything to do with dtype construction. If you load model weights from strangers, upgrade to 0.29.4 or later.
+
+## The pattern
+
+Three of the four buckets above are not really MLX bugs. `Model type ... not supported` is a coverage gap in a hand-maintained table. `Insufficient Memory` is Metal's text relayed through MLX. Float16 NaN is IEEE 754 doing exactly what it promises. Only the malloc ceiling is genuinely MLX-shaped, and even that is a Metal limit.
+
+Which is a useful default when triaging: read the error's namespace prefix. `[METAL]` and `[metal::...]` mean the platform said no. A bare Python `ValueError` from `mlx_lm` means the library has not been taught your model yet.
