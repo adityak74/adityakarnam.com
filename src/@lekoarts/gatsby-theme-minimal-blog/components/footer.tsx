@@ -24,7 +24,7 @@ const Footer = () => {
         gap: 2,
       }}
     >
-      <div>&copy; {new Date().getFullYear()} Aditya Karnam. World Model Infrastructure Lab.</div>
+      <div>&copy; {new Date().getFullYear()} Aditya Karnam. AI Researcher.</div>
       <div sx={{ display: `flex`, flexWrap: `wrap`, gap: 2, rowGap: 1 }}>
         <Link href="/now/">Now</Link>
         <span aria-hidden>·</span>
