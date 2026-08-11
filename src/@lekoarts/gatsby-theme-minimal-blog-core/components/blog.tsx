@@ -33,7 +33,7 @@ export default function Blog({ data }: { data: BlogData }) {
     <Layout>
       <Box sx={{ display: `grid`, gap: [3, 4], my: [3, 4] }}>
         <ConsoleShell>
-          <SignalPill>Thoughts / World Model Infrastructure Lab</SignalPill>
+          <SignalPill>Thoughts / AI Research Notes</SignalPill>
           <Heading
             as="h1"
             sx={{
@@ -144,7 +144,7 @@ export default function Blog({ data }: { data: BlogData }) {
 export const Head: HeadFC = () => (
   <Seo
     title="Thoughts"
-    description="Every post from Aditya Karnam's World Model Infrastructure Lab: agents, memory, retrieval, local inference, model routing, and evals."
+    description="Every post from Aditya Karnam, AI researcher: agents, memory, retrieval, local inference, model routing, and evals."
     pathname="/blog/"
   />
 )
