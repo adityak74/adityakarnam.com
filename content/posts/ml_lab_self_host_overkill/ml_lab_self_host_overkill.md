@@ -2,7 +2,8 @@
 title: "How I Accidentally Built an Overkill ML Lab That Rivals AWS (And Why I'm Not Sorry)"
 date: 2025-09-11
 slug: "/overkill-ml-lab-homelab-rivals-aws"
-canonicalUrl: "https://adityakarnam.com/overkill-ml-lab-homelab-rivals-aws"
+canonicalUrl: "https://adityakarnam.com/overkill-ml-lab-homelab-rivals-aws/"
+description: "Building a self-hosted ML lab on Mac minis with 64GB unified memory: Ray cluster, arm64 Docker, MinIO object storage and Streamlit, and what it cost versus AWS."
 keywords:
   [
     "machine learning homelab",
