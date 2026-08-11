@@ -232,7 +232,7 @@ export default StackPage
 export const Head: HeadFC = () => (
   <Seo
     title="Stack"
-    description="A systems stack page mapping runtime, memory, retrieval, routing, interfaces, and evaluation to Aditya Karnam's published work."
+    description="An AI agent infrastructure stack mapping runtime, memory, retrieval, routing, interfaces, and evaluation to Aditya Karnam's published work."
     pathname="/stack/"
   />
 )

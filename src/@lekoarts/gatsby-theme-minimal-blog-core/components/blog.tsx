@@ -33,7 +33,7 @@ export default function Blog({ data }: { data: BlogData }) {
     <Layout>
       <Box sx={{ display: `grid`, gap: [3, 4], my: [3, 4] }}>
         <ConsoleShell>
-          <SignalPill>Thoughts / AI Research Notes</SignalPill>
+          <SignalPill>Thoughts / AI Research</SignalPill>
           <Heading
             as="h1"
             sx={{

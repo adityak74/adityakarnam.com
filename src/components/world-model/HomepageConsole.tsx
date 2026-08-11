@@ -157,7 +157,7 @@ const HomepageConsole = () => {
                   pt: 3,
                 }}
               >
-                <Text sx={{ color: "primary", fontFamily: "monospace", fontSize: "11px", mb: 1 }}>
+                <Text sx={{ color: "#E08A62", fontFamily: "monospace", fontSize: "11px", mb: 1 }}>
                   Layer 0{index + 1}
                 </Text>
                 <Heading as="h3" sx={{ fontSize: ["1.35rem", "1.55rem"], mb: 2, fontWeight: 500, color: "emphasisText" }}>

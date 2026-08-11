@@ -124,7 +124,7 @@ const FieldNotesPage = ({ data }: PageProps<FieldNotesData>) => {
         <ConsoleShell>
           <Grid sx={{ gridTemplateColumns: [`1fr`, `1fr`, `1.35fr 0.95fr`], gap: 3, alignItems: `start` }}>
             <Box>
-              <SignalPill>Field Notes / AI Research Notes</SignalPill>
+              <SignalPill>Field Notes / AI Research</SignalPill>
               <Heading
                 as="h1"
                 sx={{

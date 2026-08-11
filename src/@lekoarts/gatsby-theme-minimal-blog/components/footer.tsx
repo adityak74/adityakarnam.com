@@ -8,7 +8,7 @@ const Footer = () => {
         boxSizing: `border-box`,
         display: `flex`,
         justifyContent: `space-between`,
-        mt: [7, 8],
+        mt: [5, 6],
         pt: 4,
         color: `secondary`,
         borderTop: `1px solid`,

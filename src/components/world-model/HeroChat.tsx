@@ -51,21 +51,21 @@ const HeroChat = () => {
       sx={{
         border: "1px solid",
         borderColor: "divide",
-        borderRadius: "16px",
+        borderRadius: "10px",
         background: "#FFFFFF",
         p: [4, 5],
-        mb: [6, 7],
+        mb: [5, 6],
       }}
     >
       <Text
         sx={{
           display: "inline-block",
-          color: "primary",
+          color: "secondary",
           fontFamily: "monospace",
-          fontSize: 0,
-          letterSpacing: "0.04em",
+          fontSize: "11px",
+          letterSpacing: "0.08em",
           textTransform: "uppercase",
-          mb: 3,
+          mb: 2,
         }}
       >
         Ask about the work
