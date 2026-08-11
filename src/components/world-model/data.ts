@@ -33,10 +33,10 @@ export type FieldNote = {
 
 export const siteIdentity = {
   name: "Aditya Karnam",
-  title: "World Model Infrastructure Builder",
-  labName: "World Model Infrastructure Lab",
-  tagline: "Building the infrastructure layer for world-model-driven AI.",
-  supportingLine: "Building the systems layer for agents that remember, simulate, and act.",
+  title: "AI Researcher",
+  labName: "AI Research Notes",
+  tagline: "Researching the infrastructure behind reliable AI agents.",
+  supportingLine: "Studying how agents remember, retrieve, route, and act — and building the systems that let them do it reliably.",
   subtitle: "Agents · Memory · Retrieval · Simulation · Local Inference · Evals",
   loop: ["Observe", "Model", "Simulate", "Act", "Evaluate", "Update"],
 }
@@ -52,7 +52,7 @@ export const heroBootSequence = [
 
 export const worldModelStack: WorldModelLayer[] = [
   {
-    name: "World-Model Applications",
+    name: "Applied Systems",
     description: "Interfaces where persistent, stateful AI systems surface to users and operators.",
     relevantWork: ["Applied agent workflows", "AI Toolkit utilities", "Research notes"],
   },
@@ -470,7 +470,7 @@ export const lensOptions = [
 
 export const lensFallbacks: Record<string, string> = {
   "AI Researcher":
-    "Aditya's work sits in the infrastructure layer around world-model agents: memory, retrieval, model routing, local inference, and tool orchestration. The strongest research signal is the push from prompt chains toward inspectable, stateful systems.",
+    "Aditya's work sits in the infrastructure layer around AI agents: memory, retrieval, model routing, local inference, and tool orchestration. The strongest research signal is the push from prompt chains toward inspectable, stateful systems.",
   "Frontier Lab Recruiter":
     "Aditya's signal is the ability to turn emerging AI infrastructure ideas into usable systems: agent runtimes, retrieval layers, model routing, and local-first inference tooling grounded in real code.",
   Founder:
