@@ -161,4 +161,8 @@ covers the KV-cache side of decode cost — this post covers the compute-shape s
 Together they're the two reasons a single decode step is slow: it reads the whole
 KV cache (bandwidth-bound on cache size) and it's a GEMV, not a GEMM (bandwidth-bound
 on operation shape). Both point the same direction — decode is memory-bound, and
-nothing short of batching or a smaller cache changes that.*
+nothing short of batching or a smaller cache changes that.
+[The Batch Size That Breaks Local LLM Serving](/mlx-batch-concurrency-memory-wall-apple-silicon/)
+measures where the batching fix from this post stops working — the ~80x GEMM
+advantage is real, but only up to the batch size where the combined KV cache
+overruns unified memory.*
