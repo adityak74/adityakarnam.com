@@ -1,0 +1,179 @@
+---
+title: "The Batch Size That Breaks Local LLM Serving on Apple Silicon"
+date: 2026-08-14
+slug: "/mlx-batch-concurrency-memory-wall-apple-silicon/"
+canonicalUrl: "https://adityakarnam.com/mlx-batch-concurrency-memory-wall-apple-silicon/"
+description: "Measured on an M5 Pro: batching concurrent requests raises aggregate throughput right up until peak memory approaches physical RAM, then throughput collapses and the process eventually has to be killed. The wall is unified memory, not compute."
+keywords:
+  [
+    "mlx batch concurrency benchmark",
+    "local llm serving apple silicon",
+    "unified memory limit llm inference",
+    "mlx batch size throughput",
+    "apple silicon llm swap thrashing",
+    "m5 pro concurrent inference",
+    "mlx out of memory batch",
+    "local llm serving memory wall",
+  ]
+tags:
+  - ai
+  - local-llms
+  - open-source
+---
+
+Batching concurrent requests is supposed to be free throughput — more work per
+GPU pass, better utilization, higher aggregate tokens/sec. Up to a point, it is.
+Then it isn't, and the failure mode isn't a gentle plateau. On this benchmark it
+went from a 138.9 tok/s peak to 40.0 tok/s, and the next size up in the sweep
+never finished — the process sat for over 50 minutes and I had to kill it.
+
+This is the third post in this benchmark series, and honestly it's the one I set
+out to write last, because it's the least clean. The KV cache and GEMV/GEMM
+posts had crisp, falsifiable predictions that came in close to exact. This one
+has a real gap in the data, caused by the exact thing the post is about. I'm
+publishing it anyway because the gap *is* the finding.
+
+- **Aggregate throughput rises with batch size, peaks, then collapses** — not a
+  plateau, a collapse. At 4,096-token context, throughput peaked at batch 8
+  (138.9 tok/s) and fell to 40.0 tok/s at batch 32, a 71% drop from the peak.
+- **The collapse tracks memory pressure, not batch size in the abstract.**
+  Peak memory hit 97.6% of the machine's 48 GB of unified memory at the point
+  throughput collapsed. Earlier batch sizes on the same context stayed under 32%.
+- **Past the collapse, the run didn't finish — it hung.** The next cell in the
+  sweep (16k context, batch 16) ran for 50+ minutes with no result and was
+  killed. Swap usage at kill time was 18.8 GB. This is why the dataset below is
+  missing several cells: the benchmark hit the same wall it was measuring.
+
+## The setup
+
+| | |
+| --- | --- |
+| Machine | Apple M5 Pro, 48 GB unified memory |
+| OS | macOS 26.5.2 |
+| Libraries | `mlx` 0.32.0, `mlx-lm` 0.31.3 |
+| Model | `mlx-community/Qwen3-8B-4bit` |
+| Sweep (planned) | context ∈ {512, 4096, 16384, 32768} × batch ∈ {1, 2, 4, 8, 16, 32} |
+| Gen length | 64 tokens/request |
+| Reps | 5 per cell, 1 warmup, medians reported |
+
+Unified memory is the relevant detail. On a machine with a dedicated GPU and
+separate VRAM, the model weights, KV cache, and OS working set live in different
+pools. On Apple Silicon they share one pool. That's normally an advantage — no
+copying data across a PCIe bus — but it means every batch you add competes with
+the OS and everything else for the same finite RAM, with no separate ceiling to
+warn you before it happens.
+
+## What actually completed
+
+16 of 24 planned cells finished. Here's context 4,096 — the one where the whole
+story is visible in a single context length:
+
+| Batch | Aggregate tok/s | Peak memory | % of 48 GB RAM |
+| ---: | ---: | ---: | ---: |
+| 1 | 50.2 | 6.5 GB | 12.6% |
+| 2 | 87.8 | 7.7 GB | 15.0% |
+| 4 | 126.8 | 10.4 GB | 20.2% |
+| 8 | **138.9** | 16.0 GB | 31.1% |
+| 16 | 97.7 | 27.5 GB | 53.3% |
+| 32 | 40.0 | 50.3 GB | **97.6%** |
+
+Throughput scales cleanly through batch 8, roughly what you'd expect from more
+work amortizing fixed per-request overhead. Batch 16 is already past the peak —
+down almost 30% from batch 8, even as memory use nearly doubles. Batch 32 is
+worse than running the requests one at a time would have been for a fraction of
+the memory: 40.0 tok/s aggregate, spread across 32 concurrent streams, works out
+to 1.25 tok/s per stream. A single unbatched request alone got 50.2 tok/s.
+
+At 512-token context, the same sweep never collapses — it's still climbing at
+batch 32 (387.1 tok/s, the best number in the whole dataset). At 16,384-token
+context, the collapse arrives earlier: batch 8 already sits at 30.5 GB (59.2% of
+RAM) with throughput already flat against batch 4 rather than still climbing.
+Longer context means a bigger KV cache per request, which means the memory wall
+gets hit at a lower batch size. The three context lengths tested show the same
+shape, just shifted — the wall is a memory budget, and every request's KV cache
+spends down that budget before you get to add more requests.
+
+## Why it hung instead of erroring
+
+I expected an out-of-memory error, which would at least be a clean failure. What
+happened instead was worse for debugging: the process kept running, throughput
+dropped, and it just got slower and slower without terminating. The run log shows
+the elapsed-time-per-cell climbing sharply right where memory pressure appears —
+batch 16 at 4,096 context took over 5 minutes for 6 reps, batch 32 took nearly 14
+minutes for the same rep count, versus under a minute for every cell before the
+memory got tight. That's the signature of swapping: macOS was paging unified
+memory out to disk to keep the process alive rather than killing it, which turns
+a memory problem into a latency problem with no clear boundary. By the time the
+runner reached 16k context at batch 16, it had been running that pattern long
+enough that I terminated it manually after 50 minutes with no output.
+
+Swap at the time of termination: 18.8 GB used out of 54 GB configured. The
+process was, functionally, running an LLM off disk.
+
+## What this means for serving
+
+If you're running local inference for yourself, this mostly says: don't reach
+for large batch sizes as a default optimization on unified memory hardware
+without checking peak memory first. The GEMV/GEMM post in this series shows
+batching is where the *compute* throughput win lives — that part is real. This
+post shows the ceiling on how far you can push it before the machine stops being
+memory-bound in a good way (bandwidth-limited GEMM) and starts being memory-bound
+in a bad way (swap-limited everything). The useful number isn't the batch size —
+it's the percentage of physical RAM your batch size × context length combination
+consumes. This dataset suggests staying meaningfully under it, not just under
+100% of it: the collapse at 4,096 context started at 53% memory usage (batch 16),
+well before the process ran out of RAM outright.
+
+If you're building a serving layer rather than running interactively, this is the
+argument for admission control keyed on estimated memory footprint (batch size ×
+context length × KV cache bytes per token, from the first post in this series)
+rather than a fixed concurrency limit. A fixed limit that's safe at short context
+is exactly the setting that swaps at long context.
+
+## What I am confident of, and what I am not
+
+**Confident:**
+
+- Aggregate throughput at 4,096-token context peaks at batch 8 and collapses by
+  batch 32, and the collapse coincides with peak memory crossing roughly half
+  of physical RAM.
+- The process did not error cleanly on memory exhaustion — it slowed down
+  first, consistent with swap activity, and had to be killed rather than
+  finishing or failing on its own.
+
+**Not confident:**
+
+- I do not have data for 16k-context batch 16/32 or any 32k-context cell — the
+  sweep never got there. I'm inferring the wall continues in the same direction
+  based on the pattern at 4,096 context and the partial 16,384 data, not
+  measuring it directly. Treat that extrapolation as a hypothesis, not a result.
+- Two cells (4,096/batch 16 and 16,384/batch 8) are flagged noisy in the raw
+  data (run-to-run coefficient of variation high enough to distrust the point
+  estimate) — exactly the batch sizes right at the start of the collapse, which
+  makes sense if the machine was already under memory pressure and timing got
+  unstable, but it also means those two numbers specifically should be read as
+  approximate.
+- One chip, one model, one machine's swap configuration. A machine with more
+  RAM headroom or a smaller model would push this wall to a higher batch size;
+  the *shape* of the collapse is what I'd expect to generalize, not the specific
+  batch-8 peak.
+
+## Reproducing this
+
+```bash
+./scripts/benchmarks/exp3_batch_concurrency.py \
+    --batches 1,2,4,8,16,32 --contexts 512,4096,16384,32768 \
+    --gen-tokens 64 --reps 5 --warmup 1
+```
+
+If you run the full sweep, watch `vm_stat` or Activity Monitor's memory pressure
+gauge alongside it, and be ready to kill it — nothing in the script itself
+detects the wall before you hit it.
+
+---
+
+*Related: [Why MLX Decode Slows at Long Context](/mlx-long-context-kv-cache-apple-silicon/)
+covers the per-request KV cache growth that determines how quickly this memory
+wall arrives per additional batch slot.
+[Why Batching Doesn't Fix Decode: GEMV vs GEMM](/mlx-gemv-gemm-roofline-apple-silicon/)
+covers why batching helps at all, up until this post's wall makes it stop helping.*

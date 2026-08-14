@@ -282,6 +282,10 @@ not have.
 covers the other half of why decode is slow — it's not just bandwidth-bound on
 cache size, it's a matrix-vector operation running ~80x below the GEMM throughput
 this same chip hits during batched prefill.
+[The Batch Size That Breaks Local LLM Serving](/mlx-batch-concurrency-memory-wall-apple-silicon/)
+picks up where this post leaves off — the KV cache growth measured here is what
+determines how quickly batching more concurrent requests runs into the unified
+memory wall.
 [MLX non-determinism on Apple Silicon](/mlx-non-determinism-apple-silicon/)
 covers why repeated runs of the same MLX computation do not produce identical
 results, which is why every number above is a median over repetitions rather than
