@@ -1,0 +1,164 @@
+---
+title: "Why Batching Doesn't Fix Decode: GEMV vs GEMM on Apple Silicon"
+date: 2026-08-13
+slug: "/mlx-gemv-gemm-roofline-apple-silicon/"
+canonicalUrl: "https://adityakarnam.com/mlx-gemv-gemm-roofline-apple-silicon/"
+description: "Measured on an M5 Pro: batched matmul (GEMM) holds a flat ~80x throughput advantage over matrix-vector ops (GEMV) at every size tested. That gap is why batching multiplies prefill throughput but barely touches decode."
+keywords:
+  [
+    "gemv vs gemm apple silicon",
+    "mlx roofline model",
+    "why batching doesn't help decode",
+    "llm decode memory bound",
+    "apple silicon llm compute bound vs memory bound",
+    "mlx matrix vector throughput",
+    "m5 pro gpu gemm benchmark",
+    "llm batching prefill decode",
+  ]
+tags:
+  - ai
+  - local-llms
+  - open-source
+---
+
+Batch requests together and prefill gets dramatically faster per-token. Batch
+requests together and decode barely moves. Anyone who has served local models
+has noticed this asymmetry. The usual explanation — "prefill is parallel, decode
+is sequential" — is true but incomplete. It doesn't say *how much* the two differ,
+or why batching is the specific fix for one and not the other.
+
+I had the roofline data sitting next to the KV cache measurements from [the last
+post](/mlx-long-context-kv-cache-apple-silicon/), so I pulled the two operation
+shapes apart: matrix-vector (GEMV, what decode does — one token against the whole
+weight matrix) and matrix-matrix (GEMM, what batched prefill does — many tokens
+against the same weight matrix at once). Same hardware, same measurement harness,
+just isolating the shape of the multiply.
+
+- **GEMM holds roughly 80-85x more throughput than GEMV, at every matrix size I
+  tested — 1024 through 12,288.** The ratio does not shrink as the matrices get
+  bigger; it's already there at the smallest size.
+- **GEMM's throughput is flat across that entire size range.** It doesn't ramp up
+  as N grows, which is the signature of an operation that's compute-bound from
+  the start, not one still climbing toward a compute ceiling.
+- **GEMV's throughput tracks the memory bandwidth curve, not a compute curve** —
+  it moves with cache and streaming effects, not with problem size, which is the
+  signature of memory-bound work.
+- This is the mechanical reason batch size is the lever for prefill throughput
+  and mostly isn't for decode: batching turns a sequence of GEMVs into one GEMM,
+  and GEMM is the shape sitting ~80x higher on this chip.
+
+## The setup
+
+Same machine and harness as the KV cache post, one sweep added:
+
+| | |
+| --- | --- |
+| Machine | Apple M5 Pro, 52 GB unified memory |
+| OS | macOS 26.5.2 |
+| Libraries | `mlx` 0.32.0 |
+| Matrix sizes (N) | 1024, 2048, 4096, 8192, 12288 (square-ish, weight-matrix shaped) |
+| Dtypes | float16, float32 |
+| Reps | 9 per cell, medians reported |
+
+For each N, I ran the same multiply as a GEMV (a length-N vector against an
+N×N matrix — one decode step) and as a GEMM (an N×N matrix against an N×N
+matrix — a batch of N prefill tokens against the same weights). Everything else
+— weights, dtype, machine, thermal state — is held constant. Only the shape of
+the right-hand side changes.
+
+## The numbers
+
+float16, GFLOP/s by matrix size:
+
+| N | GEMV | GEMM | Ratio |
+| --- | --- | --- | --- |
+| 1,024 | 354.4 | 27,985.6 | 79.0x |
+| 2,048 | 487.9 | 30,958.5 | 63.5x |
+| 4,096 | 387.9 | 28,780.5 | 74.2x |
+| 8,192 | 277.3 | 30,001.3 | 108.2x |
+| 12,288 | 283.7 | 23,990.7 | 84.6x |
+
+Two things jump out. First, GEMM's throughput barely moves across a 12x range
+in matrix size — 24 to 31 TFLOP/s the whole way. An operation that's still
+climbing toward its compute ceiling would show throughput *increasing* with N,
+as larger tiles amortize fixed overhead. Flat-from-the-start throughput is what
+you see when the operation is compute-bound before you even get to N=1024 —
+there's no ramp because there's no headroom being unlocked as N grows.
+
+Second, GEMV's numbers don't move with N in any consistent direction — they
+bounce between 277 and 488 GFLOP/s, tracking the same kind of noise you'd expect
+from a bandwidth-limited operation subject to cache residency effects, not a
+compute-bound one. That's consistent with what the arithmetic tells you it
+should be: a GEMV at size N does roughly 2N² flops while touching roughly 4N²
+bytes (the full weight matrix, read once), so its flops-per-byte is low and
+roughly constant regardless of N. A GEMM at size N does roughly 2N³ flops over
+the same order of bytes, so its flops-per-byte — and therefore its ability to
+hide memory latency behind compute — grows with N. GEMV never gets to hide
+anything. It's memory-bound by construction, not by bad luck.
+
+float32 tells the same story at lower absolute numbers (as expected — twice the
+bytes moved per element): GEMV ranges 138–243 GFLOP/s, GEMM ranges 18,725–20,860
+GFLOP/s, ratios landing in the same 75-135x band. The dtype changes the
+intercept, not the shape of the story.
+
+## What this means for serving
+
+Decode, one token at a time, is a GEMV against every weight matrix in the model.
+There is no way to make GEMV behave like GEMM without changing what work is
+being done — which is exactly what request batching does. Combine 8 concurrent
+users' next-token predictions into one matrix and the GPU is doing a GEMM against
+the same weights instead of 8 separate GEMVs. That's not a scheduling trick, it's
+a change in operation shape, and the ~80x gap measured above is the size of the
+prize for making that change.
+
+It's also why batching prefill is close to free and batching decode isn't: prefill
+is already GEMM-shaped (many tokens against the weights at once, even for a single
+request), so there's little shape left to change. Decode only becomes GEMM-shaped
+when you have other requests' tokens to batch alongside it — which is why
+continuous batching and paged-attention serving stacks exist, and why single-user
+local inference (no other requests to batch with) is structurally stuck paying
+the GEMV price for every token it generates, on any hardware.
+
+## What I am confident of, and what I am not
+
+**Confident:**
+
+- GEMM throughput is flat across a 12x range in N, which is the signature of an
+  operation running compute-bound from the smallest size tested.
+- GEMV throughput does not track N and instead tracks bandwidth-shaped noise,
+  consistent with memory-bound behavior.
+- The ~80x gap is stable across both dtypes tested, which rules out it being a
+  float16-specific quirk of MLX's kernels.
+
+**Not confident:**
+
+- I did not measure a matrix size small enough to find where GEMM stops being
+  compute-bound — the ramp, if it exists below N=1024, isn't in this data.
+  Everything I measured is already on the flat part of the curve.
+- I don't have this chip's published peak FP16 GFLOP/s to compute what fraction
+  of theoretical peak the ~24-31 TFLOP/s GEMM numbers represent. Treat them as
+  measured throughput, not as a percentage of a roofline ceiling — I'm reporting
+  the plateau, not its height relative to the hardware limit.
+- One chip, one framework. MLX's GEMM and GEMV kernels are not necessarily
+  representative of every runtime's kernels at these sizes — a poorly tuned GEMV
+  kernel elsewhere could show a smaller gap, and a poorly tuned GEMM kernel could
+  show a larger one.
+
+## Reproducing this
+
+```bash
+./scripts/benchmarks/exp2_bandwidth_roofline.py
+```
+
+Same script as the bandwidth-ceiling numbers in the KV cache post — the GEMV/GEMM
+sweep is part of the same run. Results append as JSONL, medians over 9 reps per
+cell, run plugged in.
+
+---
+
+*Related: [Why MLX Decode Slows at Long Context](/mlx-long-context-kv-cache-apple-silicon/)
+covers the KV-cache side of decode cost — this post covers the compute-shape side.
+Together they're the two reasons a single decode step is slow: it reads the whole
+KV cache (bandwidth-bound on cache size) and it's a GEMV, not a GEMM (bandwidth-bound
+on operation shape). Both point the same direction — decode is memory-bound, and
+nothing short of batching or a smaller cache changes that.*

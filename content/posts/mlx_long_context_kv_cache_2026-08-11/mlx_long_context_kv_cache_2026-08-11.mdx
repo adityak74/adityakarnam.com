@@ -278,7 +278,11 @@ not have.
 
 ---
 
-*Related: [MLX non-determinism on Apple Silicon](/mlx-non-determinism-apple-silicon/)
+*Related: [Why Batching Doesn't Fix Decode: GEMV vs GEMM on Apple Silicon](/mlx-gemv-gemm-roofline-apple-silicon/)
+covers the other half of why decode is slow — it's not just bandwidth-bound on
+cache size, it's a matrix-vector operation running ~80x below the GEMM throughput
+this same chip hits during batched prefill.
+[MLX non-determinism on Apple Silicon](/mlx-non-determinism-apple-silicon/)
 covers why repeated runs of the same MLX computation do not produce identical
 results, which is why every number above is a median over repetitions rather than
 a single sample. For the errors you will hit while doing this,
