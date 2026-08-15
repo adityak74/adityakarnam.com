@@ -9,10 +9,10 @@ const config: GatsbyConfig = {
     // You can also add new values here to query them like usual
     // See all options: https://github.com/LekoArts/gatsby-themes/blob/main/themes/gatsby-theme-minimal-blog/gatsby-config.mjs
     siteTitle: `Aditya Karnam`,
-    siteTitleAlt: `Aditya Karnam — World Model Infrastructure Lab`,
-    siteHeadline: `Aditya Karnam builds the infrastructure layer for world-model-driven AI: memory, retrieval, model routing, local inference, agent runtimes, and evals.`,
+    siteTitleAlt: `Aditya Karnam — AI Researcher`,
+    siteHeadline: `Aditya Karnam is an AI researcher building the infrastructure layer around agents: memory, retrieval, model routing, local inference, agent runtimes, and evals.`,
     siteUrl: `https://adityakarnam.com`,
-    siteDescription: `Aditya Karnam is a world model infrastructure builder focused on agent runtimes, memory, retrieval, model routing, local inference, and evaluation systems.`,
+    siteDescription: `Aditya Karnam is an AI researcher focused on agent runtimes, memory, retrieval, model routing, local inference, and evaluation systems.`,
     siteImage: `/banner-aditya.png`,
     siteLanguage: `en`,
     author: `@aditya_karnam`,
@@ -24,28 +24,24 @@ const config: GatsbyConfig = {
       options: {
         navigation: [
           {
+            title: `AI Research`,
+            slug: `/ai-research`,
+          },
+          {
+            title: `AI Toolkit`,
+            slug: `/ai-toolkit`,
+          },
+          {
+            title: `Thoughts`,
+            slug: `/blog`,
+          },
+          {
             title: `Systems`,
             slug: `/systems`,
           },
           {
-            title: `Stack`,
-            slug: `/stack`,
-          },
-          {
             title: `Field Notes`,
             slug: `/field-notes`,
-          },
-          {
-            title: `Ask`,
-            slug: `/ask`,
-          },
-          {
-            title: `Now`,
-            slug: `/now`,
-          },
-          {
-            title: `Status`,
-            slug: `/status`,
           },
           {
             title: `Quecto`,
@@ -82,6 +78,10 @@ const config: GatsbyConfig = {
             url: `https://scholar.google.com/citations?user=WujCeDkAAAAJ&hl=en`,
           },
           {
+            name: `Call to Think`,
+            url: `https://calltothink.com`,
+          },
+          {
             name: `Homepage`,
             url: `https://www.adityakarnam.com`,
           },
@@ -105,9 +105,9 @@ const config: GatsbyConfig = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `Aditya Karnam - World Model Infrastructure Lab`,
+        name: `Aditya Karnam - AI Researcher`,
         short_name: `adityakarnam`,
-        description: `World model infrastructure, agent runtimes, memory, retrieval, routing, and evaluation systems by Aditya Karnam.`,
+        description: `AI research and infrastructure: agent runtimes, memory, retrieval, routing, and evaluation systems by Aditya Karnam.`,
         start_url: `/`,
         background_color: `#02090d`,
         display: `standalone`,
@@ -150,6 +150,19 @@ const config: GatsbyConfig = {
         saveReportTo: `${__dirname}/public/.statoscope/_bundle.html`,
         saveStatsTo: `${__dirname}/public/.statoscope/_stats.json`,
         open: false,
+      },
+    },
+    {
+      resolve: `gatsby-plugin-cloudflare-pages`,
+      options: {
+        headers: {
+          // Cloudflare Pages merges headers from every matching rule rather than letting a more
+          // specific path override a less specific one, so a path-scoped override for /books/*
+          // would combine with this DENY into an invalid "DENY, SAMEORIGIN" value (still blocked).
+          // SAMEORIGIN site-wide still blocks cross-origin framing (clickjacking protection intact)
+          // while allowing the /ai-systems-design-field-guide/ page to embed its own PDF.
+          [`/*`]: [`X-Frame-Options: SAMEORIGIN`],
+        },
       },
     },
   ].filter(Boolean) as Array<PluginRef>,

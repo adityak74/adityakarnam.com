@@ -5,10 +5,8 @@ import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
 import {
   ConsoleList,
   Divider,
-  InlineLink,
   Panel,
   StatusRow,
-  ThreeColumnGrid,
   TwoColumnGrid,
   WorldModelHero,
   WorldModelPageShell,
@@ -23,30 +21,6 @@ type ComponentStatus = {
   note: string
 }
 
-type HealthTile = {
-  name: string
-  state: string
-  detail: string
-}
-
-const healthTiles: HealthTile[] = [
-  {
-    name: "Research paper",
-    state: "Green",
-    detail: "The published thesis and field notes are online and reachable.",
-  },
-  {
-    name: "Building tools",
-    state: "Green",
-    detail: "Ask My Work, Research Lens, and the supporting routes are available.",
-  },
-  {
-    name: "Tools",
-    state: "Green",
-    detail: "The systems pages, stack maps, and project artifacts are intact.",
-  },
-]
-
 const serviceStatus: ComponentStatus[] = [
   {
     name: "Website",
@@ -55,16 +29,10 @@ const serviceStatus: ComponentStatus[] = [
     note: "Updated from the latest local build and previewed in browser QA.",
   },
   {
-    name: "Ask My Work",
+    name: "Hero chat",
     status: "Operational",
-    detail: "The source-grounded research interface is available on the /ask route.",
-    note: "Backend responses stay constrained to the site context and uploaded notes.",
-  },
-  {
-    name: "Research Lens",
-    status: "Operational",
-    detail: "The visitor-lens summaries and adaptive profiles are wired behind server routes.",
-    note: "OpenRouter-backed responses fall back to curated copy when unavailable.",
+    detail: "The multi-turn, persona-adaptive chat on the homepage is grounded via Cloudflare AI Search.",
+    note: "Falls back to curated copy when retrieval or generation is unavailable.",
   },
   {
     name: "Content system",
@@ -94,7 +62,7 @@ const recentChecks = [
 
 const knownIssues = [
   "Gatsby build in this sandbox still ends with the existing `~/.config/gatsby/config.json` EPERM warning.",
-  "OpenRouter-backed answers are still fallback-first unless the API route can reach the server-side model call.",
+  "Hero chat answers fall back to curated copy unless the AI Search route can reach the retrieval and generation backend.",
   "This page is a status-style view, not a live uptime monitor with external probes yet.",
 ]
 
@@ -127,41 +95,6 @@ const StatusPage = (_props: PageProps) => (
       />
 
       <Divider />
-
-      <WorldModelSection
-        eyebrow="Current State"
-        title="All monitored site surfaces are green"
-        description="The status board highlights the pieces the site actually depends on: published content, tools, APIs, and the build/publish path."
-      >
-        <ThreeColumnGrid>
-          {healthTiles.map((tile) => (
-            <Panel key={tile.name} accent="green">
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.6rem",
-                  marginBottom: "0.8rem",
-                }}
-              >
-                <span
-                  aria-hidden="true"
-                  style={{
-                    width: "10px",
-                    height: "10px",
-                    borderRadius: "999px",
-                    background: "#2f8f4e",
-                    boxShadow: "0 0 0 4px rgba(47, 143, 78, 0.12)",
-                    flexShrink: 0,
-                  }}
-                />
-                <StatusRow label={tile.name} value={tile.state} />
-              </div>
-              <p style={{ color: labPalette.body, lineHeight: 1.7, margin: 0 }}>{tile.detail}</p>
-            </Panel>
-          ))}
-        </ThreeColumnGrid>
-      </WorldModelSection>
 
       <WorldModelSection
         eyebrow="Service Map"
@@ -216,25 +149,6 @@ const StatusPage = (_props: PageProps) => (
           </Panel>
         </TwoColumnGrid>
       </WorldModelSection>
-
-      <WorldModelSection
-        eyebrow="Related"
-        title="Where to go next"
-        description="The status page is a lightweight operations view. The other pages explain the systems and the active work behind it."
-      >
-        <TwoColumnGrid>
-          <Panel accent="cyan">
-            <p style={{ color: labPalette.body, marginTop: 0 }}>
-              Read <InlineLink to="/systems/">Systems</InlineLink> for the artifact index and research-backed project map.
-            </p>
-          </Panel>
-          <Panel accent="green">
-            <p style={{ color: labPalette.body, marginTop: 0 }}>
-              Read <InlineLink to="/now/">Now</InlineLink> for the active fronts and current wedges in motion.
-            </p>
-          </Panel>
-        </TwoColumnGrid>
-      </WorldModelSection>
     </WorldModelPageShell>
   </Layout>
 )
@@ -244,7 +158,7 @@ export default StatusPage
 export const Head: HeadFC = () => (
   <Seo
     title="Status"
-    description="Service status page for Aditya Karnam's World Model Infrastructure Lab."
+    description="Service status page for Aditya Karnam, AI researcher."
     pathname="/status/"
   />
 )

@@ -1,6 +1,33 @@
 ---
-title: Awesome Agentic Memory
 slug: "/awesome-agentic-memory"
+title: "Awesome Agent Memory List: 9 Frameworks Compared (2026 Update)"
+description: "The curated awesome-agent-memory list — A-MEM (NeurIPS 2025), mem0, Letta, Zep, Graphiti +5 more — compared by memory type, backend, and MCP support. Includes 10 MCP servers and 8 vector DBs. Updated 2026."
+keywords:
+  [
+    "mem0 alternatives",
+    "mem0 vs letta",
+    "mem0 vs letta vs zep",
+    "best agent memory for production",
+    "agent memory framework comparison",
+    "which agent memory system to use",
+    "mcp memory server comparison",
+    "open source memory layer for ai agents",
+    "agent memory framework",
+    "agent memory systems",
+    "ai agent memory database",
+    "agentic memory",
+    "awesome agent memory",
+    "awesome ai memory",
+    "awesome memory for agents",
+    "a-mem agentic memory for llm agents",
+    "a-mem neurips 2025",
+    "a-mem agentic memory github",
+    "what is a-mem agentic memory",
+    "a-mem vs mem0",
+    "zettelkasten agent memory",
+  ]
+canonicalUrl: "https://adityakarnam.com/awesome-agentic-memory/"
+hideTitle: true
 ---
 
 <div style={{
@@ -16,7 +43,6 @@ slug: "/awesome-agentic-memory"
     <div style={{ textAlign: "center", marginBottom: "4rem" }}>
       <div style={{ marginBottom: "1rem", display: "flex", justifyContent: "center", gap: "0.5rem", flexWrap: "wrap" }}>
         <img src="https://awesome.re/badge-flat2.svg" alt="Awesome" style={{ height: "20px" }} />
-        <img src="https://img.shields.io/github/stars/aviskaar/awesome-agentic-memory?style=flat-square&color=gold&label=Stars" alt="Stars" style={{ height: "20px" }} />
         <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square" alt="PRs Welcome" style={{ height: "20px" }} />
         <img src="https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg?style=flat-square" alt="CC0" style={{ height: "20px" }} />
       </div>
@@ -27,7 +53,7 @@ slug: "/awesome-agentic-memory"
         marginBottom: "1.25rem",
         lineHeight: 1.15
       }}>
-        Awesome Agentic Memory
+        Awesome Agent Memory
       </h1>
       <p style={{
         fontSize: "1.15rem",
@@ -36,7 +62,7 @@ slug: "/awesome-agentic-memory"
         margin: "0 auto 2rem",
         lineHeight: "1.7"
       }}>
-        The most comprehensive curated list of memory systems, plugins, frameworks, databases, and research for AI agents — across every domain.
+        mem0, Letta, Graphiti and more — agent memory frameworks, MCP servers, vector databases and knowledge graphs, compared by memory type, backend and MCP support.
       </p>
       <p style={{
         fontSize: "1rem",
@@ -73,6 +99,60 @@ slug: "/awesome-agentic-memory"
       </div>
     </div>
 
+    {/* Related on adityakarnam.com */}
+    <div style={{
+      background: "#1F1D16",
+      border: "1px solid #2B291F",
+      borderRadius: "12px",
+      padding: "2rem",
+      marginBottom: "3rem"
+    }}>
+      <h2 style={{ fontSize: "1.35rem", fontWeight: "700", color: "#E5E1D8", marginBottom: "0.5rem" }}>
+        🔗 Building agent memory yourself? Start here
+      </h2>
+      <p style={{ color: "#928D7E", marginBottom: "1.25rem", lineHeight: "1.7" }}>
+        If this list is useful, these deep-dives on adityakarnam.com cover the harness, retrieval, and MCP layers that agentic memory plugs into.
+      </p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1rem" }}>
+        {[
+          { title: "What Is an AI Agent Harness?", desc: "How memory, tools, retries, and verification fit into an agent's runtime.", url: "/ai-research/what-is-an-ai-agent-harness/" },
+          { title: "Building QuECTO", desc: "From a 1.3 MB minimal harness to an evaluable coding agent with session persistence.", url: "/ai-research/building-quecto-from-minimal-harness-to-evaluable-agent/" },
+          { title: "Persona-Adaptive RAG Chat", desc: "Grounded, multi-turn retrieval architecture built on Cloudflare AI Search.", url: "/hero-rag-chat-architecture/" },
+          { title: "I Turned My Portfolio Into an MCP Server", desc: "A hosted, read-only MCP server exposing my site's content to any MCP client.", url: "/portfolio-mcp-server/" },
+          { title: "subagent-fleet: Local AI Compute Control Plane", desc: "Routing coding-agent subagents across local Ollama machines.", url: "/subagent-fleet-local-ai-compute-control-plane/" },
+          { title: "AI Research Hub", desc: "All research posts on agents, harnesses, and reasoning systems in one place.", url: "/ai-research/" },
+        ].map(({ title, desc, url }) => (
+          <a key={url} href={url} style={{
+            display: "block",
+            background: "#15140F",
+            borderRadius: "8px",
+            padding: "1rem",
+            border: "1px solid #2B291F",
+            textDecoration: "none",
+            transition: "border-color 0.2s"
+          }}>
+            <div style={{ fontWeight: "600", color: "#E5E1D8", marginBottom: "0.35rem", fontSize: "0.95rem" }}>{title} →</div>
+            <div style={{ fontSize: "0.82rem", color: "#928D7E", lineHeight: "1.5" }}>{desc}</div>
+          </a>
+        ))}
+      </div>
+      <div style={{ marginTop: "1.25rem", textAlign: "center" }}>
+        <a href="/ai-toolkit/" style={{
+          display: "inline-block",
+          background: "#2B291F",
+          color: "#E5E1D8",
+          padding: "0.6rem 1.25rem",
+          borderRadius: "8px",
+          textDecoration: "none",
+          fontSize: "0.9rem",
+          fontWeight: "600",
+          border: "1px solid #2B291F"
+        }}>
+          Try the free AI Toolkit (prompt graders, composer, thread generator) →
+        </a>
+      </div>
+    </div>
+
     {/* Why It Matters */}
     <div style={{
       background: "#1F1D16",
@@ -101,6 +181,82 @@ slug: "/awesome-agentic-memory"
             <div style={{ fontSize: "0.85rem", color: "#928D7E" }}>{desc}</div>
           </div>
         ))}
+      </div>
+    </div>
+
+    {/* A-MEM Deep Dive */}
+    <div id="a-mem" style={{
+      background: "#1F1D16",
+      border: "1px solid #2B291F",
+      borderRadius: "12px",
+      padding: "2rem",
+      marginBottom: "3rem"
+    }}>
+      <h2 style={{ fontSize: "1.5rem", fontWeight: "700", color: "#E5E1D8", marginBottom: "1rem" }}>
+        🗂️ What Is A-MEM (Agentic Memory for LLM Agents)?
+      </h2>
+      <p style={{ color: "#E5E1D8", lineHeight: "1.7", marginBottom: "1rem" }}>
+        <strong>A-MEM: Agentic Memory for LLM Agents</strong> is a memory architecture from the paper
+        by Wujiang Xu et al., accepted at <strong>NeurIPS 2025</strong>, that organizes an agent's
+        memories the way a <strong>Zettelkasten</strong> note-taking system organizes ideas: each new
+        memory is written as a structured note, the system automatically links it to related existing
+        notes, and — unlike most vector-store memory layers — older notes get updated and re-linked as
+        new context arrives, so the memory network evolves instead of just growing. It uses ChromaDB as
+        its default vector backend and has no built-in MCP server, which makes it a research-grade
+        reference implementation rather than a drop-in production library.
+      </p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem", marginBottom: "1.25rem" }}>
+        {[
+          ["Paper", "A-MEM: Agentic Memory for LLM Agents"],
+          ["Venue", "NeurIPS 2025"],
+          ["Authors", "Wujiang Xu, Zujie Liang, Kai Mei, et al."],
+          ["Core idea", "Zettelkasten-style dynamic linking + note evolution"],
+          ["Backend", "ChromaDB (vector store)"],
+          ["MCP support", "None built-in"],
+        ].map(([label, value]) => (
+          <div key={label} style={{ background: "#15140F", borderRadius: "8px", padding: "0.85rem 1rem", border: "1px solid #2B291F" }}>
+            <div style={{ fontSize: "0.75rem", color: "#928D7E", marginBottom: "0.25rem", textTransform: "uppercase", letterSpacing: "0.03em" }}>{label}</div>
+            <div style={{ fontSize: "0.9rem", color: "#E5E1D8", fontWeight: "600" }}>{value}</div>
+          </div>
+        ))}
+      </div>
+
+      <h3 style={{ fontSize: "1.15rem", fontWeight: "700", color: "#E5E1D8", marginBottom: "0.75rem" }}>
+        How does A-MEM's Zettelkasten memory work?
+      </h3>
+      <p style={{ color: "#928D7E", lineHeight: "1.7", marginBottom: "1rem" }}>
+        Each time the agent stores a new memory, A-MEM generates a structured note containing the
+        content, contextual keywords, and tags, then retrieves the most semantically related existing
+        notes and creates links between them. Critically, it doesn't stop there — it also revisits and
+        updates the linked notes' context in light of the new memory, so the network of notes keeps
+        evolving rather than becoming a static, ever-growing log. This is what distinguishes it from
+        flat semantic-search memory layers like a plain vector store: retrieval in A-MEM follows the
+        link graph, not just embedding similarity.
+      </p>
+
+      <h3 style={{ fontSize: "1.15rem", fontWeight: "700", color: "#E5E1D8", marginBottom: "0.75rem" }}>
+        A-MEM vs mem0 vs Letta: what's the difference?
+      </h3>
+      <p style={{ color: "#928D7E", lineHeight: "1.7", marginBottom: "1.25rem" }}>
+        <strong>mem0</strong> is a production-oriented universal memory layer (semantic + episodic +
+        knowledge graph) with 14M+ downloads and first-party MCP support — pick it when you want a
+        drop-in memory API today. <strong>Letta</strong> (formerly MemGPT) manages memory the way an
+        operating system manages virtual memory, with core/archival/recall tiers built for long-running
+        stateful agents. <strong>A-MEM</strong> is the one built specifically around interconnected,
+        self-evolving notes — it's the strongest fit when your agent needs to reason over how memories
+        relate to each other over time, not just recall the most similar past fact. It is a research
+        implementation, not a hosted service, so expect to build the production wrapper yourself.
+      </p>
+
+      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+        <a href="https://arxiv.org/abs/2502.12110" target="_blank" rel="noopener noreferrer" style={{
+          background: "#2B291F", color: "#E5E1D8", padding: "0.55rem 1rem", borderRadius: "8px",
+          textDecoration: "none", fontSize: "0.85rem", fontWeight: "600", border: "1px solid #2B291F"
+        }}>Read the A-MEM paper (arXiv) →</a>
+        <a href="https://github.com/agiresearch/A-mem" target="_blank" rel="noopener noreferrer" style={{
+          background: "#15140F", color: "#E5E1D8", padding: "0.55rem 1rem", borderRadius: "8px",
+          textDecoration: "none", fontSize: "0.85rem", fontWeight: "600", border: "1px solid #2B291F"
+        }}>A-MEM on GitHub →</a>
       </div>
     </div>
 
@@ -689,8 +845,11 @@ slug: "/awesome-agentic-memory"
 
     {/* Footer */}
     <div style={{ textAlign: "center", paddingTop: "2rem", borderTop: "1px solid #2B291F" }}>
-      <p style={{ color: "#928D7E", fontSize: "0.85rem" }}>
+      <p style={{ color: "#928D7E", fontSize: "0.85rem", marginBottom: "0.75rem" }}>
         Curated with ❤️ · <a href="https://github.com/aviskaar/awesome-agentic-memory/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" style={{ color: "#E5E1D8", textDecoration: "none" }}>Contribute a project</a> · Licensed CC0
+      </p>
+      <p style={{ color: "#928D7E", fontSize: "0.85rem" }}>
+        More from adityakarnam.com: <a href="/ai-research/" style={{ color: "#E5E1D8", textDecoration: "underline" }}>AI Research</a> · <a href="/ai-toolkit/" style={{ color: "#E5E1D8", textDecoration: "underline" }}>AI Toolkit</a> · <a href="/field-notes/" style={{ color: "#E5E1D8", textDecoration: "underline" }}>Field Notes</a> · <a href="/about/" style={{ color: "#E5E1D8", textDecoration: "underline" }}>About</a>
       </p>
     </div>
 

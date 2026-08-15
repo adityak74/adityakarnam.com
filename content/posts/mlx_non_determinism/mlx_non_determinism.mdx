@@ -1,21 +1,20 @@
 ---
-title: "The Hidden Problem With MLX: Why Your Apple Silicon LLM Isn't Reproducible"
 date: 2025-09-15
 slug: "/mlx-non-determinism-apple-silicon"
-canonicalUrl: "https://adityakarnam.com/mlx-non-determinism-apple-silicon/"
+title: "MLX Non-Determinism on Apple Silicon"
+description: "Why identical MLX inputs give different outputs: batch-invariance tests from 512 to 4096 matrices, plus bfloat16, float32 and float16 error behavior."
 keywords:
   [
-    mlx,
-    apple silicon,
-    machine learning,
-    non-determinism,
-    llm inference,
-    metal,
-    batch invariance,
-    reproducibility,
-    floating point,
-    gpu kernels,
+    "mlx non-determinism",
+    "mlx batch inference",
+    "mlx reproducibility",
+    "apple silicon llm inference",
+    "mlx batch invariance",
+    "metal matmul nondeterminism",
+    "mlx bfloat16 float16 precision",
+    "deterministic llm inference",
   ]
+canonicalUrl: "https://adityakarnam.com/mlx-non-determinism-apple-silicon/"
 ---
 
 
@@ -144,6 +143,8 @@ Each strategy is locally optimal for performance but produces slightly different
 **Accept the Limitation**: Document nondeterministic behavior for users and adjust expectations accordingly.
 
 **Switch to Ollama**: For applications requiring determinism, use Ollama instead of MLX-based inference.
+
+> **Update, August 2026 — this recommendation needs revisiting.** Ollama shipped an [MLX backend in v0.19](https://ollama.com/blog/mlx) (March 2026) and promoted it to the default fast path on capable Apple Silicon Macs in v0.30 (May 2026). On a current Ollama with ≥32GB of unified memory, "switch to Ollama" may no longer route around MLX — it may now *be* MLX, in which case this mitigation does nothing for you. I have not yet re-measured determinism under Ollama's MLX backend, so treat this bullet as unverified for Ollama ≥0.30 until I publish numbers. The other mitigations below are unaffected.
 
 **Maintain Consistent Batch Sizes**: When using MLX, keep fixed batch sizes throughout your pipeline.
 

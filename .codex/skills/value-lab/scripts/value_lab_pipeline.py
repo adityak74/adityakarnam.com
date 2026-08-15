@@ -23,6 +23,9 @@ EVIDENCE = {
     "estimated",
     "experimental",
 }
+WEEKLY_CHANGE_MARKERS = {"up", "down", "same", "star"}
+WEEKLY_CHANGE_LIMIT = 4
+MEANINGFUL_COST_CHANGE = 0.01
 
 
 def slug(value: str) -> str:
@@ -189,6 +192,191 @@ def compute_pareto_frontier(records: list[dict[str, Any]]) -> dict[str, list[str
                 frontier.append(candidate["configurationId"])
         frontiers[key] = sorted(frontier)
     return frontiers
+
+
+def _configurations_by_id(publication: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    return {
+        item["id"]: item for item in publication.get("configurations", [])
+        if isinstance(item, dict) and isinstance(item.get("id"), str)
+    }
+
+
+def _weekly_sources(*configurations: dict[str, Any] | None) -> list[dict[str, str]]:
+    links: dict[str, set[str]] = defaultdict(set)
+    for configuration in configurations:
+        if not configuration:
+            continue
+        if isinstance(configuration.get("sourceUrl"), str):
+            links[configuration["sourceUrl"]].add(f"{configuration.get('model', 'Configuration')} benchmark")
+        if isinstance(configuration.get("priceSourceUrl"), str):
+            links[configuration["priceSourceUrl"]].add(f"{configuration.get('model', 'Configuration')} pricing")
+    return [
+        {"label": " + ".join(sorted(links[url])), "url": url}
+        for url in sorted(links)
+    ]
+
+
+def _weekly_item(
+    *, item_id: str, marker: str, headline: str, evidence: str,
+    configurations: list[dict[str, Any]], priority: int,
+) -> dict[str, Any]:
+    return {
+        "id": item_id,
+        "marker": marker,
+        "headline": headline,
+        "evidence": evidence,
+        "sourceRunIds": sorted({item["runId"] for item in configurations}),
+        "sources": _weekly_sources(*configurations),
+        "_priority": priority,
+    }
+
+
+def _leader_map(publication: dict[str, Any]) -> dict[tuple[str, str], dict[str, Any]]:
+    cohorts: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
+    for configuration in publication.get("configurations", []):
+        if not isinstance(configuration, dict):
+            continue
+        cohorts[(configuration["benchmark"], configuration["benchmarkVersion"])].append(configuration)
+    return {
+        cohort: sorted(configurations, key=lambda item: (-float(item["score"]), item["id"]))[0]
+        for cohort, configurations in cohorts.items() if configurations
+    }
+
+
+def _frontier_map(publication: dict[str, Any]) -> dict[str, set[str]]:
+    chart = next(
+        (item for item in publication.get("charts", []) if item.get("id") == "performance-cost"),
+        None,
+    )
+    if not chart or not isinstance(chart.get("frontiers"), dict):
+        return {}
+    return {
+        cohort: set(configuration_ids)
+        for cohort, configuration_ids in chart["frontiers"].items()
+        if isinstance(cohort, str) and isinstance(configuration_ids, list)
+    }
+
+
+def _cohort_configurations(publication: dict[str, Any], cohort: str) -> list[dict[str, Any]]:
+    return [
+        configuration for configuration in publication.get("configurations", [])
+        if isinstance(configuration, dict)
+        and f"{configuration.get('benchmark')}@{configuration.get('benchmarkVersion')}" == cohort
+    ]
+
+
+def build_weekly_changes(
+    current: dict[str, Any], previous: dict[str, Any] | None,
+) -> dict[str, Any]:
+    current_date = current["updatedAt"]
+    baseline = {
+        "title": "What's Changed Since Last Week?",
+        "baselineDate": None,
+        "currentDate": current_date,
+        "status": "baseline",
+        "items": [],
+    }
+    if not previous or not isinstance(previous.get("updatedAt"), str) or previous["updatedAt"] >= current_date:
+        return baseline
+
+    current_by_id = _configurations_by_id(current)
+    previous_by_id = _configurations_by_id(previous)
+    candidates: list[dict[str, Any]] = []
+
+    current_frontiers = _frontier_map(current)
+    previous_frontiers = _frontier_map(previous)
+    for cohort in sorted(set(current_frontiers) & set(previous_frontiers)):
+        cohort_evidence = [
+            *_cohort_configurations(current, cohort),
+            *_cohort_configurations(previous, cohort),
+        ]
+        for configuration_id in sorted(current_frontiers[cohort] - previous_frontiers[cohort]):
+            configuration = current_by_id.get(configuration_id)
+            if configuration:
+                candidates.append(_weekly_item(
+                    item_id=f"frontier-entry-{slug(cohort)}-{slug(configuration_id)}",
+                    marker="up",
+                    headline=f"{configuration['model']} entered the {configuration['benchmark']} {configuration['benchmarkVersion']} Pareto frontier.",
+                    evidence=configuration["evidence"], configurations=cohort_evidence, priority=10,
+                ))
+        for configuration_id in sorted(previous_frontiers[cohort] - current_frontiers[cohort]):
+            configuration = previous_by_id.get(configuration_id)
+            if configuration:
+                candidates.append(_weekly_item(
+                    item_id=f"frontier-exit-{slug(cohort)}-{slug(configuration_id)}",
+                    marker="down",
+                    headline=f"{configuration['model']} left the {configuration['benchmark']} {configuration['benchmarkVersion']} Pareto frontier.",
+                    evidence=configuration["evidence"], configurations=cohort_evidence, priority=10,
+                ))
+
+    current_leaders = _leader_map(current)
+    previous_leaders = _leader_map(previous)
+    for cohort in sorted(set(current_leaders) & set(previous_leaders)):
+        current_leader = current_leaders[cohort]
+        previous_leader = previous_leaders[cohort]
+        if current_leader["id"] != previous_leader["id"]:
+            candidates.append(_weekly_item(
+                item_id=f"leader-change-{slug(cohort[0])}-{slug(cohort[1])}-{slug(current_leader['id'])}",
+                marker="up",
+                headline=f"{current_leader['model']} became the leader on {cohort[0]} {cohort[1]}.",
+                evidence=current_leader["evidence"], configurations=[current_leader, previous_leader], priority=20,
+            ))
+        else:
+            candidates.append(_weekly_item(
+                item_id=f"leader-unchanged-{slug(cohort[0])}-{slug(cohort[1])}",
+                marker="same",
+                headline=f"{current_leader['model']} remained the leader on {cohort[0]} {cohort[1]}.",
+                evidence=current_leader["evidence"], configurations=[current_leader, previous_leader], priority=90,
+            ))
+
+    current_recommendation = current.get("recommendation", {}).get("configurationId")
+    previous_recommendation = previous.get("recommendation", {}).get("configurationId")
+    if current_recommendation and current_recommendation != previous_recommendation:
+        current_config = current_by_id.get(current_recommendation)
+        previous_config = previous_by_id.get(previous_recommendation)
+        if current_config:
+            candidates.append(_weekly_item(
+                item_id=f"value-recommendation-{slug(current_recommendation)}",
+                marker="star",
+                headline=f"{current_config['model']} became the highest-value measured configuration.",
+                evidence=current_config["evidence"],
+                configurations=[item for item in (current_config, previous_config) if item], priority=30,
+            ))
+
+    for configuration_id in sorted(set(current_by_id) & set(previous_by_id)):
+        current_config = current_by_id[configuration_id]
+        previous_config = previous_by_id[configuration_id]
+        old_cost = previous_config.get("costPerTaskUsd")
+        new_cost = current_config.get("costPerTaskUsd")
+        if not isinstance(old_cost, (int, float)) or isinstance(old_cost, bool) or old_cost <= 0:
+            continue
+        if not isinstance(new_cost, (int, float)) or isinstance(new_cost, bool):
+            continue
+        delta = (float(new_cost) - float(old_cost)) / float(old_cost)
+        if abs(delta) < MEANINGFUL_COST_CHANGE:
+            continue
+        direction = "fell" if delta < 0 else "rose"
+        marker = "down" if delta < 0 else "up"
+        candidates.append(_weekly_item(
+            item_id=f"task-cost-{marker}-{slug(configuration_id)}",
+            marker=marker,
+            headline=f"{current_config['model']} measured task cost {direction} by {abs(delta) * 100:.1f}%.",
+            evidence=current_config["evidence"], configurations=[current_config, previous_config], priority=40,
+        ))
+
+    unique = {candidate["id"]: candidate for candidate in candidates}
+    items = []
+    for candidate in sorted(unique.values(), key=lambda item: (item["_priority"], item["id"]))[:WEEKLY_CHANGE_LIMIT]:
+        candidate = dict(candidate)
+        candidate.pop("_priority")
+        items.append(candidate)
+    return {
+        "title": "What's Changed Since Last Week?",
+        "baselineDate": previous["updatedAt"],
+        "currentDate": current_date,
+        "status": "compared",
+        "items": items,
+    }
 
 
 def _select_recommendation(runs: list[dict[str, Any]]) -> dict[str, Any]:
@@ -446,6 +634,7 @@ def _source_run_ids_are_valid(run_ids: Any, available_run_ids: set[str]) -> bool
 
 def validate_publication_visuals(
     publication: dict[str, Any], normalized_runs: list[dict[str, Any]] | None = None,
+    previous: dict[str, Any] | None = None,
 ) -> list[str]:
     """Validate the published renderer contract against normalized run provenance."""
     errors: list[str] = []
@@ -479,6 +668,108 @@ def validate_publication_visuals(
         "leader", "measured-configurations", "leader-gap", "evidence-health",
         "top-three", "largest-harness-difference", "research-coverage",
     }
+    if publication.get("schemaVersion") != 3:
+        errors.append("publication schemaVersion must be 3")
+
+    weekly = publication.get("weeklyChanges")
+    if not isinstance(weekly, dict):
+        errors.append("publication requires weeklyChanges")
+    else:
+        status = weekly.get("status")
+        items = weekly.get("items")
+        current_date = weekly.get("currentDate")
+        baseline_date = weekly.get("baselineDate")
+        if not isinstance(weekly.get("title"), str) or not weekly["title"]:
+            errors.append("weeklyChanges title must be a non-empty string")
+        if status not in {"baseline", "compared"}:
+            errors.append("weeklyChanges status must be baseline or compared")
+        if not isinstance(current_date, str) or current_date != publication.get("updatedAt"):
+            errors.append("weeklyChanges currentDate must match publication updatedAt")
+        else:
+            try:
+                date.fromisoformat(current_date)
+            except ValueError:
+                errors.append("weeklyChanges currentDate must be an ISO date")
+        if status == "baseline":
+            if baseline_date is not None or items != []:
+                errors.append("weeklyChanges baseline state requires a null baselineDate and empty items")
+        elif not isinstance(baseline_date, str):
+            errors.append("weeklyChanges compared state requires baselineDate")
+        else:
+            try:
+                if date.fromisoformat(baseline_date) >= date.fromisoformat(current_date):
+                    errors.append("weeklyChanges baselineDate must be earlier than currentDate")
+            except (TypeError, ValueError):
+                errors.append("weeklyChanges baselineDate must be an ISO date")
+
+        if not isinstance(items, list):
+            errors.append("weeklyChanges items must be a list")
+            items = []
+        elif len(items) > WEEKLY_CHANGE_LIMIT:
+            errors.append(f"weeklyChanges may contain at most {WEEKLY_CHANGE_LIMIT} items")
+
+        prior_configurations = previous.get("configurations", []) if isinstance(previous, dict) else []
+        weekly_configurations = [
+            configuration for configuration in [*configurations, *prior_configurations]
+            if isinstance(configuration, dict) and isinstance(configuration.get("runId"), str)
+        ]
+        weekly_run_ids = {configuration["runId"] for configuration in weekly_configurations}
+        seen_weekly_ids: set[str] = set()
+        for index, item in enumerate(items):
+            prefix = f"weeklyChanges.items[{index}]"
+            if not isinstance(item, dict):
+                errors.append(f"{prefix} must be an object")
+                continue
+            for field in ("id", "headline", "evidence"):
+                if not isinstance(item.get(field), str) or not item[field]:
+                    errors.append(f"{prefix} {field} must be a non-empty string")
+            if item.get("id") in seen_weekly_ids:
+                errors.append(f"{prefix} id must be unique")
+            elif isinstance(item.get("id"), str):
+                seen_weekly_ids.add(item["id"])
+            if item.get("marker") not in WEEKLY_CHANGE_MARKERS:
+                errors.append(f"{prefix} marker is invalid")
+            if item.get("evidence") not in EVIDENCE:
+                errors.append(f"{prefix} evidence is invalid")
+            source_run_ids = item.get("sourceRunIds")
+            if (
+                not isinstance(source_run_ids, list) or not source_run_ids
+                or len(source_run_ids) != len(set(source_run_ids))
+                or any(run_id not in weekly_run_ids for run_id in source_run_ids)
+            ):
+                errors.append(f"{prefix} sourceRunIds must resolve to unique current or prior runs")
+                source_run_ids = []
+            sources_list = item.get("sources")
+            if not isinstance(sources_list, list) or not sources_list:
+                errors.append(f"{prefix} sources must be a non-empty list")
+                sources_list = []
+            source_urls = []
+            for source_index, source in enumerate(sources_list):
+                if not isinstance(source, dict) or not isinstance(source.get("label"), str) or not source.get("label"):
+                    errors.append(f"{prefix}.sources[{source_index}] label must be a non-empty string")
+                url = source.get("url") if isinstance(source, dict) else None
+                if not isinstance(url, str) or not url.startswith("https://"):
+                    errors.append(f"{prefix}.sources[{source_index}] URL must use HTTPS")
+                else:
+                    source_urls.append(url)
+            if len(source_urls) != len(set(source_urls)):
+                errors.append(f"{prefix} source URLs must be unique")
+            if source_run_ids:
+                referenced = [
+                    configuration for configuration in weekly_configurations
+                    if configuration["runId"] in source_run_ids
+                ]
+                expected_sources = _weekly_sources(*referenced)
+                if sources_list != expected_sources:
+                    errors.append(f"{prefix} sources must match referenced run provenance")
+        try:
+            expected_weekly = build_weekly_changes(publication, previous)
+        except (KeyError, TypeError, ValueError):
+            errors.append("weeklyChanges could not be recomputed from publication inputs")
+        else:
+            if weekly != expected_weekly:
+                errors.append("weeklyChanges must match deterministic comparison")
+
     cards = publication.get("dashboardCards", [])
     if not isinstance(cards, list) or len(cards) != 7:
         errors.append("publication requires exactly seven dashboard cards")
@@ -654,7 +945,9 @@ def snapshot_filename(bundle: dict[str, Any], publication: dict[str, Any]) -> st
     return f"{slug(bundle['run']['runId'])}-v{publication['schemaVersion']}.json"
 
 
-def build_publication(normalized: dict[str, Any]) -> dict[str, Any]:
+def build_publication(
+    normalized: dict[str, Any], previous: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     runs = normalized["benchmarkRuns"]
     frontiers = compute_pareto_frontier(runs)
     recommendation = _select_recommendation(runs)
@@ -695,8 +988,8 @@ def build_publication(normalized: dict[str, Any]) -> dict[str, Any]:
         })
     charts.extend([_build_harness_chart(publishable_configurations), _build_coverage_chart(publishable_configurations, recommendation)])
     updated = normalized["run"]["retrievedAt"][:10]
-    return {
-        "schemaVersion": 2, "updatedAt": updated, "title": "Coding Agent Value Lab",
+    publication = {
+        "schemaVersion": 3, "updatedAt": updated, "title": "Coding Agent Value Lab",
         "subtitle": "Independent analysis of coding models, harnesses, reasoning levels, costs, and subscription efficiency.",
         "positioning": "Benchmarks tell you who scored highest. This lab tells you what to use.",
         "status": f"{len(publishable_configurations)} publishable configurations · refreshed {updated}",
@@ -716,6 +1009,8 @@ def build_publication(normalized: dict[str, Any]) -> dict[str, Any]:
         },
         "history": [],
     }
+    publication["weeklyChanges"] = build_weekly_changes(publication, previous)
+    return publication
 
 
 def evaluate_change_gate(
@@ -784,9 +1079,10 @@ def main() -> int:
         print(json.dumps({"gate": gate}, sort_keys=True))
         return 2
 
+    previous = json.loads(args.previous.read_text()) if args.previous and args.previous.exists() else None
     normalized = normalize_bundle(bundle)
-    publication = build_publication(normalized)
-    visual_errors = validate_publication_visuals(publication, normalized["benchmarkRuns"])
+    publication = build_publication(normalized, previous)
+    visual_errors = validate_publication_visuals(publication, normalized["benchmarkRuns"], previous)
     if visual_errors:
         gate = {
             "requiresReview": True,
@@ -799,7 +1095,6 @@ def main() -> int:
         print(json.dumps({"gate": gate}, sort_keys=True))
         return 2
     snapshot = args.snapshot_root / publication["updatedAt"] / snapshot_filename(bundle, publication)
-    previous = json.loads(args.previous.read_text()) if args.previous and args.previous.exists() else None
     gate = evaluate_change_gate(previous, publication, 0, len(bundle["benchmarkRuns"]), inaccessible, active_notices)
     if args.gate_output:
         args.gate_output.parent.mkdir(parents=True, exist_ok=True)

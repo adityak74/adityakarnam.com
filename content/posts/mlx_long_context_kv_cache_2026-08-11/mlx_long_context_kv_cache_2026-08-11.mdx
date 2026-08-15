@@ -1,0 +1,294 @@
+---
+title: "Why MLX Decode Slows at Long Context"
+date: 2026-08-11
+slug: "/mlx-long-context-kv-cache-apple-silicon/"
+canonicalUrl: "https://adityakarnam.com/mlx-long-context-kv-cache-apple-silicon/"
+description: "Measured on an M5 Pro: quantizing the KV cache halves how fast decode degrades with context, but halves prefill throughput too. Break-even math included."
+keywords:
+  [
+    "mlx long context performance drop",
+    "mlx kv cache apple silicon",
+    "mlx long context slowdown",
+    "apple silicon llm long context",
+    "mlx kv cache quantization",
+    "mlx decode throughput context length",
+    "m5 pro llm inference",
+    "quantized kv cache benchmark",
+    "mlx memory bandwidth",
+  ]
+tags:
+  - ai
+  - local-llms
+  - open-source
+---
+
+Run a local model on a Mac with a short prompt and you get something like 55 tokens
+per second. Feed the same model a 64k-token context and it drops to 10. The model
+is identical. The machine is identical. Only the context changed.
+
+The usual explanation is "attention is quadratic," which is true of prefill and
+irrelevant to the part you actually feel. Decode — the token-by-token generation
+after the prompt is processed — is not quadratic. It degrades linearly. And the
+reason is boring in the best way: every token you generate has to read the entire
+KV cache out of memory, and that cache grows with context.
+
+I wanted to know whether that was actually the cause on Apple Silicon or just a
+plausible story, so I measured it. The short version:
+
+- **Halving the bytes in the KV cache halves the rate at which decode degrades.**
+  Predicted 2.00×, measured **1.92×**.
+- **But quantizing the KV cache costs you about half your prefill throughput**,
+  which makes time-to-first-token much worse.
+- Below roughly 32k context, **quantized KV is simply slower end to end**. Above it,
+  it wins only if you generate enough tokens to pay back the prefill penalty —
+  about **4,166 tokens at 64k context**.
+
+Everything below is measured on one machine, and I have included the parts that
+did not behave.
+
+## The setup
+
+| | |
+| --- | --- |
+| Machine | Apple M5 Pro, 52 GB unified memory |
+| OS | macOS 26.5.2 |
+| Libraries | `mlx` 0.32.0, `mlx-lm` 0.31.3 |
+| Model | `mlx-community/Qwen3-8B-4bit` |
+| Geometry | 36 layers, 8 KV heads, head_dim 128 |
+| Sweep | context 512 → 65,536, KV cache at fp16 / 8-bit / 4-bit |
+| Reps | 7 per cell, warmup discarded, medians reported |
+
+I report medians rather than means because Apple Silicon latency is right-skewed,
+and I track a robust coefficient of variation per cell so I can throw out cells
+that were too noisy to trust. One cell was. I will come back to it.
+
+The scripts are in the repo under `scripts/benchmarks/` if you want to reproduce
+any of this on your own hardware.
+
+## First, ruling out the software
+
+Before blaming memory bandwidth, it is worth checking whether MLX's attention
+kernel is simply inefficient. If the kernel were the bottleneck, this would be a
+software story, not a hardware one.
+
+I measured the machine's actual achievable streaming bandwidth, then measured how
+fast an attention-shaped read over a KV cache runs against that ceiling:
+
+| Measurement | Result |
+| --- | --- |
+| Streaming bandwidth (fp16) | 265.6 GB/s |
+| Attention-over-KV | 260.9 GB/s |
+| Efficiency vs ceiling | **98.3%** |
+| Linearity in KV length | R² = 0.9989 |
+| Compute headroom (GEMM vs GEMV) | 109× |
+
+The attention kernel reads memory at 98% of what this chip can deliver, and its
+cost is almost perfectly linear in KV length. There is 109× more compute available
+than the operation uses. Whatever is slowing decode down, it is not MLX's kernel
+being sloppy — the kernel is running out of memory bandwidth, not out of FLOPs.
+
+That is the setup for the real experiment.
+
+## The experiment: change only the bytes
+
+If decode degradation is caused by reading the KV cache, then reducing the *size*
+of the KV cache should reduce the degradation proportionally — and should do
+almost nothing else.
+
+That is a clean ablation. Quantizing the KV cache to 8-bit halves the bytes
+attention has to read per token. To 4-bit, quarters them. It does not change the
+model, the weights, the sequence, or the kernel. It changes one variable.
+
+So the prediction is specific and falsifiable. Fit decode latency against context
+length:
+
+```
+ms_per_token = t0 + m * context_length
+```
+
+The intercept `t0` is the context-independent cost — mostly reading the model
+weights. The slope `m` is the KV term. If the KV-bandwidth explanation is right,
+the **slope must fall by 2× at 8-bit and 4× at 4-bit**, while the intercept stays
+roughly put. If the slope does not move, the explanation is wrong.
+
+### Results
+
+| KV precision | Slope (ms per ctx-token) | Intercept | R² | Slope ratio | Predicted |
+| --- | --- | --- | --- | --- | --- |
+| fp16 (default) | 1.2720e-03 | 14.53 ms | 0.982 | — | — |
+| 8-bit | 6.6289e-04 | 18.02 ms | 0.994 | **1.92×** | 2.0× |
+| 4-bit | 3.9682e-04 | 18.58 ms | 0.999 | **3.21×** | 4.0× |
+
+The 8-bit result is within 4% of the prediction. The 4-bit result is 20% under.
+
+That is about as direct a confirmation as this kind of measurement gets. The
+long-context decode slowdown on Apple Silicon is dominated by KV cache read
+bandwidth, and you can move it by changing how many bytes the cache occupies.
+
+Here is the same thing as raw throughput:
+
+| Context | fp16 | 8-bit | 4-bit |
+| ---: | ---: | ---: | ---: |
+| 512 | 55.65 | 53.02 | 53.41 |
+| 2,048 | 53.61 | 51.39 | 51.23 |
+| 8,192 | 45.20 | 41.03 | 45.52 |
+| 16,384 | 36.85 | 35.18 | 40.30 |
+| 32,768 | 16.59 | 26.98 | 31.56 |
+| 65,536 | **10.19** | **15.93** | 17.55 |
+
+*(tokens/sec, median of 7 reps)*
+
+Notice that at short context, quantizing the KV cache makes things slightly
+**worse** — 55.65 → 53.02 at 512 tokens. That is the intercept rising: dequantizing
+costs a small fixed amount per token, and when there is barely any cache to read,
+you pay the cost without collecting the benefit.
+
+## The part I nearly got wrong
+
+The 4-bit measurement at 65,536 context had a robust coefficient of variation of
+**0.254** — 25% run-to-run spread, where every other cell in the sweep came in
+under 6%. I excluded it from the fit.
+
+That matters, because my first pass *included* it, and it produced a 4-bit slope
+ratio of 2.25× instead of 3.21×. On that basis I briefly believed the effect
+saturated below 8 bits — that 4-bit KV bought almost nothing extra. It was a
+tidy, counterintuitive, publishable conclusion, and it was an artifact of one
+noisy data point.
+
+The corrected fit has R² = 0.9989 across the remaining seven cells. The effect
+does not saturate. I am flagging this because the failure mode is the interesting
+part: a single bad cell in an eight-point fit produced a confident, wrong,
+*interesting-sounding* result. If I had not been tracking dispersion per cell I
+would have shipped it.
+
+## The catch nobody mentions
+
+Everything above is about decode. Decode is not the whole cost of a request.
+
+Quantized KV caches make **prefill substantially slower**:
+
+| Context | fp16 prefill | 8-bit prefill | Ratio |
+| ---: | ---: | ---: | ---: |
+| 16,384 | 1,145.3 tok/s | 604.7 tok/s | 0.53× |
+| 32,768 | 878.4 tok/s | 413.2 tok/s | 0.47× |
+| 65,536 | 558.5 tok/s | 247.6 tok/s | 0.44× |
+
+You lose more than half your prefill throughput. In wall-clock terms at 64k
+context, time-to-first-token goes from **117.3 s to 264.7 s**. You wait more than
+twice as long to see the first token, in exchange for generating subsequent
+tokens 56% faster.
+
+Whether that trade is worth taking depends entirely on how much you generate.
+Setting total time equal for both configurations and solving for the number of
+generated tokens:
+
+| Context | TTFT fp16 → 8-bit | Break-even |
+| ---: | --- | --- |
+| 16,384 | 14.3 s → 27.1 s | **never** — fp16 wins outright |
+| 32,768 | 37.3 s → 79.3 s | 1,810 tokens |
+| 65,536 | 117.3 s → 264.7 s | 4,166 tokens |
+
+At 16k context, fp16 KV is faster at both prefill *and* decode, so quantizing is
+strictly worse. At 32k you need to generate about 1,800 tokens before it pays off.
+At 64k, about 4,200.
+
+### What that means in practice
+
+- **Long context, short answer** — RAG over a big document, a classification call,
+  a structured extraction. This is most agent tool-calls. **Keep fp16 KV.** You
+  will pay the prefill penalty and never earn it back.
+- **Long context, long generation** — writing a document from a large corpus,
+  extended chain-of-thought, generating a big diff. **Quantize the KV cache.**
+- **Under ~32k context** — do not quantize the KV cache for speed. It is slower.
+  (Quantizing to fit something in memory that otherwise would not fit is a
+  different question with a different answer.)
+
+The version of this advice you usually see is "use a quantized KV cache for long
+context," full stop. That is wrong for a large fraction of real workloads,
+because it optimizes the metric that is easy to benchmark instead of the one users
+experience.
+
+## Where it falls apart entirely
+
+I tried to include 131,072 context in the sweep. One repetition took **1,650
+seconds of prefill** — 27.5 minutes for a single prompt — and decoded at
+**1.02 tokens/sec**.
+
+For scale: 65,536 context prefills in 117 seconds. Doubling the context multiplied
+prefill cost by **14×**, where quadratic attention alone predicts about 4×. Peak
+memory at that point was well past where the other cells sat.
+
+I am reporting this as a single observation rather than a measurement, because I
+stopped the sweep there — at 8 repetitions across 3 KV arms it would have taken
+about 11 hours to produce one row of a table. But the shape is worth knowing: on
+this machine, somewhere between 64k and 128k context, you leave the regime where
+the linear model above holds and enter one where things degrade much faster than
+bandwidth alone explains. I do not have a verified mechanism for that, so I am not
+going to offer one.
+
+## What I am confident of, and what I am not
+
+**Confident:**
+
+- Decode degradation with context is dominated by KV cache read bandwidth on this
+  hardware. Slope ratios of 1.92× and 3.21× against predictions of 2× and 4×, with
+  R² between 0.98 and 0.999.
+- MLX's attention kernel is not the problem — it runs at 98.3% of achievable
+  streaming bandwidth.
+- Quantized KV caches roughly halve prefill throughput, and the break-even points
+  above follow directly from measured TTFT and per-token latency.
+
+**Not confident:**
+
+- The 4-bit slope ratio came in 20% below prediction (3.21× vs 4×). That gap is
+  real but I cannot yet attribute it. It is not simple dequantization overhead in
+  the intercept, since the 4-bit intercept (18.58 ms) is close to 8-bit's
+  (18.02 ms).
+- Peak reported memory was *higher* for the quantized arms than for fp16 at the
+  same context — 27.62 GB at 8-bit versus 15.58 GB at fp16 at 64k. That is
+  backwards from what the cache size alone implies. I suspect transient workspace
+  during prefill, but I have not verified it, so treat the peak-memory column as
+  unexplained rather than as a finding.
+- One model, one machine. Qwen3-8B-4bit on an M5 Pro. The intercept term scales
+  with weight bytes, so a larger model will show a flatter *relative* curve — the
+  slope stays but the intercept grows, so KV matters proportionally less. I have
+  indirect evidence of that but not a clean matched-model measurement.
+
+## Reproducing this
+
+The harness is in the repo:
+
+```bash
+./scripts/benchmarks/exp2_bandwidth_roofline.py        # the bandwidth ceiling
+./scripts/benchmarks/exp1_kv_cache_longcontext.py \
+    --contexts 512,1024,2048,4096,8192,16384,32768,65536 \
+    --kv-bits none,8,4 --reps 7
+```
+
+Results append as JSONL and are fsynced per measurement, so an out-of-memory
+failure at long context does not destroy the shorter rows. Run it plugged in —
+Apple Silicon throttles sustained GPU work on battery, and the numbers are not
+comparable.
+
+If you run this on an M4, an M3 Ultra, or a machine with a different memory
+bandwidth, I would genuinely like to see the slopes. The prediction is specific:
+the slope should scale inversely with your streaming bandwidth, and the intercept
+should scale with your model's weight bytes. That is falsifiable on hardware I do
+not have.
+
+---
+
+*Related: [Why Batching Doesn't Fix Decode: GEMV vs GEMM on Apple Silicon](/mlx-gemv-gemm-roofline-apple-silicon/)
+covers the other half of why decode is slow — it's not just bandwidth-bound on
+cache size, it's a matrix-vector operation running ~80x below the GEMM throughput
+this same chip hits during batched prefill.
+[The Batch Size That Breaks Local LLM Serving](/mlx-batch-concurrency-memory-wall-apple-silicon/)
+picks up where this post leaves off — the KV cache growth measured here is what
+determines how quickly batching more concurrent requests runs into the unified
+memory wall.
+[MLX non-determinism on Apple Silicon](/mlx-non-determinism-apple-silicon/)
+covers why repeated runs of the same MLX computation do not produce identical
+results, which is why every number above is a median over repetitions rather than
+a single sample. For the errors you will hit while doing this,
+[MLX errors on Apple Silicon](/mlx-errors-apple-silicon-troubleshooting/) covers
+the memory ones in particular.*

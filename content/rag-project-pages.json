@@ -1,0 +1,26 @@
+[
+  {
+    "slug": "ai-toolkit",
+    "title": "AI Toolkit",
+    "url": "https://adityakarnam.com/ai-toolkit/",
+    "body": "AI Toolkit is a collection of interactive LLM workflow tools, including prompt composition, grading, and writing utilities. It is less about world-modeling directly and more about the practical operations layer: shaping and evaluating model behavior through usable, repeatable prompt tools rather than ad-hoc prompting."
+  },
+  {
+    "slug": "leanlearn",
+    "title": "leanlearn",
+    "url": "https://github.com/adityak74/leanlearn",
+    "body": "leanlearn is a modern, high-performance learning management system built for speed and simplicity on a Cloudflare-native stack: Pages, D1, Workers, and React Router v7. It provides edge-hosted courses with real-time progress tracking, automated certificate generation, and Google OAuth, built lean so learners get fast pages and teams can ship without heavy infrastructure overhead."
+  },
+  {
+    "slug": "cc-creativity-skills",
+    "title": "cc-creativity-skills",
+    "url": "https://github.com/adityak74/cc-creativity-skills",
+    "body": "cc-creativity-skills is a growing library of composable skills for Claude Code that cover creative and interactive generation workflows Claude Code does not ship with out of the box: generative art, interactive experiences, and creative tooling. It reduces from-scratch prompting time for teams building AI-driven creative features."
+  },
+  {
+    "slug": "antigravity-cmux-skills",
+    "title": "antigravity-cmux-skills",
+    "url": "https://github.com/adityak74/antigravity-cmux-skills",
+    "body": "antigravity-cmux-skills is a collection of Claude Code skills for orchestrating independent agent sessions in cmux: splitting panes, monitoring agents, automating browsers, and coordinating parallel work across multiple terminal sessions. It explores whether tmux-based terminal multiplexing can become a practical coordination layer for running multiple AI agent sessions in parallel, without adding platform dependencies or a dedicated orchestration service."
+  }
+]

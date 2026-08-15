@@ -15,6 +15,10 @@ import {
   type DashboardCard,
   type ValueLabChart,
 } from "../components/value-lab/ValueLabVisuals"
+import WeeklyChanges, {
+  formatWeeklyChangesMarkdown,
+  type WeeklyChangesData,
+} from "../components/value-lab/WeeklyChanges"
 import {
   Divider,
   Panel,
@@ -67,6 +71,7 @@ const configurations = valueLab.configurations as Array<{
 const history = valueLab.history as Array<{ date: string; label: string }>
 const dashboardCards = ((valueLab as unknown) as { dashboardCards?: DashboardCard[] }).dashboardCards ?? []
 const charts = valueLab.charts as unknown as ValueLabChart[]
+const weeklyChanges = ((valueLab as unknown) as { weeklyChanges: WeeklyChangesData }).weeklyChanges
 
 const formatMarkdown = () => {
   const lines = [
@@ -76,6 +81,10 @@ const formatMarkdown = () => {
     "",
     `Updated: ${valueLab.updatedAt}`,
     `Status: ${valueLab.status}`,
+    "",
+    `## ${weeklyChanges.title}`,
+    "",
+    formatWeeklyChangesMarkdown(weeklyChanges, evidenceLabels),
     "",
     `## ${valueLab.recommendation.eyebrow}`,
     "",
@@ -239,6 +248,8 @@ const ValueLabPage = (_props: PageProps) => (
           </div>
         }
       />
+
+      <WeeklyChanges data={weeklyChanges} evidenceLabels={evidenceLabels} />
 
       {dashboardCards.filter(card => card.group === "summary").length > 0 ? (
         <WorldModelSection eyebrow="Dashboard" title="Measured research at a glance.">

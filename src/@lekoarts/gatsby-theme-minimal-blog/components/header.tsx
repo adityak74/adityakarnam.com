@@ -4,6 +4,7 @@ import useMinimalBlogConfig from "@lekoarts/gatsby-theme-minimal-blog/src/hooks/
 import Navigation from "@lekoarts/gatsby-theme-minimal-blog/src/components/navigation";
 import HeaderTitle from "@lekoarts/gatsby-theme-minimal-blog/src/components/header-title";
 import HeaderExternalLinks from "./header-external-links";
+import { SiteBanner } from "../../../components/SiteBanner";
 
 type HeaderProps = {
   children?: React.ReactNode;
@@ -14,6 +15,7 @@ const Header = ({ children }: HeaderProps) => {
 
   return (
     <header sx={{ mb: [5, 6], pt: [2, 3] }}>
+      <SiteBanner />
       <div
         sx={{
           display: `flex`,
@@ -26,7 +28,7 @@ const Header = ({ children }: HeaderProps) => {
         <div>
           <HeaderTitle />
           <div sx={{ color: `secondary`, fontSize: 1, mt: 1, maxWidth: `26rem`, letterSpacing: `-0.01em` }}>
-            Building the infrastructure layer for world-model-driven AI.
+            AI researcher building the infrastructure layer for reliable agents.
           </div>
         </div>
       </div>

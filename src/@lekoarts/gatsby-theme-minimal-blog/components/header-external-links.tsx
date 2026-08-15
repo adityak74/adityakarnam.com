@@ -8,6 +8,7 @@ import {
   FaMedium,
   FaGoogle,
   FaHome,
+  FaFeatherAlt,
 } from "react-icons/fa";
 
 type ExternalLink = {
@@ -39,6 +40,9 @@ const HeaderExternalLinks = ({ links }: HeaderExternalLinksProps) => (
           break;
         case "Google Scholar":
           IconComponent = FaGoogle;
+          break;
+        case "Call to Think":
+          IconComponent = FaFeatherAlt;
           break;
         case "Homepage":
           IconComponent = FaHome;
