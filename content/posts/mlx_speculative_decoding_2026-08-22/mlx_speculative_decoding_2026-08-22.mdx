@@ -3,7 +3,7 @@ title: "Speculative Decoding on Apple Silicon: 58% Faster, Until It Isn't"
 date: 2026-08-22
 slug: "/mlx-speculative-decoding-apple-silicon/"
 canonicalUrl: "https://adityakarnam.com/mlx-speculative-decoding-apple-silicon/"
-description: "Measured on an M5 Pro: a 0.6B draft model speeds up an 8B target model's decode by 58% at its best setting, but only for predictable, code-like text. For open-ended generation it is slower than no draft model at every setting tested, and past two draft tokens it gets slower on both."
+description: "Measured on an M5 Pro: a 0.6B draft model speeds up an 8B target model's decode by 58% at its best setting, but only for predictable, code-like text. For open-ended generation it is slower than no draft model at every setting tested, and past two draft tokens it gets slower on both. Updated with a Qwen3.6 MTP self-speculative decoding sweep and a Qwen3.8 baseline."
 keywords:
   [
     "speculative decoding mlx",
@@ -14,6 +14,11 @@ keywords:
     "apple silicon llm speedup",
     "m5 pro speculative decoding",
     "draft model acceptance rate",
+    "qwen3.6 mtp speculative decoding",
+    "multi-token prediction apple silicon",
+    "self-speculative decoding mlx",
+    "qwen3.8 benchmark apple silicon",
+    "optiq mtp benchmark",
   ]
 tags:
   - ai
@@ -158,6 +163,100 @@ prompt. If your traffic is mostly open-ended chat or long-form writing rather
 than code or other structured output, measure before you turn this on. It cost
 throughput here, it did not add it.
 
+## Does this hold on newer Qwen models?
+
+Everything above used Qwen3-8B and a Qwen3-0.6B draft, both from the original
+Qwen3 family. Qwen has since shipped Qwen3.6 and Qwen3.8, a different
+architecture (`model_type: qwen3_5` in both, mixing linear-attention and
+full-attention layers) and some checkpoints ship a built-in multi-token
+prediction (MTP) head instead of relying on a separate draft model. An MTP
+head enables self-speculative decoding: one model, one set of weights,
+drafting and verifying against itself.
+
+I benchmarked `mlx-community/Qwen3.6-27B-OptiQ-4bit`, a 27B dense model with a
+bundled MTP head, using `optiq`'s `OptiqEngine` and the same methodology as
+above: two prompt types, 5 reps, 1 warmup, medians reported. Speculation
+depth plays the role `num_draft_tokens` played earlier: how many tokens the
+MTP head drafts per verification cycle.
+
+### MTP self-speculative decoding: Qwen3.6-27B
+
+| Depth | Structured tok/s | vs. baseline | Structured acceptance | Open-ended tok/s | vs. baseline | Open-ended acceptance |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 0 (baseline) | 14.6 | | | 14.6 | | |
+| 1 | 21.1 | +45% | 75.3% | 21.0 | +43% | 73.4% |
+| 2 | **22.0** | **+51%** | 54.6% | **21.2** | **+45%** | 50.6% |
+| 3 | 21.3 | +46% | 43.2% | 20.6 | +41% | 40.7% |
+| 4 | 17.9 | +23% | 30.0% | 18.7 | +28% | 32.1% |
+
+Three things differ from the external-draft result above:
+
+- **It won on open-ended text too.** Every depth setting beat the baseline on
+  both prompt types. In the `num_draft_tokens` sweep, open-ended generation
+  never won at any setting.
+- **Acceptance rate falls with depth here, instead of rising.** Earlier,
+  acceptance rate rose monotonically even as speed fell. Here it drops
+  monotonically, from 75.3% at depth 1 to 30.0% at depth 4, while speed still
+  peaks at depth 2 and then falls. MTP's verification is all-or-nothing per
+  cycle: if any token in a longer speculative chain mismatches, the rest of
+  the chain is discarded, so a bigger depth pulls the average acceptance
+  fraction down even when the tokens that do land are still a net win.
+- **Peak memory moved this time.** 19.4 GB at baseline up to 20.75 GB at
+  depth 4, about 7%. The `num_draft_tokens` sweep barely moved memory at all
+  (a 70 MB spread). Running a bigger speculative chain per cycle inside one
+  model costs memory differently than running a second, separate draft model.
+
+The vendor behind this quant (`mlx-optiq`) advertises "1.4x decode via
+`optiq serve --mtp`" on the model card. Depth 1 alone already clears that
+(1.43-1.45x); the depth-2 peak reaches 1.45-1.51x. The claim held up
+independently, on this machine, with this repo's own methodology.
+
+### What about Qwen3.8?
+
+Qwen3.8 shares the same architecture (`qwen3_5`) and tokenizer as Qwen3.6
+(confirmed by matching `eos_token_id` values across both configs), so the
+plan was to run the identical MTP sweep on it. That did not work out
+cleanly. `mlx-community/Qwen3.8-27B-4bit`, the natural checkpoint to reach
+for, turns out to be a multimodal build tagged for `mlx_vlm`, and its MTP
+head ships as a separate, much smaller sidecar repo
+(`Qwen3.8-27B-MTP-4bit`, 239 MB) rather than bundled into the base weights
+the way the Qwen3.6 build does it. `optiq`'s `OptiqEngine` only auto-detects
+an MTP head already embedded in the checkpoint it loads. There is no
+supported path to attach a separate sidecar, and hand-merging the raw
+weights carries a real risk of producing a model that generates
+fluent-looking but silently wrong output, with no fast way to catch that. I
+did not attempt it.
+
+What I could measure safely: plain autoregressive decode on the real
+Qwen3.8-27B-4bit weights, confirmed to load correctly as a text-only model
+despite the multimodal tag. `mlx_lm`'s own `qwen3_5.py` wraps a
+`language_model` submodule built from the text config and discards the
+`vision_tower.*` weights during loading, verified by reading the loader
+source rather than assumed from the README.
+
+| Model | Quant | tok/s (median, both prompts) | Peak memory |
+| --- | --- | ---: | ---: |
+| Qwen3.6-27B-OptiQ-4bit | mixed 4/8-bit (OptiQ) | 14.6 | ~19.4-19.5 GB |
+| Qwen3.8-27B-4bit | uniform 4-bit | 18.3 | ~15.5 GB |
+
+Qwen3.8 decodes about 25% faster and uses roughly 4 GB less memory here, but
+this is not a controlled architecture comparison. The two checkpoints come
+from different quantization schemes (OptiQ's sensitivity-aware mixed
+precision vs. a uniform 4-bit quant) produced by different tools, so the gap
+could be the quantization, the checkpoint, or the architecture generation,
+and this dataset cannot separate those. **There is no speculative decoding
+number for Qwen3.8 in this post.** What exists is a real autoregressive
+baseline on real Qwen3.8 weights, and an open question about whether its MTP
+head delivers a similar win to Qwen3.6's once it can be tested safely.
+
+**Confident:** the Qwen3.6-27B MTP results above (both prompt types, all
+five depths, robust CV under 0.02 on every cell, no noisy cells at all). The
+Qwen3.8-27B AR baseline (CV under 0.01 on both prompts).
+
+**Not confident:** whether Qwen3.8's MTP head would show the same shape of
+result as Qwen3.6's if it could be attached safely. One model family, one
+quantization tool, one machine.
+
 ## What I am confident of, and what I am not
 
 **Confident:**
@@ -197,8 +296,20 @@ python3 scripts/benchmarks/exp5_speculative_decoding.py \
     --draft-tokens 1,2,4,8,16 --reps 5 --warmup 1
 ```
 
-Run it plugged into AC power. Apple Silicon throttles differently on battery,
-and every number in this post was captured on AC.
+The Qwen3.6 MTP sweep and the Qwen3.8 baseline each have their own script:
+
+```bash
+pip install mlx-optiq
+python3 scripts/benchmarks/exp6_mtp_speculative_optiq.py \
+    --model mlx-community/Qwen3.6-27B-OptiQ-4bit \
+    --depths 1,2,3,4 --reps 5 --warmup 1
+
+python3 scripts/benchmarks/exp6b_qwen38_ar_baseline.py \
+    --model mlx-community/Qwen3.8-27B-4bit --reps 5 --warmup 1
+```
+
+Run all of these plugged into AC power. Apple Silicon throttles differently
+on battery, and every number in this post was captured on AC.
 
 ---
 
