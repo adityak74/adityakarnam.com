@@ -6,6 +6,11 @@ export const createPages: GatsbyNode["createPages"] = async ({ actions }) => {
     toPath: "/",
     isPermanent: true,
   })
+  actions.createRedirect({
+    fromPath: "/mlx-speculative-decoding-apple-silicon/",
+    toPath: "/mlx-speculative-decoding-qwen3-8-apple-silicon/",
+    isPermanent: true,
+  })
 }
 
 // The minimal-blog-core theme supports `description` / `canonicalUrl` on posts but not on

@@ -1,12 +1,13 @@
 ---
-title: "Speculative Decoding on Apple Silicon: 58% Faster, Until It Isn't"
+title: "Speculative Decoding on Apple Silicon: 119% Faster on Qwen3.8, Until It Isn't"
 date: 2026-08-22
-slug: "/mlx-speculative-decoding-apple-silicon/"
-canonicalUrl: "https://adityakarnam.com/mlx-speculative-decoding-apple-silicon/"
-description: "Measured on an M5 Pro: a 0.6B draft model speeds up an 8B target model's decode by 58% at its best setting, but only for predictable, code-like text. For open-ended generation it is slower than no draft model at every setting tested, and past two draft tokens it gets slower on both."
+slug: "/mlx-speculative-decoding-qwen3-8-apple-silicon/"
+canonicalUrl: "https://adityakarnam.com/mlx-speculative-decoding-qwen3-8-apple-silicon/"
+description: "Measured on an M5 Pro: pairing Qwen3.8-27B with a 0.8B draft model peaks at a 119% decode speedup, the best result in this series, but it does not work out of the box. mlx_lm refuses to run speculative decoding against Qwen3.8's hybrid attention cache at all; getting a real number required patching it. Includes the original Qwen3-8B result (58% peak) and a Qwen3.6 self-speculative MTP comparison."
 keywords:
   [
     "speculative decoding mlx",
+    "qwen3.8 speculative decoding",
     "mlx draft model benchmark",
     "speculative decoding apple silicon",
     "num_draft_tokens mlx",
@@ -14,6 +15,11 @@ keywords:
     "apple silicon llm speedup",
     "m5 pro speculative decoding",
     "draft model acceptance rate",
+    "qwen3.6 mtp speculative decoding",
+    "gated deltanet speculative decoding",
+    "mlx_lm arrayscache trimmable cache",
+    "self-speculative decoding mlx",
+    "optiq mtp benchmark",
   ]
 tags:
   - ai
@@ -23,24 +29,69 @@ tags:
 
 Speculative decoding is supposed to be close to free speed: a small draft model
 guesses several tokens ahead, the big target model checks them all in one pass,
-and you keep whichever prefix it agrees with. On this benchmark the best setting
-got a real 58% speedup. The next setting up in the same sweep, on the same
-hardware, was slower than not using a draft model at all.
+and you keep whichever prefix it agrees with. Paired with Qwen3.8-27B, the best
+setting in this benchmark reached a 119% speedup, more than doubling decode
+throughput. Getting that number required patching `mlx_lm` first: out of the
+box, it refuses to run speculative decoding against Qwen3.8 at all, for any
+draft model, for a specific and fixable reason.
 
-- **A 0.6B draft model sped up an 8B target model's decode by 58% at its peak
-  setting**, from 60.0 tok/s to 94.7 tok/s, on a code-generation prompt with
-  `num_draft_tokens=2`.
-- **Past that peak, more draft tokens made things worse, not better.** At
-  `num_draft_tokens=4` the same prompt dropped to 51.8 tok/s, below the 60.0
-  tok/s baseline with no draft model at all. At `num_draft_tokens=8` it was
-  44.4 tok/s.
-- **On open-ended text, speculative decoding never won.** Every
-  `num_draft_tokens` setting tested (1, 2, 4, 8, 16) was slower than the 58.8
-  tok/s baseline for a creative-writing prompt. The best speculative setting
-  still lost by 16%.
-- **Memory was not the bottleneck here.** Peak memory stayed within about 70 MB
-  across every cell, structured or open-ended, draft model or none. Whatever is
-  costing throughput past the peak, it is not unified memory pressure.
+- **A 0.8B draft model sped up Qwen3.8-27B's decode by 119% at its peak
+  setting**, from 17.9 tok/s to 39.2 tok/s, on a code-generation prompt with
+  `num_draft_tokens=4`. This is the largest speedup in this benchmark series.
+- **This did not work with stock `mlx_lm`.** Every attempt failed with
+  `Speculative decoding requires a trimmable prompt cache (got {'ArraysCache'})`,
+  regardless of the draft model. The fix is a real patch to `mlx_lm` itself,
+  covered below, built on an existing unmerged upstream pull request rather
+  than from scratch.
+- **Memory is not free here**, unlike the rest of this series. Peak memory
+  jumps from ~16 GB at baseline to ~22-24 GB once speculation is active, a
+  real cost of the mechanism that makes the patch work.
+- **Open-ended generation still falls apart at high draft-token counts**, and
+  worse than anywhere else in this series: -54% versus baseline at
+  `num_draft_tokens=16`.
+- **The original finding on Qwen3-8B still holds**: a 0.6B draft model, no
+  patch needed, peaked at +58% on the same kind of structured prompt. That
+  result and a Qwen3.6 self-speculative (MTP) comparison are both below, for
+  the full picture across three approaches and two model generations.
+
+## How speculative decoding works
+
+Normal decoding runs one token at a time: the target model does a full
+forward pass, produces one token, then does another full forward pass for
+the next one. For an 8B or 27B model, most of that pass is spent moving
+weights through memory rather than computing on them, so generating N
+tokens costs N full passes through the big model regardless of how simple
+the continuation is.
+
+Speculative decoding splits the work across two models. A small, cheap
+draft model generates several candidate tokens in a row, one at a time,
+which is fast because it is small. The big target model then checks all of
+those candidates in a single batched forward pass, the same cost as
+generating just one token normally, and compares what it would have
+generated against what the draft guessed. Whichever prefix of candidates
+matches gets kept for free; the first mismatch gets corrected with the
+target model's own token, and everything after that mismatch is discarded
+and regenerated next round.
+
+![Diagram comparing standard one-token-at-a-time decoding, which needs one full forward pass through the target model per token, against speculative decoding, where a small draft model proposes several candidate tokens that the target model verifies in a single batched pass, accepting the matching prefix and discarding the rest](./speculative-decoding-explained.png)
+
+The payoff depends entirely on how often the draft model guesses right.
+Every accepted token is a token the expensive target model did not have to
+generate on its own token-by-token; every rejected token is compute spent
+for nothing, since the draft model still had to run its forward passes to
+propose it. That is the tension this whole post is measuring: more
+candidate tokens per round means more potential free tokens if they are
+accepted, but also more wasted draft compute if they are not, and the
+right number depends on the model, the hardware, and how predictable the
+text being generated is.
+
+There are two ways to get a draft model. The first three sections below use
+an *external* draft model: a genuinely separate, smaller checkpoint (a 0.6B
+or 0.8B model) that has to be loaded and run alongside the target. The
+Qwen3.6 section further down uses the other approach, *self-speculation*: a
+single model with a built-in extra head that drafts its own next few
+tokens, so there is no second model to load at all. Same mechanism,
+verify-and-keep-the-matching-prefix, different source for the guesses.
 
 ## The setup
 
@@ -48,20 +99,166 @@ hardware, was slower than not using a draft model at all.
 | --- | --- |
 | Machine | Apple M5 Pro, 48 GB unified memory |
 | OS | macOS 26.5.2 |
-| Libraries | `mlx` 0.32.1, `mlx-lm` 0.31.3 |
-| Target model | `mlx-community/Qwen3-8B-4bit` |
-| Draft model | `mlx-community/Qwen3-0.6B-4bit` (same tokenizer family, required by `mlx_lm`) |
+| Libraries | `mlx` 0.32.1, `mlx-lm` 0.31.3 + unmerged patch ([PR #1486](https://github.com/ml-explore/mlx-lm/pull/1486)) |
+| Target model | `mlx-community/Qwen3.8-27B-4bit` |
+| Draft model | `mlx-community/Qwen3.5-0.8B-4bit` (same tokenizer family: `eos_token_id: 248044`, `vocab_size: 248320` on both) |
 | Sweep | `num_draft_tokens` in {1, 2, 4, 8, 16}, plus a no-draft baseline, on two prompt types |
 | Gen length | 320 tokens per generation |
 | Reps | 5 per cell, 1 warmup, medians reported |
 
-Two prompt types, chosen to test whether predictability matters: a **structured**
-prompt (write four small, well-specified Python functions) and an **open-ended**
-prompt (write a short reflective piece with no fixed structure). The idea is
-that a draft model should guess more of the next tokens correctly when the
-continuation is more constrained, and the data backs that up.
+Same two prompt types as the rest of this series: a **structured** prompt
+(four small, well-specified Python functions) and an **open-ended** prompt
+(a short reflective piece with no fixed structure), to test whether
+predictability changes the outcome.
 
 ## The numbers: structured prompt
+
+| `num_draft_tokens` | tok/s (median) | vs. baseline | Draft acceptance rate | Peak memory |
+| ---: | ---: | ---: | ---: | ---: |
+| 0 (baseline) | 17.9 | | | 16.0 GB |
+| 1 | 27.6 | +54% | 44.1% | 23.2 GB |
+| 2 | 35.1 | +96% | 59.7% | 22.5 GB |
+| 4 | **39.2** | **+119%** | 70.6% | 21.7 GB |
+| 8 | 27.6 | +54% | 77.2% | 21.9 GB |
+| 16 | 21.0 | +17% | 79.7% | 21.9 GB |
+
+The peak here is `num_draft_tokens=4`, not 2. That differs from both the
+original Qwen3-8B result below and the Qwen3.6 MTP result further down,
+which both peaked at their smallest tested step beyond 1. All three cells
+from `num_draft_tokens=1` through 8 comfortably beat baseline; only at 16
+does the gain shrink to +17%, and even then it never drops below baseline
+the way the open-ended prompt does.
+
+## The numbers: open-ended prompt
+
+| `num_draft_tokens` | tok/s (median) | vs. baseline | Draft acceptance rate | Peak memory |
+| ---: | ---: | ---: | ---: | ---: |
+| 0 (baseline) | 18.1 | | | 15.9 GB |
+| 1 | 22.9 | +27% | 32.8% | 24.4 GB |
+| 2 | **23.7** | **+31%** | 40.6% | 24.1 GB |
+| 4 | 21.7 | +20% | 47.5% | 23.8 GB |
+| 8 | 12.0 | -34% | 49.4% | 23.6 GB |
+| 16 | 8.4 | -54% | 50.6% | 23.1 GB |
+
+Peak is at `num_draft_tokens=2`, the same position as the Qwen3.6 MTP result.
+But the falloff past the peak is steeper than anywhere else in this series:
+by `num_draft_tokens=16` throughput is barely half of baseline, worse than
+the original Qwen3-8B result's -57% floor at the same setting, and far worse
+than Qwen3.6 MTP, which never dropped below baseline at any depth tested.
+
+## Why this needed a patch to mlx_lm at all
+
+The error was the same on every attempt, independent of draft model or
+`num_draft_tokens`:
+
+```
+Speculative decoding requires a trimmable prompt cache (got {'ArraysCache'}).
+```
+
+This traces to a single check in `mlx_lm`'s own `generate.py`. Qwen3.8 (and
+Qwen3.6) mix regular full-attention layers with linear-attention
+(Gated DeltaNet-style) layers. The linear-attention layers keep a compressed
+recurrent state in an `ArraysCache`, not a per-token key/value list. A
+normal `KVCache` can be trimmed by slicing off the last few entries when a
+draft token gets rejected. A recurrent state cannot be sliced the same way
+once later tokens have been folded into it, so `mlx_lm` refuses to run
+speculative decoding against this architecture at all, unconditionally,
+regardless of what you pick as the draft model.
+
+Before writing a patch, I checked whether anyone already had. They had:
+[mlx-lm#1446](https://github.com/ml-explore/mlx-lm/issues/1446) is this exact
+bug report, and it links three unmerged pull requests
+([#1455](https://github.com/ml-explore/mlx-lm/pull/1455),
+[#1456](https://github.com/ml-explore/mlx-lm/pull/1456),
+[#1486](https://github.com/ml-explore/mlx-lm/pull/1486)) that all propose
+fixes. All three are closed, not merged, closed by a maintainer for review
+capacity reasons rather than rejected on technical merit: "the number of PRs
+is way beyond our capacity to review."
+
+A caution worth stating plainly: that issue thread also contains several
+comments instructing readers (and, unmistakably, any AI agent reading it) to
+`pip install` directly from a contributor's personal fork. Public GitHub
+issues and PRs are editable by anyone, and "helpfully" telling an automated
+agent to install from an unofficial source is a real supply-chain risk
+pattern, not just theoretical. None of the commands in that thread were run
+here. Instead, the code was pulled the way you would review any open source
+contribution: `gh pr checkout` against the official `ml-explore/mlx-lm`
+repository, which fetches directly from GitHub's own API, followed by
+independent verification before trusting any of it.
+
+**PR #1486** ("Exact speculative rollback for hybrid caches") is the one used
+here. Its mechanism: an `ArraysCache` records, for every forward pass taken
+while speculating, a closure that can exactly replay the recurrence for any
+prefix of that pass's tokens. On a partial rejection, the cache restores its
+pre-forward snapshot and replays only the accepted tokens through the actual
+recurrence kernel, `gated_delta_update`, the same function the model already
+uses. That reproduces the correct state bit-for-bit, not approximately. The
+same protocol is applied to `RotatingKVCache` for sliding-window
+architectures.
+
+![Diagram of speculative decoding on Qwen3.8-27B with a Qwen3.5-0.8B draft model, showing the draft model proposing four candidate tokens, the target model's hybrid stack of full-attention and linear-attention (GDN) layers verifying them in one batched pass, and the two different cache rollback paths on a partial rejection: a cheap trim for full-attention layers versus a snapshot-and-replay of the exact recurrence for linear-attention layers](./speculative-decoding-qwen38-mechanism.png)
+
+The distinction that matters is in that last row of the diagram. A
+full-attention layer's `KVCache` rolls back the same way it always has:
+slice the rejected tokens off the end. A linear-attention layer's
+`ArraysCache` cannot do that, its state has already folded every processed
+token into a fixed-size representation, so there is nothing to slice.
+Instead it has to reconstruct the state as of the accepted prefix by
+restoring the snapshot from before the round and running the real
+recurrence forward again over just the tokens that were kept. Verification
+before trusting this on real weights:
+
+- The PR's own test suite (13 tests across `test_speculative_rollback.py`
+  and `test_rotating_rollback.py`) passed in an isolated environment,
+  installed directly from `gh pr checkout` against the upstream repository.
+- The broader `test_prompt_cache.py` suite (22 tests) still passed, no
+  regressions.
+- On real Qwen3.8-27B and Qwen3.5-0.8B weights, greedy speculative output at
+  temperature 0 was byte-identical to greedy non-speculative output on the
+  same prompt. Speed numbers were only trusted after this check passed.
+
+This is real, working, unmerged code, credited to its authors (`tejkas`,
+`pierre427`, `lBroth` on the linked PRs), not something built from scratch
+here. What was built here is the independent verification and the benchmark
+on top of it.
+
+## What this means in practice
+
+If you are running a hybrid-attention Qwen3.6 or Qwen3.8 model with `mlx_lm`
+today, stock speculative decoding does not work at all, on any draft model.
+That is worth knowing before spending time tuning `num_draft_tokens` on a
+setup that will fail outright. If you want the speedup now, the patch is
+real, tested, and not merged: [PR #1486](https://github.com/ml-explore/mlx-lm/pull/1486)
+on the official repository is the one verified here.
+
+Do not assume the peak setting transfers between model families. The
+original Qwen3-8B result below peaks at `num_draft_tokens=2`. This one peaks
+at `num_draft_tokens=4`. Sweep on your own model pair.
+
+Budget for the memory cost. Speculation here adds roughly 6-8 GB of peak
+memory over baseline, a real cost from holding a replay window of per-layer
+recurrent-state snapshots. On a memory-constrained machine this could matter
+more than the speed win.
+
+Do not turn this on for open-ended generation without checking your specific
+setting first. Every model and mechanism in this series wins on structured,
+code-like prompts. Only Qwen3.6's MTP approach avoided losing to baseline on
+open-ended text at every setting tested; both external-draft results here and
+in the original experiment lose badly at high `num_draft_tokens` on
+open-ended prompts.
+
+## The original result: Qwen3-8B and a 0.6B draft
+
+This is the finding this post originally shipped with, using the plain Qwen3
+architecture, no patch required (Qwen3-8B has ordinary attention layers
+throughout, so its `KVCache` is trimmable by default).
+
+| | |
+| --- | --- |
+| Target model | `mlx-community/Qwen3-8B-4bit` |
+| Draft model | `mlx-community/Qwen3-0.6B-4bit` |
+
+**Structured prompt:**
 
 | `num_draft_tokens` | tok/s (median) | vs. baseline | Draft acceptance rate |
 | ---: | ---: | ---: | ---: |
@@ -72,15 +269,7 @@ continuation is more constrained, and the data backs that up.
 | 8 | 44.4 | -26% | 75.0% |
 | 16 | 48.6 | -19% | 80.3% |
 
-Two draft tokens per round is the sweet spot. Below it, the draft model is not
-generating enough candidates per round to pay back the overhead of running a
-second model at all. Above it, throughput falls even though the acceptance
-rate keeps climbing, which is the counterintuitive part: the fraction of
-emitted tokens that came from the draft model rises from 44.4% at
-`num_draft_tokens=1` all the way to 80.3% at `num_draft_tokens=16`, and
-throughput still gets worse, not better.
-
-## The numbers: open-ended prompt
+**Open-ended prompt:**
 
 | `num_draft_tokens` | tok/s (median) | vs. baseline | Draft acceptance rate |
 | ---: | ---: | ---: | ---: |
@@ -91,104 +280,118 @@ throughput still gets worse, not better.
 | 8 | 39.6 | -33% | 60.3% |
 | 16 | 25.2 | -57% | 61.3% |
 
-No setting beats the baseline here, not even `num_draft_tokens=1`. Acceptance
-rate is lower at every matched setting than the structured prompt's (35.9% vs.
-44.4% at `num_draft_tokens=1`, 60.3% vs. 75.0% at `num_draft_tokens=8`), which
-is what you would expect: a small draft model guesses correctly more often
-when the target's next tokens are more constrained by syntax and convention,
-less often when they are open-ended prose. Lower acceptance means more of the
-draft model's guesses get thrown away, and every thrown-away guess is compute
-spent for nothing.
+Two draft tokens per round was the sweet spot for this pair. Below it, the
+draft model does not generate enough candidates per round to pay back the
+overhead of running a second model at all. Above it, throughput falls even
+though acceptance keeps climbing, from 44.4% at `num_draft_tokens=1` to
+80.3% at `num_draft_tokens=16`, because the draft model's forward passes are
+sequential and their count grows linearly with `num_draft_tokens`, so the
+fixed latency per round grows too, whether or not the extra guesses get
+accepted. No open-ended setting beat baseline at all.
 
-## Why acceptance rate keeps rising while speed falls
+Peak memory here stayed within about 70 MB across every cell, draft model or
+none. Qwen3-8B has no recurrent-state layers, so there is no replay window to
+hold in memory, unlike the Qwen3.8 result above. That contrast, same
+technique, wildly different memory profile, comes down entirely to whether
+the target architecture has linear-attention layers.
 
-This is the part that does not match the simple mental model of speculative
-decoding as "free" speedup. In `mlx_lm`, each round works like this: the draft
-model generates `num_draft_tokens` candidates one at a time (a sequential
-chain of small forward passes through the 0.6B model), then the target model
-verifies the whole candidate sequence in a single batched pass and accepts
-whichever prefix matches what it would have generated on its own.
+## Self-speculative alternative: Qwen3.6 MTP
 
-Two costs scale with `num_draft_tokens`, and only one of them shows up in the
-acceptance-rate number. The draft model's forward passes are sequential and
-their count grows linearly with `num_draft_tokens`, so the fixed latency per
-round grows too, whether or not those extra guesses get accepted. The
-acceptance rate reported above only counts what fraction of *emitted* tokens
-came from an accepted draft guess, not how much draft compute was spent
-generating candidates that got rejected partway through the round. A round
-with `num_draft_tokens=16` where the target accepts the first 5 tokens still
-paid for all 16 sequential draft forward passes before verification could
-happen. As `num_draft_tokens` grows, the marginal accepted token gets more
-expensive to produce even as the cumulative acceptance rate keeps climbing,
-because a growing share of each round's draft compute is spent on candidates
-past the point where the target would have diverged anyway.
+A different mechanism, tested for comparison: instead of a second draft
+model, some Qwen3.6/3.8 checkpoints ship a built-in multi-token prediction
+(MTP) head that drafts its own next few tokens, verified by the same model.
+Benchmarked via `optiq`'s `OptiqEngine` on `mlx-community/Qwen3.6-27B-OptiQ-4bit`,
+same methodology, "depth" playing the role `num_draft_tokens` plays above.
 
-Peak memory does not explain any of this. It sat between 5.12 GB and 5.19 GB
-across every single cell in the sweep, a spread of about 70 MB, regardless of
-prompt type, draft model presence, or `num_draft_tokens`. The 0.6B draft
-model's own weights and KV cache add a rounding error to a machine with 48 GB
-of unified memory. Whatever the cost of extra draft tokens is, it is wall-clock
-latency from sequential small forward passes, not memory pressure. That
-distinguishes this result from the batch-concurrency post in this series,
-where the wall was unified memory running out. Here, the wall is the fixed
-per-step overhead of running a second autoregressive model, compounding once
-you ask it to run more steps per round than the target ends up needing.
+| Depth | Structured tok/s | vs. baseline | Structured acceptance | Open-ended tok/s | vs. baseline | Open-ended acceptance |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 0 (baseline) | 14.6 | | | 14.6 | | |
+| 1 | 21.1 | +45% | 75.3% | 21.0 | +43% | 73.4% |
+| 2 | **22.0** | **+51%** | 54.6% | **21.2** | **+45%** | 50.6% |
+| 3 | 21.3 | +46% | 43.2% | 20.6 | +41% | 40.7% |
+| 4 | 17.9 | +23% | 30.0% | 18.7 | +28% | 32.1% |
 
-## What this means in practice
+This is the only approach of the three that won on open-ended text at every
+depth tested. Its acceptance rate also falls with depth rather than rising,
+the opposite of both external-draft results, because MTP's verification is
+all-or-nothing per cycle: a longer speculative chain is more likely to
+diverge early, pulling the average acceptance fraction down even when the
+tokens that do land are a net win. Peak memory moved a modest 7% here (19.4
+to 20.75 GB), less dramatic than the Qwen3.8 external-draft result's
+40-53% jump, but still real, unlike the flat 70 MB spread on the original
+Qwen3-8B result.
 
-If you are running `mlx_lm` with a small, well-matched draft model on
-predictable, structured generation, code being the clearest example,
-speculative decoding is a real win here: 58% faster decode at
-`num_draft_tokens=2`. That is the number worth remembering, not a generic
-"speculative decoding helps" claim.
+`mlx-optiq`, the toolkit behind this quant, advertises "1.4x decode via
+`optiq serve --mtp`" on the model card. Depth 1 alone clears that
+(1.43-1.45x); the depth-2 peak reaches 1.45-1.51x. That claim held up
+independently here.
 
-Do not assume more draft tokens is more speedup. On this hardware and this
-model pair, the throughput curve peaks early and falls fast: `num_draft_tokens=2`
-was the best cell in the whole sweep, and every setting above it lost ground,
-in one case going from a 34-58% win to a 14-26% loss without changing anything
-except that one number. If you are tuning `num_draft_tokens` for a production
-setup, sweep it on your own workload rather than picking a default and moving
-on. The `mlx_lm` default of 3 sits between the two best structured settings
-tested here, which is a reasonable place to start but not obviously optimal
-for every workload.
-
-Do not assume speculative decoding helps at all for open-ended generation.
-Every setting tested was slower than plain decoding for the creative-writing
-prompt. If your traffic is mostly open-ended chat or long-form writing rather
-than code or other structured output, measure before you turn this on. It cost
-throughput here, it did not add it.
+`optiq`'s engine works on this architecture without needing `mlx_lm`
+patched, because it implements its own snapshot-and-restore rollback
+internally (`MTPLXRuntime`, `_snapshot_cache` / `_restore_cache`) rather than
+relying on `mlx_lm`'s generic trim path. That is the same idea as PR #1486
+above, arrived at independently, for a different generation loop.
 
 ## What I am confident of, and what I am not
 
 **Confident:**
 
-- Speculative decoding produced a real, repeatable speedup on the structured
-  prompt at `num_draft_tokens=1` and `num_draft_tokens=2`, peaking at +58% over
-  baseline. These cells had tight run-to-run variance (robust CV under 0.04).
-- Speculative decoding was slower than baseline on the open-ended prompt at
-  every `num_draft_tokens` setting tested, and the gap widened as
-  `num_draft_tokens` increased.
-- Peak memory did not meaningfully change across any cell in the sweep. This
-  is a compute and scheduling story, not a memory story.
+- The Qwen3.8 external-draft results (both prompts, all five
+  `num_draft_tokens` settings): every cell has robust CV under 0.03, no
+  noisy cells, and greedy output was verified byte-identical to the
+  non-speculative baseline before any speed number was trusted.
+- The original Qwen3-8B result: real, repeatable speedup on the structured
+  prompt at `num_draft_tokens=1` and `2`, peaking at +58%, tight variance
+  (CV under 0.04). Slower than baseline at every open-ended setting.
+- The Qwen3.6 MTP results: all five depths, both prompts, robust CV under
+  0.02, no noisy cells.
+- Peak memory does not meaningfully move for the original Qwen3-8B pair
+  (plain attention, no recurrent state), and moves substantially for both
+  Qwen3.8 external-draft (+40-53%) and Qwen3.6 MTP (+7%), both of which
+  have hybrid-attention targets. The pattern (recurrent-state architectures
+  cost real memory for speculation; plain-attention ones do not) held
+  across every model tested here.
 
 **Not confident:**
 
-- Two cells are flagged noisy in the raw data: open-ended `num_draft_tokens=1`
-  (robust coefficient of variation 0.161) and open-ended `num_draft_tokens=4`
-  (robust CV 0.409, the noisiest cell in the whole dataset). Both still landed
-  below baseline across their runs, so the direction of the finding holds, but
-  treat their exact tok/s figures as approximate rather than precise.
-- One model pair, one machine, one chip. A different draft-to-target size
-  ratio, a different model family, or a machine with a different core mix
-  could shift where the peak sits. The shape I would expect to generalize is
-  the existence of a peak followed by a falloff, not the specific
-  `num_draft_tokens=2` number.
-- Two prompt types is not a systematic sweep of predictability. It shows the
-  direction (more constrained text accepts more draft tokens) but not where
-  the acceptance rate stops helping for prompt types in between code and open
-  prose.
+- PR #1486 is unmerged. If it changes before merging, or does not merge at
+  all, the exact numbers here are tied to a specific unmerged commit, not a
+  stable release.
+- One draft-to-target ratio was tested for the Qwen3.8 pair (0.8B:27B). A
+  different ratio could shift where the peak sits, the same caveat that
+  applied to the original Qwen3-8B pairing.
+- Two cells in the original Qwen3-8B open-ended sweep were flagged noisy in
+  the raw data (`num_draft_tokens=1` at CV 0.161, `num_draft_tokens=4` at CV
+  0.409). Both still landed below baseline, so the direction holds, but
+  treat those two exact figures as approximate.
+- One model family per approach, one machine, one chip throughout this
+  post. The shape I would expect to generalize is that hybrid-attention
+  architectures need a working rollback mechanism at all before speculation
+  helps, and that memory cost tracks whether that mechanism exists, not the
+  specific numbers for any one pairing.
 
 ## Reproducing this
+
+The benchmark script itself is also up as a standalone
+[gist](https://gist.github.com/adityak74/90c6e7c4f0678026ffa503bce4f2eb6a)
+if you want it without cloning the whole repo.
+
+The Qwen3.8 result requires the patched `mlx_lm`. Install it from the
+official pull request, not any personal fork:
+
+```bash
+git clone https://github.com/ml-explore/mlx-lm.git
+cd mlx-lm
+gh pr checkout 1486
+pip install -e .
+
+python3 scripts/benchmarks/exp5_speculative_decoding.py \
+    --target-model mlx-community/Qwen3.8-27B-4bit \
+    --draft-model mlx-community/Qwen3.5-0.8B-4bit \
+    --draft-tokens 1,2,4,8,16 --reps 5 --warmup 1 --tag qwen38
+```
+
+The original Qwen3-8B result runs on stock `mlx_lm`:
 
 ```bash
 python3 scripts/benchmarks/exp5_speculative_decoding.py \
@@ -197,16 +400,24 @@ python3 scripts/benchmarks/exp5_speculative_decoding.py \
     --draft-tokens 1,2,4,8,16 --reps 5 --warmup 1
 ```
 
-Run it plugged into AC power. Apple Silicon throttles differently on battery,
-and every number in this post was captured on AC.
+The Qwen3.6 MTP sweep has its own script:
+
+```bash
+pip install mlx-optiq
+python3 scripts/benchmarks/exp6_mtp_speculative_optiq.py \
+    --model mlx-community/Qwen3.6-27B-OptiQ-4bit \
+    --depths 1,2,3,4 --reps 5 --warmup 1
+```
+
+Run all of these plugged into AC power. Apple Silicon throttles differently
+on battery, and every number in this post was captured on AC.
 
 ---
 
 *Related: [The Batch Size That Breaks Local LLM Serving](/mlx-batch-concurrency-memory-wall-apple-silicon/)
 covers what happens when concurrent requests, not a draft model, compete for
-the same unified memory pool. That post's wall is memory. This post's wall is
-sequential compute overhead from a second model, which is why peak memory
-barely moved here even as throughput swung by more than 2x across the sweep.
+the same unified memory pool, the other way this series has seen memory
+become the binding constraint.
 [Why Batching Doesn't Fix Decode: GEMV vs GEMM](/mlx-gemv-gemm-roofline-apple-silicon/)
 covers the underlying reason single-token decode is slow in the first place,
 the exact problem speculative decoding is trying to work around by batching

@@ -1,0 +1,112 @@
+{
+  "experiment": "exp6b_qwen38_ar_baseline",
+  "metadata": {
+    "captured_at_utc": "2026-08-23T15:56:05.136677+00:00",
+    "hostname": "adityakarnams-MacBook-Pro.local",
+    "chip": "Apple M5 Pro",
+    "arch": "arm64",
+    "physical_cores": "18",
+    "logical_cores": "18",
+    "perf_cores": "6",
+    "efficiency_cores": "12",
+    "ram_bytes": 51539607552,
+    "ram_gb": 48.0,
+    "macos_version": "26.5.2",
+    "macos_build": "25F84",
+    "kernel": "25.5.0",
+    "python_version": "3.11.15",
+    "python_executable": "/Users/adityakarnam/.venvs/mlx-specdec/bin/python3",
+    "packages": {
+      "mlx": "0.32.1",
+      "mlx-lm": "0.31.3",
+      "numpy": "2.4.6",
+      "transformers": "5.12.1",
+      "sentencepiece": "0.2.2"
+    },
+    "ollama_version": "ollama version is 0.32.15",
+    "power": {
+      "on_ac_power": true,
+      "low_power_mode": false,
+      "power_mode": 2,
+      "cpu_speed_limit_pct": null,
+      "raw_batt": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=22872163)\t80%; AC attached; not charging present: true",
+      "raw_therm": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+    },
+    "env": {},
+    "experiment": "exp6b_qwen38_ar_baseline",
+    "model": "mlx-community/Qwen3.8-27B-4bit",
+    "prompts": {
+      "structured": {
+        "max_tokens": 320
+      },
+      "open_ended": {
+        "max_tokens": 320
+      }
+    },
+    "args": {
+      "results_dir": "/Users/adityakarnam/Projects/adityakarnam.com/scripts/benchmarks/results",
+      "tag": "",
+      "dry_run": false,
+      "smoke": false,
+      "seed": 0,
+      "model": "mlx-community/Qwen3.8-27B-4bit",
+      "reps": 5,
+      "warmup": 1
+    }
+  },
+  "analysis": {},
+  "rows": [
+    {
+      "ts": "2026-08-23T15:57:55.040889+00:00",
+      "dry_run": false,
+      "prompt_kind": "structured",
+      "mode": "AR",
+      "tps_n": 5,
+      "tps_median": 18.28458503914548,
+      "tps_mean": 18.291368561877583,
+      "tps_p25": 18.277143175647907,
+      "tps_p75": 18.31573412351486,
+      "tps_iqr": 0.03859094786695394,
+      "tps_mad": 0.031149084369381796,
+      "tps_min": 18.2483795787093,
+      "tps_max": 18.331000892370362,
+      "tps_cv_robust": 0.0021105728013151273,
+      "mem_gb_n": 5,
+      "mem_gb_median": 15.564926024,
+      "mem_gb_mean": 15.564926023999998,
+      "mem_gb_p25": 15.564926024,
+      "mem_gb_p75": 15.564926024,
+      "mem_gb_iqr": 0.0,
+      "mem_gb_mad": 0.0,
+      "mem_gb_min": 15.564926024,
+      "mem_gb_max": 15.564926024,
+      "mem_gb_cv_robust": 0.0
+    },
+    {
+      "ts": "2026-08-23T15:59:42.233193+00:00",
+      "dry_run": false,
+      "prompt_kind": "open_ended",
+      "mode": "AR",
+      "tps_n": 5,
+      "tps_median": 18.322074137256173,
+      "tps_mean": 18.315677554617054,
+      "tps_p25": 18.316102793528433,
+      "tps_p75": 18.324616312109253,
+      "tps_iqr": 0.008513518580819834,
+      "tps_mad": 0.005971343727740219,
+      "tps_min": 18.285483975294557,
+      "tps_max": 18.330110554896848,
+      "tps_cv_robust": 0.00046465910557082695,
+      "mem_gb_n": 5,
+      "mem_gb_median": 15.462602868,
+      "mem_gb_mean": 15.462602868,
+      "mem_gb_p25": 15.462602868,
+      "mem_gb_p75": 15.462602868,
+      "mem_gb_iqr": 0.0,
+      "mem_gb_mad": 0.0,
+      "mem_gb_min": 15.462602868,
+      "mem_gb_max": 15.462602868,
+      "mem_gb_cv_robust": 0.0
+    }
+  ]
+}
