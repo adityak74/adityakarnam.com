@@ -1,8 +1,8 @@
 ---
 title: "Speculative Decoding on Apple Silicon: 119% Faster on Qwen3.8, Until It Isn't"
 date: 2026-08-22
-slug: "/mlx-speculative-decoding-apple-silicon/"
-canonicalUrl: "https://adityakarnam.com/mlx-speculative-decoding-apple-silicon/"
+slug: "/mlx-speculative-decoding-qwen3-8-apple-silicon/"
+canonicalUrl: "https://adityakarnam.com/mlx-speculative-decoding-qwen3-8-apple-silicon/"
 description: "Measured on an M5 Pro: pairing Qwen3.8-27B with a 0.8B draft model peaks at a 119% decode speedup, the best result in this series, but it does not work out of the box. mlx_lm refuses to run speculative decoding against Qwen3.8's hybrid attention cache at all; getting a real number required patching it. Includes the original Qwen3-8B result (58% peak) and a Qwen3.6 self-speculative MTP comparison."
 keywords:
   [

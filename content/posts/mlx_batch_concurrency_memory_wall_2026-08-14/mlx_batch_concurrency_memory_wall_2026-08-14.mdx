@@ -177,7 +177,7 @@ covers the per-request KV cache growth that determines how quickly this memory
 wall arrives per additional batch slot.
 [Why Batching Doesn't Fix Decode: GEMV vs GEMM](/mlx-gemv-gemm-roofline-apple-silicon/)
 covers why batching helps at all, up until this post's wall makes it stop helping.
-[Speculative Decoding on Apple Silicon](/mlx-speculative-decoding-apple-silicon/)
+[Speculative Decoding on Apple Silicon](/mlx-speculative-decoding-qwen3-8-apple-silicon/)
 tests a different lever for the same decode-speed problem: a draft model instead
 of a bigger batch. Its wall is sequential compute overhead, not memory, which is
 why peak memory barely moves in that post even as this one shows memory as the
