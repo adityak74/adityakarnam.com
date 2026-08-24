@@ -1,0 +1,64 @@
+{
+  "captured_at_utc": "2026-08-24T02:38:23.319727+00:00",
+  "hostname": "adityakarnams-MacBook-Pro.local",
+  "chip": "Apple M5 Pro",
+  "arch": "arm64",
+  "physical_cores": "18",
+  "logical_cores": "18",
+  "perf_cores": "6",
+  "efficiency_cores": "12",
+  "ram_bytes": 51539607552,
+  "ram_gb": 48.0,
+  "macos_version": "26.5.2",
+  "macos_build": "25F84",
+  "kernel": "25.5.0",
+  "python_version": "3.14.5",
+  "python_executable": "/Users/adityakarnam/Projects/mlx-lm-pr1486-eval/venv/bin/python3",
+  "packages": {
+    "mlx": "0.32.1",
+    "mlx-lm": "0.31.3",
+    "numpy": "2.5.2",
+    "transformers": "5.15.1",
+    "sentencepiece": "0.2.2"
+  },
+  "ollama_version": "ollama version is 0.32.15",
+  "power": {
+    "on_ac_power": true,
+    "low_power_mode": false,
+    "power_mode": 2,
+    "cpu_speed_limit_pct": null,
+    "raw_batt": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=22872163)\t100%; charged; 0:00 remaining present: true",
+    "raw_therm": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+  },
+  "env": {},
+  "experiment": "exp5_speculative_decoding",
+  "target_model": "mlx-community/Qwen3.8-27B-4bit",
+  "draft_model": "mlx-community/Qwen3.5-0.8B-4bit",
+  "draft_tokens_swept": [
+    1,
+    2,
+    4,
+    8,
+    16
+  ],
+  "prompts": {
+    "structured": {
+      "max_tokens": 320
+    },
+    "open_ended": {
+      "max_tokens": 320
+    }
+  },
+  "args": {
+    "results_dir": "/Users/adityakarnam/Projects/adityakarnam.com/scripts/benchmarks/results",
+    "tag": "qwen38",
+    "dry_run": false,
+    "smoke": false,
+    "seed": 0,
+    "target_model": "mlx-community/Qwen3.8-27B-4bit",
+    "draft_model": "mlx-community/Qwen3.5-0.8B-4bit",
+    "draft_tokens": "1,2,4,8,16",
+    "reps": 5,
+    "warmup": 1
+  }
+}
