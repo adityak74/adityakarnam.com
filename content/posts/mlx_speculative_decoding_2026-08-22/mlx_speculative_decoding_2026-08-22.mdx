@@ -249,6 +249,56 @@ number for Qwen3.8 in this post.** What exists is a real autoregressive
 baseline on real Qwen3.8 weights, and an open question about whether its MTP
 head delivers a similar win to Qwen3.6's once it can be tested safely.
 
+### Why not just pair Qwen3.8 with a small external draft model?
+
+That was the obvious next question, and this time a small enough draft model
+genuinely exists: `mlx-community/Qwen3.5-0.8B-4bit`, 625 MB, same
+architecture family (`qwen3_5`) and the same tokenizer as Qwen3.8
+(`eos_token_id: 248044`, `vocab_size: 248320` on both). A ~0.8B:27B ratio,
+tighter than the original 0.6B:8B pairing at the top of this post. Both
+models loaded without issue and the pairing is exactly the kind exp5 used.
+
+Every speculative generation attempt failed anyway, with the same error
+regardless of `num_draft_tokens`:
+
+```
+Speculative decoding requires a trimmable prompt cache (got {'ArraysCache'}).
+```
+
+This is not a draft-model problem. It is `mlx_lm`'s own `generate.py`
+(line 532) refusing to run external-draft speculative decoding against the
+**target** model at all, because of how the target's cache is built.
+Qwen3.6/3.8 mix regular full-attention layers with linear-attention (Gated
+DeltaNet-style) layers, and the linear-attention layers keep a compressed
+recurrent state in an `ArraysCache`, not a per-token key/value list. A
+normal `KVCache` can be trimmed by slicing off the last few entries when a
+draft token gets rejected; a recurrent state cannot be sliced the same way
+once later tokens have been folded into it. `mlx_lm` checks for exactly this
+before it will run speculative decoding, and this architecture fails the
+check unconditionally, independent of what you pick as the draft model.
+
+This is also why the Qwen3.6 MTP result above works at all: `optiq`'s
+`MTPLXRuntime` does not rely on `mlx_lm`'s generic trim path. It snapshots
+the cache before speculating and restores it on a partial reject
+(`_snapshot_cache` / `_restore_cache` in its engine code), which sidesteps
+the "must be sliceable" requirement entirely. That machinery exists, but
+only inside `optiq`'s self-speculative MTP loop, not wired into `mlx_lm`'s
+external-draft path.
+
+Could `mlx_lm` itself be patched to support this? In principle, yes, the
+same way: snapshot the recurrent state before each speculative round,
+restore it and replay the accepted tokens on a partial reject, instead of
+trying to trim it directly. That is a real change, not a small one: it means
+adding snapshot/restore semantics to `ArraysCache` (or a new cache type),
+and rewiring `generate.py`'s speculative loop to use restore-and-replay in
+place of the direct trim it does today for standard `KVCache`. `optiq`
+already proves the approach works, but only for its own MTP loop; building
+and validating the equivalent for an *external* draft model would be a
+separate, nontrivial effort, and byte-for-byte correctness would need the
+same kind of verification this post already leans on: comparing generated
+text against the non-speculative baseline before trusting any speed number
+from it. That is future work, not something attempted here.
+
 **Confident:** the Qwen3.6-27B MTP results above (both prompt types, all
 five depths, robust CV under 0.02 on every cell, no noisy cells at all). The
 Qwen3.8-27B AR baseline (CV under 0.01 on both prompts).
