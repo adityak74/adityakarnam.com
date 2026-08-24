@@ -54,6 +54,45 @@ draft model, for a specific and fixable reason.
   result and a Qwen3.6 self-speculative (MTP) comparison are both below, for
   the full picture across three approaches and two model generations.
 
+## How speculative decoding works
+
+Normal decoding runs one token at a time: the target model does a full
+forward pass, produces one token, then does another full forward pass for
+the next one. For an 8B or 27B model, most of that pass is spent moving
+weights through memory rather than computing on them, so generating N
+tokens costs N full passes through the big model regardless of how simple
+the continuation is.
+
+Speculative decoding splits the work across two models. A small, cheap
+draft model generates several candidate tokens in a row, one at a time,
+which is fast because it is small. The big target model then checks all of
+those candidates in a single batched forward pass, the same cost as
+generating just one token normally, and compares what it would have
+generated against what the draft guessed. Whichever prefix of candidates
+matches gets kept for free; the first mismatch gets corrected with the
+target model's own token, and everything after that mismatch is discarded
+and regenerated next round.
+
+![Diagram comparing standard one-token-at-a-time decoding, which needs one full forward pass through the target model per token, against speculative decoding, where a small draft model proposes several candidate tokens that the target model verifies in a single batched pass, accepting the matching prefix and discarding the rest](./speculative-decoding-explained.png)
+
+The payoff depends entirely on how often the draft model guesses right.
+Every accepted token is a token the expensive target model did not have to
+generate on its own token-by-token; every rejected token is compute spent
+for nothing, since the draft model still had to run its forward passes to
+propose it. That is the tension this whole post is measuring: more
+candidate tokens per round means more potential free tokens if they are
+accepted, but also more wasted draft compute if they are not, and the
+right number depends on the model, the hardware, and how predictable the
+text being generated is.
+
+There are two ways to get a draft model. The first three sections below use
+an *external* draft model: a genuinely separate, smaller checkpoint (a 0.6B
+or 0.8B model) that has to be loaded and run alongside the target. The
+Qwen3.6 section further down uses the other approach, *self-speculation*: a
+single model with a built-in extra head that drafts its own next few
+tokens, so there is no second model to load at all. Same mechanism,
+verify-and-keep-the-matching-prefix, different source for the guesses.
+
 ## The setup
 
 | | |
