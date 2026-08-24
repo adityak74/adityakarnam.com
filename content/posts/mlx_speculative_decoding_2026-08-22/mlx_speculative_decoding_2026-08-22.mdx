@@ -194,7 +194,19 @@ pre-forward snapshot and replays only the accepted tokens through the actual
 recurrence kernel, `gated_delta_update`, the same function the model already
 uses. That reproduces the correct state bit-for-bit, not approximately. The
 same protocol is applied to `RotatingKVCache` for sliding-window
-architectures. Verification before trusting this on real weights:
+architectures.
+
+![Diagram of speculative decoding on Qwen3.8-27B with a Qwen3.5-0.8B draft model, showing the draft model proposing four candidate tokens, the target model's hybrid stack of full-attention and linear-attention (GDN) layers verifying them in one batched pass, and the two different cache rollback paths on a partial rejection: a cheap trim for full-attention layers versus a snapshot-and-replay of the exact recurrence for linear-attention layers](./speculative-decoding-qwen38-mechanism.png)
+
+The distinction that matters is in that last row of the diagram. A
+full-attention layer's `KVCache` rolls back the same way it always has:
+slice the rejected tokens off the end. A linear-attention layer's
+`ArraysCache` cannot do that, its state has already folded every processed
+token into a fixed-size representation, so there is nothing to slice.
+Instead it has to reconstruct the state as of the accepted prefix by
+restoring the snapshot from before the round and running the real
+recurrence forward again over just the tokens that were kept. Verification
+before trusting this on real weights:
 
 - The PR's own test suite (13 tests across `test_speculative_rollback.py`
   and `test_rotating_rollback.py`) passed in an isolated environment,
