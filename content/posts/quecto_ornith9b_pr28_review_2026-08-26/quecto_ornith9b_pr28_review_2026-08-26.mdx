@@ -1,0 +1,180 @@
+---
+title: "A Free Local 9B Model Optimized My Rust Agent Harness. Two of Its Three Claims Were Wrong."
+date: 2026-08-26
+slug: "/ornith-9b-local-model-quecto-code-review-claude-sonnet-5/"
+canonicalUrl: "https://adityakarnam.com/ornith-9b-local-model-quecto-code-review-claude-sonnet-5/"
+description: "ornith-9b, running fully local and free through the Claude Code harness, wrote a real performance PR against quecto with three optimizations. Claude Sonnet 5 verified the diff line by line: one claim was correct, one was mislabeled, and one didn't do what it said — and got fixed for real before merge. Released as quecto-agent v0.2.2."
+keywords:
+  [
+    "ornith-9b",
+    "local llm code review",
+    "claude code local model",
+    "ai generated pull request review",
+    "quecto rust agent harness",
+    "claude sonnet 5 code review",
+    "free local coding agent",
+    "ai code review catches hallucination",
+  ]
+tags:
+  - ai
+  - agents
+  - open-source
+  - local-llms
+---
+
+**ornith-9b — a 9B-parameter model, running entirely on my own machine, zero
+API cost — opened a real performance PR against [quecto](https://github.com/adityak74/quecto),
+my Rust agent harness. It wasn't a toy diff. It touched four files, changed a
+hot dispatch path, and claimed three concrete wins.** I asked Claude Sonnet 5
+to review it the way I'd want a senior engineer to review any PR: verify every
+claim against the diff, don't just skim the description. One claim was exactly
+right. One was real but mislabeled. One didn't do what it said on the tin —
+and got rewritten for real before merge. The result shipped as
+[`quecto-agent v0.2.2`](https://github.com/adityak74/quecto/releases/tag/quecto-agent-v0.2.2).
+
+This is the part of "local models are good enough now" that doesn't make it
+into the demo clips: good enough at *writing* plausible optimizations, not
+yet reliable at knowing whether they're true. The review step is where that
+gap gets caught — or doesn't.
+
+## The setup
+
+[quecto](https://github.com/adityak74/quecto) is a minimal Rust agent
+harness I've been building in public — the subject of an
+[earlier post](/ai-research/building-quecto-from-minimal-harness-to-evaluable-agent)
+on going from a toy loop to something evaluable. It has a core library, an
+agent crate, a tool registry, and a trace/telemetry system, all covered by a
+workspace test suite.
+
+I pointed **ornith-9b**, running locally through a Claude Code–compatible
+harness, at the codebase with one instruction: find real performance
+opportunities and fix them. No cloud calls, no API key, no token bill. Twelve
+minutes later it opened [PR #28](https://github.com/adityak74/quecto/pull/28):
+*"perf: hyper-optimize quecto harness base (connection reuse, O(1) dispatch,
+pre-allocs)."*
+
+The PR described three changes:
+
+1. **Cache the `ureq::Agent`** (`src/lib.rs`) — stop building a new HTTP
+   connection pool on every request; share one `LazyLock<ureq::Agent>`
+   across all LLM calls.
+2. **O(1) tool dispatch** (`tools/mod.rs`) — replace a `Vec<Box<dyn Tool>>`
+   with linear `find()` with a `BTreeMap<String, Box<dyn Tool>>`.
+3. **Pre-allocate `trace_identity`** (`agent.rs`) — clone the trace identity
+   once per run instead of "14+ times per step."
+
+All 24 tests in the two-crate workspace passed. On paper, it looked like a
+clean, mergeable perf PR — the kind of contribution that's easy to rubber-stamp
+if you trust the description and the green check mark.
+
+![Diagram of the review pipeline: ornith-9b generates a pull request locally with three claimed optimizations, Claude Sonnet 5 reviews each claim against the diff and marks one correct, one mislabeled, and one incorrect, then the incorrect one is fixed for real before merge and quecto-agent v0.2.2 is released](./ornith9b-sonnet5-review-pipeline.png)
+
+## What actually held up
+
+I didn't take the PR description on faith. I asked Claude Sonnet 5 to check
+each of the three claims against the actual diff and the workspace test
+suite — not just read the bullet points and approve. Its review, [posted
+directly on the PR](https://github.com/adityak74/quecto/pull/28#issuecomment-5421020878),
+verified locally with `cargo build --workspace` and `cargo test --workspace`
+(462 tests across the full workspace, not just the 24 in the two touched
+crates) and clippy clean against pre-existing warnings only.
+
+| Claim | Verdict | What was actually true |
+| --- | --- | --- |
+| Shared `ureq::Agent` for connection reuse | ✅ Correct | `LazyLock<ureq::Agent>` built once, reused via `SHARED_AGENT.post(...)` across every request. Description matched the diff exactly. |
+| "O(1) tool dispatch" via `BTreeMap` | ⚠️ Real, but mislabeled | `BTreeMap::get` is a tree lookup — **O(log n)**, no hashing anywhere. Still a genuine improvement over the old linear scan, and the sorted iteration order is a real bonus for `tool_names()`/`schemas()` output. But it is not O(1), and at 13 registered tools the complexity class barely matters either way. |
+| Pre-allocated `trace_identity` — "eliminates 13 redundant clones per step" | ❌ Didn't do what it claimed | The diff only moved the clone *source* from `self.trace_identity` to a local `run_identity` variable. Every one of the ~10 `emit_trace_event` call sites in `run_loop` still deep-cloned the full `TraceIdentity` struct — up to 6 heap-allocated `String` fields — on every single call. Same allocation count as before, plus one extra clone to build `run_identity`. The claimed win simply wasn't there. |
+
+Claim one was a genuinely well-executed optimization: identify a
+per-request allocation, hoist it to a `LazyLock`, done. Claim two is the
+shape of a real fix wearing the wrong name tag — `BTreeMap` over `Vec::find()`
+is still strictly better, it's just not the complexity class the PR said it
+was. Claim three is the one that matters: a plausible-sounding "before/after"
+narrative — *14 clones per step, now 1* — that reads perfectly well in a PR
+description and is simply false when you trace where the actual `.clone()`
+calls execute.
+
+## Fixing it for real, before merge
+
+Rather than rejecting the PR or leaving a comment and waiting, the fix for
+claim three went in as a same-PR follow-up commit
+([`846a26a`](https://github.com/adityak74/quecto/commit/846a26aa3394b24cede761c1811883725a83e2be)):
+wrap the field in `Rc<TraceIdentity>`. Every `run_identity.clone()` at those
+~10 call sites is now a refcount bump instead of a deep copy of six heap
+strings, with exactly one real allocation per `run_loop` / `run` / `resume`
+invocation — which is what the original PR description *said* it had already
+done. Getting `Rc<TraceIdentity>` to serialize identically required adding
+serde's `rc` feature so `#[serde(flatten)]` output on trace events didn't
+change shape; the existing trace-serialization tests confirmed it didn't.
+
+Full workspace suite after the fix: 462 passed, 0 failed. Merged same day.
+
+> **quecto got a new version.** [`quecto-agent v0.2.2`](https://github.com/adityak74/quecto/releases/tag/quecto-agent-v0.2.2)
+> ships the connection-reuse fix and O(1)-labeled-but-actually-O(log n) tool
+> dispatch as originally proposed — plus the trace-identity fix that only
+> became true during review. The release notes say it plainly: *"PR #28's
+> original description overstated two of these... The `Rc<TraceIdentity>`
+> fix above was implemented during review to make the clone-elimination claim
+> actually true before merge."*
+
+## Why this is the interesting result, not a knock on ornith-9b
+
+I want to be precise about what this does and doesn't show. ornith-9b found
+three real hot spots in a codebase it hadn't seen before, wrote working Rust
+against a two-crate workspace, kept all existing tests green, and got one out
+of three optimizations completely right on the first try — for free, on a
+laptop, with no round trip to anyone's API. That's not nothing. A year ago
+"local 9B model opens a mergeable perf PR against a Rust workspace" would
+have been the whole headline.
+
+The part worth sitting with is the failure mode on claim three, because it's
+not a syntax error or a broken test — those are cheap to catch. It's a
+*narratively coherent but factually wrong* performance claim: a "before: 14
+clones, after: 1" story that reads as confident and specific, backed by a
+diff that superficially looks like it does what the story says, and passes
+every existing test because the tests never asserted anything about
+allocation count in the first place. That's exactly the class of error code
+review by test suite doesn't catch and code review by description doesn't
+catch either — it only surfaces when someone traces the actual call sites
+against the actual claim.
+
+**What I'm confident of:**
+
+- The connection-reuse fix (claim 1) was correct as described, verified
+  against the diff.
+- The dispatch complexity claim (claim 2) was a real improvement mislabeled
+  with the wrong Big-O — a naming error, not a functional one.
+- The trace-identity claim (claim 3) was false as originally written and is
+  now true, because the fix was made real during review rather than accepted
+  on description alone.
+
+**What I'm not extrapolating from one PR:**
+
+- A 1-in-3 "confidently wrong claim" rate on a single PR is a sample size of
+  one. I'm not claiming that's ornith-9b's general hit rate, and I haven't
+  run a matched trial against other local models on the same task to say
+  whether this is typical or unlucky.
+- This says something about *this* PR's claims, not about whether the
+  underlying code changes were good ideas — two of the three were genuinely
+  good ideas, independent of how accurately they were described.
+
+## The actual takeaway
+
+If you're running local models through an agent harness to generate real
+code changes — and at 9B parameters, free, and local, there's very little
+reason not to try — the review step isn't optional scaffolding. It's the
+thing that turns "plausible diff with a confident description" into "diff
+that does what it says." Verify claims against the diff, not against the
+prose. In this case that meant the difference between shipping a
+trace-telemetry change that silently kept its original allocation cost and
+shipping one that actually eliminated it — same line count, same test
+result, very different truth.
+
+---
+
+*Related: [Building QuECTO: From Minimal Agent Harness to Evaluable Coding Agent](/ai-research/building-quecto-from-minimal-harness-to-evaluable-agent)
+covers the harness this PR was opened against. [What Is an AI Agent Harness?](/ai-research/what-is-an-ai-agent-harness)
+covers the broader pattern of models operating inside a harness rather than
+freeform. [subagent-fleet: Local AI Compute Control Plane](/subagent-fleet-local-ai-compute-control-plane)
+covers running local models like ornith-9b as part of a coding-agent fleet in
+the first place.*
