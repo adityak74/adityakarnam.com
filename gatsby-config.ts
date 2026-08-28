@@ -58,6 +58,10 @@ const config: GatsbyConfig = {
         ],
         externalLinks: [
           {
+            name: `Resume`,
+            url: `/resume.pdf`,
+          },
+          {
             name: `LinkedIn`,
             url: `https://www.linkedin.com/in/adityakarnamgrao/`,
           },
