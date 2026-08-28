@@ -97,6 +97,23 @@ const AboutPage = () => {
                 simulate outcomes, route between models, use tools, and interact with environments without collapsing
                 back into a one-shot prompt.
               </Text>
+              <Text sx={{ mt: 3 }}>
+                <a
+                  href="/resume.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{
+                    color: consoleColors.accent,
+                    fontFamily: `monospace`,
+                    fontSize: [1, 2],
+                    textDecoration: `none`,
+                    borderBottom: `1px dashed ${consoleColors.accent}`,
+                    ":hover": { color: consoleColors.text, borderBottomStyle: `solid` },
+                  }}
+                >
+                  view resume (pdf) ↗
+                </a>
+              </Text>
             </Box>
 
             <Box
