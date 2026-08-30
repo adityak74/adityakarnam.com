@@ -321,6 +321,30 @@ export const systems: SystemArtifact[] = [
     },
   },
   {
+    name: "local-code-review",
+    slug: "/local-code-review/",
+    tags: ["local inference", "code review", "Python", "AI tools", "macOS"],
+    researchQuestion: "Can AI-powered code review run entirely on a Mac, privately and without network round-trips?",
+    systemBuilt:
+      "LocalCodeReview — a Python tool that runs AI code review locally on a Mac, delivering fast, private feedback on diffs without sending code to external APIs.",
+    whyItMatters:
+      "Code review is one of the highest-value tasks in engineering. Running it locally on Apple Silicon eliminates latency, cost, and the privacy concerns that come with sending code to a hosted model.",
+    status: "Active experiment",
+    links: [
+      { label: "GitHub", href: "https://github.com/adityak74/local-code-review" },
+    ],
+    explanationModes: {
+      "Research Idea":
+        "local-code-review explores whether the code review loop can be run on-device using local models, making AI-assisted review practical for teams with sensitive codebases.",
+      "System Design":
+        "It takes a diff or file set, passes it through a locally-hosted model on the Mac, and returns structured review feedback without any data leaving the machine.",
+      "Business Value":
+        "Teams get AI code review without paying per-token API costs or exposing proprietary code to external services — useful for security-conscious engineering organizations.",
+      "Code Walkthrough":
+        "Start with the diff parser and model invocation layer, then inspect how review output is structured and surfaced for developer consumption.",
+    },
+  },
+  {
     name: "quecto",
     slug: "/quecto/",
     tags: ["Rust", "agent runtime", "local inference", "coding agent", "zero async"],
