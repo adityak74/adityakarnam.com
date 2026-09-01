@@ -1,0 +1,148 @@
+---
+title: "LoRA Fine-Tuning Crashed on Three MoE Models in mlx-lm. The Fix Was One Line, Three Times."
+date: 2026-09-01
+slug: "/mlx-lm-lora-moe-stop-gradient-fix/"
+canonicalUrl: "https://adityakarnam.com/mlx-lm-lora-moe-stop-gradient-fix/"
+description: "mlx_lm.lora --train crashed on granitemoe, granitemoehybrid, and lfm2_moe with a VJP error on integer routing indices. Found while fine-tuning Qwen3-30B-A3B on an M5 Pro, traced to a missing mx.stop_gradient, fixed and merged upstream as mlx-lm PR #1795."
+keywords:
+  [
+    "mlx-lm lora fine-tuning crash",
+    "mlx stop_gradient moe",
+    "mlx-lm pull request",
+    "granitemoe lora training error",
+    "lfm2 moe fine-tuning",
+    "mlx gather_axis vjp error",
+    "apple silicon lora fine-tuning",
+    "mixture of experts gradient fix",
+  ]
+tags:
+  - ai
+  - local-llms
+  - open-source
+---
+
+**Fine-tuning a mixture-of-experts model with `mlx_lm.lora --train` on Apple
+Silicon currently crashes for three model families — `granitemoe`,
+`granitemoehybrid`, and `lfm2_moe` — with a VJP error on the router's integer
+expert indices.** I hit it mid-training, traced it to a one-line fix that
+every other MoE model in the repo already had, and upstreamed it as
+[`mlx-lm` PR #1795](https://github.com/ml-explore/mlx-lm/pull/1795), merged
+today.
+
+This isn't a deep investigation like the last piece I wrote about a PR — it's
+the other kind of contribution: small, mechanical, and almost entirely about
+noticing that a fix which already existed elsewhere in the codebase hadn't
+been applied everywhere it needed to be.
+
+## What broke
+
+I was surveying MoE trainability on an M5 Pro, running LoRA fine-tunes
+against `Qwen3-30B-A3B` and a few other mixture-of-experts checkpoints to see
+what worked out of the box. Training on `granitemoe` crashed immediately on
+the first backward pass:
+
+```text
+ValueError: [gather_axis] Cannot calculate VJP with respect to indices. Use
+stop_gradient on indices to stop gradients from being computed.
+```
+
+Same error, same shape, on `granitemoehybrid` and `lfm2_moe`. Forward
+inference worked fine on all three — this only shows up once you ask MLX for
+gradients.
+
+## Why it happens
+
+Every MoE layer in `mlx_lm` does roughly the same thing: run the input
+through a router to get per-expert logits, pick the top-k experts, and gather
+those experts' outputs. The router logits are differentiable — that's the
+point, the router is a learned linear layer. But the *indices* you get from
+picking the top-k are integers, produced by `mx.argpartition`, and MLX can't
+compute a vector-Jacobian product through an integer index into `gather_axis`
+/ `take_along_axis`. You have to explicitly tell autograd "stop here, these
+are not differentiable":
+
+```python
+top_k_idx = mx.stop_gradient(
+    mx.argpartition(logits, kth=-self.top_k, axis=-1)[..., -self.top_k :]
+)
+```
+
+Without that barrier, calling `.backward()` (which `mlx_lm.lora --train`
+does on every step) asks for a gradient with respect to the indices
+themselves, and MLX correctly refuses.
+
+![Diagram showing router logits flowing through argpartition into integer top-k expert indices; without a barrier the backward pass requests a VJP on the indices and crashes, but routing the indices through mx.stop_gradient before take_along_axis and the switch MLP fixes it](./moe-stop-gradient-diagram.png)
+
+## The part that made this an easy fix
+
+This wasn't a novel bug. A quick survey of `mlx_lm/models/` showed that most
+sibling MoE implementations — `olmoe`, `mixtral`, `qwen2_moe`, `phimoe`,
+`glm4_moe`, `bailing_moe`, `ernie4_5_moe`, `exaone_moe`, `afmoe`, and others —
+already wrap their routing indices in `mx.stop_gradient`. And a few days
+earlier, [PR #1787](https://github.com/ml-explore/mlx-lm/pull/1787) had
+landed the identical fix for `qwen3_moe`. Between the existing pattern and
+that precedent, `granitemoe`, `granitemoehybrid`, and `lfm2_moe` were simply
+the last three index-selecting MoE models in the repo missing the guard.
+
+The fix per file:
+
+- **`granitemoe.py` / `granitemoehybrid.py`** — wrap the `argpartition` slice
+  in `mx.stop_gradient(...)`, same shape as the existing fixed models.
+- **`lfm2_moe.py`** — one added line, `inds = mx.stop_gradient(inds)`,
+  right after the indices are computed.
+
+88 additions, 6 deletions, almost all of it test code.
+
+## Testing it properly
+
+A one-line diff is easy to get wrong in a way that looks right — forward
+pass unaffected, no visible symptom until someone runs `--train`. So the PR
+adds a real regression test per model: build a tiny config (16 hidden size, 4
+experts, 1–2 layers, no downloaded weights), run one forward and backward
+pass, assert it doesn't raise. All three failed 3/3 before the fix and passed
+3/3 after.
+
+The first review comment from the mlx-lm maintainer wasn't about the fix
+itself — it was about test placement: move the tests into
+`tests/test_tuner_trainer.py` to match the structure `#1787` had already
+established, instead of a new standalone file. Small ask, straightforward
+to match:
+
+```python
+def test_granitemoe_backward(self):
+    from mlx_lm.models import granitemoe
+    model = granitemoe.Model(granitemoe.ModelArgs(...))
+    self._assert_backward(model)
+```
+
+Repeated for the other two families, using each model's actual config shape
+(`lfm2_moe` needed `layer_types=["conv", "full_attention"]` and
+`conv_L_cache` to build at all). Full `test_tuner_trainer.py` passed locally
+— 5 tests, all green — before the second push.
+
+## Why this is worth writing up at all
+
+There's no dramatic verification story here, unlike [reviewing ornith-9b's
+quecto PR](/ornith-9b-local-model-quecto-code-review-claude-sonnet-5/), where
+the interesting part was catching a claim that didn't match the diff. This
+one is closer to the median useful open-source contribution: hit a real
+crash doing real work, recognize it as an instance of a pattern the
+maintainers had already solved twice, apply the same fix a third time with
+proper regression coverage, and get it merged same-week with one round of
+review feedback.
+
+If you're running LoRA fine-tunes against MoE checkpoints on `mlx-lm` and
+hit `[gather_axis] Cannot calculate VJP with respect to indices` on a model
+family not listed above, this is almost certainly the same bug — check
+whether that model's router wraps its top-k indices in `mx.stop_gradient`
+before the gather.
+
+---
+
+*Related: [A Free Local 9B Model Optimized My Rust Agent Harness](/ornith-9b-local-model-quecto-code-review-claude-sonnet-5/)
+covers a different kind of contribution — verifying a locally-generated PR's
+claims against the diff rather than fixing a bug found by hand.
+[The Batch Size That Breaks Local LLM Serving on Apple Silicon](/mlx-batch-concurrency-memory-wall-apple-silicon/)
+and the rest of the MLX benchmark series cover other Apple Silicon inference
+constraints found the same way this bug was: running real workloads until
+something breaks, then tracing why.*
