@@ -2,7 +2,7 @@
 import * as React from "react"
 import { Box, Flex, Grid, Heading, Link as ThemeLink, Text, jsx } from "theme-ui"
 import { Link } from "gatsby"
-import { siteIdentity, systems, worldModelStack } from "./data"
+import { openSourceContributions, siteIdentity, systems, worldModelStack } from "./data"
 import HeroChat from "./HeroChat"
 
 const cardStyles = {
@@ -187,6 +187,52 @@ const HomepageConsole = () => {
               </Box>
             )
           })}
+        </Grid>
+      </Box>
+
+      <Box sx={{ ...cardStyles, p: [4, 5], mb: [5, 6] }}>
+        <Text sx={sectionLabelStyles}>Contributed to Open Source</Text>
+        <Text sx={{ color: "secondary", lineHeight: 1.65, maxWidth: "46rem", fontSize: "17px", mb: 3 }}>
+          Fixes and improvements landed upstream in projects I use, not just my own.
+        </Text>
+        <Grid columns={[1]} gap={3}>
+          {openSourceContributions.map((contribution) => (
+            <Box
+              key={contribution.prHref}
+              sx={{
+                border: "1px solid",
+                borderColor: "divide",
+                borderRadius: "10px",
+                p: 3,
+                background: "muted",
+              }}
+            >
+              <Flex sx={{ justifyContent: "space-between", alignItems: "baseline", gap: 2, flexWrap: "wrap", mb: 1 }}>
+                <Heading as="h3" sx={{ fontSize: "1.1rem", fontWeight: 500 }}>
+                  {contribution.project}
+                </Heading>
+                <Text sx={{ color: "secondary", fontFamily: "monospace", fontSize: "11px" }}>
+                  {contribution.status}
+                </Text>
+              </Flex>
+              <Text sx={{ color: "secondary", lineHeight: 1.55, fontSize: 1, mb: 2 }}>{contribution.summary}</Text>
+              <Flex sx={{ gap: 3, flexWrap: "wrap" }}>
+                <ThemeLink
+                  href={contribution.prHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  sx={{ color: "primary", fontSize: 1 }}
+                >
+                  {contribution.repo} · {contribution.prLabel} →
+                </ThemeLink>
+                {contribution.writeUpHref && (
+                  <Link to={contribution.writeUpHref} sx={{ color: "primary", textDecoration: "none", fontSize: 1 }}>
+                    Write-up →
+                  </Link>
+                )}
+              </Flex>
+            </Box>
+          ))}
         </Grid>
       </Box>
 

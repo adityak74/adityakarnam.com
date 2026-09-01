@@ -31,6 +31,16 @@ export type FieldNote = {
   thesis: string
 }
 
+export type OpenSourceContribution = {
+  project: string
+  repo: string
+  prLabel: string
+  prHref: string
+  summary: string
+  status: string
+  writeUpHref?: string
+}
+
 export const siteIdentity = {
   name: "Aditya Karnam",
   title: "AI Researcher",
@@ -367,6 +377,37 @@ export const systems: SystemArtifact[] = [
       "Code Walkthrough":
         "Start with the core four-function API and streaming path, then move to quecto-agent's tool dispatch loop, sandbox denylist, manifest flavor loading, and SQLite session resume/undo flow.",
     },
+  },
+]
+
+export const openSourceContributions: OpenSourceContribution[] = [
+  {
+    project: "mlx-lm",
+    repo: "ml-explore/mlx-lm",
+    prLabel: "PR #1795",
+    prHref: "https://github.com/ml-explore/mlx-lm/pull/1795",
+    summary:
+      "Fixed a LoRA fine-tuning crash on granitemoe, granitemoehybrid, and lfm2_moe — the MoE routers' integer top-k indices needed mx.stop_gradient before the backward pass, matching the pattern already used by sibling models.",
+    status: "Merged",
+    writeUpHref: "/mlx-lm-lora-moe-stop-gradient-fix/",
+  },
+  {
+    project: "ml-homelab",
+    repo: "justinrmiller/ml-homelab",
+    prLabel: "PR #5 (+ #1, #2, #4)",
+    prHref: "https://github.com/justinrmiller/ml-homelab/pull/5",
+    summary:
+      "Added KubeRay cluster management (init/status/shutdown scripts, setup docs) to a homelab ML stack, plus earlier fixes to the Streamlit job trigger and project init scripts.",
+    status: "Merged",
+  },
+  {
+    project: "streamlit-auth0",
+    repo: "conradbez/streamlit-auth0",
+    prLabel: "PR #32, #33",
+    prHref: "https://github.com/conradbez/streamlit-auth0/pull/32",
+    summary:
+      "Added custom Auth0 configuration support and localStorage-backed session persistence to a Streamlit Auth0 integration component.",
+    status: "Open",
   },
 ]
 
