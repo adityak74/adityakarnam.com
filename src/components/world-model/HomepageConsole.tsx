@@ -13,7 +13,7 @@ const cardStyles = {
 }
 
 const sectionLabelStyles = {
-  display: "inline-block",
+  display: "block",
   color: "secondary",
   fontFamily: "monospace",
   fontSize: "11px",
@@ -138,9 +138,9 @@ const HomepageConsole = () => {
 
       <Box sx={{ ...cardStyles, p: [4, 5], mb: [5, 6] }}>
         <Text sx={sectionLabelStyles}>Contributed to Open Source</Text>
-        <Text sx={{ color: "secondary", lineHeight: 1.65, maxWidth: "46rem", fontSize: "17px", mb: 3 }}>
+        <Heading as="h2" sx={{ fontSize: ["1.4rem", "1.7rem"], fontWeight: 500, lineHeight: 1.35, maxWidth: "46rem", mb: 3 }}>
           Fixes and improvements landed upstream in projects I use, not just my own.
-        </Text>
+        </Heading>
         <Grid columns={[1]} gap={3}>
           {openSourceContributions.map((contribution) => (
             <Box
@@ -186,9 +186,9 @@ const HomepageConsole = () => {
         <Flex sx={{ justifyContent: "space-between", alignItems: "flex-end", gap: 3, flexWrap: "wrap", mb: 4 }}>
           <Box>
             <Text sx={sectionLabelStyles}>Proof</Text>
-            <Text sx={{ color: "secondary", lineHeight: 1.65, maxWidth: "46rem", fontSize: "17px" }}>
+            <Heading as="h2" sx={{ fontSize: ["1.4rem", "1.7rem"], fontWeight: 500, lineHeight: 1.35, maxWidth: "46rem" }}>
               Six systems that show the work, not just describe it.
-            </Text>
+            </Heading>
           </Box>
           <Link to="/systems/" sx={{ color: "primary", textDecoration: "none", fontFamily: "monospace", fontSize: 0 }}>
             View full index →
