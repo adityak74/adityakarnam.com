@@ -355,6 +355,54 @@ export const systems: SystemArtifact[] = [
     },
   },
   {
+    name: "google-maps-mcp",
+    slug: "/google-maps-mcp/",
+    tags: ["MCP", "Google Maps", "tool interface", "Python"],
+    researchQuestion: "Can AI agents navigate and reason about the physical world by integrating real-time map and location data through a standard protocol?",
+    systemBuilt:
+      "An MCP server that exposes Google Maps capabilities to AI agents — enabling location search, routing, place details, and geographic context as structured tool calls.",
+    whyItMatters:
+      "Agents that need to reason about physical locations require a reliable, structured interface to mapping data. google-maps-mcp brings Google Maps into the agent tool layer through MCP, making geography a first-class context.",
+    status: "Early experiment",
+    links: [
+      { label: "GitHub", href: "https://github.com/adityak74/google-maps-mcp" },
+    ],
+    explanationModes: {
+      "Research Idea":
+        "google-maps-mcp explores whether location and geographic reasoning can be added to agents as a pluggable tool layer through the MCP protocol, without baking map logic into the agent core.",
+      "System Design":
+        "It wraps the Google Maps API surface in an MCP server, normalizing place search, route queries, and geographic detail into structured results any compatible agent can consume.",
+      "Business Value":
+        "Agents that need location context — scheduling, logistics, travel planning, or field operations — gain a drop-in geographic data layer without custom API integration work.",
+      "Code Walkthrough":
+        "Start with the MCP server entry point and tool definitions, then inspect the Google Maps API wrappers, result normalizers, and the schema that agents receive from each tool call.",
+    },
+  },
+  {
+    name: "awesome-ai-videos-to-books",
+    slug: "/awesome-ai-videos-to-books/",
+    tags: ["multi-agent", "LLM", "textbook", "claude-code", "reinforcement-learning", "evals"],
+    researchQuestion: "Can a multi-agent pipeline with adversarial fact-checking reliably transform AI video lectures and graduate courses into illustrated, print-ready textbooks?",
+    systemBuilt:
+      "A multi-agent pipeline that ingests premier AI video lectures and graduate courses — including Stanford CS329A — and produces illustrated textbooks, EPUBs, and print-ready PDFs through adversarial multi-agent fact-checking.",
+    whyItMatters:
+      "Premier AI education lives in video, behind lecture-hall paywalls or buried in YouTube timecodes. awesome-ai-videos-to-books makes it durable, searchable, and printable — with factual grounding enforced by the pipeline itself.",
+    status: "Active experiment",
+    links: [
+      { label: "GitHub", href: "https://github.com/adityak74/awesome-ai-videos-to-books" },
+    ],
+    explanationModes: {
+      "Research Idea":
+        "awesome-ai-videos-to-books asks whether multi-agent adversarial review can produce textbooks from AI video content that are factually reliable enough to trust for graduate-level study.",
+      "System Design":
+        "Multiple agents divide transcript extraction, concept structuring, illustration generation, and adversarial fact-checking across a pipeline that converges on a Typst-formatted document exported as EPUB or PDF.",
+      "Business Value":
+        "It makes high-quality AI education accessible in persistent, searchable form — useful for researchers building reading lists, educators creating course materials, or students consolidating lecture content.",
+      "Code Walkthrough":
+        "Start with the pipeline orchestration layer and transcript ingestion, then inspect the agent roles — extractor, structurer, illustrator, fact-checker — and the Typst export pipeline that produces final deliverables.",
+    },
+  },
+  {
     name: "quecto",
     slug: "/quecto/",
     tags: ["Rust", "agent runtime", "local inference", "coding agent", "zero async"],
