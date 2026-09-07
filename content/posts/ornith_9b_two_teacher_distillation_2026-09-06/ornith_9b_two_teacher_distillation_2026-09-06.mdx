@@ -26,12 +26,13 @@ tags:
 
 **I spent about a week distilling a 9B reasoning model on one Mac, and the
 result is a 4.9 GB checkpoint that outscores the 8.9 GB build of the same
-model and matches the 17 GB full-precision original on MMLU.** The weights are
-on Hugging Face as
-[`adityak74/Ornith-1.5-9B-MLX-distil-oQ4`](https://huggingface.co/adityak74/Ornith-1.5-9B-MLX-distil-oQ4)
-and the entire pipeline — including the decisions log with every dead end —
-is at
-[`adityak74/ornith-1.5-9b-distil`](https://github.com/adityak74/ornith-1.5-9b-distil).
+model and matches the 17 GB full-precision original on MMLU.**
+
+> **Model → [`adityak74/Ornith-1.5-9B-MLX-distil-oQ4`](https://huggingface.co/adityak74/Ornith-1.5-9B-MLX-distil-oQ4)
+> on Hugging Face.** 4.9 GB, MLX, runs on any Apple Silicon Mac with ~8 GB free.
+> **83.5 MMLU · 79.0 TruthfulQA · 90.8 HumanEval.**
+> Full pipeline and decisions log:
+> [`adityak74/ornith-1.5-9b-distil`](https://github.com/adityak74/ornith-1.5-9b-distil).
 
 The headline is nice. The interesting part is that it happened for a reason I
 did not predict, and that reason is probably useful to anyone shipping a
