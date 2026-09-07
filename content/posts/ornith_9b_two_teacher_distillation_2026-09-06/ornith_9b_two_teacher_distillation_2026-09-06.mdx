@@ -29,7 +29,10 @@ result is a 4.9 GB checkpoint that outscores the 8.9 GB build of the same
 model and matches the 17 GB full-precision original on MMLU.**
 
 > **Model → [`adityak74/Ornith-1.5-9B-MLX-distil-oQ4`](https://huggingface.co/adityak74/Ornith-1.5-9B-MLX-distil-oQ4)
-> on Hugging Face.** 4.9 GB, MLX, runs on any Apple Silicon Mac with ~8 GB free.
+> on Hugging Face**, or on
+> [Ollama](https://ollama.com/adityakarnam/Ornith-1.5-9B-MLX-distil-oQ4):
+> `ollama run adityakarnam/Ornith-1.5-9B-MLX-distil-oQ4`.
+> 4.9 GB, runs on any Apple Silicon Mac with ~8 GB free.
 > **83.5 MMLU · 79.0 TruthfulQA · 90.8 HumanEval.**
 > Full pipeline and decisions log:
 > [`adityak74/ornith-1.5-9b-distil`](https://github.com/adityak74/ornith-1.5-9b-distil).
@@ -305,6 +308,14 @@ known defect with a known fix, not a mystery — which is the useful kind of
 failure.
 
 ## Using it
+
+The shortest path is Ollama:
+
+```bash
+ollama run adityakarnam/Ornith-1.5-9B-MLX-distil-oQ4
+```
+
+Or straight from MLX:
 
 ```bash
 pip install mlx-lm
