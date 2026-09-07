@@ -1,0 +1,414 @@
+---
+title: "Distilling Ornith-1.5-9B: a 4.9 GB Model That Beats the 8.9 GB One It Replaces"
+date: 2026-09-06
+slug: "/distilling-ornith-9b-two-teacher-mlx/"
+canonicalUrl: "https://adityakarnam.com/distilling-ornith-9b-two-teacher-mlx/"
+banner: "./distilled-vs-shipped.png"
+description: "Two teachers, rejection sampling and rank-32 LoRA on a single M4 Pro produced a 4.9 GB build of Ornith-1.5-9B that scores +5.5 MMLU and +3.0 HumanEval over the stock 4-bit release. The mechanism turned out to be reasoning termination, not knowledge."
+keywords:
+  [
+    "knowledge distillation",
+    "mlx apple silicon",
+    "quantization reasoning models",
+    "lora distillation",
+    "rejection sampling distillation",
+    "ornith 1.5 9b",
+    "mlx-lm lora",
+    "local llm fine-tuning mac",
+    "humaneval truncation",
+    "distill before quantize",
+  ]
+tags:
+  - ai
+  - local-llms
+  - open-source
+---
+
+**I spent about a week distilling a 9B reasoning model on one Mac, and the
+result is a 4.9 GB checkpoint that outscores the 8.9 GB build of the same
+model and matches the 17 GB full-precision original on MMLU.** The weights are
+on Hugging Face as
+[`adityak74/Ornith-1.5-9B-MLX-distil-oQ4`](https://huggingface.co/adityak74/Ornith-1.5-9B-MLX-distil-oQ4)
+and the entire pipeline — including the decisions log with every dead end —
+is at
+[`adityak74/ornith-1.5-9b-distil`](https://github.com/adityak74/ornith-1.5-9b-distil).
+
+The headline is nice. The interesting part is that it happened for a reason I
+did not predict, and that reason is probably useful to anyone shipping a
+quantized reasoning model.
+
+![Grouped horizontal bar chart comparing four builds of Ornith-1.5-9B on MMLU and HumanEval: the distilled 4-bit model at 4.9 GB scores 83.5 and 90.8, above the shipped 4-bit model at 78.0 and 87.8, above the 8.9 GB 8-bit build at 83.1 and 88.4, and level with the 17 GB bf16 base at 82.6 and 91.5](./distilled-vs-shipped.png)
+
+## Why bother
+
+`Ornith-1.5-9B` ships in a few precisions, and I had measured all of them on
+my own harness before starting. The 4-bit build — `oQ4`, a mixed-bit scheme,
+4.9 GB — is the one you actually run on a laptop. It is also the one that
+loses the most:
+
+| Model                    |     MMLU | TruthfulQA | HumanEval | size   |
+| ------------------------ | -------: | ---------: | --------: | ------ |
+| Ornith-1.5-9B bf16       |     82.6 |       80.5 |  **91.5** | 17 GB  |
+| Ornith-1.5-9B oQ8        |     83.1 |       80.7 |      88.4 | 8.9 GB |
+| Ornith-1.5-9B oQ4        |     78.0 |       80.7 |      87.8 | 4.9 GB |
+| Ornith-1.5-9B oQ3        |     66.6 |       67.6 |      72.0 | —      |
+| Qwen3.6-35B-A3B-4bit     | **89.3** |   **89.2** |      93.3 | 19 GB  |
+| Ornith-1.5-35B-A3B-4bit  |     83.0 |       86.4 |  **93.3** | 19 GB  |
+
+bf16 → oQ4 costs **4.6 points of MMLU** and 3.7 of HumanEval. That gap is a
+quantization problem, not a knowledge problem: the 9B demonstrably has the
+capability at full precision and loses it in the 4-bit map. So the plan was
+never "make the model smarter." It was: teach the bf16 student from teachers
+that are genuinely better, fuse, and only *then* quantize, so the quantizer
+starts from an improved checkpoint instead of compounding two lossy steps.
+
+## Two teachers, split by what each is measurably good at
+
+The two 35B MoE models in that table are not ranked, they are complementary,
+and it matters:
+
+- **Qwen3.6-35B-A3B-4bit** is +6.3 MMLU and +2.8 TruthfulQA over the other
+  teacher. It teaches knowledge and truthfulness.
+- **Ornith-1.5-35B-A3B-4bit** ties Qwen *exactly* on HumanEval (153/164 each)
+  and gets there **4.6× faster** — 2.6 hours to run the full benchmark suite
+  against Qwen's 6.1. So it teaches code and does the bulk of the generation
+  work, because it is cheap.
+
+Both are 3B-active MoEs, which is why they are faster than the dense 9B
+student they are teaching despite being four times its parameter count.
+
+Picking teachers per domain rather than picking "the best model" is the
+cheapest decision in the whole project and probably the highest leverage one.
+
+## The pipeline
+
+Eight stages, every one resumable — re-running skips ids already on disk,
+which matters when a stage is a ten-hour generation job and your Mac has other
+opinions about what it wants to do tonight.
+
+```bash
+odistil prompts     # build the prompt pool from HF datasets
+odistil teach       # generate teacher traces (batched MLX generation)
+odistil dataset     # verify, decontaminate, mix
+odistil train       # rank-32 LoRA over the bf16 student
+odistil fuse        # fuse adapters back to bf16
+odistil quantize --variant oq4
+odistil eval --model runs/v1/quant/oq4
+odistil report --time
+```
+
+Stage 3 is where the quality comes from, and it is not subtle. A teacher trace
+is kept **only if its answer is verifiably correct**:
+
+- multiple choice → the teacher's letter must match the gold letter
+- open QA → normalized match against the gold aliases
+- code → the generated program is **executed against its source dataset's own
+  unit tests** in a sandboxed subprocess
+
+Then anything sharing a 13-gram with MMLU test, TruthfulQA or HumanEval is
+dropped before training. 3,974 traces were generated; **1,672 survived**. That
+58% rejection rate is the product.
+
+## What the hardware decided
+
+A 9B in bf16 is ~18 GB of weights; AdamW adds ~72 GB of fp32 optimizer state.
+That does not fit in 64 GB, so a full fine-tune was never on the table. LoRA
+over the full-precision base was.
+
+What surprised me was where the memory actually goes. Measured peak, batch 1,
+gradient checkpointing on:
+
+| sequence length | layers adapted | peak memory | speed      |
+| --------------: | -------------: | ----------: | ---------: |
+|            1024 |      32 (all)  |     48.6 GB | 36 s/iter  |
+|            1024 |             16 |     47.8 GB | 20 s/iter  |
+|            1024 |              8 |     47.4 GB | 14 s/iter  |
+|             512 |              8 |     27.2 GB |  7 s/iter  |
+
+**Adapting a quarter of the stack instead of all of it saves 1.2 GB and 61% of
+the time.** Memory is driven by the forward pass, not by how many layers carry
+adapters — roughly 20 MB per token, because this architecture's hybrid
+`linear_attn` layers materialise per-timestep state. The layer count only
+truncates backprop, so it buys speed, not footprint. Sequence length is the
+only real lever on memory.
+
+Settled on rank 32 over the top 16 of 32 layers, 1024-token sequences, batch 1.
+3,200 steps, 1.76M tokens, one M4 Pro.
+
+Two more things the machine dictated. Gradient accumulation of 4 kept four
+backward graphs alive and hit Metal's 499,000 live-resource limit, so the
+effective batch is 1 and the learning rate came down to match. And GPU stages
+have to run strictly one at a time — running Qwen generation alongside a
+training job killed both with `[METAL] Command buffer execution failed:
+Insufficient Memory`, because a 4-bit 35B teacher is ~19 GB and the training
+job peaks near 48 GB against a 52 GB recommended working set.
+
+### The 1024-token cap cost half the data, and I paid it anyway
+
+Training targets include the teacher's full reasoning trace. At a 1024-token
+cap, that means dropping every sample whose prompt plus reasoning exceeds it:
+
+| cap  | kept, with reasoning | kept, answer only |
+| ---: | -------------------: | ----------------: |
+|  896 |                  43% |               98% |
+| 1024 |                  50% |               99% |
+| 1280 |                  62% |              100% |
+
+Stripping the reasoning would have kept essentially every sample. I did not,
+because the chat template pre-opens a `<think>` block: a student trained on
+answer-only targets learns to emit `</think>` immediately and stop reasoning —
+exactly the behaviour it is evaluated and served with. Half the data with
+intact reasoning beats all of it with the reasoning removed.
+
+The fix that does not trade away the behaviour is to make the *teacher* brief.
+The knowledge teacher is asked to keep reasoning under 150 words, and rejection
+sampling still throws out any answer that got worse for the brevity — so the
+risk is a lower keep rate, not a worse student.
+
+## Measuring the baseline found bugs in my own harness
+
+Before distilling anything I ran the undistilled bf16 student through my
+harness. It scored **82.3% HumanEval** where the reference numbers said 91.5%.
+Of the 29 failures, **22 were the harness, not the model**:
+
+- **20 truncations.** Items hit a 2048-token cap mid-reasoning and scored
+  wrong. Failures averaged 1,821 generated tokens against 708 for successes.
+  Fix: per-benchmark budgets (HumanEval 4096, MMLU 3072), and the truncation
+  count reported next to every accuracy, so a low score that is really a budget
+  problem announces itself.
+- **3 `NameError`s.** The model returns just the function, dropping the imports
+  and helpers the HumanEval prompt supplies. Fix: prepend the problem prompt as
+  a preamble before the extracted code.
+
+Rescoring the *existing* outputs with the preamble fix alone moved 132/160 to
+135/160. If you are evaluating a reasoning model and not reporting truncations,
+some fraction of your accuracy number is measuring your token budget.
+
+Corrected baseline: **145/164 = 88.4% HumanEval** for the bf16 base on my
+harness. That is the number the distilled model had to beat — not the 91.5%
+from a harness whose prompt formatting, parsing and budget handling I cannot
+see.
+
+## One measurement that saved five GPU-hours
+
+The original code pool was 384 MBPP problems plus 1,500 CodeFeedback
+instructions. After generating 512 traces I checked the keep rate instead of
+assuming it:
+
+| source       | traces | usable  | verified how                     |
+| ------------ | -----: | ------: | -------------------------------- |
+| MBPP         |    384 | **74%** | executed against the real tests  |
+| CodeFeedback |    128 | **24%** | syntax only — 53% truncated away |
+
+CodeFeedback is free-form instruction data. Its answers are long, they run past
+the generation budget, and there is nothing to verify them against. Three
+quarters of the compute spent on it produced nothing usable.
+
+Dropped it, and replaced the volume with **the rest of MBPP** — my code
+benchmark is HumanEval, so MBPP's test and validation splits are training data,
+not eval data. That took the code slice from 384 verified plus 1,500
+unverifiable prompts to 974 prompts that all ship with executable tests, for
+less total generation time.
+
+## The first result looked like a failure
+
+| model                    | HumanEval | truncated |
+| ------------------------ | --------: | --------: |
+| bf16 base (undistilled)  | **88.4%** |        15 |
+| distilled oQ4            |     84.1% |        19 |
+
+Four points *down*. I wrote it up as a negative result, noted that eight of the
+14 problems lost were truncations, and started drafting the v2 changes.
+
+Then I noticed the comparison was wrong. I was comparing a **4.72-bit** model
+against a **bf16** one, which folds the entire cost of quantization into what
+was supposed to be the distillation delta. The like-for-like comparison — both
+models quantized with the same oQ4 map, both measured by the same harness — is
+a different picture:
+
+| benchmark        | shipped oQ4 | distilled oQ4 |     delta | truncations |
+| ---------------- | ----------: | ------------: | --------: | ----------: |
+| MMLU (n=250)     |       81.2% |         82.4% |    +1.2pp |     24 → 10 |
+| TruthfulQA (250) |       72.4% |         70.8% |    −1.6pp |     27 → 20 |
+| HumanEval (164)  |       72.0% |     **84.1%** | **+12.2pp** |     39 → 19 |
+
+Same distilled checkpoint, same score, opposite conclusion. The lesson is
+boring and I will be repeating it to myself for a while: **a distillation delta
+and a quantization delta are two different measurements, and if your baseline
+is not at the same bit width you are measuring both at once.**
+
+## What it actually fixed: termination, not knowledge
+
+Look at the truncation column above. It roughly halves in every row.
+
+![Two panels. Left: stacked bars showing the shipped 4-bit model reached an answer on 125 of 164 HumanEval problems with 39 truncated, versus the distilled model at 145 reached and 19 truncated. Right: of the 28 problems the distilled model gained, 22 were ones the shipped model had truncated and only 6 were ones it answered wrongly; mean generation fell from 1,721 to 1,414 tokens, HumanEval wall clock 33% faster, MMLU 15% faster](./termination-not-knowledge.png)
+
+Against the shipped oQ4, the distilled model gained 28 HumanEval problems and
+lost 8 — and **22 of the 28 gains were problems where the shipped model simply
+ran out of budget mid-reasoning**. It never reaches an answer on 24% of
+HumanEval. The distilled model cuts that to 12%, and mean generation drops from
+1,721 tokens to 1,414.
+
+So the working hypothesis: **quantization damages a model's ability to *stop*
+reasoning more than its ability to *reason*.** Training on teacher traces that
+terminate cleanly repairs much of that.
+
+It also explains the flat multiple-choice results, which had been bothering me
+given that 75% of the training data went to knowledge and truthfulness. A
+truncated multiple-choice answer is often still recoverable from context. A
+truncated program never is. There is simply less broken behaviour available to
+repair on MMLU, so there is less to gain.
+
+## Two harnesses, and why the smaller number is the true one
+
+I re-measured the distilled model on the serving harness that produced the
+original table — the one that matters for deployment, and that does not
+penalise truncation the way mine does:
+
+| benchmark  | my harness | serving harness |
+| ---------- | ---------: | --------------: |
+| MMLU       |     +1.2pp |      **+5.5pp** |
+| TruthfulQA |     −1.6pp |          −1.7pp |
+| HumanEval  |    +12.2pp |      **+3.0pp** |
+
+TruthfulQA agrees to within 0.1pp. MMLU differs because I only measured 250
+items there (±6.9pp at that size — the delta was never resolvable). HumanEval
+differs by nine points, and the reason is worth stating plainly: the two
+harnesses disagree about the **shipped** model, not the distilled one. Mine
+scores shipped oQ4 at 72.0% where the serving harness scores it 87.8%, because
+the serving harness recovers an answer from output I score as unfinished.
+
+**+3.0pp is the number to trust.** My +12.2pp was inflated by measuring a
+failure mode the other harness masks. I would rather publish the smaller number
+with the reason attached than the bigger one.
+
+The effect is real on both, though, and the independent confirmation is the
+clock: against the shipped oQ4 on the serving harness, the distilled model is
+**33% faster on HumanEval and 15% faster on MMLU**. It reaches its answer
+sooner, on a harness that does not care about truncation at all. That is a
+property of the weights, not of the scoring.
+
+## The benchmark that got worse
+
+TruthfulQA regressed 1.7 points, consistently, on both harnesses. That is a
+real regression and it belongs in the headline, not a footnote.
+
+The cause is almost certainly the training data. The truthfulness slice was 626
+samples drawn from **TriviaQA and SciQ** — datasets that reward confident
+factual recall. TruthfulQA measures close to the opposite reflex: resisting a
+plausible-sounding falsehood and declining to assert. I trained the model to be
+more confident and then measured it on a benchmark that punishes exactly that.
+
+If truthfulness is what you care about, use the stock `oQ4` or `oQ8`. This is a
+known defect with a known fix, not a mystery — which is the useful kind of
+failure.
+
+## Using it
+
+```bash
+pip install mlx-lm
+mlx_lm.generate --model adityak74/Ornith-1.5-9B-MLX-distil-oQ4 \
+  --prompt "Explain the difference between a process and a thread." \
+  --max-tokens 1024
+```
+
+```python
+from mlx_lm import load, generate
+
+model, tokenizer = load("adityak74/Ornith-1.5-9B-MLX-distil-oQ4")
+prompt = tokenizer.apply_chat_template(
+    [{"role": "user", "content": "Write a function to check if a string is a palindrome."}],
+    add_generation_prompt=True,
+    tokenize=False,
+)
+print(generate(model, tokenizer, prompt=prompt, max_tokens=4096))
+```
+
+It is a reasoning model and the chat template opens a `<think>` block for it,
+so give it room: **4096 max tokens for coding problems**, 2048+ for everything
+else. Truncating mid-reasoning throws away the answer entirely — which, if you
+have read this far, you will recognise as the entire subject of this post.
+
+Runs on any Apple Silicon Mac with ~8 GB free. Note that it is *slower* than
+the 35B MoE teachers on the same machine despite being a quarter their size,
+because it is dense and they activate ~3B parameters per token. It wins on
+memory, not latency.
+
+## What v2 changes
+
+v1 shipped at 83.5 / 79.0 / 90.8. Two defects were diagnosable from v1's own
+data, so v2 fixes exactly those and holds everything else constant — same
+teachers, same rank-32 LoRA, same 1024-token cap, same quantization map. If v2
+moves, the cause is identifiable.
+
+1. **The truthfulness slice taught the wrong reflex.** TriviaQA and SciQ are
+   replaced with a misconception true/false set: 1,703 statements, 63% of them
+   misconceptions, with gold labels so traces stay verifiable, and zero 8-gram
+   overlap with TruthfulQA. SciQ moves to the knowledge slice where it always
+   belonged.
+2. **The code teacher was never asked to be brief.** The knowledge teacher was;
+   the code teacher was not, and v1 lost **356 code traces to the length cap —
+   more than it lost to wrong answers (93)**. Regenerating that slice with a
+   brevity instruction costs about two GPU-hours and should return several
+   hundred extra verified samples to the slice that had the fewest.
+
+The bigger change I keep circling is real logit distillation. All three models
+share an identical 248,044-token vocabulary — the two Ornith `tokenizer.json`
+files are byte-identical, Qwen's differs only in formatting — so KL against
+teacher logits is genuinely available. The right shape is offline: record the
+teacher's top-64 logprobs per generated token during the generation stage, then
+train on a mix of cross-entropy and KL against those sparse targets. Online KD
+would need a 19 GB teacher and an 18 GB student co-resident with optimizer
+state, which does not fit. Offline costs disk and nothing else.
+
+### A change worth making, reverted for a boring reason
+
+Prompt sampling uses `rng.sample(range(N), n)`, which is stable when *other*
+pools get resized but not when *this* one does. Growing the MMLU pool
+reshuffles the selection, and every trace already generated stops matching by
+id. Taking a prefix of one fixed shuffle fixes that properly, so I made the
+change — and then measured what it cost: reusable v1 traces dropped from 2,400
+to **65**. Switching methods invalidates every trace generated under the old
+one, and 2,400 traces is about five GPU-hours.
+
+Reverted, with the reasoning left in the code. It is the right design to adopt
+at the *start* of a run that has nothing to reuse, and the wrong one to adopt
+in the middle of a project.
+
+## Caveats
+
+- Every delta here compares checkpoints measured by the same harness against
+  each other. Cross-harness absolute numbers do not agree and are not meant to.
+- MMLU and TruthfulQA in my own harness were measured on seeded 250-item
+  subsets; deltas under ~7pp are not resolvable at that size. The full-protocol
+  numbers in the headline table come from the serving harness.
+- None of the original targets (86–89 MMLU / 86–89 TruthfulQA / 92–94
+  HumanEval) were reached. What was reached is a better model at the same size,
+  which was the useful half of the goal.
+- One base model, one architecture, one machine. The termination hypothesis is
+  the thing I would most like someone else to test on a different model family.
+- The base model card states no license, so the terms governing this derivative
+  are whatever govern that model and its upstreams — including Gemma terms,
+  which flow downstream. Check those before redistribution. This repo claims
+  nothing beyond the recipe.
+
+## The transferable part
+
+Three things I would carry to any project like this:
+
+1. **Distill in full precision, quantize last.** The quantizer then starts from
+   an improved checkpoint instead of compounding two lossy steps, and you get
+   to recover capability the 4-bit map was throwing away.
+2. **Report truncations next to accuracy.** For a reasoning model, a low score
+   and a small token budget are indistinguishable without it — and the gap
+   between two harnesses is usually right there.
+3. **Measure keep rates before spending the GPU-hours.** The single best
+   decision in this project was generating 512 code traces, checking what
+   fraction was usable, and throwing out a data source at 24%.
+
+Repo: [`github.com/adityak74/ornith-1.5-9b-distil`](https://github.com/adityak74/ornith-1.5-9b-distil)
+— including [`DECISIONS.md`](https://github.com/adityak74/ornith-1.5-9b-distil/blob/main/DECISIONS.md),
+which is the running log of every judgement call with the evidence behind it,
+including the two above that I got wrong first.
+Model: [`adityak74/Ornith-1.5-9B-MLX-distil-oQ4`](https://huggingface.co/adityak74/Ornith-1.5-9B-MLX-distil-oQ4).
+Built with [mlx-lm](https://github.com/ml-explore/mlx-lm) on an M4 Pro.
