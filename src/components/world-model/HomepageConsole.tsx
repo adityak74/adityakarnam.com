@@ -3,6 +3,7 @@ import * as React from "react"
 import { Box, Flex, Grid, Heading, Link as ThemeLink, Text, jsx } from "theme-ui"
 import { Link } from "gatsby"
 import { openSourceContributions, siteIdentity, systems, worldModelStack } from "./data"
+import { openSourceImpact } from "./impact"
 import HeroChat from "./HeroChat"
 
 const cardStyles = {
@@ -73,6 +74,16 @@ const HomepageConsole = () => {
               The future of AI is not just larger language models. It is infrastructure that lets models understand
               environments, reason across time, and interact with the world.
             </Text>
+            <Grid columns={[2, null, 4]} gap={2} sx={{ maxWidth: "46rem", mb: 3 }}>
+              {openSourceImpact.heroMetrics.map((metric) => (
+                <Box key={metric.label} sx={{ borderLeft: "2px solid", borderColor: "primary", pl: 2 }}>
+                  <Text sx={{ color: "text", fontFamily: "monospace", fontSize: [1, 2], fontWeight: 600, mb: 0 }}>
+                    {metric.value}
+                  </Text>
+                  <Text sx={{ color: "secondary", fontSize: "11px", lineHeight: 1.35, mb: 0 }}>{metric.label}</Text>
+                </Box>
+              ))}
+            </Grid>
             <Flex sx={{ gap: 3, flexWrap: "wrap", alignItems: "center" }}>
               <Link
                 to="/systems/"
@@ -136,10 +147,46 @@ const HomepageConsole = () => {
         </Grid>
       </Box>
 
+      <Box sx={{ ...cardStyles, p: [4, 5], mb: [5, 6], background: "#F7F4EE" }}>
+        <Grid columns={[1, null, "1.25fr 0.75fr"]} gap={[4, 5]}>
+          <Box>
+            <Text sx={sectionLabelStyles}>{openSourceImpact.featuredProject.eyebrow}</Text>
+            <Heading as="h2" sx={{ fontSize: ["1.5rem", "1.8rem"], fontWeight: 500, lineHeight: 1.3, mb: 2 }}>
+              {openSourceImpact.featuredProject.title}
+            </Heading>
+            <Text sx={{ color: "secondary", lineHeight: 1.65, fontSize: "17px", mb: 3 }}>
+              {openSourceImpact.featuredProject.description}
+            </Text>
+            <Flex sx={{ gap: 3, flexWrap: "wrap" }}>
+              {openSourceImpact.featuredProject.links.map((link) => (
+                <ThemeLink key={link.href} href={link.href} target="_blank" rel="noreferrer" sx={{ color: "primary", fontSize: 1 }}>
+                  {link.label} →
+                </ThemeLink>
+              ))}
+            </Flex>
+          </Box>
+          <Box sx={{ borderTop: ["1px solid", null, "none"], borderLeft: ["none", null, "1px solid"], borderColor: "divide", pt: [3, null, 0], pl: [0, null, 4] }}>
+            {openSourceImpact.featuredProject.metrics.map((metric) => (
+              <Text key={metric} sx={{ color: "text", fontFamily: "monospace", fontSize: [1, 2], mb: 2 }}>
+                {metric}
+              </Text>
+            ))}
+            <Box sx={{ borderTop: "1px solid", borderColor: "divide", mt: 3, pt: 3 }}>
+              <Text sx={{ color: "text", fontWeight: 500, mb: 1 }}>{openSourceImpact.googleDriveAction.name}</Text>
+              <Text sx={{ color: "secondary", fontSize: 1, lineHeight: 1.5, mb: 2 }}>{openSourceImpact.googleDriveAction.description}</Text>
+              <ThemeLink href={openSourceImpact.googleDriveAction.href} target="_blank" rel="noreferrer" sx={{ color: "primary", fontSize: 1 }}>
+                {openSourceImpact.googleDriveAction.metrics.join(" · ")} →
+              </ThemeLink>
+            </Box>
+            <Text sx={{ color: "secondary", fontSize: "11px", mt: 3, mb: 0 }}>{openSourceImpact.snapshotLabel}</Text>
+          </Box>
+        </Grid>
+      </Box>
+
       <Box sx={{ ...cardStyles, p: [4, 5], mb: [5, 6] }}>
         <Text sx={sectionLabelStyles}>Contributed to Open Source</Text>
         <Heading as="h2" sx={{ fontSize: ["1.4rem", "1.7rem"], fontWeight: 500, lineHeight: 1.35, maxWidth: "46rem", mb: 3 }}>
-          Fixes and improvements landed upstream in projects I use, not just my own.
+          Landed upstream in {openSourceImpact.upstreamProjects.join(", ")}.
         </Heading>
         <Grid columns={[1]} gap={3}>
           {openSourceContributions.map((contribution) => (

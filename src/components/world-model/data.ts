@@ -264,12 +264,13 @@ export const systems: SystemArtifact[] = [
     tags: ["MCP", "research retrieval", "academic search", "tool interface"],
     researchQuestion: "Can AI agents retrieve verified academic knowledge without hallucinating citations?",
     systemBuilt:
-      "An MCP server that lets agents search and retrieve accurate academic articles from scholarly databases, giving agents a direct path to peer-reviewed literature.",
+      "An MCP server that lets agents search and retrieve accurate academic articles from scholarly databases, giving agents a direct path to peer-reviewed literature. It reached 78K+ PyPI downloads in the September 2026 public monthly snapshot.",
     whyItMatters:
       "Research-grounded agents need a reliable retrieval path to scholarly knowledge. mcp-scholarly closes the gap between LLM training data and verifiable, up-to-date academic sources.",
-    status: "Shipping / active",
+    status: "Shipping / active · 78K+ monthly PyPI downloads (September 2026 public snapshot)",
     links: [
       { label: "GitHub", href: "https://github.com/adityak74/mcp-scholarly" },
+      { label: "PyPI", href: "https://pypi.org/project/mcp-scholarly/" },
     ],
     explanationModes: {
       "Research Idea":

@@ -14,6 +14,7 @@ import {
   TwoColumnGrid,
   consoleColors,
 } from "../components/world-model/pages-field-notes-about/primitives"
+import { openSourceImpact } from "../components/world-model/impact"
 
 const proofPoints = [
   {
@@ -147,6 +148,38 @@ status: ready`}
             <HeroStat label="Throughline" value="Explicit runtime behavior" />
           </Grid>
         </ConsoleShell>
+
+        <SectionBlock
+          eyebrow="Open-source impact"
+          title="Adoption, upstream trust, and technical depth"
+          description="The work is strongest where these three forms of proof meet: tools people use, contributions accepted by other maintainers, and systems built to make agent behavior more reliable."
+        >
+          <ThreeColumnGrid>
+            <ConsoleCard title="Adoption" accent={consoleColors.accent}>
+              <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [2, 3], mb: 2 }}>
+                {openSourceImpact.featuredProject.name}
+              </Heading>
+              <Text sx={{ color: consoleColors.muted, mb: 2 }}>
+                Scholarly retrieval for MCP clients, distributed through PyPI and the MCP ecosystem.
+              </Text>
+              <Text sx={{ color: consoleColors.accent, fontFamily: "monospace", fontSize: 1 }}>
+                {openSourceImpact.featuredProject.metrics.join(" · ")}
+              </Text>
+            </ConsoleCard>
+            <ConsoleCard title="Upstream trust" accent={consoleColors.accentAlt}>
+              <Text sx={{ color: consoleColors.muted }}>
+                Merged work in {openSourceImpact.upstreamProjects.join(", ")} shows the same systems work holding up outside my own repositories.
+              </Text>
+            </ConsoleCard>
+            <ConsoleCard title="Technical depth" accent={consoleColors.warning}>
+              <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [2, 3], mb: 2 }}>
+                {openSourceImpact.technicalDepth.name}
+              </Heading>
+              <Text sx={{ color: consoleColors.muted }}>{openSourceImpact.technicalDepth.description}</Text>
+            </ConsoleCard>
+          </ThreeColumnGrid>
+          <Text sx={{ color: consoleColors.soft, fontSize: 0, mt: 3, mb: 0 }}>{openSourceImpact.snapshotLabel}</Text>
+        </SectionBlock>
 
         <SectionBlock
           eyebrow="Research Position"
