@@ -427,6 +427,30 @@ export const systems: SystemArtifact[] = [
         "Start with the core four-function API and streaming path, then move to quecto-agent's tool dispatch loop, sandbox denylist, manifest flavor loading, and SQLite session resume/undo flow.",
     },
   },
+  {
+    name: "ornith-1.5-9b-distil",
+    slug: "/ornith-1.5-9b-distil/",
+    tags: ["model distillation", "local inference", "Apple Silicon", "MLX", "Python"],
+    researchQuestion: "Can two-teacher distillation on Apple Silicon produce a local model that closes the quality gap with larger frontier models at a fraction of the inference cost?",
+    systemBuilt:
+      "A two-teacher distillation pipeline for Ornith-1.5-9B on Apple Silicon using MLX — compressing a 9B model through a two-teacher training procedure to produce a faster, smaller build that retains competitive quality against larger baselines.",
+    whyItMatters:
+      "Smaller distilled models that hold quality against larger teachers are the practical path to capable on-device inference. ornith-1.5-9b-distil pushes that boundary on Apple Silicon, where most local inference experimentation happens today.",
+    status: "Active experiment",
+    links: [
+      { label: "GitHub", href: "https://github.com/adityak74/ornith-1.5-9b-distil" },
+    ],
+    explanationModes: {
+      "Research Idea":
+        "ornith-1.5-9b-distil explores whether two-teacher knowledge distillation can produce a compact, high-quality local model from a 9B baseline, running the full training pipeline on Apple Silicon with MLX.",
+      "System Design":
+        "The pipeline uses two teacher models to supervise distillation, runs training natively on Apple Silicon via MLX, and produces a compressed student model that can be evaluated and deployed locally.",
+      "Business Value":
+        "A distilled local model that holds quality against larger versions reduces inference cost and latency, making capable AI accessible on consumer hardware without hosted API dependencies.",
+      "Code Walkthrough":
+        "Start with the distillation training script and teacher model configuration, then inspect the MLX training loop, loss functions combining teacher signals, and the evaluation pipeline that benchmarks the student against baselines.",
+    },
+  },
 ]
 
 export const openSourceContributions: OpenSourceContribution[] = [
