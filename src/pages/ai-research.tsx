@@ -27,6 +27,16 @@ type MyPaper = {
 
 const myPapers: MyPaper[] = [
   {
+    title:
+      "BudgetBench: A Budget-Tiered Protocol and Pilot Harness for Memory Strategy Evaluation in Local Large Language Model Agents",
+    venue: "arXiv preprint · arXiv:2609.13149 [cs.LG, cs.CL]",
+    year: "2026",
+    status: "Preprint",
+    detail:
+      "An active-budget protocol and reference harness that treats the per-call input-token budget as the independent variable when comparing memory strategies for local LLM agents, sweeping 2K–32K budgets and reporting quality, budget utilization, latency, and budget-violation rates as a first-class outcome.",
+    url: "https://arxiv.org/abs/2609.13149",
+  },
+  {
     title: "MEDFIT-LLM: Medical Enhancements through Domain-Focused Fine Tuning of Small Language Models",
     venue: "2025 2nd International Conference on Research Methodologies in Knowledge Management, AI and Telecommunication Engineering",
     year: "2025",
@@ -51,7 +61,7 @@ const myPapers: MyPaper[] = [
 const inProgressPapers = [
   {
     title: "In progress",
-    detail: "Additional papers currently in progress or submitted to arXiv will be added here as they land.",
+    detail: "More papers are in progress; new preprints and peer-reviewed work will be added here as they land.",
   },
 ]
 
@@ -101,7 +111,7 @@ engineering notes`}
           </Grid>
 
           <Grid sx={{ gridTemplateColumns: [`repeat(2, minmax(0, 1fr))`, `repeat(4, minmax(0, 1fr))`], gap: 3, mt: 4 }}>
-            <HeroStat label="Published papers" value={`${myPapers.length}`} />
+            <HeroStat label="Papers & preprints" value={`${myPapers.length}`} />
             <HeroStat label="In progress" value="1+" />
             <HeroStat label="Citations" value="10" />
             <HeroStat label="Mode" value="Publishing + explaining" />
@@ -179,7 +189,7 @@ engineering notes`}
         <SectionBlock
           eyebrow="My Papers"
           title="Published and in-progress research"
-          description="Peer-reviewed and academic work I've authored, with more papers in progress or submitted to arXiv on the way."
+          description="Peer-reviewed papers, preprints, and academic work I've authored, with more research in progress."
         >
           <Grid sx={{ gridTemplateColumns: [`1fr`, `repeat(2, minmax(0, 1fr))`], gap: 3 }}>
             {myPapers.map(paper => (
