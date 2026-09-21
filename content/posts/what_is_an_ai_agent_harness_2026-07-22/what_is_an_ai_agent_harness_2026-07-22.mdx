@@ -267,6 +267,8 @@ The "best" memory or reasoning strategy can change depending on:
 
 A strategy that wins under a generous token budget can lose badly under a constrained one — which means budget isn't a side detail, it's part of the harness definition itself.
 
+> **The paper is now on arXiv:** [BudgetBench: A Budget-Tiered Protocol and Pilot Harness for Memory Strategy Evaluation in Local Large Language Model Agents](https://arxiv.org/abs/2609.13149) (arXiv:2609.13149). It treats the input-token budget as an experimental variable, testing memory strategies at 2K, 4K, 8K, 16K, and 32K tokens and recording quality, utilization, latency, and budget violations. Code and reproducibility artifacts: [github.com/aviskaar/budgetbench](https://github.com/aviskaar/budgetbench).
+
 ## 7. From harness evaluation to AgentABI
 
 QuECTO measures agent-runtime behavior. AgentABI asks a different question: whether one runtime can safely replace another without introducing behavioral breaking changes.
