@@ -35,6 +35,7 @@ const myPapers: MyPaper[] = [
     detail:
       "An active-budget protocol and reference harness that treats the per-call input-token budget as the independent variable when comparing memory strategies for local LLM agents, sweeping 2K–32K budgets and reporting quality, budget utilization, latency, and budget-violation rates as a first-class outcome.",
     url: "https://arxiv.org/abs/2609.13149",
+    explainerSlug: "/budgetbench-explained/",
   },
   {
     title: "MEDFIT-LLM: Medical Enhancements through Domain-Focused Fine Tuning of Small Language Models",
