@@ -13,6 +13,7 @@
 ## Global Constraints
 
 - Work only in `books/building-a-coding-agent-harness/examples/reference-harness/` for this plan.
+- Use `/Users/adityakarnam/Projects/quecto` as the authoritative local Quecto implementation reference; record its exact commit before extracting claims or patterns.
 - The crate must compile on stable Rust and run without an async runtime.
 - All network tests use a local mock server; tests must not call a live model provider.
 - Repository tools must reject paths outside the configured repository root.

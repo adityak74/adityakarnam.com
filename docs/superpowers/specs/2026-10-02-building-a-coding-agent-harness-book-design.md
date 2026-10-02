@@ -205,7 +205,7 @@ reference-harness/
 
 The teaching build may simplify Quecto's module layout and dependency choices, but it must not fake core behavior. Every deliberate simplification will be disclosed in the final chapter's production mapping.
 
-The local sibling repository at `../quecto` is the primary implementation reference. Published claims must be checked against the current public Quecto repository before release.
+The local repository at `/Users/adityakarnam/Projects/quecto` is the primary implementation reference. Published claims must be checked against that checkout's pinned commit and the current public Quecto repository before release.
 
 ## Book source and build system
 

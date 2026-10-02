@@ -13,6 +13,7 @@
 ## Global Constraints
 
 - Execute after `2026-10-02-coding-harness-reference-implementation.md` passes.
+- Use `/Users/adityakarnam/Projects/quecto` for Quecto source checks and cite the pinned commit recorded by the reference implementation plan.
 - Target 70-80 designed pages and approximately 18,000-24,000 manuscript words.
 - Every implementation chapter follows problem, invariant, minimal design, code, failure mode, Quecto comparison, and exercise.
 - Use `{{include:path#anchor}}` for runnable code; do not paste divergent long listings.
