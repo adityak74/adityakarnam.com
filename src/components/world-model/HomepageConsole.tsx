@@ -147,6 +147,51 @@ const HomepageConsole = () => {
         </Grid>
       </Box>
 
+      <Box
+        sx={{
+          ...cardStyles,
+          display: "grid",
+          gridTemplateColumns: ["1fr", null, "1.35fr 0.65fr"],
+          gap: [4, 5],
+          alignItems: "center",
+          p: [4, 5],
+          mb: [5, 6],
+          background: "#1A1A18",
+          color: "#FAF9F7",
+          borderColor: "#1A1A18",
+          overflow: "hidden",
+        }}
+      >
+        <Box>
+          <Text sx={{ ...sectionLabelStyles, color: "#E08A62" }}>New book · 75-page practical systems guide</Text>
+          <Heading as="h2" sx={{ color: "#FAF9F7", fontSize: ["1.7rem", "2.2rem"], fontWeight: 500, lineHeight: 1.16, maxWidth: "20ch", mb: 2 }}>
+            Build a coding agent harness from the model call outward.
+          </Heading>
+          <Text sx={{ color: "#C8C3B9", lineHeight: 1.65, fontSize: "17px", maxWidth: "48rem", mb: 3 }}>
+            A hands-on guide to tools, bounded loops, repository context, policy, and the production concerns around them. Build the runnable Rust core, then compare its architecture with Quecto.
+          </Text>
+          <Flex sx={{ gap: 3, flexWrap: "wrap", alignItems: "center" }}>
+            <Link
+              to="/books/coding-agent-harness/"
+              sx={{ display: "inline-flex", alignItems: "center", color: "#1A1A18", bg: "#E08A62", px: 3, py: 2, borderRadius: "8px", textDecoration: "none", fontWeight: 600 }}
+            >
+              Preview and download the book →
+            </Link>
+            <ThemeLink href="https://github.com/adityak74/quecto" target="_blank" rel="noreferrer" sx={{ color: "#F0C6A8", fontSize: 1 }}>
+              See Quecto on GitHub →
+            </ThemeLink>
+          </Flex>
+        </Box>
+        <Link to="/books/coding-agent-harness/" aria-label="Open Building a Coding Agent Harness book page" sx={{ display: "block", justifySelf: ["center", null, "end"], width: "min(100%, 250px)" }}>
+          <img
+            src="/books/building-a-coding-agent-harness-cover.png"
+            alt="Cover of Building a Coding Agent Harness by Aditya Karnam and Arjun Jaggi"
+            loading="lazy"
+            sx={{ display: "block", width: "100%", borderRadius: "6px", boxShadow: "0 18px 42px rgba(0,0,0,0.34)" }}
+          />
+        </Link>
+      </Box>
+
       <Box sx={{ ...cardStyles, p: [4, 5], mb: [5, 6], background: "#F7F4EE" }}>
         <Grid columns={[1, null, "1.25fr 0.75fr"]} gap={[4, 5]}>
           <Box>
