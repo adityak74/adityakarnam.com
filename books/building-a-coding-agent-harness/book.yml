@@ -8,7 +8,7 @@ author: "Aditya Karnam"
 edition: "1.0.0"
 published: "2026-10-02"
 license: "MIT"
-repository: "https://github.com/adityakarnam/quecto"
+repository: "https://github.com/adityak74/quecto"
 path: "/building-a-coding-agent-harness/"
 page_count_target: 70
 page_count_max: 80
@@ -72,50 +72,50 @@ chapters:
       - failure-mode
       - quecto-in-production
   - id: 8
-    file: 08-sessions-state-and-recovery.md
-    title: "Sessions, State, and Recovery"
+    file: 08-sessions-and-state-management.md
+    title: "Sessions and State Management"
     required_callouts:
       - system-invariant
       - failure-mode
       - quecto-in-production
   - id: 9
-    file: 09-profiles-and-extensibility.md
-    title: "Profiles and Extensibility"
+    file: 09-profiles-and-security-gates.md
+    title: "Profiles and Security Gates"
     required_callouts:
       - system-invariant
       - failure-mode
       - quecto-in-production
       - beyond-rust
   - id: 10
-    file: 10-mcp-and-external-tools.md
-    title: "MCP and External Tools"
+    file: 10-mcp-model-context-protocol.md
+    title: "MCP — Model Context Protocol"
     required_callouts:
       - system-invariant
       - failure-mode
       - quecto-in-production
       - beyond-rust
   - id: 11
-    file: 11-observability.md
-    title: "Observability"
+    file: 11-observability-and-telemetry.md
+    title: "Observability and Telemetry"
     required_callouts:
       - system-invariant
       - failure-mode
       - quecto-in-production
   - id: 12
-    file: 12-evaluation.md
-    title: "Evaluation"
+    file: 12-evaluation-and-benchmarks.md
+    title: "Evaluation and Benchmarks"
     required_callouts:
       - system-invariant
       - failure-mode
       - quecto-in-production
   - id: 13
-    file: 13-complete-reference-harness.md
-    title: "Complete the Reference Harness"
+    file: 13-the-complete-reference-harness.md
+    title: "The Complete Reference Harness"
     required_callouts:
       - system-invariant
       - quecto-in-production
       - beyond-rust
   - id: 14
-    file: 90-appendices.md
-    title: "Appendices"
+    file: 14-appendix-the-quecto-reference.md
+    title: "Appendix: The Quecto Reference"
     required_callouts: []

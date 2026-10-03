@@ -23,7 +23,7 @@ The loop must terminate *bounded by steps, by repetition, or by policy denial*.
 The agent is initialized with a model, a tool registry, a context (file system), and a configuration. The `run` method receives a prompt string, pushes it as a user message, and then enters the loop:
 
 ```rust
-{{include:../../examples/reference-harness/src/agent.rs#ANCHOR: bounded-agent-loop}}
+{{include:../examples/reference-harness/src/agent.rs#ANCHOR: bounded-agent-loop}}
 ```
 
 Each iteration:
@@ -56,25 +56,25 @@ The agent returns one of these outcomes:
 | `StepLimit` | Exceeded `max_steps` iterations without a text-only response. |
 | `RepeatedAction` | Model sent the same tool call 3+ times with unchanged results. |
 | `Blocked` | Policy denied 3+ tool calls in a row (configurable via `denial_limit`). |
-| `Cancelled` | The user invoked a cancellation token. |
-| `VerificationFailed { attempts }` | The verification gate failed too many times. |
+| `Cancelled` | Reserved variant; `Agent::run` does not currently return it. |
+| `VerificationFailed { attempts }` | Reserved variant; verification retries are not implemented in this crate. |
 | `Error(String)` | A non-recoverable error occurred (model transport failure, file-system I/O). |
 
-> **System invariant:** The harness must never return a partial success. If `StepLimit` is reached, the result is *no progress*, not a partial edit. The harness must report this clearly to the user and *not* leave the file system in a modified state (each tool records a before/after change for undo, but the harness should only commit changes once the final result is `Complete`).
+> **System invariant:** `StepLimit` is not success, but it also does not automatically roll back edits in the reference crate. The harness returns the outcome and keeps the recorded changes in context; a caller must decide how to present, inspect, or revert those changes.
 
 ## Policy Gating (Optional)
 
 When `denial_limit > 0`, each tool call is checked against a default `ReadOnly` policy. If the call is denied (e.g., the model calls `write_file` or `run_command` under a read-only preset), the harness records the denial and increments the denial counter. After `denial_limit` consecutive denials, the agent returns `Outcome::Blocked`.
 
-This is an *optional* safety layer. It is not enabled by default (`denial_limit: 0` means no gating). You enable it when you want the agent to ask before performing risky operations.
+This is an *optional* safety layer. It is not enabled by default (`denial_limit: 0` means no gating). In the teaching implementation, an `Ask` decision does not prompt a person; it returns an explanatory tool result and leaves the operation unexecuted. A real interactive approval flow needs a separate approver component.
 
-> **Quecto in production:** Quecto uses a *profile* system (see Chapter 9) where each repository has a named profile (e.g., "readonly", "editor", "full") that selects which tools are allowed, which commands are blocked, and which require approval. The teaching harness simplifies this to a single default policy for safety.
+> **Quecto in production:** Quecto resolves layered TOML *flavors* (`quecto-agent/src/flavor.rs`) and combines them with approval presets and per-tool overrides. The teaching crate stops at three fixed presets and does not implement flavor loading or interactive approval.
 
 ## Exercise
 
 Write a test that:
-1. Creates a scripted model returning 3 identical `write_file` calls (same path, same content).
-2. Registers `WriteFile` in the registry.
+1. Creates a scripted model returning 3 identical `echo` calls (same arguments, same result).
+2. Registers the test `EchoTool` in the registry.
 3. Sets `repeat_limit: 3`.
 4. Verifies the agent returns `Outcome::RepeatedAction`.
 

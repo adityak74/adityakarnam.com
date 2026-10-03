@@ -1,6 +1,6 @@
 # 6. Verification as a Completion Gate
 
-> Chapter 6 teaches you to use verification as the *final* gate before the agent reports "I'm done." The agent is confident when the model says so, but the harness should *measure* confidence (test output, lint results, diff size).
+> This chapter designs a verification gate. The compact reference crate does not include verification retries or automatic rollback; Quecto's production verifier is a separate, simpler command gate.
 
 ## The Problem
 
@@ -11,7 +11,7 @@ A model will claim its work is finished when:
 
 None of these are sufficient. The model may have introduced a regression that the tests will catch. The model may have deleted a dependency that a linter will flag.
 
-Verification is the harness's answer: after the agent says "done," run the verification commands. If verification fails, *revert the changes* (undo) and *report the failures* to the model. The model retries. This loop continues until verification passes or the retry budget is exhausted.
+Verification is one answer: before the agent reports "done," run appropriate verification commands. If verification fails, report the result and define explicitly whether the agent may make a bounded repair attempt. Rollback is a separate policy decision; automatically discarding all edits can destroy useful work and is not a behavior of the compact teaching crate.
 
 > **System invariant:** The agent must never report `Outcome::Complete(...)` if verification has not been run. Verification must always run (unless explicitly disabled).
 
@@ -21,7 +21,7 @@ When the agent's model says "done" (no tool calls), the harness:
 1. Collects all file changes since the prompt.
 2. Runs the verification commands (tests, linters, etc.).
 3. If verification passes → `Outcome::Complete(...)`.
-4. If verification fails → **undo** all changes, report failures to the model, and *continue* the loop (one retry attempt).
+4. If verification fails → report failures and, if configured, allow a bounded repair attempt.
 5. If retry budget exhausted → `Outcome::VerificationFailed { attempts }`.
 
 ```
@@ -69,10 +69,7 @@ Each verification failure consumes one *retry*. The budget (configurable, defaul
 | `VerificationFailed { attempts }` | Model said done, verification failed, retried 3 times and failed again. |
 | (loop continues) | Model said done, verification failed, retry budget not exhausted. |
 
-> **Quecto in production:** Quecto's verification system (see `quecto` repository) supports:
-> - **Incremental verification**: only run tests related to changed files.
-> - **Parallel verification**: run all tests concurrently (with a per-test timeout).
-> - **Statistical verification**: if N% of tests fail (but not 100%), the harness *warns* but does not *reject* (partial success is acceptable for hotfixes).
+> **Quecto in production:** `quecto-agent/src/verify.rs` runs configured verification commands through the repository command boundary and reports each command's status and output. Quecto does not implement the incremental, parallel, or statistical policies sketched in earlier drafts of this chapter. Verification is a completion gate, not proof that a change is correct; choose commands that exercise the behavior you care about.
 
 ## Example
 
@@ -92,7 +89,7 @@ The harness:
 
 The model (prompted with the failures) may then make a corrective edit (change `x = 5` to `x = 10` in `src/main.rs`).
 
-> **System invariant:** The harness must *undo* the changes before each retry (step 2). If the harness does not undo, the agent's second verification will accumulate the *second* batch of edits, making the diff larger and more confusing for the agent.
+> **System invariant:** A retry policy must define what happens to the current diff. Do not claim that a retry implies rollback: preserve, checkpoint, or revert changes intentionally, and make the user-visible behavior explicit.
 
 ## Exercise
 
@@ -101,7 +98,7 @@ Write a verification test that:
 2. Runs the verification command `cargo test` (which will include `test.rs`).
 3. Verifies that the harness returns `Outcome::VerificationFailed { attempts: 3 }`.
 
-This test lives in the reference harness (placeholder: `tests/verify.rs`).
+This test is a design exercise: the compact teaching crate does not yet include a `Verifier` module. To experiment, build the command-runner boundary first and keep subprocess tests opt-in where the environment restricts process creation.
 
 ---
 
@@ -116,4 +113,4 @@ This test lives in the reference harness (placeholder: `tests/verify.rs`).
 
 ## Build checkpoint
 
-A verification test can be written alongside the existing agent tests. The test runs in the same process (no child process for the test runner), so verification does not require the sandbox to allow process spawning.
+The current teaching-crate suite includes non-spawning model, tool, context, policy, and agent tests. Command execution and verification require child processes and should be run only in an environment that permits them.

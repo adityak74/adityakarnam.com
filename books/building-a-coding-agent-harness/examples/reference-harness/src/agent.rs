@@ -115,7 +115,12 @@ impl Agent {
                         Decision::Allow => {}
                         Decision::Ask => {
                             // Waiting for user approval: do NOT execute.
-                            // Skip to next call without incrementing denial_count.
+                            // Report the skipped action so the model protocol remains complete.
+                            self.messages.push(Message::tool_result(
+                                call.id.clone(),
+                                "policy requires user approval; the operation was not executed",
+                            ));
+                            // An Ask decision is not a denial and does not increment denial_count.
                             continue;
                         }
                         Decision::Deny(reason) => {

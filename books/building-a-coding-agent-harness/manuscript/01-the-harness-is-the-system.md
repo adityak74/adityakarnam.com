@@ -49,12 +49,12 @@ The harness sits between calls. It transforms the response into a decision (what
 The model protocol is simple: a list of messages (system, user, assistant, tool), each with a role, a content string, and optional tool calls. The tool call returns a tool result. The harness builds the message list, sends it, and processes the response.
 
 ```rust
-{{include:../../examples/reference-harness/src/model.rs#ANCHOR: message-types}}
+{{include:../examples/reference-harness/src/model.rs#ANCHOR: message-types}}
 ```
 
 The `Message` type distinguishes four roles: `system`, `user`, `assistant`, and `tool`. The `ToolCall` type carries an identifier, a name, and JSON arguments. The `AssistantMessage` carries the model's response (text plus optional tool calls) and a finish reason.
 
-> **Failure mode:** If the harness passes unrecognized fields (e.g., a custom `reasoning` field) in the request, the model may return unrecognized fields in the response that the harness does not know how to parse. The harness must reject unknown response fields defensively rather than silently dropping information.
+> **Failure mode:** If the harness silently drops a response field that affects control flow, it can mis-handle the turn. Decide explicitly which fields are part of the supported contract. This teaching parser validates the fields it consumes; it does not reject every unknown JSON field, which is a separate forward-compatibility choice.
 
 The harness also sends tool definitions (JSON schemas) alongside the messages. This is how the model knows *what* tools exist and *what* arguments each accepts.
 
@@ -63,12 +63,12 @@ The harness also sends tool definitions (JSON schemas) alongside the messages. T
 The model trait is the single interface between the harness and the model:
 
 ```rust
-{{include:../../examples/reference-harness/src/model.rs#ANCHOR: model-trait}}
+{{include:../examples/reference-harness/src/model.rs#ANCHOR: model-trait}}
 ```
 
 This is intentionally narrow. The harness calls `complete` once per loop iteration and passes all messages together (full history). The model mutates its own state (session variables, token cache, stream buffer). The harness never inspects the internal state.
 
-The `Send` bound means the model can be moved between threads (required for the agent loop, which spawns a worker). The model receives tool schemas from the harness as JSON values, letting the harness control what the model sees without hard-coding types in the model layer.
+The `Send` bound means the model can be moved between threads if a caller chooses to do so; this teaching agent loop does not spawn a worker. The model receives tool schemas from the harness as JSON values, letting the harness control what the model sees without hard-coding tool types in the transport layer.
 
 > **System invariant:** The model trait must never leak memory addresses, file handles, or tokens into the message flow. The only thing crossing the boundary is messages, tool schemas, and responses.
 
@@ -82,8 +82,8 @@ The default transport is a minimal HTTP client that:
 - Returns structured errors (`ModelError`) rather than panicking.
 
 ```rust
-{{include:../../examples/reference-harness/src/model.rs#ANCHOR: http-completion}}
-{{include:../../examples/reference-harness/src/model.rs#ANCHOR: parse-assistant}}
+{{include:../examples/reference-harness/src/model.rs#ANCHOR: http-completion}}
+{{include:../examples/reference-harness/src/model.rs#ANCHOR: parse-assistant}}
 ```
 
 The error type distinguishes four classes:
@@ -96,12 +96,12 @@ The error type distinguishes four classes:
 
 ## Quecto in Production
 
-Quecto's production harness (see `quecto` repository) uses this same `Model` trait but adds:
+Quecto's production `quecto-agent` crate defines its own related `Model` interface; it is not the same Rust trait as this teaching crate. Its production path adds:
 
 - Streaming output (incremental token-by-token rendering).
-- Retry with exponential backoff on transient failures.
-- Provider-specific adaptors (OpenAI, Anthropic, Ollama) that normalize response formats.
-- Token counting (for budgeting per-session cost).
+- OpenAI-compatible and Anthropic wire formats, plus configurable providers such as local OpenAI-compatible servers.
+- Optional native reasoning controls and token-usage telemetry.
+- Session persistence, verification, and optional OpenTelemetry integration at the agent layer.
 
 The teaching harness omits streaming (the book's primary path is synchronous). See the "Beyond Rust" note below for how these features map to Python (using `httpx` streams) or TypeScript (using `ReadableStream`).
 
@@ -128,4 +128,4 @@ cd books/building-a-coding-agent-harness/examples/reference-harness
 cargo test --test model_http
 ```
 
-You should see: 6 tests, 0 failures.
+The model transport integration tests should pass. Run `cargo test` to execute the full reference-crate suite.

@@ -24,7 +24,7 @@ The `Context` struct holds:
 - `cancel_token` — a handle that allows the harness to cancel a running command.
 
 ```rust
-{{include:../../examples/reference-harness/src/context.rs#ANCHOR: message-types}}
+{{include:../examples/reference-harness/src/context.rs}}
 ```
 
 The `Context::new(root)` constructor canonicalizes the root and returns an error if it is not a valid directory. The `Context::with_command_limits(root, limits, token)` constructor adds command execution support (see the `run_command` section below).
@@ -71,7 +71,7 @@ The precedence is:
 2. Repository instructions (if `.claude/rules.md` exists).
 3. Seeded context (explicit, highest priority).
 
-> **Quecto in production:** Quecto's instruction loading system reads: `.claude/rules.md`, `.ai/rules.md`, `.gpt_prompt.md`, `README.md` (section matching the task). The harness merges these in order, with the task description overriding everything.
+> **Quecto in production:** `quecto-agent/src/instructions.rs` loads `AGENTS.md`, `CLAUDE.md`, and `.agent/instructions.md` from the repository root down to the current working directory. Root instructions are emitted first and nearer instructions later. `quecto-agent/src/context.rs` separately seeds task context; see the pinned source in Appendix A.
 
 ## Exercise
 

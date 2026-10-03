@@ -1,6 +1,6 @@
 # 10. MCP — Model Context Protocol for Tool Expansion
 
-> Chapter 10 teaches you to *expand* the harness's tool surface *without changing the harness itself*. You will implement an MCP server (a tool provider) that: (1) advertises tools over a stdio/pipe or HTTP transport, (2) the harness *discovers* tools at startup (no compile-time dependency on the tool's source), and (3) the harness *executes* tools over the protocol (calling back into the MCP server).
+> Chapter 10 studies how to expand a harness's tool surface through MCP. The compact reference crate does not implement MCP; production Quecto has a separate `quecto-mcp` crate and an optional adapter in `quecto-agent`.
 
 ## The Problem
 
@@ -58,7 +58,7 @@ MCP uses JSON-RPC 2.0 over a transport (stdio or HTTP). The protocol defines:
 
 The harness *must implement* the `initialize` + `tools/list` handshake (at startup) and the `tools/call` execution (per tool call).
 
-> **Quecto in production:** Quecto runs MCP servers *in the same process* (as separate tasks, not separate processes) for debugging ease. In production, Quecto runs MCP servers *in separate processes* (with a timeout of 10 seconds per call). The harness *does not share* memory with the server (the server's memory space is *isolated* from the harness's memory space — a server crash does not corrupt the harness's state).
+> **Quecto in production:** MCP support is optional (`--features mcp`) and provided by the separate `quecto-mcp` crate. The CLI accepts configured STDIO, Streamable HTTP, and legacy SSE server connections. These are distinct transports; do not describe HTTP as an in-process server or assume transport isolation without checking the selected transport and its lifecycle.
 
 ## The Discovery Protocol
 
@@ -96,7 +96,8 @@ This test demonstrates the *discovery protocol*: the harness discovers tools (at
 
 ```bash
 cd books/building-a-coding-agent-harness/examples/reference-harness
-cargo test --test mcp mock_server_discovers_two_tools_and_executes_call
+cd /path/to/quecto
+cargo test -p quecto-mcp
 ```
 
-This test verifies that a mock MCP server's tool list is discovered and registered (with one successful tool call).
+The MCP client crate's tests exercise its protocol and transports. The mock discovery test described above is a design exercise, not a test in the book's teaching crate.

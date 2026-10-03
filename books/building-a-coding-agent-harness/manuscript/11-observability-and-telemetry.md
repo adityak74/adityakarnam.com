@@ -1,6 +1,6 @@
 # 11. Observability and Telemetry
 
-> Chapter 11 teaches you to *observe* the agent's runtime: *what* it did (tool calls, file changes, verification results), *when* it did it (timestamps, duration), and *why* it failed (reason codes). You will implement a `Telemetry` struct that: (1) records events (tool calls, errors, verification outcomes), (2) writes them to a *local log file* (JSON Lines), and (3) provides a `query` method for the user (or the harness UI) to inspect past sessions.
+> Chapter 11 studies how to observe an agent's runtime: what it did, when it did it, and where it failed. The JSON Lines API below is a design sketch; this chapter does not add a telemetry module to the runnable teaching crate.
 
 ## The Problem
 
@@ -10,15 +10,13 @@ If the harness *does not observe* these, the user (or the harness UI) cannot *di
 
 A telemetry system is *observability*: it records every visible event (tool calls, results, errors) in a *structured log*. The log is *durable* (written to a file, not in memory). The user (or the harness) can *query* the log (for debugging, for analytics, for auditing).
 
-> **System invariant:** The telemetry system must *never* record the *content* of the model's internal reasoning (the system prompt, the hidden reasoning). It records only *visible events*: tool names, arguments (truncated to 1 KB), results (truncated to 1 KB), and error codes.
+> **Design invariant:** Decide explicitly whether prompts, tool arguments, results, or model reasoning may be persisted. The JSONL example below excludes prompt and reasoning content and truncates tool data; this is a proposed privacy policy, not a guarantee about Quecto's SQLite transcript storage.
 
 ## The Telemetry Struct
 
-```rust
-{{include:../../examples/reference-harness/src/telemetry.rs#ANCHOR: telemetry-struct}}
-```
+> **Implementation boundary:** The teaching crate does not contain a telemetry module. This chapter describes instrumentation requirements and compares them with Quecto's optional OpenTelemetry tracing and SQLite-backed run recorder.
 
-A `Telemetry` object holds:
+In the illustrative JSONL design, a `Telemetry` object could hold:
 - `log_path` — the path to the log file (a `.jsonl` file in the session's output directory).
 - `session_id` — the current session's ID (used to correlate events).
 - `events` — a *buffered* list of events (flushed to disk at session end).
@@ -53,7 +51,7 @@ The event types are:
 | `Telemetry::query_since(start_time)` | Returns events from `start_time` (as a list of JSON objects). |
 | `Telemetry::flush()` | Flushes the buffer to disk (called at session end). |
 
-The harness *calls* `log_event` at:
+An implementation might call `log_event` at:
 - Before every tool execution (a `tool_call` event).
 - After every tool execution (a `tool_result` event).
 - On every error (an `error` event).
@@ -72,12 +70,12 @@ The log file is *JSON Lines* (one JSON object per line). Each line is *independe
 {"timestamp":"...","session_id":"...","event_type":"session_end","outcome":"Complete",...}
 ```
 
-The harness *can query* the file (using `grep` or a JSONL reader) to *inspect* past sessions:
+An application using this proposed format could query the file with a JSONL reader:
 - `grep -c tool_call .q/.logs/*.jsonl` — total tool calls across all sessions.
 - `grep -c error .q/.logs/*.jsonl` — total errors (across all sessions).
 - `grep session_start .q/.logs/*.jsonl | wc -l` — number of sessions (concurrent vs sequential).
 
-> **Quecto in production:** Quecto writes telemetry to `~/.quecto/logs/<session_id>.jsonl` (one file per session). The CLI command `quecto logs --session <id>` reads the file and displays it in a terminal UI (with timestamps, tool names, and results). The *production telemetry* (for Quecto's developers) writes to a *remote server* (an HTTP endpoint, POSTing JSON objects). The *local log* is the *only* telemetry that the user sees (the remote server is *not* exposed to the agent).
+> **Quecto in production:** Run transcripts and file changes are persisted by `quecto-agent/src/session.rs` and `recorder.rs` in SQLite. Optional OpenTelemetry tracing is initialized from the `otel` feature in `quecto-agent/src/main.rs`; it is exported through OTLP. The CLI has no `quecto logs` command and does not write the JSONL log format sketched above.
 
 ## The Telemetry as a Debug Tool
 
@@ -97,7 +95,7 @@ Write a test that:
 3. Verifies that the log file contains exactly 3 JSON objects (3 lines).
 4. Verifies that `query_since(start_time)` returns 2 events (the tool_call and session_end).
 
-This test demonstrates the *telemetry format*: a JSONL file, one event per line, with a query interface.
+This is a design exercise for a JSONL telemetry implementation. Quecto uses SQLite for persisted sessions and optional OTLP tracing rather than this proposed file/query API.
 
 ---
 
@@ -112,8 +110,8 @@ This test demonstrates the *telemetry format*: a JSONL file, one event per line,
 ## Build checkpoint
 
 ```bash
-cd books/building-a-coding-agent-harness/examples/reference-harness
-cargo test --test telemetry telemetry_writes_jsonl_and_returns_events
+cd /path/to/quecto
+cargo test -p quecto-agent recorder_appends_messages_and_changes_with_sequence
 ```
 
-This test verifies that a `Telemetry` object writes 3 JSONL events and returns 2 on query.
+This Quecto test checks that the production recorder persists messages and file changes with sequence numbers. It does not test JSONL output.

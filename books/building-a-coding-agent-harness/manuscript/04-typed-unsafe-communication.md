@@ -4,9 +4,9 @@
 
 ## The Problem
 
-A raw text prompt ("delete /tmp") is unsafe: the model's intent is ambiguous. A typed tool definition ("delete_file: {path: string} → {error: null | string}") is safe because:
-- The harness knows *all* tool names before the model speaks (from the schema list).
-- The harness validates the arguments against the schema *before* executing.
+A raw text prompt ("delete /tmp") is unsafe: the model's intent is ambiguous. A typed tool definition ("delete_file: {path: string} → {error: null | string}") improves the boundary because:
+- The harness knows *which* tool names it exposes before the model speaks.
+- The tool implementation validates its own required arguments before performing I/O. A published JSON schema informs the model, but is not a substitute for validation at execution time.
 - The harness can intercept or deny the call based on policy (see Chapter 5).
 
 A tool is a callable unit of work. It has a name, a description, a JSON schema, and a run function. The harness *exposes* the tool to the model via the tool schema, and *executes* the tool when the model requests it.
@@ -16,7 +16,7 @@ A tool is a callable unit of work. It has a name, a description, a JSON schema, 
 The tool trait is the interface the harness uses to discover, register, and execute tools:
 
 ```rust
-{{include:../../examples/reference-harness/src/tools.rs#ANCHOR: tool-trait}}
+{{include:../examples/reference-harness/src/tools.rs#ANCHOR: tool-trait}}
 ```
 
 Four methods:
@@ -25,7 +25,7 @@ Four methods:
 - `schema()` — the JSON Schema for arguments (used by the model).
 - `run(args, context)` — the execution function (takes arguments, returns output).
 
-The `Send + Sync` bounds mean tools can be shared across threads (required for the agent loop).
+The `Send + Sync` bounds make a tool eligible to be moved or shared across threads; the teaching agent loop itself does not spawn worker threads.
 
 > **System invariant:** A tool's `run` method must never panic. If a tool encounters an error (file not found, command timeout), it must return `ToolError::Failed(...)` — never a Rust `panic!()`. A panic inside a tool execution corrupts the agent's state and forces a restart.
 
@@ -37,7 +37,7 @@ The registry is a BTreeMap from tool name to a boxed tool trait object. It provi
 - `execute(call, context)` — find and run a tool by name.
 
 ```rust
-{{include:../../examples/reference-harness/src/tools.rs#ANCHOR: tool-registry}}
+{{include:../examples/reference-harness/src/tools.rs#ANCHOR: tool-registry}}
 ```
 
 The `BTreeMap` ensures deterministic ordering of tools in the schema (alphabetical). This matters because the model's output depends on the order of tools it sees.
@@ -46,27 +46,25 @@ The `BTreeMap` ensures deterministic ordering of tools in the schema (alphabetic
 
 ## Built-in Tools
 
-The reference harness includes three tools:
+The reference harness includes four tools:
 
 | Tool | Operation | Example |
 |------|-----------|---------|
 | `ReadFile` | Read a file (path must be inside repo). | `read_file(path: "src/main.rs")` |
 | `WriteFile` | Write/overwrite a file (records undo snapshots). | `write_file(path: "src/main.rs", content: "...")` |
 | `ApplyPatch` | Replace the first occurrence of `old` text with `new`. | `apply_patch(path: "src/main.rs", old: "fn foo()", new: "fn bar()")` |
+| `RunCommand` | Run a command through the context's timeout and output limits. | `run_command(command: "cargo test")` |
 
 Each tool records a `FileChange` (before/after content) in the context. This enables:
 - Undo (revert a file to its previous state).
 - Diff (see what the agent changed in a single step).
 - Verification (diff the output of the agent's edits against a baseline).
 
-> **Quecto in production:** Quecto's production harness includes additional tools: `RunCommand` (execute shell commands), `Grep` (search files), `GitStatus` (check repository state), and `ListFiles` (enumerate files). The teaching harness stops at `ReadFile`, `WriteFile`, and `ApplyPatch` (the minimal set needed for code editing).
+> **Quecto in production:** Quecto adds `SearchText`, `ListFiles`, `GitDiff`, and `GitStatus` around the file, patch, and shell tools. The exported tool surface is listed in `quecto-agent/src/lib.rs` and implemented under `quecto-agent/src/tools/`.
 
 ## Quecto's Version
 
-Quecto's tools extend this interface with:
-- **Document-editing tools**: `ApplySemanticPatch` (apply a patch constrained by AST structure), `FixFormatting` (run a formatter).
-- **Execution tools**: `RunCommand` (shell commands), `Bash` (terminal session), `Python` (inline script).
-- **Query tools**: `Grep`, `FindFiles`, `GitStatus`, `Diff` (compare two files).
+Quecto's tools extend this interface with repository search, file listing, Git status/diff inspection, shell execution, and optional MCP-backed tools.
 
 See the "Beyond Rust" note for how Quecto's tool system maps to Python (using `openai::tools` parameter with a custom tool schema).
 

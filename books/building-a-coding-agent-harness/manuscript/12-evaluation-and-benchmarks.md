@@ -1,6 +1,6 @@
 # 12. Evaluation and Benchmarks
 
-> Chapter 12 teaches you to *evaluate* the harness (and the models it uses) *objectively*. A *benchmark* is a *defined* coding task (a repository, a prompt, a set of verification commands) that *produces* a *measurable* outcome (did it pass? how many steps? how long?). A *suite* of benchmarks is a *comparison* (model A vs model B). The harness *runs* benchmarks, *records* results (in a JSON file), and *compares* them (scores).
+> Chapter 12 develops an evaluation design for agent harnesses. The simplified `Benchmark` and `Suite` examples are teaching sketches; production Quecto evaluation is a separate crate with its own contract and storage model.
 
 ## The Problem
 
@@ -18,11 +18,9 @@ A *benchmark suite* is a *collection* of benchmarks (to compare models). The har
 
 ## The Benchmark Struct
 
-```rust
-{{include:../../examples/reference-harness/src/evaluate.rs#ANCHOR: benchmark-struct}}
-```
+> **Implementation boundary:** Evaluation is discussed as a system design and is not implemented in the compact reference crate. Production evaluation lives in the separate `quecto-eval` crate.
 
-A `Benchmark` holds:
+In the simplified sketch, a `Benchmark` could hold:
 - `id` — a unique identifier (e.g., "auth-fix-01").
 - `repo_url` — the repository URL (or local path).
 - `repo_commit` — the repository commit (pinned state).
@@ -31,13 +29,13 @@ A `Benchmark` holds:
 - `pass_threshold` — the pass criteria (e.g., "0 tests failed").
 - `expected_steps` — an *expected* step range (for a sanity check: "this benchmark should take 1–5 steps").
 
-A benchmark is *loaded* from a YAML/JSON file (a `benchmarks/<id>.json` file in the benchmark suite directory). The harness *runs* the benchmark (clones the repository at `repo_commit`, runs the agent, runs the verification commands).
+This book's simplified benchmark design uses a manifest to pin task inputs. Quecto's production evaluator uses its own manifest and contract types; do not assume the illustrative YAML/JSON shape is accepted by `quecto-eval`.
 
 > **Failure mode:** If the repository *clone* fails (network down, repository deleted), the benchmark *must* record a `Skipped` result (not a crash). The harness *does not fail* the entire suite because one benchmark is skipped.
 
 ## The Benchmark Runner
 
-The harness runs a benchmark in a *single session* (with a *fixed* repository state):
+An isolated benchmark runner should run each task against a fixed repository state:
 1. *Clone* the repository at `repo_commit`.
 2. *Run* the agent (with the prompt, the verification commands).
 3. *Collect* the result (pass/fail, steps, time).
@@ -70,7 +68,7 @@ The harness *reports* a suite score:
 - `skipped` — number of benchmarks that were skipped (failed to clone, timed out).
 - `avg_steps` — average step count across *passed* benchmarks.
 
-> **Quecto in production:** Quecto stores benchmark suites in `~/.quecto/benchmarks/*.yaml`. The CLI command `quecto benchmark run suite.yaml` runs the suite (and writes results to `~/.quecto/benchmarks/results/<suite>.json`). The results file contains: `{ "benchmarks": { "auth-fix-01": { "outcome": "Complete", "steps": 3, "time_ms": 45000 } }, "score": { "passed": 4, "total": 4, "avg_steps": 3.0 } }`.
+> **Quecto in production:** Evaluation is a separate workspace member with `eval` and `compat` CLI subcommands (`cargo run -p quecto-eval -- --help`). The compatibility runner accepts a manifest, tasks directory, database path, and agent binary. It is not a `quecto benchmark` subcommand and does not emit the invented score schema shown in early drafts. Read `quecto-eval/src/cli.rs`, `manifest.rs`, and `runner.rs` for the current contract.
 
 ## The Score Format
 
@@ -110,7 +108,7 @@ Write a test that:
 3. Verifies that the score file has `passed: 1, failed: 1, total: 2`.
 4. Verifies that `avg_steps` is a valid number (not null).
 
-This test demonstrates the *benchmark suite format*: a collection of benchmarks with a *scored* result.
+This is a design exercise for the simplified suite API described here; the production evaluator uses its own contracts and result storage.
 
 ---
 
@@ -125,8 +123,8 @@ This test demonstrates the *benchmark suite format*: a collection of benchmarks 
 ## Build checkpoint
 
 ```bash
-cd books/building-a-coding-agent-harness/examples/reference-harness
-cargo test --test evaluate suite_reports_score_with_one_passed_one_failed
+cd /path/to/quecto
+cargo test -p quecto-eval
 ```
 
-This test verifies that a benchmark suite with two benchmarks (one pass, one fail) reports a score of `{passed: 1, failed: 1, total: 2}`.
+This runs the production evaluator's unit and integration tests. The compact book crate has no `evaluate` test target.

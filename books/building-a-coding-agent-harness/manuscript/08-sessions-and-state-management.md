@@ -1,6 +1,6 @@
 # 8. Sessions and State Management
 
-> Chapter 8 teaches you to isolate *one coding task* (one user prompt, one set of edits, one verification pass) in a `Session` struct that: (1) owns the complete message history (so the model gets every tool call and result), (2) tracks file changes (to undo, diff, and verify), and (3) runs a *bounded loop* (agent→tools→verify→retry) that exits cleanly with a result.
+> This chapter designs session persistence and recovery. The `Session` APIs below are illustrative; the compact reference crate does not define this type. Quecto production uses a SQLite-backed store and a separate agent/run lifecycle.
 
 ## The Problem
 
@@ -10,9 +10,7 @@ A session is the *single mutable handle* for one coding task. It owns the messag
 
 ## The Session Struct
 
-```rust
-{{include:../../examples/reference-harness/src/session.rs#ANCHOR: session-struct}}
-```
+> **Implementation boundary:** This chapter presents a session design, not code from the compact reference crate. The teaching `Agent` keeps its messages in memory for one instance; production Quecto persists resumable sessions in SQLite.
 
 A session holds:
 - `id` — a UUID (for logging, for the user).
@@ -63,11 +61,11 @@ The session's `result` field is the *only* place the final outcome is stored. Th
 
 ## The Session as a Scope
 
-The session's lifetime is the *scope* of one coding task. A user submits a task (or the harness runs a task). The harness creates a session, runs the loop, and reads the result. A second task starts a *second* session (with a fresh message list, fresh undo snapshot).
+The session's lifetime is the scope of one coding task. In a production runtime, a user submits a task and the harness creates or resumes persisted state. A second task should begin with isolated state rather than accidentally inheriting another task's messages or changes.
 
 This is the key insight: *a session is not a conversation across tasks*. It is a single task. If a user says "first fix the auth bug, then refactor the API," the harness creates *two sessions* (one after the other), not one session with 400 messages.
 
-> **System invariant:** When the harness starts a new session, it must *clear* the previous session's message list. If the previous session's messages leak (e.g., a shared vector), the model sees stale tool calls from a different task, which is a *hallucination prompt* (the model will try to satisfy the stale call).
+> **System invariant:** A new session must not inherit another task's messages or tool-call state. Reusing a session is explicit resume; a fresh task receives a fresh identity and state boundary.
 
 ## Exercise
 
@@ -79,7 +77,7 @@ Write a test that:
 5. Verifies that `session.changes()` returns exactly one change (old: `fn main() {}`, new: `fn entry() {}`).
 6. Verifies that `session.result()` is `Outcome::Complete`.
 
-This test demonstrates the *session as a scope*: one prompt, one session, one change, one result.
+This is a design exercise for a future session module. The compact crate currently tests message accumulation and tool results within the `Agent`; it does not expose a `Session` type or persist changes.
 
 ---
 
@@ -98,4 +96,4 @@ cd books/building-a-coding-agent-harness/examples/reference-harness
 cargo test --test agent_loop session_populates_messages_and_records_change
 ```
 
-This test verifies that a session correctly records one write change and returns `Outcome::Complete`.
+Run `cargo test` for the implemented teaching-crate checkpoints. The session exercise above is not an existing test.

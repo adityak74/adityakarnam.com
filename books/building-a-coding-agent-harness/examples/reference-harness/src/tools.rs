@@ -91,6 +91,7 @@ impl ToolRegistry {
         tool.run(&call.arguments, cx)
     }
 }
+// ANCHOR_END: tool-registry
 
 // ReadFile: read a file within the repo.
 

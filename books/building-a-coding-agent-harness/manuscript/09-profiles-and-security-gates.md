@@ -1,12 +1,12 @@
 # 9. Profiles and Security Gates
 
-> Chapter 9 teaches you to replace *one-size-fits-all* safety with *per-repository profiles*. A profile is a named configuration (e.g., "readonly," "editor," "docker-build") that selects which tools are allowed, which commands are blocked, and which operations require human approval. The harness *configures* one profile per repository and *denies* calls that violate the profile's rules.
+> Chapter 9 designs layered per-project policy configuration. The generic "profile" model below is illustrative; the compact crate has only fixed presets, while production Quecto calls its TOML configuration *flavors*.
 
 ## The Problem
 
 The three presets (ReadOnly, Editor, Full) from Chapter 5 are a *starting point* for teaching. In production, every repository has a *different threat model*. A Rust web server is not the same security posture as a personal finance script. A "Full" policy that allows `sudo docker run` on one repo is reckless on another.
 
-A *profile* is a named bundle of rules: allowed tools, blocked commands, approval requirements. The harness selects one profile per repository (from a `.quecto/profile` file, a CLI flag, or a profile directory). The policy *checks* every tool call against that profile's rules.
+A *profile* in the generic design is a named bundle of rules: allowed tools, blocked commands, approval requirements. The policy checks every proposed tool call against the resolved configuration before execution.
 
 > **System invariant:** The harness must *never* execute a tool call that violates the active profile's rules. The policy decision is *not advisory* — a denied call is rejected, no approval prompt is shown, and the tool is *not executed*.
 
@@ -18,22 +18,17 @@ A profile is a *deterministic configuration* (no file I/O during policy decision
 - `approval_required` — a set of (tool, path) pairs that require human approval, even if the tool is allowed.
 - `profiles` — a map of *sub-profiles* (named overrides for specific tools).
 
-```rust
-{{include:../../examples/reference-harness/src/profile.rs#ANCHOR: profile-struct}}
-```
+> **Implementation boundary:** Profiles are a design chapter, not a module in the compact teaching crate. In Quecto, the corresponding production feature is called a *flavor* and is implemented in `quecto-agent/src/flavor.rs`.
 
-A profile is loaded *once* (at harness startup) from a YAML or JSON file (e.g., `~/.quecto/profiles/docker-build.json`). The harness *does not read a profile file at every tool call*. Reading a file per call makes the policy *unreliable* (if the file is deleted, a lock is held, or the permissions change, the policy decision changes mid-run).
+In a profile-based design, load the active configuration before the run rather than allowing it to change unpredictably between tool calls. Quecto uses layered TOML flavor configuration; the compact reference crate has no configuration-file loader.
 
-> **Failure mode:** If the harness reads a profile file *during* policy decisions (instead of loading it once at startup), and the file is accidentally moved or deleted, the policy falls back to *default* (which may be unsafe). The profile must be *loaded once, executed always*.
+> **Failure mode:** If configuration changes while a run is in progress, the same tool call may be allowed under one policy state and denied under another. Snapshot the resolved policy at a clearly defined boundary and surface parse errors rather than silently falling back to a weaker mode.
 
 ## Profile Resolution
 
-The harness resolves a profile by:
-1. Reading `~/.quecto/profiles/<name>.json` (user's profile directory).
-2. Reading `<repo>/.quecto/profile` (repository-level override).
-3. If neither exists, using `ReadOnly` (default).
+The exact configuration precedence is an application contract. Quecto's flavor resolution is implemented by `resolve` and related functions in `quecto-agent/src/flavor.rs`; read those before relying on a presumed filesystem path or default.
 
-The resolution order is *always* — user profile → repository profile → default. A repository-level profile *cannot* relax a user-level restriction (a user-level profile can restrict a repository's wider permissions).
+Quecto resolves ordered layers: user base flavor, optional user named flavor, project base flavor, and optional project named flavor. Later layers override keys left unspecified by earlier layers. Do not assume every merge policy is automatically restrictive; trust checks specifically gate project settings that grant privilege.
 
 > **System invariant:** A repository profile *can only restrict*, never *relax*, the user profile. If the user profile says "no sudo" and the repository profile says "allow sudo", the effective result is "no sudo" (the *more restrictive* wins). This is the *default-deny* principle: the user's intent is always honored, even if the repository's intent conflicts.
 
@@ -57,21 +52,17 @@ A profile file is a JSON document:
 }
 ```
 
-- `name` is the profile's identifier (used in `~/.quecto/profile` and in CLI).
+- `name` is the profile's identifier, selected by the application.
 - `allowed_tools` is a set (subset of all tools).
 - `blocked_commands` is a list of *patterns* (substring match).
 - `approval_required` is a list of (tool, path) pairs, or wildcard `*` for *all* paths.
 - `sub_profiles` is a map of *named overrides* (resolved dynamically when the agent explicitly requests the sub-profile, via a tool call `use_profile(name)`).
 
-> **Quecto in production:** Quecto stores profiles in `~/.quecto/profiles/*.json`. The CLI command `quecto profile list` lists them. The user can *create* a profile with `quecto profile create --allow RunCommand --deny "sudo "` (which writes a JSON file). The harness *does not validate the JSON against a schema*; an invalid profile file is *silently skipped* (loaded once, if parse fails, the next session uses the default `ReadOnly`).
+> **Quecto in production:** Quecto flavors are TOML manifests with layered configuration. The `Flavor` type denies unknown fields for its strict sections; `resolve` and related functions combine configuration sources. Project-scoped privilege is subject to trust checks. There is no `quecto profile list/create` subcommand; inspect `quecto-agent --help` and `quecto-agent/src/flavor.rs` for the actual interface and precedence.
 
 ## Profiles in Production
 
-Quecto uses profiles in four ways:
-1. **Per-repository** — each repository has a `.quecto/profile` file. If the file says `"docker-build"`, the harness loads the corresponding profile and applies it.
-2. **Per-task** — the user can specify a profile at task start: `quecto task --profile editor "fix the auth bug"`. The task-level profile *overrides* the repository-level one.
-3. **Sub-profiles** — a profile can have sub-profiles (e.g., `docker-build/run_docker`). The agent can *request* a sub-profile explicitly (a tool call `use_profile("run_docker")`). The harness checks the sub-profile's rules (approval_required: `docker run --privileged`).
-4. **User override** — the user can *temporarily* override a profile for one task (e.g., `quecto task --allow-sudo "install this package"`). The harness records the override in a *cache* (valid for 1 hour) and applies it only to that task.
+Quecto uses the `--flavor` option to select named TOML layers. Base files are `~/.config/quecto/flavor.toml` and `<repo>/.quecto/flavor.toml`; optional named files are stored under `flavors/<name>.toml` within those directories. The project layer follows the user layer. Trust-on-first-use protects project flavor settings that grant additional privilege.
 
 > **Failure mode:** If the user override is persisted *globally* (applied to all future tasks), a one-time override becomes permanent. Overrides must *expire* (TTL). The harness should store an override as `{ profile: "full", expires: "2026-10-02T23:59:00Z" }`. After `expires`, the override is *automatically removed*.
 
@@ -110,7 +101,7 @@ This test demonstrates the *profile gate*: a named configuration that *restricts
 
 ```bash
 cd books/building-a-coding-agent-harness/examples/reference-harness
-cargo test --test safety profile_docker_build_allows_run_denies_sudo
+cargo test --test safety policy_presets_gate_reads_edits_and_commands
 ```
 
-This test verifies that a `docker-build` profile allows `RunCommand` but blocks `sudo` and disallows `WriteFile`.
+This checkpoint exercises the implemented teaching policy. The profile exercise above is a design task, not an existing test.

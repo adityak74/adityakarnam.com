@@ -10,7 +10,7 @@ The policy layer answers: *should this tool call execute?*
 
 The policy returns one of three decisions:
 - **Allow** — execute immediately.
-- **Ask** — wait for the user (human in the loop).
+- **Ask** — require an external approval decision before execution. The compact teaching agent has no interactive approver; it records an explanatory tool result and does not execute the call.
 - **Deny** — reject unconditionally (the tool is unknown, or the command is hard-blocked).
 
 > **System invariant:** The policy must be a *pure function* of the call and the preset. It must not inspect the file system (no file I/O in the policy decision). If it does, a file system error could *throttle* the agent (a file-system "file not found" error causes the policy to reject all calls).
@@ -41,7 +41,7 @@ Three presets encode safety trade-offs:
 
 *\*Full does not mean all commands are allowed. It means all *tools* are allowed. The hard-denied command list (below) still applies.*
 
-> **Quecto in production:** Quecto supports *profiles* (named configurations like `git-pushing`, `docker-build`, `readonly`). Each profile is a combination of preset + additional allowed commands. The teaching harness stops at the three presets above.
+> **Quecto in production:** Quecto resolves layered TOML *flavors* (`quecto-agent/src/flavor.rs`) and has approval presets and per-tool overrides. The teaching crate stops at three fixed presets and hard-deny patterns; it does not implement flavor loading or interactive approval.
 
 ## Hard-Denied Commands
 
@@ -67,17 +67,14 @@ The `Policy::decide(call)` method follows a simple three-step logic:
 3. **Is the tool in the current preset?** If yes, `Allow`. If no (it is known but not in this preset), `Ask`.
 
 ```rust
-{{include:../../examples/reference-harness/src/policy.rs}}
+{{include:../examples/reference-harness/src/policy.rs}}
 ```
 
 > **System invariant:** The `ALL_TOOLS` array (union of all preset tools) must be kept in sync with the actual tools registered in the harness. If you add a new tool, add its name to `ALL_TOOLS`. Otherwise the policy will incorrectly classify it as "unknown" (and deny it).
 
 ## Quecto's Version
 
-Quecto's policy extends this with:
-- **Per-repository profiles** (each repo has a named profile).
-- **Per-tool overrides** (a specific tool can be allowed in one profile but denied in another).
-- **Approval presets** (store user approval for a specific tool+path combination).
+Quecto combines the policy decision with flavor configuration, an approval mode, a terminal approver, and trust checks. These are separate production components rather than fields in the teaching `Policy` type.
 
 The teaching harness is simpler: one policy, one preset, no overrides.
 

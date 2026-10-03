@@ -39,7 +39,7 @@ BOOK_YML = BOOK_DIR / "book.yml"
 
 
 def load_book_yml() -> dict:
-    """Load book.yml (simple YAML-like text)."""
+    """Load the small, intentionally dependency-free subset used in book.yml."""
     text = BOOK_YML.read_text()
     # Strip comment lines and key: value
     chapters: list[str] = []
@@ -49,16 +49,25 @@ def load_book_yml() -> dict:
         stripped = line.strip()
         if not stripped or stripped.startswith("#"):
             continue
+        indent = len(line) - len(line.lstrip())
+        if current == "chapters" and indent >= 4:
+            chapter_file = re.match(r'^file:\s*["\']?([^"\']+)', stripped)
+            if chapter_file:
+                chapters.append(chapter_file.group(1).strip())
+            continue
+        if indent > 0:
+            continue
+        if stripped == "chapters:":
+            current = "chapters"
+            continue
         m = re.match(r"^(\w+):\s*(.+)$", stripped)
         if m:
             current = m.group(1)
-            if current in ("chapters", "title", "author", "subtitle", "version"):
+            if current in ("chapters", "title", "author", "subtitle", "supporting_line", "edition", "version"):
                 if current == "chapters":
                     pass  # list items below
                 else:
                     meta[current] = m.group(2).strip().strip('"')
-        elif stripped.startswith("- "):
-            chapters.append(stripped[2:].strip())
     return {"chapters": chapters, **meta}
 
 
@@ -104,29 +113,47 @@ def resolve_includes(md: str) -> str:
         path_rel = m.group(1).strip()
         anchor = m.group(2)  # may be None
 
-        candidate = MANUSCRIPT_DIR.parent.parent / path_rel
+        candidate = (MANUSCRIPT_DIR / path_rel).resolve()
         if not candidate.exists():
-            return ""  # drop stale includes silently
+            raise FileNotFoundError(f"include target does not exist: {path_rel}")
 
         content = candidate.read_text(encoding="utf-8")
 
         if anchor:
             anchor_clean = anchor.split(":", 1)[-1].strip() if ":" in anchor else anchor.strip()
-            marker = f"#ANCHOR: {anchor_clean}"
+            marker = f"ANCHOR: {anchor_clean}"
             idx = content.find(marker)
-            if idx >= 0:
-                content = content[idx:]
-            path_prefix = path_rel.split("/")[-1] + ":"
-            if content.startswith(path_prefix):
-                content = content[len(path_prefix):]
+            if idx < 0:
+                raise ValueError(f"anchor {anchor_clean!r} not found in {path_rel}")
+            start = content.find("\n", idx)
+            end_marker = f"ANCHOR_END: {anchor_clean}"
+            end = content.find(end_marker, start)
+            if end < 0:
+                raise ValueError(f"anchor end {anchor_clean!r} not found in {path_rel}")
+            content = content[start + 1:end].rstrip()
+        else:
+            content = re.sub(r"(?m)^\s*// ANCHOR(?:_END)?: .*\n", "", content).rstrip()
 
+        # Authors may put an include inside a fenced Rust block or use a bare
+        # directive for a whole source file. Add a fence only in the latter
+        # case; nested fences turn Rust attributes beginning with `#` into
+        # Markdown headings and corrupt both layout and PDF bookmarks.
+        fences_before = len(re.findall(r"(?m)^\s*```", md[:m.start()]))
+        if fences_before % 2:
+            return content.rstrip()
         return "```\n" + content.rstrip() + "\n```"
 
     return pattern.sub(replacer, md)
 
 
 def load_chapters() -> list[Chapter]:
-    files = sorted(MANUSCRIPT_DIR.glob("*.md"))
+    manifest_files = load_book_yml()["chapters"]
+    if not manifest_files:
+        raise ValueError("book.yml must declare chapter file order")
+    files = [MANUSCRIPT_DIR / name for name in manifest_files]
+    missing = [str(path) for path in files if not path.is_file()]
+    if missing:
+        raise FileNotFoundError("chapter file(s) missing from book.yml: " + ", ".join(missing))
     chapters: list[Chapter] = []
     for f in files:
         raw = f.read_text(encoding="utf-8")
@@ -148,6 +175,23 @@ def load_chapters() -> list[Chapter]:
 
 
 def md_to_html(md: str) -> str:
+    # Python-Markdown follows the blank-line-before-list rule. Normalize the
+    # manuscript's compact prose lists without touching fenced code or list
+    # continuation lines, so labels and callout lists render as actual lists.
+    normalized: list[str] = []
+    in_fence = False
+    previous = ""
+    for line in md.splitlines():
+        if re.match(r"^\s*```", line):
+            in_fence = not in_fence
+        is_list = bool(re.match(r"^\s{0,3}(?:[-*+]\s+|\d+[.)]\s+)", line))
+        previous_is_list = bool(re.match(r"^\s{0,3}(?:[-*+]\s+|\d+[.)]\s+)", previous))
+        if not in_fence and is_list and previous.strip() and not previous_is_list:
+            normalized.append("")
+        normalized.append(line)
+        previous = line
+    md = "\n".join(normalized)
+
     extensions = [
         "fenced_code",
         "codehilite",
@@ -168,72 +212,57 @@ def build_html(chapters: list[Chapter], yml: dict) -> str:
     """Assemble the final HTML (TOC + chapters + appendices)."""
     toc_html = ""
     for i, ch in enumerate(chapters):
-        num = f"{i+1}. " if i > 0 else ""
-        toc_html += f"<li><strong>{num}{ch.title}</strong></li>\n"
-    toc_html = f"<h1>Table of Contents</h1><ul>{toc_html}</ul><hr/>"
+        if i == 0:
+            continue
+        anchor = f"chapter-{i}"
+        toc_html += f'<li><a href="#{anchor}">{ch.title}</a><span class="toc-page" href="#{anchor}"></span></li>\n'
+    toc_html = f'<section class="toc"><h1>Contents</h1><ul>{toc_html}</ul></section>'
+
+    cover_html = f"""
+    <section class="cover">
+      <img src="building-a-coding-agent-harness-cover.png" alt="Layered coding-agent runtime illustration" />
+      <div class="cover-kicker">A PRACTICAL SYSTEMS GUIDE</div>
+      <h1>{yml.get('title', 'Building a Coding Agent Harness')}</h1>
+      <p class="cover-subtitle">{yml.get('subtitle', '')}</p>
+      <p class="cover-support">{yml.get('supporting_line', '')}</p>
+      <p class="cover-author">{yml.get('author', '')}</p>
+      <p class="cover-edition">EDITION {yml.get('edition', '1.0.0')} &nbsp;·&nbsp; OCTOBER 2026</p>
+    </section>
+    """
 
     chapter_html_parts: list[str] = []
-    for ch in chapters:
-        if ch.title.startswith("Appendix"):
-            chapter_html_parts.append(f"<h1>{ch.title}</h1>")
-        else:
-            chapter_html_parts.append(f"<h1>{ch.title}</h1>")
-        chapter_html_parts.append(md_to_html(ch.body))
-
-    appendix_parts = []
-    for ch in chapters:
-        if ch.title.startswith("Appendix"):
-            appendix_parts.append(f"<h1>{ch.title}</h1>")
-            appendix_parts.append(md_to_html(ch.body))
+    for i, ch in enumerate(chapters):
+        if i == 0:
+            body = re.sub(r"(?m)^# .*\n?", "", ch.body, count=1)
+            body = re.sub(r"(?ms)^## Front Matter\s*.*?(?=^## Preface)", "", body, count=1)
+            chapter_html_parts.append(f'<section class="front-matter">{md_to_html(body)}</section>')
+            continue
+        anchor = f"chapter-{i}"
+        chapter_html_parts.append(f'<section class="chapter"><h1 id="{anchor}">{ch.title}</h1>')
+        # The source heading is represented by the manifest-backed heading above.
+        body = re.sub(r"(?m)^# .*\n?", "", ch.body, count=1)
+        chapter_html_parts.append(md_to_html(body))
+        chapter_html_parts.append("</section>")
 
     return (
-        f"<h1 style='page-break-after:always;'>" + toc_html + "</h1>" +
-        "\n".join(chapter_html_parts) +
-        (f"<h1 style='page-break-after:always;'>" + "\n".join(appendix_parts) + "</h1>" if appendix_parts else "")
+        cover_html + toc_html + "\n".join(chapter_html_parts)
     )
 
 
-def render_pdf(html: str, output_path: Path) -> None:
+def render_pdf(html: str, output_path: Path, yml: dict) -> None:
     """Write HTML to PDF via weasyprint (primary path).
 
     Target: 70–80 pages. 9pt font, 18mm margins.
     """
     from weasyprint import HTML
 
-    css = """
-    @page {
-        size: A4;
-        margin: 34mm 24mm 34mm 24mm;
-        @top-center { content: string(book-title); font-size: 8pt; color: #888; }
-        @bottom-center { content: counter(page); font-size: 9pt; }
-    }
-    body { font-family: "Source Sans 3", "Linux Libertine", serif;
-           font-size: 12.5pt; line-height: 1.6; color: #222; }
-    h1 { font-size: 26pt; page-break-after: avoid; margin-bottom: 10pt;
-         border-bottom: 2px solid #333; padding-bottom: 4pt;
-         string-set: book-title attr(title); }
-    h2 { font-size: 16pt; page-break-after: avoid; margin-top: 12pt; margin-bottom: 6pt; }
-    h3 { font-size: 13pt; page-break-after: avoid; margin-top: 8pt; }
-    p { margin: 0 0 10pt 0; text-align: justify; orphans: 3; widows: 3; }
-    pre, code { font-family: "DejaVu Sans Mono", monospace; font-size: 8.5pt; line-height: 1.3; }
-    pre { background: #f4f4f4; border: 1px solid #ddd; padding: 8px;
-          margin: 5pt 0; border-radius: 2pt; }
-    code { background: #f0f0f0; padding: 1pt 2pt; border-radius: 1pt; }
-    pre code { background: none; padding: 0; }
-    table { border-collapse: collapse; margin: 8pt 0; font-size: 9pt; width: 100%; }
-    th { border-bottom: 2px solid #333; text-align: left; padding: 4pt 5pt; }
-    td { border-bottom: 1px solid #ccc; padding: 4pt 5pt; }
-    blockquote { border-left: 3px solid #666; padding-left: 12pt; margin: 8pt 0;
-                 font-style: italic; color: #444; font-size: 11pt; }
-    .page-break-after { page-break-after: always; }
-    .page-break-before { page-break-before: always; }
-    hr { border: none; border-top: 1px solid #ccc; margin: 12pt 0; }
-    ul, ol { margin: 7pt 0; padding-left: 18pt; }
-    li { margin-bottom: 4pt; font-size: 12.5pt; }
-    """
-
-    doc_html = f"<html><head><style>{css}</style></head><body>{html}</body></html>"
-    HTML(string=doc_html).write_pdf(str(output_path))
+    css = (SCRIPT_DIR / "pdf" / "book.css").read_text(encoding="utf-8")
+    doc_html = (
+        f"<html><head><meta charset='utf-8'><title>{yml.get('title', '')}</title>"
+        f"<meta name='author' content='{yml.get('author', '')}'>"
+        f"<style>{css}</style></head><body>{html}</body></html>"
+    )
+    HTML(string=doc_html, base_url=str(output_path.parent.resolve())).write_pdf(str(output_path))
 
 
 def fallback_reportlab(output_path: Path, chapters: list[Chapter], yml: dict) -> None:
@@ -319,21 +348,23 @@ def main() -> None:
     if args.standalone:
         out_path = Path(args.output).with_suffix(".html")
         out_path.parent.mkdir(parents=True, exist_ok=True)
+        cover_asset = out_path.parent / "building-a-coding-agent-harness-cover.png"
+        cover_asset.write_bytes((BOOK_DIR / "assets" / "cover-illustration.png").read_bytes())
         out_path.write_text(
-            f"<html><head><style>{open(SCRIPT_DIR / 'pdf' / 'book.css').read()}</style>"
+            f"<html><head><meta charset='utf-8'><title>{yml.get('title', '')}</title>"
+            f"<meta name='author' content='{yml.get('author', '')}'>"
+            f"<style>{open(SCRIPT_DIR / 'pdf' / 'book.css').read()}</style>"
             f"</head><body>{html}</body></html>")
         print(f"HTML written: {out_path}")
         return
 
     out_path = Path(args.output)
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    cover_asset = out_path.parent / "building-a-coding-agent-harness-cover.png"
+    cover_asset.write_bytes((BOOK_DIR / "assets" / "cover-illustration.png").read_bytes())
     print(f"Rendering PDF: {out_path} ...")
-    try:
-        render_pdf(html, out_path)
-        print(f"Done: {out_path}")
-    except Exception as exc:
-        print(f"  → weasyprint failed ({exc}). Falling back to reportlab.")
-        fallback_reportlab(out_path, chapters, yml)
+    render_pdf(html, out_path, yml)
+    print(f"Done: {out_path}")
 
 
 if __name__ == "__main__":

@@ -15,7 +15,7 @@ The boundary: **one model call per loop iteration, full history sent together.**
 The model transport is configured with a single struct:
 
 ```rust
-{{include:../../examples/reference-harness/src/model.rs#ANCHOR: message-types}}
+{{include:../examples/reference-harness/src/model.rs#ANCHOR: model-config}}
 ```
 
 `ModelConfig` carries four fields:
@@ -31,7 +31,7 @@ The model transport is configured with a single struct:
 The harness constructs the request body as a JSON object with `model` and `messages`. If tools exist, it adds a `tools` array. It sends a `POST` with `Content-Type: application/json` and an optional `Authorization` header.
 
 ```rust
-{{include:../../examples/reference-harness/src/model.rs#ANCHOR: http-completion}}
+{{include:../examples/reference-harness/src/model.rs#ANCHOR: http-completion}}
 ```
 
 The `endpoint` method normalizes the URL: if the base URL already ends with `/v1`, it appends `/chat/completions`; otherwise it appends `/v1/chat/completions`. This handles both `https://api.openai.com/v1` and `https://api.openai.com` correctly.
@@ -43,7 +43,7 @@ The `endpoint` method normalizes the URL: if the base URL already ends with `/v1
 The model returns a JSON body. The harness parses it into an `AssistantMessage`:
 
 ```rust
-{{include:../../examples/reference-harness/src/model.rs#ANCHOR: parse-assistant}}
+{{include:../examples/reference-harness/src/model.rs#ANCHOR: parse-assistant}}
 ```
 
 The parser extracts:

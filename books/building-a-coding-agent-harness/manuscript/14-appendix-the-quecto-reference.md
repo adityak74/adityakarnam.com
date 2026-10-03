@@ -1,100 +1,90 @@
 # Appendix A. The Quecto Reference
 
-> This appendix maps *every chapter* of the book to the *actual production code* in Quecto (the product that inspired this book). The appendix *is not theoretical*. It *pointers* you to the *real source code* (in the `quecto` repository) that *implements* each chapter's lesson.
+Quecto is the production system behind this book's examples. The repository is at <https://github.com/adityak74/quecto>. The chapter mapping below uses the local reference checkout at revision `97158860a490790edeb58f9727b684423f04cbe3` (2026-10-03). Paths are relative to that repository root. Check the remote `main` branch for newer source before treating a path as current.
 
-## Mapping the Chapters
+## The Runnable Book Harness
 
-| Chapter | Title | Quecto Module | Module Path | Key Types |
-|---------|-------|---------------|-------------|-----------|
-| 1 | The Harness Is the System | `quecto_core` | `src/quecto_core/` | `Quecto::new()`, `Quecto::run()` |
-| 2 | One Model Call, No Framework | `quecto_core::model` | `src/quecto_core/model/` | `HttpModel`, `ModelError` |
-| 3 | The Bounded Agent Loop | `quecto_core::agent` | `src/quecto_core/agent/` | `Agent::run`, `Outcome`, `RepeatGuard` |
-| 4 | Typed, Unsafe-Free Communication | `quecto_core::tools` | `src/quecto_core/tools/` | `Tool`, `ToolRegistry`, `RunCommand` |
-| 5 | Execution Policy and Approval Gates | `quecto_core::policy` | `src/quecto_core/policy/` | `Policy::decide`, `Decision` |
-| 6 | Verification as a Completion Gate | `quecto_core::verify` | `src/quecto_core/verify/` | `Verifier::check`, `VerificationResult` |
-| 7 | Context and Instruction Loading | `quecto_core::context` | `src/quecto_core/context/` | `Context`, `resolve_existing` |
-| 8 | Sessions and State Management | `quecto_core::session` | `src/quecto_core/session/` | `Session`, `Session::push` |
-| 9 | Profiles and Security Gates | `quecto_core::profile` | `src/quecto_core/profile/` | `Profile`, `Profile::from_json` |
-| 10 | MCP — Model Context Protocol | `quecto_mcp` | `crates/quecto_mcp/` | `McpServer`, `McpError` |
-| 11 | Observability and Telemetry | `quecto_telemetry` | `crates/quecto_telemetry/` | `Telemetry`, `Event` |
-| 12 | Evaluation and Benchmarks | `quecto_evaluate` | `crates/quecto_evaluate/` | `Benchmark`, `Suite` |
-| 13 | The Complete Reference Harness | `quecto_cli` | `bin/quecto` | `harness run`, `harness benchmark` |
+The compact, self-contained teaching crate is `books/building-a-coding-agent-harness/examples/reference-harness`. It has five modules: `model`, `agent`, `tools`, `context`, and `policy`. This crate is deliberately smaller than Quecto. The chapters about persistence, profile composition, MCP, telemetry, and evaluation explain production concerns and map them to Quecto; they do not claim those systems are implemented in this teaching crate.
 
-## How to Read the Quecto Code
+| Book topic | Teaching implementation | Production Quecto source |
+|---|---|---|
+| Model messages and HTTP | `examples/reference-harness/src/model.rs` | `quecto-agent/src/model.rs`, plus root `src/lib.rs` for the tiny core |
+| Bounded loop and outcomes | `examples/reference-harness/src/agent.rs` | `quecto-agent/src/agent.rs` |
+| Tools and schemas | `examples/reference-harness/src/tools.rs` | `quecto-agent/src/tools/` and `quecto-agent/src/lib.rs` |
+| Repository context and command sandbox | `examples/reference-harness/src/context.rs` | `quecto-agent/src/context.rs`, `quecto-agent/src/sandbox.rs` |
+| Execution policy | `examples/reference-harness/src/policy.rs` | `quecto-agent/src/policy.rs`, `quecto-agent/src/approval.rs` |
+| Verification | Design chapter; not in the teaching crate | `quecto-agent/src/verify.rs` |
+| Instructions | Design chapter; not in the teaching crate | `quecto-agent/src/instructions.rs` |
+| Sessions and persistence | Design chapter; not in the teaching crate | `quecto-agent/src/session.rs`, `quecto-agent/src/recorder.rs` |
+| Profiles / layered config | Design chapter; not in the teaching crate | `quecto-agent/src/flavor.rs` |
+| MCP | Design chapter; not in the teaching crate | `quecto-mcp/` and feature-gated `quecto-agent/src/mcp_adapter.rs` |
+| OpenTelemetry | Design chapter; not in the teaching crate | `quecto-agent/src/main.rs` (`otel` feature), `quecto-agent/Cargo.toml` |
+| Evaluation | Design chapter; not in the teaching crate | `quecto-eval/` |
 
-For each chapter, *open* the corresponding module (in the `quecto` repository) and *read* the public API (the `pub` structs and methods). Do *not* read the *internal* implementation (the `fn` methods that are *not* `pub`). The public API *is* what this book teaches. The internal implementation *is* implementation detail.
+## How to Explore the Production Repository
 
-For example, for Chapter 4 (typed tools), *open* `src/quecto_core/tools/mod.rs` and *read* the `pub trait Tool` definition. Do *not* read the `impl ReadFile` method (unless you want to understand the *internal* file I/O).
+Quecto is a Cargo workspace. Its root `quecto` crate is the small synchronous OpenAI-compatible model transport. `quecto-agent` builds the interactive and one-shot coding agent on top of it; `quecto-mcp` contains MCP transport support; `quecto-eval` contains evaluation contracts, manifests, and runners. Begin with each crate's `src/lib.rs` and `Cargo.toml`, then follow the named module paths in the table.
 
-> **Learning strategy:** Read the *book's source code* (in this worktree: `examples/reference-harness/src/`) *first*. Then *open* the *corresponding* module in the `quecto` repository. *Compare* them (what is the same? what is different?). The book's source is *simplified*; the Quecto source is *production* (with error handling, edge cases, and performance considerations).
+Useful commands from a Quecto checkout:
 
-## The Quecto vs. This Book
+```sh
+cargo test --workspace
+cargo run -p quecto-agent -- --help
+cargo run -p quecto-agent -- "Summarize this repository"
+cargo run -p quecto-eval -- --help
+```
 
-| Aspect | This Book | Quecto (production) |
-|--------|-----------|--------------------|
-| Tools | ReadFile, WriteFile, ApplyPatch, RunCommand | + Grep, GitStatus, ListFiles, Python, Bash |
-| Policy | 3 presets (ReadOnly, Editor, Full) | Profiles (named bundles, per-repo, sub-profiles) |
-| Security | Hard-denied command patterns (substring) | Token-based matching (first token in command) |
-| Session | Single message list | Per-session file diff + verification state + retry count |
-| MCP | stdio protocol (JSON-RPC 2.0) | stdio + HTTP (server can run remotely) |
-| Telemetry | Local JSONL file | Local JSONL + remote server (POST) |
-| Evaluation | `Benchmark` + `Suite` structs | CLI (`quecto benchmark run`) + web dashboard |
+Optional features alter the build: MCP is enabled with `--features mcp`; OpenTelemetry with `--features otel`. The default agent build does not enable these optional features.
 
-> **Important:** The book *intentionally* *simplifies* the Quecto reference. The book teaches *concepts* (the harness layers). The Quecto source *implements* those concepts *with* production concerns (error handling, concurrent safety, performance). *Do not* think the book is "wrong" because the Quecto source is more complex. The book is *foundational*; the Quecto source is *applied*.
+## What the Two Implementations Share
 
-## The Quecto Command Reference
+| Concern | Teaching harness | Production Quecto |
+|---|---|---|
+| Model boundary | Small `Model::complete` trait and OpenAI-compatible HTTP implementation | Core model transport plus the agent crate's own model abstraction and provider wire-format handling |
+| Agent | Bounded synchronous loop with step, repeat, and policy-denial limits | Coding-agent run loop with model completion options, tools, session data, and recorder hooks |
+| Tools | Read, write, patch, and command examples | File, search, git, shell, and optional MCP-backed tools |
+| Policy | Three educational presets and hard-deny examples | Approval modes, flavors, tool filtering, and trust configuration |
+| Verification | Architectural treatment only | Configured completion gate implemented by `quecto-agent/src/verify.rs` |
+| State | In-memory teaching objects | SQLite-backed session storage and change summaries |
+| Telemetry | Not implemented in the teaching crate | Optional OpenTelemetry tracing; do not confuse it with a JSONL session log |
+| Evaluation | Not implemented in the teaching crate | Separate `quecto-eval` crate and evaluation data |
 
-The `quecto` CLI (the *production* command-line tool) maps *directly* to the chapters:
+The teaching code prioritizes readable boundaries over feature parity. It is not a drop-in library for production use. Production Quecto has its own types, error paths, config system, and platform constraints; compare behaviors rather than assuming identical APIs.
 
-| CLI Command | Chapter |
-|-------------|---------|
-| `quecto run --repo <path>` | Chapters 3, 13 |
-| `quecto run --profile <name>` | Chapter 9 |
-| `quecto run --prompt "fix ..." --verify "cargo test"` | Chapter 6 |
-| `quecto run --mcp server.json` | Chapter 10 |
-| `quecto logs --session <id>` | Chapter 11 |
-| `quecto benchmark run suite.yaml` | Chapter 12 |
-| `quecto status` | Chapter 13 (post-run status) |
+## CLI Orientation
 
-Each command *prints* (to the terminal) the *same data* that the CLI library returns (the `Outcome` enum, the telemetry events, the score). The CLI *is the presentation layer* (over the library).
+The production binary is `quecto-agent`, not a `quecto run` subcommand. It accepts a task prompt directly, supports `chat`, `resume`, `undo`, `diff`, and `new` subcommands, and provides flags such as `--yes`, `--no-verify`, `--flavor`, `--model`, `--base-url`, and `--max-steps`. Run `cargo run -p quecto-agent -- --help` for the current interface. Evaluation is a separate binary in `quecto-eval`; it is not a `quecto benchmark` subcommand.
 
-> **Quecto in production:** The CLI is *two-layer*: (1) a *library* (`lib.rs`), (2) a *binary* (`bin/quecto`). The binary *calls* the library (it does *not* duplicate the library's logic). The binary's only job is to *parse CLI arguments*, *call* the library, and *print* the result (formatted for the terminal).
+## Further Reading
 
----
+1. [Quecto repository](https://github.com/adityak74/quecto) — source, README, and release information.
+2. [Anthropic Messages API](https://docs.anthropic.com/en/api/messages) — one provider's message interface.
+3. [OpenAI function calling](https://platform.openai.com/docs/guides/function-calling) — tool-call schemas and request flow.
+4. [JSON-RPC 2.0 specification](https://www.jsonrpc.org/specification) — protocol foundations relevant to MCP.
+5. [Cargo workspaces](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html) — how the production crates fit together.
 
-## Appendix B. Further Reading
-
-1. **Anthropic API (Messages API)** — *how the model API works*. https://docs.anthropic.com/en/api/messages
-2. **OpenAI Tool Calling** — *how tool calling works in the OpenAI API*. https://platform.openai.com/docs/guides/function-calling
-3. **JSON-RPC 2.0 Specification** — *the protocol that MCP uses*. https://www.jsonrpc.org/specification
-4. **git sparse-checkout** — *if you clone the full Quecto repository, use sparse-checkout to avoid downloading all modules*. `git sparse-checkout set quecto_core`
-5. **cargo doc (Rust documentation)** — *to browse the Quecto source*. `cargo doc --open --package quecto_core`
-
-## Appendix C. Glossary
+## Glossary
 
 | Term | Definition |
-|------|-----------|
-| **Harness** | The *system boundary* (model vs. harness). The harness is the *infrastructure* that sits *between* the model and the user. |
-| **Policy** | A *gate* that decides whether a tool call should *execute*. Returns `Allow`, `Ask`, or `Deny`. |
-| **Session** | A *single coding task's* isolated state (message history, file changes, verification result). |
-| **Profile** | A *named configuration* (like "editor" or "docker-build") that selects *which* tools are allowed, *which* commands are blocked. |
-| **MCP** (Model Context Protocol) | A *protocol* for the harness to *discover* tools (at startup) and *execute* tools (over a protocol) without hard-coding the tools' source. |
-| **Telemetry** | *Observability*: the logging of every visible event (tool calls, errors, verification outcomes) to a durable file. |
-| **Benchmark** | A *defined* coding task (repository, prompt, verification commands) with a *measurable* outcome (pass/fail). |
-| **ReviewGate** | (From earlier chapters, not in this book) A *post-edit* review step (before the changes are applied) that checks the diff for *obvious regressions* (deleted imports, removed error handling). *Not included in this book (intentionally out of scope).* |
-| **Progressive Disclosure** | A *UI/UX principle*: show the *simple* configuration by default; show the *advanced* configuration only when the user *opts in*. (Quecto's approach: default `ReadOnly`; user *explicitly* switches to `Full`.) |
+|---|---|
+| Harness | The runtime around a model that controls tools, state, policy, and completion. |
+| Policy | A gate that allows, asks about, or denies an action before execution. |
+| Session | The persisted state for an agent run, including messages and recoverable changes. |
+| Flavor | Quecto's layered configuration profile for model, tools, approvals, and verification. |
+| MCP | Model Context Protocol, used to discover and invoke external tools through servers. |
+| Telemetry | Instrumentation emitted for operational observation; in Quecto this means optional OpenTelemetry, not a local JSONL CLI log. |
+| Evaluation | Repeatable task execution with defined inputs and measurable outcomes. |
 
----
+## Rebuild This Book
 
-## Appendix D. Build the Book (PDF)
+The source manuscript, build script, stylesheet, and reference crate live together in the book directory. From `books/building-a-coding-agent-harness/examples`, run:
 
-To generate a PDF from this manuscript (if you want a *printable* version of this book):
+```sh
+python3 build_book.py
+cargo test --manifest-path reference-harness/Cargo.toml
+```
 
-1. Ensure `build_book.py` (and the `pdf/` modules) are installed and runnable (see the book's `build/` directory).
-2. Run `python3 build_book.py --output static/books/building-a-coding-agent-harness.pdf`.
-3. Validate the PDF (page count 70–80, TOC, bookmarks, no clipping).
-
-> **Note:** The `build_book.py` and `pdf/` modules are *not included* in this book's manuscript. They are *in the worktree* (at `examples/build/` and `examples/pdf/`). The PDF pipeline is a *separate project* (a Python script using `reportlab` or `weasyprint`). If you want to produce a PDF, the pipeline code is in that directory.
+The builder writes the PDF and HTML to `static/books/`. It resolves source-code includes from the reference crate so the short listings stay aligned with executable code.
 
 ---
 

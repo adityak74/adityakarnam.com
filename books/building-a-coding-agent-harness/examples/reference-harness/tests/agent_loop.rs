@@ -189,6 +189,42 @@ fn agent_returns_ordinary_model_completion() {
 }
 
 #[test]
+fn policy_ask_returns_a_tool_result_without_executing_the_tool() {
+    let temp = tempdir().unwrap();
+    let model = ScriptedModel::new(vec![
+        AssistantMessage {
+            content: String::new(),
+            tool_calls: vec![ToolCall {
+                id: "write-1".to_owned(),
+                name: "write_file".to_owned(),
+                arguments: json!({"path": "must-not-exist.txt", "content": "no"}),
+            }],
+            finish_reason: "tool_calls".to_owned(),
+        },
+        text_reply("waiting for approval"),
+    ]);
+    let mut agent = Agent::new(
+        Box::new(model),
+        registry(),
+        Context::new(temp.path().to_owned()).unwrap(),
+        AgentConfig {
+            system_prompt: "You are a coding agent.".to_owned(),
+            max_steps: 4,
+            repeat_limit: 3,
+            denial_limit: 1,
+        },
+    );
+
+    let outcome = agent.run("write a file");
+
+    assert!(matches!(outcome, Outcome::Complete(_)));
+    assert!(agent.context().resolve_existing("must-not-exist.txt").is_err());
+    assert_eq!(agent.messages()[3].role, "tool");
+    assert_eq!(agent.messages()[3].tool_call_id.as_deref(), Some("write-1"));
+    assert!(agent.messages()[3].content.contains("approval"));
+}
+
+#[test]
 fn agent_stops_at_step_limit_after_tool_use() {
     let temp = tempdir().unwrap();
     let model = ScriptedModel::new(vec![tool_reply(call("call-1", "one"))]);

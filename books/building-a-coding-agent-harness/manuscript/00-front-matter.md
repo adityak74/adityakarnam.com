@@ -24,17 +24,17 @@
 
 > **You will not learn much by reading this book about models.** You will learn a great deal by reading it about harnesses.
 
-The model gives the agent its raw capability, but the harness gives it its behavior, its safety, its safety, its traceability, and its cost. A well-designed harness can make a small model outperform a large one by constraining the search space effectively. A poorly designed harness can make a large model produce worse results than a small model with guardrails.
+The model gives the agent its raw capability, but the harness shapes its behavior, safety, traceability, and cost. A well-designed harness can help a smaller model succeed by constraining the search space effectively. A poorly designed harness can make a capable model produce worse results than a smaller model operating with clear guardrails.
 
 This book teaches you to build a harness, not to study models. You will not train a single model in these pages. What you will train is judgment — about where to draw boundaries, what to gate, what to observe, and what to measure.
 
-The writing assumes you know programming and basic computer science but might not know agent-system architecture. You will build along. Every chapter adds code to a shared reference implementation in Rust, tests it, and compares it to a production system (Quecto) that uses the same design.
+The writing assumes you know programming and basic computer science but might not know agent-system architecture. You will build along in Rust. The runnable reference crate develops the model boundary, agent loop, tools, repository context, and policy. Later chapters widen the lens to the additional runtime concerns implemented in production Quecto; those chapters are architecture studies, not claims that every layer is implemented in the compact teaching crate.
 
 This book is not documentation of one repository. It is a general guide to harness design, using Rust for implementation and Quecto as evidence that the architecture works.
 
 ## How to Use This Book
 
-Read sequentially. Each chapter builds on the previous chapter's code. The reference harness compiles and tests are provided for every visible chunk.
+Read Chapters 1–5 sequentially; these build the runnable reference crate. Chapters 6–12 examine production-runtime concerns, marking their exercises as design extensions when the teaching crate does not implement them. Chapter 13 brings the implemented core together and Appendix A maps the broader design to production Quecto.
 
 The book uses a build-first rhythm:
 
@@ -58,7 +58,7 @@ Prerequisites: Rust 2021, a Unix terminal, familiarity with HTTP and basic syste
 
 ## Architecture Map (Summary)
 
-The system consists of seven layers, each built in a chapter:
+The system can be understood as cooperating concerns. The first five are implemented in the teaching crate; the later runtime concerns are developed as designs and compared with Quecto:
 
 | Layer | Purpose | Chapter |
 |-------|---------|---------|
@@ -67,15 +67,11 @@ The system consists of seven layers, each built in a chapter:
 | Tools | Typed communication | 4 |
 | Policy | Gate reads, edits, commands | 5 |
 | Verification | Confirm before finishing | 6 |
-| Context / Instructions | Load knowledge safely | 7 |
-| Sessions / Recovery | Persist across restarts | 8 |
-| Profiles | Layered configuration | 9 |
-| MCP | External tool integration | 10 |
-| Observability | Trace without leaking secrets | 11 |
-| Evaluation | Prove quality | 12 |
-| Reference harness | Assemble everything | 13 |
+| Context | Resolve repository paths safely | 7 |
+| Runtime architecture | Instructions, sessions, flavors, MCP, telemetry, evaluation | 8–12 |
+| Reference harness | Assemble the runnable teaching core | 13 |
 
-The architecture map below shows how the layers interact. Each layer is a module in the reference implementation.
+The map below is conceptual. The runnable crate has no modules for verification retries, persisted sessions, flavors, MCP, telemetry, or evaluation.
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -113,18 +109,18 @@ The architecture map below shows how the layers interact. Each layer is a module
 
 The book is divided into four parts:
 
-**Part I — Build the smallest useful core (Chapters 1–3):** Model transport, the agent loop, and typed tools.
+**Part I — Build the smallest useful core (Chapters 1–3):** Model transport and the agent loop.
 
-**Part II — Add safety and context (Chapters 4–7):** Policy, verification, instruction loading.
+**Part II — Add tools and safety boundaries (Chapters 4–7):** Typed tools, policy, verification concepts, and repository context.
 
-**Part III — Turn a loop into a runtime (Chapters 8–11):** Sessions, profiles, MCP, observability.
+**Part III — Turn a loop into a runtime (Chapters 8–11):** Sessions, profiles, MCP, and observability.
 
 **Part IV — Know whether it works (Chapters 12–13):** Evaluation, final assembly.
 
 ## Notes
 
 - Code excerpts are drawn from the reference implementation. Long listings are in the source; short excerpts appear inline.
-- The production comparison (Quecto) links to the repository. Use the book's version pin in `PRODUCTION-MAPPING.md` (source of truth) when checking.
+- The production comparison (Quecto) links to the repository. Source paths and the pinned revision are listed in Appendix A.
 - "Beyond Rust" notes map interfaces to Python, TypeScript, and Go without creating parallel implementations.
 
 ---

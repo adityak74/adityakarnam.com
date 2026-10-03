@@ -71,6 +71,7 @@ pub struct AssistantMessage {
 }
 // ANCHOR_END: message-types
 
+// ANCHOR: model-config
 #[derive(Clone, Debug)]
 pub struct ModelConfig {
     pub base_url: String,
@@ -78,6 +79,7 @@ pub struct ModelConfig {
     pub model: String,
     pub timeout_secs: u64,
 }
+// ANCHOR_END: model-config
 
 #[derive(Debug)]
 pub enum ModelError {
