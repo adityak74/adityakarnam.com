@@ -10,7 +10,7 @@
 
 **Supporting line:** A practical systems guide built with Rust and proven through Quecto
 
-**Author:** Aditya Karnam
+**Authors:** Aditya Karnam and Arjun Jaggi
 
 **Edition:** 1.0.0
 

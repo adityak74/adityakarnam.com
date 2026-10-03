@@ -4,7 +4,7 @@
 title: "Building a Coding Agent Harness"
 subtitle: "From Model Calls to a Safe, Observable, Evaluable Runtime"
 supporting_line: "A practical systems guide built with Rust and proven through Quecto"
-author: "Aditya Karnam"
+author: "Aditya Karnam and Arjun Jaggi"
 edition: "1.0.0"
 published: "2026-10-02"
 license: "MIT"
