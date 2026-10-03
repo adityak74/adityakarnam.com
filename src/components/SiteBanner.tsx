@@ -22,6 +22,14 @@ type Promo = {
  */
 export const promos: Promo[] = [
   {
+    key: "coding-agent-harness-book",
+    to: "/books/coding-agent-harness/",
+    message: "New book: build a coding-agent harness, step by step, with a runnable Rust reference.",
+    cta: "Explore the book",
+    background: "#33231D",
+    label: "Coding Agent Harness Book",
+  },
+  {
     key: "portfolio-mcp",
     to: "/mcp-install/",
     message: "Portfolio MCP is live. Add Aditya's work to Claude.",

@@ -1,0 +1,58 @@
+---
+title: "I Wrote the Practical Systems Guide I Wanted for Building Coding Agents"
+description: "A 75-page, build-first guide to coding-agent harnesses: implement the bounded Rust core, study production concerns, and trace the architecture to Quecto."
+date: 2026-10-03
+slug: "/building-a-coding-agent-harness/"
+canonicalUrl: "https://adityakarnam.com/building-a-coding-agent-harness/"
+keywords:
+  [
+    "coding agent harness",
+    "AI agent runtime",
+    "Rust coding agent",
+    "agent safety",
+    "Quecto",
+  ]
+tags:
+  - ai
+  - agents
+  - rust
+---
+
+I built [Quecto](https://github.com/adityak74/quecto) to explore a practical question: what sits between a language model and a coding agent that can safely change a real repository?
+
+The model call is the visible part. The harness is the system around it: the bounded loop, typed tools, repository context, policy gate, and the decisions about when a task is actually complete. I wanted a guide that built those boundaries in code, showed where they fail, and stayed honest about the difference between a teaching example and a production runtime.
+
+That guide is now available: [*Building a Coding Agent Harness*](/books/coding-agent-harness/), a free 75-page book by Aditya Karnam and Arjun Jaggi. You can [read it in your browser](/books/coding-agent-harness/), [download the PDF](/books/building-a-coding-agent-harness.pdf), or get the [source and runnable examples](/books/building-a-coding-agent-harness-edition-1.zip).
+
+## What the book helps you build
+
+The first part establishes the model boundary and adds a small Rust reference crate. You implement an OpenAI-compatible transport, a bounded tool-calling loop, typed tools, repository path checks, and execution policy. The code excerpts are resolved from that crate at build time, so the runnable source—not a separately maintained pseudocode listing—is the reference.
+
+The implementation is deliberately compact. Chapters 2–5 build its working core; Chapter 13 assembles and exercises it. The result is a library component with tests, not a ready-to-run terminal product. The book explains how a CLI could adapt the core without making the transport, tools, or policy depend on terminal input.
+
+## The harness is more than the loop
+
+The later chapters widen the design to verification, context and instructions, sessions, configuration, MCP, telemetry, and evaluation. Those chapters mark their boundary clearly: where the compact teaching crate does not implement a production concern, the text treats it as a design study and points to Quecto's corresponding source.
+
+That distinction matters. A reader should not finish a chapter believing they have persisted sessions or an MCP client if the code they just built does not contain those things. The book separates the runnable baseline from its production extensions, then maps both to the larger Quecto workspace.
+
+## Why use Quecto as the reference?
+
+Quecto is the proof project behind the guide. It grew from a small model interface into a Rust workspace with a coding-agent runtime, tools and policy, sessions, optional MCP transports, and evaluation code. The teaching crate does not duplicate Quecto's APIs or feature set; it isolates concepts so readers can build the fundamentals and then compare the production choices in real source.
+
+The appendix provides a topic-by-topic source map and commands for exploring and testing the Quecto workspace. Start with the [book page](/books/coding-agent-harness/) for the complete contents and embedded preview, then open the [Quecto repository](https://github.com/adityak74/quecto) alongside it.
+
+## A build-first reading path
+
+Read Chapters 1–5 in order and run the reference-harness tests as you go. Treat Chapters 6–12 as production design studies, following their implementation-boundary callouts. Finish with Chapter 13 to review what the compact core includes—and the checklist of what a real deployment still needs to decide.
+
+There are 14 chapters and an appendix, with exercises, system invariants, failure modes, and build checkpoints throughout. The goal is not to copy a framework. It is to leave with a working core and better judgment about the boundaries you would need to harden for your own runtime.
+
+## Read or download
+
+- [Open the book page and preview all 75 pages](/books/coding-agent-harness/)
+- [Download the PDF](/books/building-a-coding-agent-harness.pdf)
+- [Download the source package, manuscript, and reference implementation](/books/building-a-coding-agent-harness-edition-1.zip)
+- [Read the standalone HTML edition](/books/building-a-coding-agent-harness.html)
+
+The book is released under the MIT License. The examples use Rust; Python, TypeScript, and Go appear in short cross-language notes rather than as parallel implementations.
