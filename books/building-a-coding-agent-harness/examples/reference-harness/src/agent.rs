@@ -1,8 +1,9 @@
 use crate::context::Context;
 use crate::model::{Message, Model, ToolCall};
+use crate::policy::{Decision, Policy, Preset};
 use crate::tools::ToolRegistry;
 
-#[derive(Clone, Debug)]
+#[derive(Default)]
 pub struct AgentConfig {
     pub system_prompt: String,
     pub max_steps: usize,
@@ -87,6 +88,7 @@ impl Agent {
     pub fn run(&mut self, prompt: &str) -> Outcome {
         self.messages.push(Message::user(prompt));
         let mut repeat_guard = RepeatGuard::default();
+        let mut denial_count: usize = 0;
 
         for _ in 0..self.config.max_steps {
             let reply = match self
@@ -106,12 +108,39 @@ impl Agent {
             }
 
             for call in reply.tool_calls {
+                // Apply the default ReadOnly policy when denial_limit > 0.
+                if self.config.denial_limit > 0 {
+                    let policy = Policy::from_preset(Preset::ReadOnly);
+                    match policy.decide(&call) {
+                        Decision::Allow => {}
+                        Decision::Ask => {
+                            // Waiting for user approval: do NOT execute.
+                            // Skip to next call without incrementing denial_count.
+                            continue;
+                        }
+                        Decision::Deny(reason) => {
+                            denial_count += 1;
+                            if denial_count >= self.config.denial_limit.max(1) {
+                                return Outcome::Blocked;
+                            }
+                            self.messages.push(Message::tool_result(
+                                call.id.clone(),
+                                format!("policy denied: {reason}"),
+                            ));
+                            continue;
+                        }
+                    }
+                }
+
                 let result = match self.registry.execute(&call, &mut self.context) {
                     Ok(output) => output.content,
                     Err(error) => error.to_string(),
                 };
-                self.messages
-                    .push(Message::tool_result(call.id.clone(), result.clone()));
+                self.messages.push(Message::tool_result(
+                    call.id.clone(),
+                    result.clone(),
+                ));
+                denial_count = 0;
                 if repeat_guard.observe(
                     &call,
                     &result,
@@ -127,4 +156,3 @@ impl Agent {
     }
     // ANCHOR_END: bounded-agent-loop
 }
-

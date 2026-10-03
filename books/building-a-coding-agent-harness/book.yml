@@ -1,0 +1,121 @@
+# Book manifest — defines chapter order, required callouts, and output metadata.
+# Referenced by the build and validation scripts.
+
+title: "Building a Coding Agent Harness"
+subtitle: "From Model Calls to a Safe, Observable, Evaluable Runtime"
+supporting_line: "A practical systems guide built with Rust and proven through Quecto"
+author: "Aditya Karnam"
+edition: "1.0.0"
+published: "2026-10-02"
+license: "MIT"
+repository: "https://github.com/adityakarnam/quecto"
+path: "/building-a-coding-agent-harness/"
+page_count_target: 70
+page_count_max: 80
+word_count_target: 18000
+word_count_max: 24000
+
+chapters:
+  - id: 0
+    file: 00-front-matter.md
+    title: "Front Matter"
+    required_callouts: []
+  - id: 1
+    file: 01-the-harness-is-the-system.md
+    title: "The Harness Is the System"
+    required_callouts:
+      - system-invariant
+      - failure-mode
+      - quecto-in-production
+  - id: 2
+    file: 02-one-model-call-no-framework.md
+    title: "One Model Call, No Framework"
+    required_callouts:
+      - system-invariant
+      - failure-mode
+      - quecto-in-production
+      - beyond-rust
+  - id: 3
+    file: 03-the-bounded-agent-loop.md
+    title: "The Bounded Agent Loop"
+    required_callouts:
+      - system-invariant
+      - failure-mode
+      - quecto-in-production
+      - build-checkpoint
+  - id: 4
+    file: 04-typed-unsafe-communication.md
+    title: "Typed, Unsafe-Free Communication"
+    required_callouts:
+      - system-invariant
+      - failure-mode
+      - quecto-in-production
+  - id: 5
+    file: 05-execution-policy.md
+    title: "Execution Policy and Approval Gates"
+    required_callouts:
+      - system-invariant
+      - failure-mode
+      - quecto-in-production
+  - id: 6
+    file: 06-verification-as-a-completion-gate.md
+    title: "Verification as a Completion Gate"
+    required_callouts:
+      - system-invariant
+      - failure-mode
+      - quecto-in-production
+  - id: 7
+    file: 07-context-and-instruction-loading.md
+    title: "Context and Instruction Loading"
+    required_callouts:
+      - system-invariant
+      - failure-mode
+      - quecto-in-production
+  - id: 8
+    file: 08-sessions-state-and-recovery.md
+    title: "Sessions, State, and Recovery"
+    required_callouts:
+      - system-invariant
+      - failure-mode
+      - quecto-in-production
+  - id: 9
+    file: 09-profiles-and-extensibility.md
+    title: "Profiles and Extensibility"
+    required_callouts:
+      - system-invariant
+      - failure-mode
+      - quecto-in-production
+      - beyond-rust
+  - id: 10
+    file: 10-mcp-and-external-tools.md
+    title: "MCP and External Tools"
+    required_callouts:
+      - system-invariant
+      - failure-mode
+      - quecto-in-production
+      - beyond-rust
+  - id: 11
+    file: 11-observability.md
+    title: "Observability"
+    required_callouts:
+      - system-invariant
+      - failure-mode
+      - quecto-in-production
+  - id: 12
+    file: 12-evaluation.md
+    title: "Evaluation"
+    required_callouts:
+      - system-invariant
+      - failure-mode
+      - quecto-in-production
+  - id: 13
+    file: 13-complete-reference-harness.md
+    title: "Complete the Reference Harness"
+    required_callouts:
+      - system-invariant
+      - quecto-in-production
+      - beyond-rust
+  - id: 14
+    file: 90-appendices.md
+    title: "Appendices"
+    required_callouts: []

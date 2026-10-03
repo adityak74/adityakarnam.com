@@ -111,7 +111,7 @@ fn config(max_steps: usize, repeat_limit: usize) -> AgentConfig {
         system_prompt: "You are a coding agent.".to_owned(),
         max_steps,
         repeat_limit,
-        denial_limit: 3,
+        denial_limit: 0,
     }
 }
 
