@@ -73,36 +73,18 @@ The system can be understood as cooperating concerns. The first five are impleme
 
 The map below is conceptual. The runnable crate has no modules for verification retries, persisted sessions, flavors, MCP, telemetry, or evaluation.
 
-```
-┌─────────────────────────────────────────────┐
-│              Evaluation                     │ 12
-│  ┌─────────────────────────────────────┐    │
-│  │  Observability (trace, no leaks)    │ 11  │
-│  │  ┌──────────────────────────────┐  │    │
-│  │  │  MCP (external trust)       │ 10  │  │
-│  │  │  ┌────────────────────────┐  │  │    │
-│  │  │  │  Profiles /Extensibility│ 9   │  │  │
-│  │  │  │  ┌───────────────────┐  │  │  │    │
-│  │  │  │  │  Sessions (persist)│ 8   │  │  │  │
-│  │  │  │  │  ┌───────────────┐│  │  │  │    │
-│  │  │  │  │  │  Policy/Gate  │ 7   │  │  │  │
-│  │  │  │  │  │  ┌───────────┐│  │  │  │    │
-│  │  │  │  │  │  │  Context  │ 6   │  │  │  │
-│  │  │  │  │  │  │  ┌────────┐│  │  │  │    │
-│  │  │  │  │  │  │  │ Tools  │ 5   │  │  │  │
-│  │  │  │  │  │  │  │  ┌────┐│  │  │  │    │
-│  │  │  │  │  │  │  │  │Agent│ 4   │  │  │  │
-│  │  │  │  │  │  │  │  │  ┌─┐│  │  │  │    │
-│  │  │  │  │  │  │  │  │  │Model│ 3   │  │  │  │
-│  │  │  │  │  │  │  │  └──┘   │  │  │  │    │
-│  │  │  │  │  └───────────────┘  │  │  │  │
-│  │  │  │  └─────────────────────┘  │  │  │  │
-│  │  │  └──────────────────────────┘  │  │  │  │
-│  │  └──────────────────────────────┘  │  │  │  │
-│  └─────────────────────────────────────┘  │  │  │
-└─────────────────────────────────────────────┘  │  │  │
-                                                  └──┘  │  │
-                                                         └──┘
+```mermaid
+flowchart TB
+  accTitle: Book implementation path
+  accDescr: The book first builds a runnable core, then studies runtime extensions, and finally assembles the core as a reference harness.
+  CORE[Runnable teaching core · Chapters 2–5]
+  STUDIES[Runtime design studies · Chapters 6–12]
+  HARNESS[Integrated reference harness · Chapter 13]
+  CORE --> STUDIES --> HARNESS
+  classDef core fill:#f3e7d5,stroke:#b65336,color:#292723,stroke-width:2px
+  classDef design fill:#e5efeb,stroke:#49766d,color:#292723
+  class CORE,HARNESS core
+  class STUDIES design
 ```
 
 ## How This Book Is Structured

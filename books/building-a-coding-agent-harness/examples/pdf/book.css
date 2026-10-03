@@ -145,6 +145,22 @@ pre {
   page-break-inside: avoid;
 }
 pre code { background: transparent; padding: 0; font-size: 8pt; }
+.diagram {
+  margin: 5mm 0 7mm;
+  padding: 3mm;
+  background: #f7f4ed;
+  border: .55pt solid #ded8cc;
+  border-left: 2pt solid #b94f32;
+  page-break-inside: avoid;
+  text-align: center;
+}
+.diagram img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: 112mm;
+  margin: 0 auto;
+}
 table { border-collapse: collapse; width: 100%; margin: 4mm 0 6mm; font-size: 9pt; line-height: 1.35; }
 th { text-align: left; font: 8pt "Avenir", sans-serif; text-transform: uppercase; letter-spacing: .4pt; color: #8b412f; border-bottom: 1.2pt solid #b94f32; }
 th, td { vertical-align: top; padding: 2mm 2.2mm; }

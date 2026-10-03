@@ -16,8 +16,12 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 from dataclasses import dataclass
+from html import escape
 from pathlib import Path
 
 import markdown
@@ -33,6 +37,7 @@ BOOK_DIR = SCRIPT_DIR.parent  # book root (sibling of examples/)
 MANUSCRIPT_DIR = BOOK_DIR / "manuscript"
 REFERENCE_ROOT = SCRIPT_DIR / "reference-harness"
 BOOK_YML = BOOK_DIR / "book.yml"
+MERMAID_FENCE = re.compile(r"(?ms)^```mermaid[ \t]*\n(.*?)^```[ \t]*$")
 
 
 # ── helpers ──────────────────────────────────────────────────────────────────
@@ -146,6 +151,93 @@ def resolve_includes(md: str) -> str:
     return pattern.sub(replacer, md)
 
 
+def find_mermaid_cli() -> str:
+    """Find the book-local Mermaid CLI or a user-installed `mmdc`."""
+    local_cli = SCRIPT_DIR / "node_modules" / ".bin" / "mmdc"
+    if local_cli.is_file():
+        return str(local_cli)
+    cli = shutil.which("mmdc")
+    if cli:
+        return cli
+    raise RuntimeError(
+        "Mermaid diagrams require mmdc. From examples/, run `npm ci` "
+        "or install @mermaid-js/mermaid-cli globally."
+    )
+
+
+def render_mermaid_blocks(
+    md: str,
+    output_dir: Path,
+    *,
+    group: str = "diagram",
+    runner=None,
+    renderer: str | None = None,
+) -> str:
+    """Replace Mermaid fences with local SVG figures; fail rather than leak source."""
+    if not MERMAID_FENCE.search(md):
+        if re.search(r"(?m)^```mermaid(?:[ \t]|$)", md):
+            raise ValueError("unterminated Mermaid code fence")
+        return md
+
+    runner = runner or subprocess.run
+    renderer = renderer or find_mermaid_cli()
+    output_dir.mkdir(parents=True, exist_ok=True)
+    diagram_index = 0
+
+    def render_match(match: re.Match) -> str:
+        nonlocal diagram_index
+        diagram_index += 1
+        source = match.group(1).strip() + "\n"
+        filename = f"{group}-{diagram_index:02d}.svg"
+        output_path = output_dir / filename
+        source_path: Path | None = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="w", encoding="utf-8", suffix=".mmd", dir=output_dir, delete=False
+            ) as source_file:
+                source_file.write(source)
+                source_path = Path(source_file.name)
+            runner(
+                [
+                    renderer,
+                    "-i", str(source_path),
+                    "-o", str(output_path),
+                    "-c", str(SCRIPT_DIR / "mermaid-config.json"),
+                    "-b", "#f7f4ed",
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+        except FileNotFoundError as error:
+            raise RuntimeError("could not start Mermaid CLI (mmdc)") from error
+        except subprocess.CalledProcessError as error:
+            detail = (error.stderr or error.stdout or "renderer returned a failure").strip()
+            raise RuntimeError(f"could not render diagram {diagram_index}: {detail}") from error
+        finally:
+            if source_path is not None:
+                source_path.unlink(missing_ok=True)
+
+        if not output_path.is_file() or output_path.stat().st_size == 0:
+            raise RuntimeError(f"Mermaid CLI produced no SVG for diagram {diagram_index}")
+
+        description = f"Diagram {diagram_index}"
+        for line in source.splitlines():
+            accessible_description = re.match(r"\s*accDescr:\s*(.+)", line)
+            if accessible_description:
+                description = accessible_description.group(1).strip()
+                break
+        return (
+            f'<figure class="diagram"><img src="{filename}" '
+            f'alt="{escape(description, quote=True)}" /></figure>'
+        )
+
+    rendered = MERMAID_FENCE.sub(render_match, md)
+    if re.search(r"(?m)^```mermaid(?:[ \t]|$)", rendered):
+        raise ValueError("unprocessed Mermaid code fence remains in manuscript")
+    return rendered
+
+
 def load_chapters() -> list[Chapter]:
     manifest_files = load_book_yml()["chapters"]
     if not manifest_files:
@@ -208,8 +300,16 @@ def md_to_html(md: str) -> str:
 # ── PDF generation ───────────────────────────────────────────────────────────
 
 
-def build_html(chapters: list[Chapter], yml: dict) -> str:
+def build_html(
+    chapters: list[Chapter],
+    yml: dict,
+    diagram_dir: Path | None = None,
+    *,
+    mermaid_runner=None,
+    mermaid_renderer: str | None = None,
+) -> str:
     """Assemble the final HTML (TOC + chapters + appendices)."""
+    diagram_dir = diagram_dir or (SCRIPT_DIR / "static" / "books")
     toc_html = ""
     for i, ch in enumerate(chapters):
         if i == 0:
@@ -235,12 +335,26 @@ def build_html(chapters: list[Chapter], yml: dict) -> str:
         if i == 0:
             body = re.sub(r"(?m)^# .*\n?", "", ch.body, count=1)
             body = re.sub(r"(?ms)^## Front Matter\s*.*?(?=^## Preface)", "", body, count=1)
+            body = render_mermaid_blocks(
+                body,
+                diagram_dir,
+                group=f"chapter-{i:02d}-diagram",
+                runner=mermaid_runner,
+                renderer=mermaid_renderer,
+            )
             chapter_html_parts.append(f'<section class="front-matter">{md_to_html(body)}</section>')
             continue
         anchor = f"chapter-{i}"
         chapter_html_parts.append(f'<section class="chapter"><h1 id="{anchor}">{ch.title}</h1>')
         # The source heading is represented by the manifest-backed heading above.
         body = re.sub(r"(?m)^# .*\n?", "", ch.body, count=1)
+        body = render_mermaid_blocks(
+            body,
+            diagram_dir,
+            group=f"chapter-{i:02d}-diagram",
+            runner=mermaid_runner,
+            renderer=mermaid_renderer,
+        )
         chapter_html_parts.append(md_to_html(body))
         chapter_html_parts.append("</section>")
 
@@ -343,7 +457,8 @@ def main() -> None:
 
     yml = load_book_yml()
     chapters = load_chapters()
-    html = build_html(chapters, yml)
+    output_dir = Path(args.output).parent
+    html = build_html(chapters, yml, output_dir)
 
     if args.standalone:
         out_path = Path(args.output).with_suffix(".html")

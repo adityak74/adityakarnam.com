@@ -1,0 +1,27 @@
+{
+  "theme": "base",
+  "htmlLabels": false,
+  "themeVariables": {
+    "fontFamily": "Avenir, Helvetica Neue, sans-serif",
+    "fontSize": "16px",
+    "primaryColor": "#f3e7d5",
+    "primaryTextColor": "#292723",
+    "primaryBorderColor": "#b65336",
+    "secondaryColor": "#e5efeb",
+    "secondaryTextColor": "#292723",
+    "secondaryBorderColor": "#49766d",
+    "tertiaryColor": "#f7f4ed",
+    "lineColor": "#49766d",
+    "textColor": "#292723",
+    "mainBkg": "#f3e7d5",
+    "nodeBorder": "#b65336",
+    "clusterBkg": "#f7f4ed",
+    "clusterBorder": "#b8afa0",
+    "edgeLabelBackground": "#f7f4ed",
+    "actorBkg": "#f3e7d5",
+    "actorBorder": "#b65336",
+    "actorTextColor": "#292723",
+    "signalColor": "#49766d",
+    "signalTextColor": "#292723"
+  }
+}

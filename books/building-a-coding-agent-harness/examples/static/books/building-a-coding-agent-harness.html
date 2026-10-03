@@ -145,6 +145,22 @@ pre {
   page-break-inside: avoid;
 }
 pre code { background: transparent; padding: 0; font-size: 8pt; }
+.diagram {
+  margin: 5mm 0 7mm;
+  padding: 3mm;
+  background: #f7f4ed;
+  border: .55pt solid #ded8cc;
+  border-left: 2pt solid #b94f32;
+  page-break-inside: avoid;
+  text-align: center;
+}
+.diagram img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: 112mm;
+  margin: 0 auto;
+}
 table { border-collapse: collapse; width: 100%; margin: 4mm 0 6mm; font-size: 9pt; line-height: 1.35; }
 th { text-align: left; font: 8pt "Avenir", sans-serif; text-transform: uppercase; letter-spacing: .4pt; color: #8b412f; border-bottom: 1.2pt solid #b94f32; }
 th, td { vertical-align: top; padding: 2mm 2.2mm; }
@@ -268,36 +284,7 @@ a { color: #a44831; }
 </tbody>
 </table>
 <p>The map below is conceptual. The runnable crate has no modules for verification retries, persisted sessions, flavors, MCP, telemetry, or evaluation.</p>
-<div class="codehilite"><pre><span></span><code>┌─────────────────────────────────────────────┐
-│              Evaluation                     │ 12
-│  ┌─────────────────────────────────────┐    │
-│  │  Observability (trace, no leaks)    │ 11  │
-│  │  ┌──────────────────────────────┐  │    │
-│  │  │  MCP (external trust)       │ 10  │  │
-│  │  │  ┌────────────────────────┐  │  │    │
-│  │  │  │  Profiles /Extensibility│ 9   │  │  │
-│  │  │  │  ┌───────────────────┐  │  │  │    │
-│  │  │  │  │  Sessions (persist)│ 8   │  │  │  │
-│  │  │  │  │  ┌───────────────┐│  │  │  │    │
-│  │  │  │  │  │  Policy/Gate  │ 7   │  │  │  │
-│  │  │  │  │  │  ┌───────────┐│  │  │  │    │
-│  │  │  │  │  │  │  Context  │ 6   │  │  │  │
-│  │  │  │  │  │  │  ┌────────┐│  │  │  │    │
-│  │  │  │  │  │  │  │ Tools  │ 5   │  │  │  │
-│  │  │  │  │  │  │  │  ┌────┐│  │  │  │    │
-│  │  │  │  │  │  │  │  │Agent│ 4   │  │  │  │
-│  │  │  │  │  │  │  │  │  ┌─┐│  │  │  │    │
-│  │  │  │  │  │  │  │  │  │Model│ 3   │  │  │  │
-│  │  │  │  │  │  │  │  └──┘   │  │  │  │    │
-│  │  │  │  │  └───────────────┘  │  │  │  │
-│  │  │  │  └─────────────────────┘  │  │  │  │
-│  │  │  └──────────────────────────┘  │  │  │  │
-│  │  └──────────────────────────────┘  │  │  │  │
-│  └─────────────────────────────────────┘  │  │  │
-└─────────────────────────────────────────────┘  │  │  │
-                                                  └──┘  │  │
-                                                         └──┘
-</code></pre></div>
+<figure class="diagram"><img src="chapter-00-diagram-01.svg" alt="The book first builds a runnable core, then studies runtime extensions, and finally assembles the core as a reference harness." /></figure>
 
 <h2 id="how-this-book-is-structured">How This Book Is Structured</h2>
 <p>The book is divided into four parts:</p>
@@ -333,20 +320,7 @@ a { color: #a44831; }
 <p>The harness is the system. The model is only the model.</p>
 <h2 id="the-model-boundary">The Model Boundary</h2>
 <p>The boundary between the model and the harness is the <strong>API call</strong>. This is a request (messages + tools) and a response (content + tool calls). Everything between the API call and the next API call is the harness.</p>
-<div class="codehilite"><pre><span></span><code><span class="err">┌─────────────────────────────────────┐</span>
-<span class="err">│</span><span class="w">        </span><span class="n">THE</span><span class="w"> </span><span class="n">MODEL</span><span class="w">                    </span><span class="err">│</span>
-<span class="err">│</span><span class="w">  </span><span class="p">(</span><span class="n">capability</span><span class="p">:</span><span class="w"> </span><span class="n">reasoning</span><span class="p">,</span><span class="w"> </span><span class="n">generation</span><span class="p">)</span><span class="err">│</span>
-<span class="err">│</span><span class="w">                                     </span><span class="err">│</span>
-<span class="err">│</span><span class="w">  </span><span class="n">request</span><span class="w">  </span><span class="err">←────────────────────→</span><span class="w">  </span><span class="n">response</span><span class="w">  </span><span class="err">│</span>
-<span class="err">│</span><span class="w">  </span><span class="p">(</span><span class="n">messages</span><span class="p">,</span><span class="w"> </span><span class="n">tools</span><span class="p">)</span><span class="w">              </span><span class="p">(</span><span class="n">content</span><span class="p">,</span><span class="w"> </span><span class="n">tool_calls</span><span class="p">)</span>
-<span class="err">│</span><span class="w">                                     </span><span class="err">│</span>
-<span class="err">│</span><span class="w">  </span><span class="mi">392</span><span class="w"> </span><span class="n">tokens</span><span class="w"> </span><span class="ow">in</span><span class="p">,</span><span class="w"> </span><span class="mi">190</span><span class="w"> </span><span class="n">tokens</span><span class="w"> </span><span class="n">out</span><span class="w">      </span><span class="err">│</span>
-<span class="err">│</span><span class="w">  </span><span class="p">(</span><span class="n">example</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="o">-</span><span class="n">dependent</span><span class="p">)</span><span class="w">         </span><span class="err">│</span>
-<span class="err">└─────────────────────────────────────┘</span>
-<span class="w">        </span><span class="err">↑</span><span class="w">                                    </span><span class="err">│</span>
-<span class="w">        </span><span class="err">│</span><span class="w">  </span><span class="p">(</span><span class="n">HARNESS</span><span class="p">:</span><span class="w"> </span><span class="n">steps</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">through</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w">       </span><span class="err">│</span>
-<span class="w">        </span><span class="err">│</span><span class="w">                                     </span><span class="err">│</span>
-</code></pre></div>
+<figure class="diagram"><img src="chapter-01-diagram-01.svg" alt="The harness sends messages and tool definitions to the model, dispatches returned tool calls, records results, and repeats until the model returns text." /></figure>
 
 <p>The harness sits between calls. It transforms the response into a decision (what to do next), executes that decision (tools), and accumulates the result (messages) for the next model call.</p>
 <blockquote>
@@ -1549,22 +1523,7 @@ cargo<span class="w"> </span><span class="nb">test</span><span class="w"> </span
 <li>If verification fails → report failures and, if configured, allow a bounded repair attempt.</li>
 <li>If retry budget exhausted → <code>Outcome::VerificationFailed { attempts }</code>.</li>
 </ol>
-<div class="codehilite"><pre><span></span><code>┌──────────────────────────────────────────────────────┐
-│<span class="w">  </span><span class="nv">Verification</span><span class="w"> </span><span class="k">Loop</span><span class="w">                                   </span>│
-│<span class="w">                                                      </span>│
-│<span class="w">  </span>┌─────────────────┐<span class="w">    </span>┌─────────────────────────┐<span class="w">  </span>│
-│<span class="w">  </span>│<span class="w">  </span><span class="nv">Agent</span><span class="w"> </span><span class="k">loop</span><span class="w">     </span>│<span class="w"> </span>→<span class="w">  </span>│<span class="w">  </span><span class="nv">Verify</span><span class="w"> </span><span class="ss">(</span><span class="nv">tests</span>,<span class="w"> </span><span class="nv">lint</span><span class="ss">)</span><span class="w">   </span>│<span class="w">  </span>│
-│<span class="w">  </span>│<span class="w">  </span><span class="ss">(</span><span class="nv">model</span><span class="w"> </span><span class="nv">says</span><span class="w">    </span>│<span class="w">    </span>│<span class="w">  </span><span class="ss">(</span><span class="nv">pass</span><span class="w"> </span><span class="nv">or</span><span class="w"> </span><span class="nv">fail</span><span class="ss">)</span><span class="w">         </span>│<span class="w">  </span>│
-│<span class="w">  </span>│<span class="w">   </span><span class="s2">&quot;done&quot;</span><span class="ss">)</span><span class="w">       </span>│<span class="w">    </span>└────────┬────────────────┘<span class="w">  </span>│
-│<span class="w">  </span>└─────────────────┘<span class="w">             </span>│<span class="w">                  </span>│
-│<span class="w">           </span>│<span class="w">                      </span>│<span class="w"> </span><span class="nv">pass</span>?<span class="w">            </span>│
-│<span class="w">  </span>┌────────▼────────┐<span class="w">            </span>│<span class="w"> </span><span class="nv">yes</span><span class="w"> </span>→<span class="w"> </span><span class="nv">Complete</span><span class="w">   </span>│
-│<span class="w">  </span>│<span class="w">  </span><span class="nv">Undo</span><span class="w"> </span><span class="nv">changes</span><span class="w">  </span>│<span class="w">  </span>←──────────┘<span class="w">                  </span>│
-│<span class="w">  </span>│<span class="w">  </span><span class="nv">Report</span><span class="w"> </span><span class="nv">errors</span><span class="w">  </span>│<span class="w">                                </span>│
-│<span class="w">  </span>│<span class="w">  </span><span class="nv">Retry</span><span class="w"> </span><span class="ss">(</span><span class="nv">max</span><span class="w"> </span><span class="mi">3</span><span class="ss">)</span><span class="w">  </span>│<span class="w">                                </span>│
-│<span class="w">  </span>└─────────────────┘<span class="w">                                </span>│
-└──────────────────────────────────────────────────────┘
-</code></pre></div>
+<figure class="diagram"><img src="chapter-06-diagram-01.svg" alt="Verification runs configured checks after the agent claims completion; failure permits only a bounded repair loop, then returns a verification failure." /></figure>
 
 <h2 id="the-verification-command">The Verification Command</h2>
 <p>A verification command is any command that:</p>
@@ -2728,21 +2687,60 @@ cargo<span class="w"> </span><span class="nb">test</span><span class="w"> </span
 </blockquote>
 <h2 id="what-you-have-built">What You Have Built</h2>
 <p>At this point, the reference crate has a real model boundary, a bounded loop, typed tools, repository path checks, a command boundary, and a policy gate. Its structure is deliberately small:</p>
-<div class="codehilite"><pre><span></span><code>reference-harness/
-├── Cargo.toml
-├── src/
-│   ├── lib.rs       # module exports
-│   ├── model.rs     # messages, Model, OpenAI-compatible HTTP
-│   ├── agent.rs     # loop, outcomes, repeat/denial limits
-│   ├── tools.rs     # typed tools and deterministic registry
-│   ├── context.rs   # repository paths and bounded command runner
-│   └── policy.rs    # allow / ask / deny decisions
-└── tests/
-    ├── agent_loop.rs
-    ├── model_http.rs
-    └── safety.rs
-</code></pre></div>
-
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Cargo.toml</code></td>
+<td>Crate manifest and Rust dependencies</td>
+</tr>
+<tr>
+<td><code>src/lib.rs</code></td>
+<td>Public module exports</td>
+</tr>
+<tr>
+<td><code>src/model.rs</code></td>
+<td>Messages, <code>Model</code> trait, OpenAI-compatible HTTP</td>
+</tr>
+<tr>
+<td><code>src/agent.rs</code></td>
+<td>Bounded loop, outcomes, repeat and denial limits</td>
+</tr>
+<tr>
+<td><code>src/tools.rs</code></td>
+<td>Typed tools and deterministic registry</td>
+</tr>
+<tr>
+<td><code>src/context.rs</code></td>
+<td>Repository paths and bounded command runner</td>
+</tr>
+<tr>
+<td><code>src/policy.rs</code></td>
+<td>Allow / ask / deny decisions</td>
+</tr>
+<tr>
+<td><code>tests/agent_loop.rs</code></td>
+<td>Agent-loop behavior</td>
+</tr>
+<tr>
+<td><code>tests/model_http.rs</code></td>
+<td>HTTP protocol behavior</td>
+</tr>
+<tr>
+<td><code>tests/safety.rs</code></td>
+<td>Path, command, and policy boundaries</td>
+</tr>
+<tr>
+<td><code>examples/tests/test_build_book.py</code></td>
+<td>Book build and diagram-rendering tests</td>
+</tr>
+</tbody>
+</table>
 <p>The implementation does <strong>not</strong> include production sessions, profiles, verification retries, MCP, telemetry, evaluation, or a CLI. Those concerns are explored as design extensions and mapped to production source in Appendix A. Keeping that distinction visible matters: a reader should be able to run every claim about the teaching crate without discovering that the corresponding file was never written.</p>
 <h2 id="exercise-the-integrated-core">Exercise the Integrated Core</h2>
 <p>Run the full reference suite:</p>
@@ -2970,11 +2968,12 @@ cargo<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </spa
 </table>
 <h2 id="rebuild-this-book">Rebuild This Book</h2>
 <p>The source manuscript, build script, stylesheet, and reference crate live together in the book directory. From <code>books/building-a-coding-agent-harness/examples</code>, run:</p>
-<div class="codehilite"><pre><span></span><code>python3<span class="w"> </span>build_book.py
+<div class="codehilite"><pre><span></span><code>npm<span class="w"> </span>ci
+python3<span class="w"> </span>build_book.py
 cargo<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--manifest-path<span class="w"> </span>reference-harness/Cargo.toml
 </code></pre></div>
 
-<p>The builder writes the PDF and HTML to <code>static/books/</code>. It resolves source-code includes from the reference crate so the short listings stay aligned with executable code.</p>
+<p>Install the pinned Mermaid CLI with <code>npm ci</code> before building. The builder writes the PDF, standalone HTML, cover, and rendered diagram SVGs to <code>static/books/</code>. It resolves source-code includes from the reference crate so the short listings stay aligned with executable code.</p>
 <hr />
 <p><em>End of Appendix A.</em></p>
 </section></body></html>

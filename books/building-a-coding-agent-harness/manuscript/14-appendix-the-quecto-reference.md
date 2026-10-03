@@ -80,11 +80,12 @@ The production binary is `quecto-agent`, not a `quecto run` subcommand. It accep
 The source manuscript, build script, stylesheet, and reference crate live together in the book directory. From `books/building-a-coding-agent-harness/examples`, run:
 
 ```sh
+npm ci
 python3 build_book.py
 cargo test --manifest-path reference-harness/Cargo.toml
 ```
 
-The builder writes the PDF and HTML to `static/books/`. It resolves source-code includes from the reference crate so the short listings stay aligned with executable code.
+Install the pinned Mermaid CLI with `npm ci` before building. The builder writes the PDF, standalone HTML, cover, and rendered diagram SVGs to `static/books/`. It resolves source-code includes from the reference crate so the short listings stay aligned with executable code.
 
 ---
 

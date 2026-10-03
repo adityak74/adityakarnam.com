@@ -7,12 +7,13 @@ This package contains the manuscript, build pipeline, printable PDF, web HTML, c
 From `examples/`:
 
 ```sh
+npm ci
 python3 build_book.py
 python3 build_book.py --standalone
 cargo test --manifest-path reference-harness/Cargo.toml
 ```
 
-The builder requires Python-Markdown and WeasyPrint. It writes the PDF and HTML under `examples/static/books/`.
+The builder requires Python-Markdown and WeasyPrint. Mermaid CLI is pinned in `package-lock.json`; install it with `npm ci` before building. It writes the PDF and HTML under `examples/static/books/` and places rendered diagram SVGs alongside them.
 
 ## What Is Implemented
 

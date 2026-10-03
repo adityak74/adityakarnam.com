@@ -6,21 +6,19 @@
 
 At this point, the reference crate has a real model boundary, a bounded loop, typed tools, repository path checks, a command boundary, and a policy gate. Its structure is deliberately small:
 
-```text
-reference-harness/
-├── Cargo.toml
-├── src/
-│   ├── lib.rs       # module exports
-│   ├── model.rs     # messages, Model, OpenAI-compatible HTTP
-│   ├── agent.rs     # loop, outcomes, repeat/denial limits
-│   ├── tools.rs     # typed tools and deterministic registry
-│   ├── context.rs   # repository paths and bounded command runner
-│   └── policy.rs    # allow / ask / deny decisions
-└── tests/
-    ├── agent_loop.rs
-    ├── model_http.rs
-    └── safety.rs
-```
+| Path | Responsibility |
+|---|---|
+| `Cargo.toml` | Crate manifest and Rust dependencies |
+| `src/lib.rs` | Public module exports |
+| `src/model.rs` | Messages, `Model` trait, OpenAI-compatible HTTP |
+| `src/agent.rs` | Bounded loop, outcomes, repeat and denial limits |
+| `src/tools.rs` | Typed tools and deterministic registry |
+| `src/context.rs` | Repository paths and bounded command runner |
+| `src/policy.rs` | Allow / ask / deny decisions |
+| `tests/agent_loop.rs` | Agent-loop behavior |
+| `tests/model_http.rs` | HTTP protocol behavior |
+| `tests/safety.rs` | Path, command, and policy boundaries |
+| `examples/tests/test_build_book.py` | Book build and diagram-rendering tests |
 
 The implementation does **not** include production sessions, profiles, verification retries, MCP, telemetry, evaluation, or a CLI. Those concerns are explored as design extensions and mapped to production source in Appendix A. Keeping that distinction visible matters: a reader should be able to run every claim about the teaching crate without discovering that the corresponding file was never written.
 

@@ -24,22 +24,18 @@ When the agent's model says "done" (no tool calls), the harness:
 4. If verification fails → report failures and, if configured, allow a bounded repair attempt.
 5. If retry budget exhausted → `Outcome::VerificationFailed { attempts }`.
 
-```
-┌──────────────────────────────────────────────────────┐
-│  Verification Loop                                   │
-│                                                      │
-│  ┌─────────────────┐    ┌─────────────────────────┐  │
-│  │  Agent loop     │ →  │  Verify (tests, lint)   │  │
-│  │  (model says    │    │  (pass or fail)         │  │
-│  │   "done")       │    └────────┬────────────────┘  │
-│  └─────────────────┘             │                  │
-│           │                      │ pass?            │
-│  ┌────────▼────────┐            │ yes → Complete   │
-│  │  Undo changes  │  ←──────────┘                  │
-│  │  Report errors  │                                │
-│  │  Retry (max 3)  │                                │
-│  └─────────────────┘                                │
-└──────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+  accTitle: Verification loop
+  accDescr: Verification runs configured checks after the agent claims completion; failure permits only a bounded repair loop, then returns a verification failure.
+  DONE[Agent proposes completion] --> CHECKS[Run configured checks]
+  CHECKS --> PASS{All checks pass?}
+  PASS -->|Yes| COMPLETE[Complete]
+  PASS -->|No| BUDGET{Repair budget remains?}
+  BUDGET -->|Yes| REPORT[Record failures and apply configured recovery]
+  REPORT --> AGENT[Resume agent loop]
+  AGENT --> CHECKS
+  BUDGET -->|No| FAILED[VerificationFailed with attempt count]
 ```
 
 ## The Verification Command

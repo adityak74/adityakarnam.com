@@ -24,20 +24,24 @@ The harness is the system. The model is only the model.
 
 The boundary between the model and the harness is the **API call**. This is a request (messages + tools) and a response (content + tool calls). Everything between the API call and the next API call is the harness.
 
-```
-┌─────────────────────────────────────┐
-│        THE MODEL                    │
-│  (capability: reasoning, generation)│
-│                                     │
-│  request  ←────────────────────→  response  │
-│  (messages, tools)              (content, tool_calls)
-│                                     │
-│  392 tokens in, 190 tokens out      │
-│  (example, model-dependent)         │
-└─────────────────────────────────────┘
-        ↑                                    │
-        │  (HARNESS: steps 1 through N)       │
-        │                                     │
+```mermaid
+sequenceDiagram
+  accTitle: The model and harness boundary
+  accDescr: The harness sends messages and tool definitions to the model, dispatches returned tool calls, records results, and repeats until the model returns text.
+  participant H as Harness
+  participant M as Model
+  participant T as Tool registry
+  H->>M: Request (messages, tool definitions)
+  M-->>H: Response (text or tool calls)
+  loop While tool calls remain
+    H->>H: Check policy and validate arguments
+    H->>T: Dispatch approved tool call
+    T-->>H: Tool result
+    H->>H: Append result to conversation
+    H->>M: Next request with updated messages
+    M-->>H: Next response
+  end
+  H->>H: Return final text to caller
 ```
 
 The harness sits between calls. It transforms the response into a decision (what to do next), executes that decision (tools), and accumulates the result (messages) for the next model call.
