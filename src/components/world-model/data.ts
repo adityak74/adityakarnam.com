@@ -428,6 +428,30 @@ export const systems: SystemArtifact[] = [
     },
   },
   {
+    name: "technical-book-writer-skill",
+    slug: "/technical-book-writer-skill/",
+    tags: ["claude-code", "agent skills", "textbook", "technical writing", "LLM"],
+    researchQuestion: "Can a structured Claude Code skill reliably turn any technical topic into a well-organized, publishable book through a guided multi-step agent workflow?",
+    systemBuilt:
+      "A Claude Code skill that orchestrates a multi-step agent workflow to research, outline, draft, and format technical books — turning a topic or source material into a structured, publishable manuscript with consistent depth and voice.",
+    whyItMatters:
+      "Technical knowledge is often locked in scattered notes, talks, and repos. This skill compresses the writing process into a repeatable agent workflow, letting builders produce book-length artifacts without manually managing every drafting step.",
+    status: "Active experiment",
+    links: [
+      { label: "GitHub", href: "https://github.com/adityak74/technical-book-writer-skill" },
+    ],
+    explanationModes: {
+      "Research Idea":
+        "technical-book-writer-skill explores whether an agent skill layer can encode the craft of technical writing — research, outlining, drafting, and revision — into a reproducible, composable workflow.",
+      "System Design":
+        "The skill sequences dedicated agent steps for topic research, chapter outlining, section drafting, and final formatting, each with targeted prompts that enforce depth and structural consistency.",
+      "Business Value":
+        "Teams that need to produce technical documentation, internal books, or educational content can reduce writing time significantly by having an agent handle structure and initial drafts while a human steers and edits.",
+      "Code Walkthrough":
+        "Start with the skill entry point and topic ingestion step, then inspect the outliner, per-section drafting loop, and the post-processing pass that formats the final manuscript.",
+    },
+  },
+  {
     name: "ornith-1.5-9b-distil",
     slug: "/ornith-1.5-9b-distil/",
     tags: ["model distillation", "local inference", "Apple Silicon", "MLX", "Python"],
