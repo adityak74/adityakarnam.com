@@ -21,13 +21,54 @@ const clamp = (x: number, a = 0, b = 1) => Math.min(b, Math.max(a, x))
 
 const label = { fontFamily: MONO, fontSize: "12px", letterSpacing: ".06em", textTransform: "uppercase" as const, color: C.sec }
 
+
+// Scroll-driven nebula + starfield: redrawn only when scroll progress changes.
+const STARS = (() => {
+  let seed = 7
+  const r = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296)
+  return Array.from({ length: 140 }, () => ({ x: r(), y: r(), z: 0.15 + r() * 0.85, k: r() }))
+})()
+
+const Nebula = ({ p }: { p: number }) => {
+  const ref = React.useRef<HTMLCanvasElement>(null)
+  React.useEffect(() => {
+    const cv = ref.current
+    if (!cv) return
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    const w = cv.clientWidth, h = cv.clientHeight
+    if (cv.width !== w * dpr) { cv.width = w * dpr; cv.height = h * dpr }
+    const g = cv.getContext("2d")!
+    g.setTransform(dpr, 0, 0, dpr, 0, 0)
+    g.clearRect(0, 0, w, h)
+    const cloud = (cx: number, cy: number, rad: number, rgb: string, a: number) => {
+      const gr = g.createRadialGradient(cx, cy, 0, cx, cy, rad)
+      gr.addColorStop(0, `rgba(${rgb},${a})`)
+      gr.addColorStop(1, `rgba(${rgb},0)`)
+      g.fillStyle = gr
+      g.fillRect(0, 0, w, h)
+    }
+    const s = p * h
+    cloud(w * (0.78 - p * 0.2), h * 0.28 - s * 0.25, w * 0.55, "194,82,45", 0.2)
+    cloud(w * (0.2 + p * 0.25), h * 0.78 - s * 0.35, w * 0.6, "47,93,140", 0.22)
+    cloud(w * 0.5, h * (0.5 - p * 0.3), w * 0.4, "150,90,160", 0.12)
+    STARS.forEach(st => {
+      const y = (((st.y * h - s * st.z * 1.6) % h) + h) % h
+      g.fillStyle = st.k > 0.8 ? `rgba(194,82,45,${0.35 + st.z * 0.4})` : st.k > 0.55 ? `rgba(47,93,140,${0.3 + st.z * 0.4})` : `rgba(20,20,19,${0.12 + st.z * 0.3})`
+      g.beginPath()
+      g.arc(st.x * w, y, 0.5 + st.z * 1.3, 0, Math.PI * 2)
+      g.fill()
+    })
+  }, [p])
+  return <canvas ref={ref} aria-hidden="true" sx={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", WebkitMaskImage: "linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent)", maskImage: "linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent)" }} />
+}
+
 const ScrollStory = () => {
   const box = React.useRef<HTMLDivElement>(null)
   const [p, setP] = React.useState(0)
-  const [still, setStill] = React.useState(false)
+  const [calm, setCalm] = React.useState(false) // reduced motion: crossfade only, no slide/scale
 
   React.useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setStill(true); return }
+    setCalm(window.matchMedia("(prefers-reduced-motion: reduce)").matches)
     let raf = 0
     const tick = () => {
       raf = 0
@@ -43,27 +84,13 @@ const ScrollStory = () => {
     return () => { window.removeEventListener("scroll", on); window.removeEventListener("resize", on); if (raf) cancelAnimationFrame(raf) }
   }, [])
 
-  if (still) {
-    return (
-      <section aria-label="The AI stack in numbers" sx={{ my: 5 }}>
-        <div sx={{ ...label, color: C.blue, mb: 3 }}>The stack in numbers</div>
-        {STEPS.map(s => (
-          <div key={s.layer} sx={{ py: 3, borderTop: `1px solid ${C.rule}` }}>
-            <div sx={label}>{s.layer}</div>
-            <div sx={{ fontFamily: SERIF, fontSize: "2.4rem", color: C.blue, lineHeight: 1.1 }}>{s.big}</div>
-            <p sx={{ m: 0 }}>{s.line} <Link to={s.to}>{s.cta}</Link></p>
-          </div>
-        ))}
-      </section>
-    )
-  }
-
   const pos = p * N // 0..N
   const active = Math.min(N - 1, Math.floor(pos))
 
   return (
     <section aria-label="The AI stack in numbers" ref={box} sx={{ height: `${N * 70 + 100}vh`, my: 5, position: "relative" }}>
       <div sx={{ position: "sticky", top: 0, height: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", overflow: "hidden" }}>
+        <Nebula p={p} />
         <div sx={{ ...label, color: C.blue, mb: 3 }}>The stack in numbers · scroll</div>
         <div sx={{ display: "grid", gridTemplateColumns: ["28px 1fr", "140px 1fr"], gap: [2, 4], alignItems: "stretch" }}>
           {/* rail */}
@@ -84,7 +111,7 @@ const ScrollStory = () => {
                   key={s.layer}
                   aria-hidden={i !== active}
                   sx={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center", pointerEvents: i === active ? "auto" : "none", willChange: "transform, opacity" }}
-                  style={{ opacity: o, transform: `translateY(${-d * 70}px) scale(${1 - Math.abs(d) * 0.08})` }}
+                  style={{ opacity: o, transform: calm ? "none" : `translateY(${-d * 70}px) scale(${1 - Math.abs(d) * 0.08})` }}
                 >
                   <div sx={{ ...label, color: C.accent, mb: 2 }}>{String(i + 1).padStart(2, "0")} / {s.layer}</div>
                   <div sx={{ fontFamily: SERIF, fontWeight: 400, letterSpacing: "-0.03em", lineHeight: 1, fontSize: "clamp(3.6rem, 12vw, 7.5rem)", color: C.blue }}>{s.big}</div>
