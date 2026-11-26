@@ -1,12 +1,12 @@
 /** @jsx jsx */
-import GeneNetwork from "./GeneNetwork"
+import HeroStack from "./HeroStack"
 import PixelSprite from "../PixelSprite"
 import * as React from "react"
 import { Box, jsx } from "theme-ui"
 import { Link } from "gatsby"
 import HeroChat from "./HeroChat"
 
-const c = { ink: "#141413", sec: "#5E5D59", rule: "#E3E0D8", panel: "#F3F1EB", accent: "#C2522D" }
+const c = { blue: "#2F5D8C", ink: "#141413", sec: "#5E5D59", rule: "#E3E0D8", panel: "#F3F1EB", accent: "#C2522D" }
 const mono = "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace"
 const serif = "'Fraunces', 'Source Serif 4', Georgia, serif"
 
@@ -72,7 +72,7 @@ const List = ({ rows, left }: { rows: Row[]; left: "tag" | "year" }) => (
         key={r.href}
         sx={{ display: "grid", gridTemplateColumns: ["1fr", "130px 1fr"], columnGap: 4, py: 3, borderBottom: `1px solid ${c.rule}`, "&:last-child": { borderBottom: 0 } }}
       >
-        <span sx={{ ...labelSx, pt: ["0", "4px"], mb: [1, 0] }}>{left === "tag" ? r.tag : r.year}</span>
+        <span sx={{ ...labelSx, color: left === "tag" ? c.blue : c.sec, pt: ["0", "4px"], mb: [1, 0] }}>{left === "tag" ? r.tag : r.year}</span>
         <div>
           <div sx={{ fontFamily: serif, fontSize: "1.2rem", lineHeight: 1.3, fontWeight: 500, letterSpacing: "-0.01em" }}>
             <A href={r.href} external={r.external}>{r.title}</A>
@@ -87,7 +87,7 @@ const List = ({ rows, left }: { rows: Row[]; left: "tag" | "year" }) => (
 
 const HomepageConsole = () => (
   <Box sx={{ color: c.ink, pt: [4, 5], pb: 6, fontSize: "17px", lineHeight: 1.65 }}>
-    <div sx={{ display: "grid", gridTemplateColumns: ["1fr", "1fr 260px"], gap: 4, alignItems: "center" }}>
+    <div sx={{ display: "grid", gridTemplateColumns: ["1fr", "1fr", "1fr 400px"], gap: 4, alignItems: "center" }}>
     <div>
     <h1 sx={{ fontFamily: serif, fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.12, fontSize: "clamp(2.4rem, 5vw, 3.6rem)", m: 0, maxWidth: "20ch" }}>
       I work across the AI stack, from silicon to software factories.
@@ -102,7 +102,7 @@ const HomepageConsole = () => (
       <A href="/ai-research">Research</A> · <A href="/blog">Writing</A> · <A href="/about">About</A> · <a href="#contact" sx={linkSx}>Contact</a>
     </p>
     </div>
-    <div sx={{ display: ["none", "block"] }}><GeneNetwork /></div>
+    <div><HeroStack /></div>
     </div>
 
     <details sx={{ mt: 4, "& > summary": { ...labelSx, cursor: "pointer", "&:hover": { color: c.accent } } }}>

@@ -11,6 +11,7 @@ export const ed = {
   hairline: "#E3E0D8",
   panel: "#F3F1EB",
   clay: "#C2522D",
+  blue: "#2F5D8C",
   serif: "Fraunces, 'Source Serif 4', 'Source Serif Pro', Georgia, serif",
   sans: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
   mono: "'JetBrains Mono', 'IBM Plex Mono', SFMono-Regular, Consolas, monospace",
@@ -154,7 +155,7 @@ export const RuledList = ({ rows }: { rows: Row[] }) => (
         </div>
         <div sx={{ minWidth: 0 }}>
           {r.tag ? (
-            <span sx={{ display: `block`, fontFamily: ed.mono, fontSize: `12px`, letterSpacing: `0.06em`, textTransform: `uppercase`, color: ed.clay, mb: 1 }}>
+            <span sx={{ display: `block`, fontFamily: ed.mono, fontSize: `12px`, letterSpacing: `0.06em`, textTransform: `uppercase`, color: ed.blue, mb: 1 }}>
               {r.tag}
             </span>
           ) : null}
