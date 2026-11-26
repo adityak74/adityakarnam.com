@@ -40,3 +40,38 @@ export const wrapRootElement = ({ element }) => {
     </MDXProvider>
   );
 };
+
+// Scroll effects: sections fade up as they enter, plus a thin reading-progress line.
+// Hidden state is applied from JS only (no-JS visitors see everything) and only to
+// content below the fold. Skipped entirely under prefers-reduced-motion.
+let scrollFxReady = false
+export const onRouteUpdate = () => {
+  if (typeof window === "undefined" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+  if (!scrollFxReady) {
+    scrollFxReady = true
+    const st = document.createElement("style")
+    st.textContent =
+      ".rv{opacity:0;transform:translateY(18px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}" +
+      ".rv.rv-in{opacity:1;transform:none}" +
+      "#scroll-progress{position:fixed;top:0;left:0;right:0;height:2px;background:#2F5D8C;transform:scaleX(0);transform-origin:left;z-index:100;pointer-events:none}"
+    document.head.appendChild(st)
+    const bar = document.createElement("div")
+    bar.id = "scroll-progress"
+    document.body.appendChild(bar)
+    let tick = false
+    const update = () => {
+      const h = document.documentElement.scrollHeight - window.innerHeight
+      bar.style.transform = "scaleX(" + (h > 0 ? Math.min(1, window.scrollY / h) : 0) + ")"
+      tick = false
+    }
+    window.addEventListener("scroll", () => { if (!tick) { tick = true; requestAnimationFrame(update) } }, { passive: true })
+    window.addEventListener("resize", update)
+  }
+  const io = new IntersectionObserver(
+    (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("rv-in"); io.unobserve(e.target) } }),
+    { rootMargin: "0px 0px -8% 0px" }
+  )
+  document.querySelectorAll('main section, main nav[aria-label="Keep exploring"]').forEach((el) => {
+    if (el.getBoundingClientRect().top > window.innerHeight * 0.9) { el.classList.add("rv"); io.observe(el) }
+  })
+}
