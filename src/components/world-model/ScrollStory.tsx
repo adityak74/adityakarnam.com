@@ -67,7 +67,7 @@ const ScrollStory = () => {
             {STEPS.map((s, i) => {
               const raw = pos - (i + 0.5) // 0 when centred
               const d = i === 0 ? Math.max(raw, 0) : i === N - 1 ? Math.min(raw, 0) : raw // first/last stage hold at the ends
-              const o = clamp(1 - Math.abs(d) * 2.4)
+              const o = clamp((0.52 - Math.abs(d)) * 3.2) // plateau near centre, short fade, no blank gap between stages
               return (
                 <div
                   key={s.layer}

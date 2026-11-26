@@ -94,15 +94,15 @@ const PeekGuide = ({ pathname }: { pathname: string }) => {
         pointerEvents: open ? "auto" : "none",
       }}
     >
-      <div style={{ position: "relative", background: "#FAF9F6", border: "1px solid #141413", borderRadius: 2, padding: "9px 12px", marginBottom: 14, maxWidth: 210, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, lineHeight: 1.5, letterSpacing: ".02em" }}>
+      <div className="peek-card" style={{ position: "relative", background: "#FAF9F6", border: "1px solid #141413", borderRadius: 2, padding: "9px 12px", marginBottom: 14, maxWidth: 210, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, lineHeight: 1.5, letterSpacing: ".02em" }}>
         <button type="button" onClick={dismiss} aria-label="Dismiss" tabIndex={open ? 0 : -1} style={{ position: "absolute", top: 0, right: 0, background: "none", border: 0, cursor: "pointer", color: "#5E5D59", fontSize: 16, lineHeight: 1, padding: "8px 10px" }}>×</button>
         <span style={{ display: "block", paddingRight: 12 }}>{hint.text}</span>
         <Link to={hint.to} tabIndex={open ? 0 : -1} style={{ color: "#C2522D", textDecoration: "none", display: "inline-block", marginTop: 2, padding: "8px 0" }}>Go there →</Link>
       </div>
-      <div style={{ animation: open ? "peek-bob 2.4s ease-in-out infinite" : "none", transformOrigin: "bottom" }}>
+      <div className="peek-sprite" style={{ animation: open ? "peek-bob 2.4s ease-in-out infinite" : "none", transformOrigin: "bottom" }}>
         <PixelSprite name="chefFace" size={56} />
       </div>
-      <style>{"@keyframes peek-bob{0%,100%{transform:translateY(6px)}50%{transform:translateY(0)}}@media (prefers-reduced-motion: reduce){div[aria-hidden]{transition:none!important}}"}</style>
+      <style>{"@keyframes peek-bob{0%,100%{transform:translateY(6px)}50%{transform:translateY(0)}}@media (max-width:480px){.peek-card{max-width:150px!important;font-size:10px!important;padding:7px 9px!important}.peek-sprite{zoom:.7;margin-left:-14px}}@media (prefers-reduced-motion: reduce){div[aria-hidden]{transition:none!important}}"}</style>
     </div>
   )
 }
