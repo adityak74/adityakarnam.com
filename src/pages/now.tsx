@@ -3,6 +3,7 @@ import type { HeadFC, PageProps } from "gatsby"
 import Layout from "@lekoarts/gatsby-theme-minimal-blog/src/components/layout"
 import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
 import { Page, Title, Section, RuledList, Row } from "../components/world-model/pages-systems-stack-now/editorial"
+import NowOrbit from "../components/world-model/anim/NowOrbit"
 
 const tracks: Row[] = [
   {
@@ -50,6 +51,9 @@ const NowPage = (_props: PageProps) => (
       >
         Current work
       </Title>
+      <div style={{ marginBottom: 48 }}>
+        <NowOrbit />
+      </div>
       <Section label="In motion">
         <RuledList rows={tracks} />
       </Section>

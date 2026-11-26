@@ -13,6 +13,7 @@ import {
   TextLink,
   Row,
 } from "../components/world-model/pages-systems-stack-now/editorial"
+import BudgetTiers from "../components/world-model/anim/BudgetTiers"
 
 const publications: Row[] = [
   {
@@ -160,6 +161,14 @@ const AiResearchPage = () => (
       >
         Research and engineering notes
       </Title>
+
+      <div sx={{ display: `grid`, gridTemplateColumns: [`1fr`, null, `minmax(0, 1fr) 400px`], gap: [4, 5], alignItems: `center`, mb: [5, 6] }}>
+        <p sx={{ m: 0, fontSize: `17px`, lineHeight: 1.65, maxWidth: `46ch` }}>
+          BudgetBench holds the per-call token budget fixed and asks which memory strategy spends it best. Retrieval at 2K
+          scored 0.646; truncation needed 8K to reach 0.650. Hover a column, or switch the budget.
+        </p>
+        <BudgetTiers />
+      </div>
 
       <Section label="Agenda" title="What I am trying to find out">
         <Prose>

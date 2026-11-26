@@ -2,6 +2,7 @@ import * as React from "react"
 import type { HeadFC, PageProps } from "gatsby"
 import Layout from "@lekoarts/gatsby-theme-minimal-blog/src/components/layout"
 import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
+import FleetRouter from "../components/world-model/anim/FleetRouter"
 import { Page, Title, Section, RuledList, Row } from "../components/world-model/pages-systems-stack-now/editorial"
 
 const systems: Row[] = [
@@ -73,6 +74,9 @@ const SystemsPage = (_props: PageProps) => (
       >
         Systems
       </Title>
+      <div style={{ maxWidth: 400, margin: "-1rem 0 3rem auto" }}>
+        <FleetRouter />
+      </div>
       <Section label="Index">
         <RuledList rows={systems} />
       </Section>

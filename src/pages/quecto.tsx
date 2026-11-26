@@ -4,6 +4,7 @@ import type { HeadFC, PageProps } from "gatsby"
 import { jsx } from "theme-ui"
 import Layout from "@lekoarts/gatsby-theme-minimal-blog/src/components/layout"
 import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
+import AgentLoop from "../components/world-model/anim/AgentLoop"
 import {
   Page,
   Title,
@@ -53,6 +54,10 @@ const QuectoPage = (_props: PageProps) => (
         <TextLink href="https://github.com/adityak74/quecto">GitHub</TextLink>
         <a href="#quick-start" sx={{ color: ed.clay, textDecoration: `none` }}>Quick start</a>
         <TextLink to="/ai-research/building-quecto-from-minimal-harness-to-evaluable-agent/">Build notes</TextLink>
+      </div>
+
+      <div sx={{ maxWidth: 400, mb: [4, 5] }}>
+        <AgentLoop />
       </div>
 
       <Section label="Size" title="1.3 MB core, 5.5 MB agent">

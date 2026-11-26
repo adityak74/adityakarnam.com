@@ -5,6 +5,7 @@ import { jsx } from "theme-ui"
 import Layout from "@lekoarts/gatsby-theme-minimal-blog/src/components/layout"
 import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
 import { Page, Title, Section, Prose, TextLink } from "../components/world-model/pages-systems-stack-now/editorial"
+import CommunityNetwork from "../components/world-model/anim/CommunityNetwork"
 import { openSourceImpact } from "../components/world-model/impact"
 
 const AboutPage = () => (
@@ -13,6 +14,7 @@ const AboutPage = () => (
       <Title eyebrow="About">Aditya Karnam</Title>
 
       <Section>
+        <div sx={{ display: `flex`, flexDirection: [`column`, null, `row`], gap: [4, null, 5], alignItems: [`stretch`, null, `flex-start`] }}>
         <Prose>
           <p>
             I am an AI research engineer. I work across the stack, from hardware and inference performance to
@@ -25,6 +27,10 @@ const AboutPage = () => (
             (BudgetBench, 2026).
           </p>
         </Prose>
+        <div sx={{ flex: `0 0 auto`, width: [`100%`, null, `360px`] }}>
+          <CommunityNetwork />
+        </div>
+        </div>
       </Section>
 
       <Section label="Work" title="What I work on">
