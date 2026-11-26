@@ -5,6 +5,7 @@ import * as React from "react"
 import { Box, jsx } from "theme-ui"
 import { Link } from "gatsby"
 import HeroChat from "./HeroChat"
+import ScrollStory from "./ScrollStory"
 
 const c = { blue: "#2F5D8C", ink: "#141413", sec: "#5E5D59", rule: "#E3E0D8", panel: "#F3F1EB", accent: "#C2522D" }
 const mono = "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace"
@@ -146,6 +147,8 @@ const HomepageConsole = () => (
         ))}
       </div>
     </Section>
+
+    <ScrollStory />
 
     <details sx={{ mt: 4, "& > summary": { ...labelSx, cursor: "pointer", "&:hover": { color: c.accent } } }}>
       <summary>Ask my work</summary>
