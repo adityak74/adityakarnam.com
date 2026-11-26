@@ -80,7 +80,7 @@ const A = ({ href, external, children }: { href: string; external?: boolean; chi
 const Section = ({ title, more, children }: { title: string; more?: React.ReactNode; children: React.ReactNode }) => (
   <Box as="section" sx={{ mt: [6, 7], borderTop: `1px solid ${c.rule}`, pt: 3 }}>
     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", mb: 3 }}>
-      <h2 sx={{ ...labelSx, m: 0, fontWeight: 400, fontSize: "12px" }}>{title}</h2>
+      <h2 sx={{ ...labelSx, m: 0, fontWeight: 400, fontSize: "12px", color: c.blue, "&::before": { content: '""', display: "inline-block", width: "6px", height: "6px", bg: c.blue, mr: 2, verticalAlign: "1px" } }}>{title}</h2>
       {more ? <span sx={{ fontSize: "14px" }}>{more}</span> : null}
     </Box>
     {children}
@@ -127,10 +127,10 @@ const HomepageConsole = () => (
     <div><HeroStack /></div>
     </div>
 
-    <div sx={{ mt: [5, 6], display: "grid", gridTemplateColumns: ["1fr 1fr", "repeat(4, 1fr)"], borderTop: `1px solid ${c.ink}`, borderBottom: `1px solid ${c.rule}` }}>
+    <div sx={{ mt: [5, 6], display: "grid", gridTemplateColumns: ["1fr 1fr", "repeat(4, 1fr)"], borderTop: `2px solid ${c.blue}`, borderBottom: `1px solid ${c.rule}` }}>
       {stats.map((s, i) => (
         <div key={s.label} sx={{ py: 4, pr: 3, pl: [i % 2 ? 3 : 0, i ? 3 : 0], borderLeft: [i % 2 ? `1px solid ${c.rule}` : 0, i ? `1px solid ${c.rule}` : 0] }}>
-          <div sx={{ fontFamily: serif, fontSize: "clamp(2rem, 4vw, 2.8rem)", lineHeight: 1, letterSpacing: "-0.02em" }}>{s.value}</div>
+          <div sx={{ fontFamily: serif, fontSize: "clamp(2rem, 4vw, 2.8rem)", lineHeight: 1, letterSpacing: "-0.02em", color: c.blue }}>{s.value}</div>
           <div sx={{ ...labelSx, mt: 2, lineHeight: 1.5 }}>{s.label}</div>
         </div>
       ))}

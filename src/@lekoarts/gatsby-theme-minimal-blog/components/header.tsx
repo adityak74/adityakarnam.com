@@ -28,7 +28,7 @@ const Header = ({ children }: { children?: React.ReactNode }) => {
           ":hover": { color: `heading` },
         }}
       >
-        <span sx={{ color: `blue`, mr: 2 }}>NEW</span>BudgetBench: memory strategy evaluation under a fixed token budget (arXiv:2609.13149) &rarr;
+        <span sx={{ bg: `blue`, color: `background`, px: `6px`, py: `1px`, borderRadius: `2px`, mr: 2 }}>NEW</span>BudgetBench: memory strategy evaluation under a fixed token budget (arXiv:2609.13149) &rarr;
       </a>
       <div
         sx={{
