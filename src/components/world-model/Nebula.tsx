@@ -6,6 +6,7 @@ const clamp = (x: number, a = 0, b = 1) => Math.min(b, Math.max(a, x))
 
 // Scroll-driven nebula + starfield. The look is seeded by the visitor's local hour (24 looks a day) plus a per-spot salt, so spots differ from each other.
 const RGB = ["194,82,45", "47,93,140", "150,90,160", "50,140,150", "205,110,130", "210,150,60", "80,80,170"]
+const WARM = ["194,82,45", "205,110,130", "210,150,60"]
 const rng = (seed: number) => () => { seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296 }
 
 const roll = (salt: number) => {
@@ -14,8 +15,9 @@ const roll = (salt: number) => {
   const rnd = (a: number, b: number) => a + R() * (b - a)
   const pal = [...RGB].sort(() => R() - 0.5)
   return {
-    clouds: Array.from({ length: 2 + Math.floor(R() * 3) }, (_, i) => ({
-      x: rnd(0.1, 0.9), y: rnd(0.1, 0.9), r: rnd(0.28, 0.6), rgb: pal[i], a: rnd(0.06, 0.14),
+    clouds: Array.from({ length: 3 + Math.floor(R() * 2) }, (_, i) => ({
+      // warm colours read stronger on paper than cool ones, so weight them down/up to even the hours out
+      x: rnd(0.1, 0.9), y: rnd(0.1, 0.9), r: rnd(0.32, 0.6), rgb: pal[i], a: Math.max(0.09, rnd(0.07, 0.13)) * (WARM.includes(pal[i]) ? 0.75 : 1.4),
       dx: rnd(-0.3, 0.3), dy: rnd(-0.45, 0.45),
     })),
     stars: Array.from({ length: 60 + Math.floor(R() * 80) }, () => ({ x: R(), y: R(), z: rnd(0.15, 1), k: R(), rgb: pal[Math.floor(R() * 3)] })),
