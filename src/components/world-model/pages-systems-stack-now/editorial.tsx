@@ -1,5 +1,6 @@
 /** @jsx jsx */
 import * as React from "react"
+import { NebulaBackdrop } from "../Nebula"
 import { Link } from "gatsby"
 import { jsx } from "theme-ui"
 
@@ -40,7 +41,8 @@ export const Eyebrow = ({ children }: Kids) => (
 )
 
 export const Title = ({ eyebrow, children, lede }: { eyebrow?: string; children: React.ReactNode; lede?: React.ReactNode }) => (
-  <header sx={{ pb: [4, 5], borderBottom: `1px solid ${ed.hairline}`, mb: [4, 5] }}>
+  <header sx={{ pb: [4, 5], borderBottom: `1px solid ${ed.hairline}`, mb: [4, 5], position: `relative`, isolation: `isolate` }}>
+    <NebulaBackdrop strength={0.5} salt={[...(eyebrow || "x")].reduce((a, ch) => a + ch.charCodeAt(0), 10)} />
     {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
     <h1
       sx={{

@@ -6,6 +6,7 @@ import { Box, jsx } from "theme-ui"
 import { Link } from "gatsby"
 import HeroChat from "./HeroChat"
 import ScrollStory from "./ScrollStory"
+import { NebulaBackdrop } from "./Nebula"
 
 const c = { blue: "#2F5D8C", ink: "#141413", sec: "#5E5D59", rule: "#E3E0D8", panel: "#F3F1EB", accent: "#C2522D" }
 const mono = "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace"
@@ -114,7 +115,8 @@ const List = ({ rows, left }: { rows: Row[]; left: "tag" | "year" }) => (
 
 const HomepageConsole = () => (
   <Box sx={{ color: c.ink, pt: [4, 5], pb: 6, fontSize: "17px", lineHeight: 1.65 }}>
-    <div sx={{ display: "grid", gridTemplateColumns: ["1fr", "1fr", "1fr 400px"], gap: 4, alignItems: "center" }}>
+    <div sx={{ display: "grid", gridTemplateColumns: ["1fr", "1fr", "1fr 400px"], gap: 4, alignItems: "center", position: "relative", isolation: "isolate" }}>
+    <NebulaBackdrop strength={0.9} bleed={90} salt={1} />
     <div>
     <h1 sx={{ fontFamily: serif, fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.12, fontSize: "clamp(2.4rem, 5vw, 3.6rem)", m: 0, maxWidth: "20ch" }}>
       I work across <em sx={{ fontStyle: "italic", color: "#C2522D" }}>the AI stack</em>, from <em sx={{ fontStyle: "italic", color: "#2F5D8C" }}>silicon to software factories</em>.
@@ -231,9 +233,12 @@ const HomepageConsole = () => (
     </Section>
 
     <Section title="Contact">
+      <div sx={{ position: "relative", isolation: "isolate", py: 5 }}>
+      <NebulaBackdrop strength={0.8} bleed={30} salt={3} />
       <p id="contact" sx={{ m: 0, maxWidth: "68ch" }}>
         Find me on <A href="https://github.com/adityak74" external>GitHub</A>, <A href="https://www.linkedin.com/in/adityakarnamgrao/" external>LinkedIn</A> or <A href="https://twitter.com/aditya_karnam" external>Twitter</A>.
       </p>
+      </div>
     </Section>
   </Box>
 )
