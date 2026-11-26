@@ -20,9 +20,9 @@ const STAGES = [
   { name: "03 NETWORK", at: 5.5 },
   { name: "04 COMMUNITIES", at: 9 },
 ]
-const N = 16
+const N = 28
 const HELIX_Y = 62
-const NAMES: Record<number, string> = { 0: "APOE", 5: "APP", 10: "PSEN1", 14: "TREM2" } // illustrative labels
+const NAMES: Record<number, string> = { 0: "APOE", 9: "APP", 18: "PSEN1", 27: "TREM2" } // illustrative labels
 
 type RGB = [number, number, number]
 const clamp = (v: number) => Math.min(1, Math.max(0, v))
@@ -55,14 +55,15 @@ const CommunityNetwork = () => {
     const comm = Array.from({ length: N }, (_, i) => i % 4)
     const hx = Array.from({ length: N }, (_, i) => 28 + (i * 344) / (N - 1))
     const net = Array.from({ length: N }, () => ({ x: 70 + r() * 260, y: 165 + r() * 120 }))
-    const anchors = [[100, 192], [300, 192], [100, 282], [300, 282]]
+    const anchors = [[105, 188], [295, 188], [105, 272], [295, 272]]
     const cp = comm.map((c, i) => {
-      const a = (i / 4) * 6.28
-      return { x: anchors[c][0] + Math.cos(a) * 30, y: anchors[c][1] + Math.sin(a) * 22 }
+      const k = Math.floor(i / 4), a = (k / 7) * 6.28 + c
+      const rr = k % 2 ? 30 : 17
+      return { x: anchors[c][0] + Math.cos(a) * rr * 1.25, y: anchors[c][1] + Math.sin(a) * rr * 0.9 }
     })
     const edges: [number, number][] = []
     for (let i = 0; i < N; i++)
-      for (let j = i + 1; j < N; j++) if (r() < (comm[i] === comm[j] ? 0.75 : 0.04)) edges.push([i, j])
+      for (let j = i + 1; j < N; j++) if (r() < (comm[i] === comm[j] ? 0.5 : 0.015)) edges.push([i, j])
 
     const helixY = (x: number, ph: number, s: number, amp: number) => HELIX_Y + Math.sin(x * 0.07 + ph + s * Math.PI) * amp
 
@@ -165,10 +166,13 @@ const CommunityNetwork = () => {
       const hs = easeOutBack(seg(t, 10.4, 11.8)) * (1 - seg(t, 15.4, 16.2))
       if (hs > 0.02)
         for (let c = 0; c < 4; c++) {
-          ctx.strokeStyle = rgba(COMM[c], 0.7 * clamp(hs) * commDim[c])
-          ctx.setLineDash([3, 4])
-          ctx.beginPath(); ctx.ellipse(anchors[c][0], anchors[c][1], 62 * hs, 48 * hs, 0, 0, 7); ctx.stroke()
-          ctx.setLineDash([])
+          const hr = clamp(hs), d = commDim[c]
+          ctx.fillStyle = rgba(COMM[c], 0.07 * hr * d)
+          ctx.strokeStyle = rgba(COMM[c], 0.45 * hr * d)
+          ctx.lineWidth = 1
+          ctx.beginPath(); ctx.ellipse(anchors[c][0], anchors[c][1], 52 * hs, 38 * hs, 0, 0, 7); ctx.fill(); ctx.stroke()
+          ctx.fillStyle = rgba(COMM[c], 0.9 * hr * d)
+          ctx.fillText("C" + (c + 1), anchors[c][0] - 52, anchors[c][1] - 52)
         }
 
       // edges grow from one end to the other, staggered
@@ -197,7 +201,7 @@ const CommunityNetwork = () => {
         const col = mix(base, COMM[comm[i]], easeInOut(seg(ti, 9.2, 10.2)))
         const pulse = 1 + 0.25 * Math.max(0, Math.sin(t * 3 - i)) * seg(t, 10.5, 11) * (1 - seg(t, 14, 15))
         ctx.fillStyle = rgba(col, 0.95 * born * fadeAll * (t > 10.5 && t < 15.8 ? commDim[comm[i]] : 1))
-        ctx.beginPath(); ctx.arc(n.x, n.y, 4.5 * pulse * (0.4 + 0.6 * born), 0, 7); ctx.fill()
+        ctx.beginPath(); ctx.arc(n.x, n.y, 3.6 * pulse * (0.4 + 0.6 * born), 0, 7); ctx.fill()
         if (NAMES[i] && t > 5.2 && t < 15.5) {
           ctx.fillStyle = rgba(SEC, 0.95 * seg(t, 5.2, 6) * (1 - seg(t, 14.8, 15.5)) * commDim[comm[i]])
           ctx.font = "9px 'JetBrains Mono', monospace"
