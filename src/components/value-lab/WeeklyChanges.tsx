@@ -1,10 +1,11 @@
 import * as React from "react"
-import {
-  Panel,
-  WorldModelSection,
-  labPalette,
-  styles,
-} from "../world-model/pages-systems-stack-now/WorldModelPageChrome"
+import { ed, Section } from "../world-model/pages-systems-stack-now/editorial"
+
+const mono = ed.mono
+const labPalette = { heading: ed.ink, body: ed.secondary, border: ed.hairline, cyan: ed.secondary, link: ed.clay }
+const styles = {
+  label: { color: ed.secondary, fontFamily: mono, fontSize: "12px", letterSpacing: "0.06em", textTransform: "uppercase" } as React.CSSProperties,
+}
 
 export type WeeklyChangeMarker = "up" | "down" | "same" | "star"
 
@@ -34,7 +35,7 @@ const markerGlyph = (marker: WeeklyChangeMarker) => {
     case "same":
       return "↔"
     case "star":
-      return "⭐"
+      return "*"
     default:
       throw new Error(`Unsupported weekly change marker: ${String(marker)}`)
   }
@@ -68,12 +69,9 @@ const WeeklyChanges = ({ data, evidenceLabels }: WeeklyChangesProps) => {
     : `Baseline · ${data.currentDate}`
 
   return (
-    <WorldModelSection
-      eyebrow="This week in coding agents"
-      title={data.title}
-      description={period}
-    >
-      <Panel accent="cyan">
+    <Section label="This week in coding agents" title={data.title}>
+      <p style={{ color: labPalette.body, fontFamily: mono, fontSize: "12px", letterSpacing: "0.06em", margin: "0 0 1rem", textTransform: "uppercase" }}>{period}</p>
+      <div style={{ borderTop: `1px solid ${labPalette.border}`, paddingTop: "1.25rem" }}>
         {data.items.length === 0 ? (
           <p style={{ color: labPalette.body, lineHeight: 1.65, margin: 0 }}>
             {emptyMessage(data)}
@@ -93,7 +91,7 @@ const WeeklyChanges = ({ data, evidenceLabels }: WeeklyChangesProps) => {
               >
                 <span
                   aria-hidden="true"
-                  style={{ color: labPalette.cyan, fontFamily: "'JetBrains Mono', monospace", fontSize: "1.3rem" }}
+                  style={{ color: labPalette.cyan, fontFamily: "'JetBrains Mono', 'IBM Plex Mono', monospace", fontSize: "1.3rem" }}
                 >
                   {markerGlyph(item.marker)}
                 </span>
@@ -109,7 +107,7 @@ const WeeklyChanges = ({ data, evidenceLabels }: WeeklyChangesProps) => {
                         href={source.url}
                         rel="noreferrer"
                         target="_blank"
-                        style={{ color: labPalette.cyan, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.72rem" }}
+                        style={{ color: labPalette.link, fontFamily: "'JetBrains Mono', 'IBM Plex Mono', monospace", fontSize: "12px" }}
                       >
                         Source {sourceIndex + 1}
                       </a>
@@ -120,8 +118,8 @@ const WeeklyChanges = ({ data, evidenceLabels }: WeeklyChangesProps) => {
             ))}
           </div>
         )}
-      </Panel>
-    </WorldModelSection>
+      </div>
+    </Section>
   )
 }
 

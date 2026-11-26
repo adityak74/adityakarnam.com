@@ -1,320 +1,216 @@
 /** @jsx jsx */
 import * as React from "react"
-import { HeadFC, Link } from "gatsby"
-import { Box, Grid, Heading, Text, jsx } from "theme-ui"
+import { HeadFC } from "gatsby"
+import { jsx } from "theme-ui"
 import Layout from "@lekoarts/gatsby-theme-minimal-blog/src/components/layout"
 import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
 import {
-  ConsoleCard,
-  ConsoleShell,
-  HeroStat,
-  SectionBlock,
-  SignalPill,
-  ThreeColumnGrid,
-  consoleColors,
-} from "../components/world-model/pages-field-notes-about/primitives"
+  Page,
+  Title,
+  Section,
+  Prose,
+  RuledList,
+  TextLink,
+  Row,
+  Explore,
+} from "../components/world-model/pages-systems-stack-now/editorial"
+import BudgetTiers from "../components/world-model/anim/BudgetTiers"
 
-type MyPaper = {
-  title: string
-  venue: string
-  year: string
-  status: string
-  detail: string
-  url: string
-  explainerSlug?: string
-  pdfUrl?: string
-}
-
-const myPapers: MyPaper[] = [
+const publications: Row[] = [
   {
-    title:
-      "BudgetBench: A Budget-Tiered Protocol and Pilot Harness for Memory Strategy Evaluation in Local Large Language Model Agents",
-    venue: "arXiv preprint · arXiv:2609.13149 [cs.LG, cs.CL]",
-    year: "2026",
-    status: "Preprint",
-    detail:
-      "An active-budget protocol and reference harness that treats the per-call input-token budget as the independent variable when comparing memory strategies for local LLM agents, sweeping 2K–32K budgets and reporting quality, budget utilization, latency, and budget-violation rates as a first-class outcome.",
-    url: "https://arxiv.org/abs/2609.13149",
-    explainerSlug: "/budgetbench-explained/",
+    key: "budgetbench",
+    meta: "2026",
+    tag: "Preprint · arXiv:2609.13149",
+    title: "BudgetBench: a budget-tiered protocol for memory strategy evaluation in local LLM agents",
+    body: "Treats the per-call input-token budget as the independent variable, sweeping 2K to 32K. The pilot includes null results and a tokenizer bug we caught in our own numbers.",
+    links: [
+      { label: "arXiv", href: "https://arxiv.org/abs/2609.13149" },
+      { label: "Walkthrough", to: "/budgetbench-explained/" },
+    ],
   },
   {
-    title: "MEDFIT-LLM: Medical Enhancements through Domain-Focused Fine Tuning of Small Language Models",
-    venue: "2025 2nd International Conference on Research Methodologies in Knowledge Management, AI and Telecommunication Engineering",
-    year: "2025",
-    status: "Published · 5 citations",
-    detail:
-      "Domain-focused fine-tuning of small language models for medical use cases, evaluated against generic baselines.",
-    url: "https://ieeexplore.ieee.org/abstract/document/11042816",
-    explainerSlug: "/medfit-llm-explained/",
+    key: "ornith",
+    meta: "2026",
+    tag: "Distillation · MLX",
+    title: "Distilling Ornith-1.5-9B with two teachers",
+    body: "A 4.9 GB build scores +5.5 MMLU and +3.0 HumanEval over the 8.9 GB stock release it replaces, trained on one M4 Pro. The gain came from reasoning termination, not new knowledge.",
+    links: [
+      { label: "Write-up", to: "/distilling-ornith-9b-two-teacher-mlx/" },
+      { label: "GitHub", href: "https://github.com/adityak74/ornith-1.5-9b-distil" },
+    ],
   },
   {
-    title: "Efficient Reduced-BIAS Genetic Algorithm for Generic Community Detection Objectives",
-    venue: "Master's Thesis, University of Missouri–St. Louis",
-    year: "2018",
-    status: "Published · 5 citations",
-    detail:
-      "A genetic algorithm framework for community detection in complex networks that removes structural assumptions and requires no prior knowledge of community count, applied to benchmark datasets and Alzheimer's disease genetic networks.",
-    url: "https://irl.umsl.edu/thesis/331/",
-    pdfUrl: "/papers/efficient-reduced-bias-genetic-algorithm-community-detection.pdf",
+    key: "pr1795",
+    meta: "2026",
+    tag: "Upstream · mlx-lm",
+    title: "mlx-lm PR #1795: LoRA training on MoE models",
+    body: "mlx_lm.lora crashed on granitemoe, granitemoehybrid and lfm2_moe because integer routing indices reached the VJP. A missing mx.stop_gradient, fixed three times and merged upstream.",
+    links: [
+      { label: "Pull request", href: "https://github.com/ml-explore/mlx-lm/pull/1795" },
+      { label: "Write-up", to: "/mlx-lm-lora-moe-stop-gradient-fix/" },
+    ],
+  },
+  {
+    key: "speculative",
+    meta: "2026",
+    tag: "Inference · Apple Silicon",
+    title: "Speculative decoding on Apple Silicon",
+    body: "A 0.8B draft model gives a 119% peak decode speedup on Qwen3.8-27B, but mlx_lm refuses to run it against the hybrid attention cache without a patch.",
+    links: [{ label: "Write-up", to: "/mlx-speculative-decoding-qwen3-8-apple-silicon/" }],
+  },
+  {
+    key: "kv",
+    meta: "2026",
+    tag: "Inference · Apple Silicon",
+    title: "Why MLX decode slows at long context",
+    body: "Quantizing the KV cache halves how fast decode degrades with context, and halves prefill throughput too. Break-even math included.",
+    links: [{ label: "Write-up", to: "/mlx-long-context-kv-cache-apple-silicon/" }],
+  },
+  {
+    key: "roofline",
+    meta: "2026",
+    tag: "Inference · Roofline",
+    title: "Why batching does not fix decode: GEMV versus GEMM",
+    body: "On an M5 Pro, batched matmul holds a flat ~80x throughput advantage over matrix-vector ops at every size tested. That gap is why batching helps prefill and barely touches decode.",
+    links: [{ label: "Write-up", to: "/mlx-gemv-gemm-roofline-apple-silicon/" }],
+  },
+  {
+    key: "nondeterminism",
+    meta: "2025",
+    tag: "Reproducibility",
+    title: "MLX non-determinism on Apple Silicon",
+    body: "Identical inputs give different outputs. Batch-invariance tests from 512 to 4096 matrices, across bfloat16, float32 and float16.",
+    links: [{ label: "Write-up", to: "/mlx-non-determinism-apple-silicon" }],
+  },
+  {
+    key: "embenx",
+    meta: "2026",
+    tag: "Software · Retrieval",
+    title: "embenx",
+    body: "One Collection API over 15+ vector backends, with hybrid search, temporal memory and a built-in MCP server.",
+    links: [
+      { label: "Guide", to: "/embenx-python-embedding-toolkit" },
+      { label: "GitHub", href: "https://github.com/adityak74/embenx" },
+    ],
+  },
+  {
+    key: "fleet",
+    meta: "2026",
+    tag: "Software · Runtime",
+    title: "subagent-fleet",
+    body: "A control plane that routes Claude Code-style subagents across local Ollama machines. One fleet.yaml generates the LiteLLM routes, agent files and warmup flows. The published eval compares the local fleet against Sonnet 5 and GPT-4o-mini.",
+    links: [
+      { label: "Write-up", to: "/subagent-fleet-local-ai-compute-control-plane" },
+      { label: "GitHub", href: "https://github.com/adityak74/subagent-fleet" },
+    ],
+  },
+  {
+    key: "quecto",
+    meta: "2026",
+    tag: "Software · Harness",
+    title: "Quecto",
+    body: "A minimal agent harness and coding agent in Rust: a 1.3 MB core, a 5.5 MB agent, no async runtime. Built to be evaluated, with verification gates and session persistence.",
+    links: [
+      { label: "Project", to: "/quecto/" },
+      { label: "Build notes", to: "/ai-research/building-quecto-from-minimal-harness-to-evaluable-agent/" },
+    ],
+  },
+  {
+    key: "medfit",
+    meta: "2025",
+    tag: "Paper · IEEE",
+    title: "MEDFIT-LLM: domain-focused fine-tuning of small language models for medicine",
+    body: "Fine-tuned small models evaluated against generic baselines on medical tasks. Published at a 2025 IEEE conference.",
+    links: [
+      { label: "Paper", href: "https://ieeexplore.ieee.org/abstract/document/11042816" },
+      { label: "Walkthrough", to: "/medfit-llm-explained/" },
+    ],
+  },
+  {
+    key: "erbga",
+    meta: "2018",
+    tag: "Thesis · UMSL",
+    title: "Efficient Reduced-BIAS Genetic Algorithm (ERBGA) for generic community detection",
+    body: "A genetic algorithm that drops structural assumptions and needs no prior community count. Applied to benchmark graphs and Alzheimer's disease genetic networks.",
+    links: [
+      { label: "Thesis", href: "https://irl.umsl.edu/thesis/331/" },
+      { label: "PDF", href: "/papers/efficient-reduced-bias-genetic-algorithm-community-detection.pdf" },
+    ],
   },
 ]
 
-const inProgressPapers = [
-  {
-    title: "In progress",
-    detail: "More papers are in progress; new preprints and peer-reviewed work will be added here as they land.",
-  },
+// Source: Google Scholar profile (WujCeDkAAAAJ). Order: newest first.
+const papers: Row[] = [
+  { key: "p-budgetbench", meta: "2026", tag: "arXiv", title: "BudgetBench: a budget-tiered protocol and pilot harness for memory strategy evaluation in local LLM agents", body: "With A. Jaggi.", links: [{ label: "arXiv:2609.13149", href: "https://arxiv.org/abs/2609.13149" }] },
+  { key: "p-control-plane", meta: "2026", tag: "Concept paper", title: "The Enterprise AI Control Plane: a governance and orchestration framework for LLM deployments at scale", body: "With A. Jaggi. Part of a series of concept papers on enterprise agent governance, trust, identity and security." },
+  { key: "p-medfit", meta: "2025", tag: "Conference", title: "MEDFIT-LLM: medical enhancements through domain-focused fine-tuning of small language models", body: "With A. Jaggi and S. Naidu.", links: [{ label: "Paper", href: "https://ieeexplore.ieee.org/abstract/document/11042816" }] },
+  { key: "p-glucose", meta: "2025", tag: "Journal", title: "Automated analysis of glucose response patterns in type 1 diabetes using machine learning and computer vision", body: "International Journal of Advanced Computer Science and Applications 16(5)." },
+  { key: "p-breathwork", meta: "2025", tag: "Journal", title: "Neural network-enabled diagnostic framework for correlating Ayurvedic breathwork protocols with adaptive skin microbiome dynamics", body: "Mathematical Modelling of Engineering Problems 12(6)." },
+  { key: "p-governance", meta: "2025", tag: "Study", title: "Quantifying adaptive governance success: a mixed-methods analysis of 500 organizations", body: "With A. Jaggi." },
+  { key: "p-cag", meta: "2024", tag: "arXiv", title: "CAG: chunked augmented generation for Google Chrome's built-in Gemini Nano", body: "With V. Vellaiyappan Surulimuthu.", links: [{ label: "arXiv:2412.18708", href: "https://arxiv.org/abs/2412.18708" }] },
+  { key: "p-cardiac", meta: "2024", tag: "Journal", title: "AI-enhanced neural network framework for cardiac arrest prognostics", body: "Frontiers in Health Informatics 13(3)." },
+  { key: "p-erbga-paper", meta: "2018", tag: "Thesis", title: "Efficient reduced-bias genetic algorithm (ERBGA) for generic community detection objectives", body: "With C. Janikow, S. Bhatia and S. Climer. University of Missouri-St. Louis." },
+  { key: "p-benes", meta: "2016", tag: "Journal", title: "Transmission in Benes network", body: "International Journal of Pure and Applied Mathematics 109(8)." },
 ]
 
-const AiResearchPage = () => {
-  return (
-    <Layout>
-      <Box sx={{ display: `grid`, gap: [3, 4], my: [3, 4] }}>
-        <ConsoleShell>
-          <Grid sx={{ gridTemplateColumns: [`1fr`, `1fr`, `1.35fr 0.95fr`], gap: 3, alignItems: `start` }}>
-            <Box>
-              <SignalPill>AI Research Explained</SignalPill>
-              <Heading
-                as="h1"
-                sx={{
-                  color: consoleColors.text,
-                  fontSize: [5, 6, 7],
-                  mt: 3,
-                  mb: 3,
-                  maxWidth: `14ch`,
-                  lineHeight: 1.02,
-                }}
-              >
-                AI Research Explained
-              </Heading>
-              <Text sx={{ color: consoleColors.muted, fontSize: [2, 2, 3], maxWidth: `60ch`, mb: 3 }}>
-                Making AI papers, experiments, and engineering ideas easier to understand.
-              </Text>
-              <Text sx={{ color: consoleColors.soft, fontSize: [1, 2], maxWidth: `62ch` }}>
-                This section covers my own published research, explainers of other researchers' papers, hands-on
-                experiments, and the engineering ideas that connect them.
-              </Text>
-            </Box>
+const AiResearchPage = () => (
+  <Layout>
+    <Page>
+      <Title
+        eyebrow="Research"
+        lede="I work across the AI stack: how models run on real hardware, how they are trained and distilled, how agents are built around them, and how anyone knows it worked."
+      >
+        Research and engineering notes
+      </Title>
 
-            <Box sx={{ border: `1px solid ${consoleColors.border}`, borderRadius: 12, p: 3, bg: consoleColors.panelAlt }}>
-              <Text sx={{ display: `block`, fontFamily: `monospace`, color: consoleColors.accent, fontSize: 0, mb: 2 }}>
-                Coverage
-              </Text>
-              <Box as="pre" sx={{ m: 0, p: 0, bg: `transparent`, border: `none`, color: consoleColors.text, fontSize: 1 }}>
-                <code>
-                  {`my papers
-papers I'm explaining
-experiments
-engineering notes`}
-                </code>
-              </Box>
-            </Box>
-          </Grid>
+      <div sx={{ display: `grid`, gridTemplateColumns: [`1fr`, null, `minmax(0, 1fr) 400px`], gap: [4, 5], alignItems: `center`, mb: [5, 6] }}>
+        <p sx={{ m: 0, fontSize: `17px`, lineHeight: 1.65, maxWidth: `46ch` }}>
+          BudgetBench holds the per-call token budget fixed and asks which memory strategy spends it best. Retrieval at 2K
+          scored 0.646; truncation needed 8K to reach 0.650. Hover a column, or switch the budget.
+        </p>
+        <BudgetTiers />
+      </div>
 
-          <Grid sx={{ gridTemplateColumns: [`repeat(2, minmax(0, 1fr))`, `repeat(4, minmax(0, 1fr))`], gap: 3, mt: 4 }}>
-            <HeroStat label="Papers & preprints" value={`${myPapers.length}`} />
-            <HeroStat label="In progress" value="1+" />
-            <HeroStat label="Citations" value="10" />
-            <HeroStat label="Mode" value="Publishing + explaining" />
-          </Grid>
-        </ConsoleShell>
+      <Section label="Agenda" title="What I am trying to find out">
+        <Prose>
+          <p>
+            Most agent failures I see are not model failures. They come from context that was truncated without
+            anyone noticing, a runtime that gave different answers for the same input, or an eval that scored one
+            answer instead of the behavior over time.
+          </p>
+          <p>
+            The work follows three questions, and each reaches from the hardware up. How should memory be evaluated when the context budget is the
+            constraint? What do local inference stacks actually do under load, and where are they not reproducible?
+            What does a harness need to expose so its behavior can be audited? Each item below is an attempt to
+            answer one of them with a measurement.
+          </p>
+        </Prose>
+      </Section>
 
-        <SectionBlock
-          eyebrow="Foundational Guides"
-          title="Start here"
-          description="Systems-level explainers that teach the fundamentals behind the research below."
-        >
-          <Grid sx={{ gridTemplateColumns: [`1fr`, `repeat(2, minmax(0, 1fr))`], gap: 3 }}>
-            <ConsoleCard title="Guide" accent={consoleColors.accent}>
-              <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [3, 4], mt: 0, mb: 2, lineHeight: 1.15 }}>
-                What Is an AI Agent Harness?
-              </Heading>
-              <Text sx={{ color: consoleColors.soft, fontSize: 1, mb: 2 }}>
-                A Systems Guide to Building and Evaluating Reliable AI Agents
-              </Text>
-              <Text sx={{ color: consoleColors.muted, mb: 3 }}>
-                How models, tools, memory, context, verification, and runtime policies combine to determine agent
-                behavior — with examples from QuECTO, BudgetBench, and AgentABI.
-              </Text>
-              <Link
-                to="/ai-research/what-is-an-ai-agent-harness/"
-                sx={{ color: consoleColors.accent, fontFamily: `monospace`, textDecoration: `none` }}
-              >
-                Read the guide
-              </Link>
-            </ConsoleCard>
+      <Section label="Papers" title="Publications">
+        <RuledList rows={papers} />
+      </Section>
 
-            <ConsoleCard title="Build Series · Part 2" accent={consoleColors.accentAlt}>
-              <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [3, 4], mt: 0, mb: 2, lineHeight: 1.15 }}>
-                Building QuECTO
-              </Heading>
-              <Text sx={{ color: consoleColors.soft, fontSize: 1, mb: 2 }}>
-                From Minimal Agent Harness to Evaluable Coding Agent
-              </Text>
-              <Text sx={{ color: consoleColors.muted, mb: 3 }}>
-                How QuECTO grew into a small but measurable coding-agent runtime with reasoning controls, telemetry,
-                subagents, multimodal input, releases, and native evals.
-              </Text>
-              <Link
-                to="/ai-research/building-quecto-from-minimal-harness-to-evaluable-agent/"
-                sx={{ color: consoleColors.accentAlt, fontFamily: `monospace`, textDecoration: `none` }}
-              >
-                Read part two
-              </Link>
-            </ConsoleCard>
-          </Grid>
-        </SectionBlock>
-
-        <SectionBlock
-          eyebrow="Books"
-          title="AI Systems Design Field Guide"
-          description="A field guide to model APIs, agent runtimes, MCP, A2A, and production engineering — free to read online."
-        >
-          <ConsoleCard title="Book · 2026" accent={consoleColors.accent}>
-            <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [3, 4], mt: 0, mb: 2, lineHeight: 1.15 }}>
-              AI Systems Design Field Guide
-            </Heading>
-            <Text sx={{ display: `block`, color: consoleColors.muted, mb: 3 }}>
-              A short field guide covering model APIs, agent runtimes, MCP, A2A, and the production engineering that
-              ties them together.
-            </Text>
-            <Link
-              to="/ai-systems-design-field-guide/"
-              sx={{ display: `inline-block`, color: consoleColors.accent, fontFamily: `monospace`, textDecoration: `none` }}
-            >
-              Read the field guide
-            </Link>
-          </ConsoleCard>
-        </SectionBlock>
-
-        <SectionBlock
-          eyebrow="My Papers"
-          title="Published and in-progress research"
-          description="Peer-reviewed papers, preprints, and academic work I've authored, with more research in progress."
-        >
-          <Grid sx={{ gridTemplateColumns: [`1fr`, `repeat(2, minmax(0, 1fr))`], gap: 3 }}>
-            {myPapers.map(paper => (
-              <ConsoleCard key={paper.url} title={`${paper.status} · ${paper.year}`} accent={consoleColors.accent}>
-                <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [2, 3], mt: 0, mb: 2, lineHeight: 1.15 }}>
-                  {paper.title}
-                </Heading>
-                <Text sx={{ color: consoleColors.soft, fontSize: 0, fontFamily: `monospace`, mb: 2 }}>
-                  {paper.venue}
-                </Text>
-                <Text sx={{ color: consoleColors.muted, mb: 3 }}>{paper.detail}</Text>
-                <Box sx={{ display: `flex`, gap: 3, flexWrap: `wrap` }}>
-                  <a
-                    href={paper.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    sx={{ color: consoleColors.accent, fontFamily: `monospace`, textDecoration: `none` }}
-                  >
-                    Read the paper
-                  </a>
-                  {paper.explainerSlug ? (
-                    <Link
-                      to={paper.explainerSlug}
-                      sx={{ color: consoleColors.accentAlt, fontFamily: `monospace`, textDecoration: `none` }}
-                    >
-                      Read the explainer
-                    </Link>
-                  ) : null}
-                  {paper.pdfUrl ? (
-                    <a
-                      href={paper.pdfUrl}
-                      download
-                      sx={{ color: consoleColors.accentAlt, fontFamily: `monospace`, textDecoration: `none` }}
-                    >
-                      Download PDF
-                    </a>
-                  ) : null}
-                </Box>
-              </ConsoleCard>
-            ))}
-            {inProgressPapers.map(paper => (
-              <ConsoleCard key={paper.title} title="Coming soon" accent={consoleColors.warning}>
-                <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [2, 3], mt: 0, mb: 2, lineHeight: 1.15 }}>
-                  {paper.title}
-                </Heading>
-                <Text sx={{ color: consoleColors.muted }}>{paper.detail}</Text>
-              </ConsoleCard>
-            ))}
-          </Grid>
-        </SectionBlock>
-
-        <SectionBlock
-          eyebrow="Papers I'm Explaining"
-          title="Other researchers' work, made accessible"
-          description="Plain-language breakdowns of papers I find worth understanding deeply, not just my own."
-        >
-          <ThreeColumnGrid>
-            <ConsoleCard title="Coming soon" accent={consoleColors.accentAlt}>
-              <Text sx={{ color: consoleColors.muted }}>
-                First explainer of an external paper is in the works. Check back soon.
-              </Text>
-            </ConsoleCard>
-          </ThreeColumnGrid>
-        </SectionBlock>
-
-        <SectionBlock
-          eyebrow="Experiments & Engineering"
-          title="Hands-on work behind the ideas"
-          description="Practical experiments and engineering notes that ground the research in something buildable."
-        >
-          <ThreeColumnGrid>
-            <ConsoleCard title="Coming soon" accent={consoleColors.warning}>
-              <Text sx={{ color: consoleColors.muted }}>
-                First experiment write-up is in progress. Related engineering work also lives on{` `}
-                <Link to="/field-notes/" sx={{ color: consoleColors.accent }}>
-                  Field Notes
-                </Link>
-                .
-              </Text>
-            </ConsoleCard>
-          </ThreeColumnGrid>
-        </SectionBlock>
-
-        <Box
-          sx={{
-            borderTop: `1px solid`,
-            borderColor: `divide`,
-            pt: 4,
-            display: `grid`,
-            gap: 2,
-          }}
-        >
-          <Heading as="h2" sx={{ fontSize: [3, 4] }}>
-            Next moves
-          </Heading>
-          <Text sx={{ color: `secondary`, maxWidth: `70ch` }}>
-            More papers, explainers, and experiments are on the way. In the meantime, see the full publication record
-            or read the related infrastructure notes.
-          </Text>
-          <Box sx={{ display: `flex`, gap: 3, flexWrap: `wrap`, mt: 2 }}>
-            <a
-              href="https://scholar.google.com/citations?user=WujCeDkAAAAJ&hl=en"
-              target="_blank"
-              rel="noopener noreferrer"
-              sx={{ fontFamily: `monospace`, color: `accent`, textDecoration: `none` }}
-            >
-              View Google Scholar profile
-            </a>
-            <Link to="/field-notes/" sx={{ fontFamily: `monospace`, color: `accent`, textDecoration: `none` }}>
-              Read Field Notes
-            </Link>
-          </Box>
-        </Box>
-      </Box>
-    </Layout>
-  )
-}
+      <Section label="Work" title="Experiments and software">
+        <RuledList rows={publications} />
+        <p sx={{ mt: 4, mb: 0, fontSize: `15px` }}>
+          Full citation record on{` `}
+          <TextLink href="https://scholar.google.com/citations?user=WujCeDkAAAAJ&hl=en">Google Scholar</TextLink>.
+          Longer pieces: <TextLink to="/ai-research/what-is-an-ai-agent-harness/">What is an AI agent harness</TextLink>
+          {` `}and <TextLink to="/ai-systems-design-field-guide/">the AI Systems Design Field Guide</TextLink>.
+        </p>
+      </Section>
+      <Explore keys={["writing", "systems", "about"]} />
+    </Page>
+  </Layout>
+)
 
 export default AiResearchPage
 
 export const Head: HeadFC = () => (
   <Seo
-    title="AI Research: Papers & Experiments"
-    description="Making AI papers, experiments, and engineering ideas easier to understand — my own research, explainers of other papers, and hands-on experiments from Aditya Karnam."
+    title="AI Research: Papers and Experiments"
+    description="Research by Aditya Karnam: BudgetBench (arXiv:2609.13149), Ornith-1.5-9B distillation, MLX inference studies, and agent memory and retrieval systems."
     pathname="/ai-research/"
   />
 )

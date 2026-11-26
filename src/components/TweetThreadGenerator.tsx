@@ -86,7 +86,7 @@ const TweetThreadGenerator: React.FC = () => {
       tone: "Entertaining",
       audience: "General Tech Audience",
       threadLength: "7-10 tweets",
-      color: "#1da1f2",
+      color: "#C2522D",
       example:
         "Latest breakthrough in AI technology that's changing everything",
     },
@@ -105,7 +105,7 @@ const TweetThreadGenerator: React.FC = () => {
       tone: "Professional",
       audience: "Business Leaders",
       threadLength: "5-7 tweets",
-      color: "#10b981",
+      color: "#2F6F3E",
       example: "How AI is transforming business operations in 2025",
     },
     {
@@ -333,9 +333,9 @@ Your JSON array:`;
       className="max-w-6xl mx-auto"
       style={{
         fontFamily: "'Styrene A', 'Styrene B', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
-        backgroundColor: "#FFFFFF",
+        backgroundColor: "#FAF9F6",
         minHeight: "100vh",
-        color: "#1A1A18",
+        color: "#141413",
       }}
     >
       {/* Header */}
@@ -352,7 +352,7 @@ Your JSON array:`;
           style={{
             fontSize: "2.5rem",
             fontWeight: "700",
-            background: "linear-gradient(135deg, #1da1f2 0%, #1d9bf0 100%)",
+            background: "#C2522D",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             marginBottom: "0.5rem",
@@ -363,7 +363,7 @@ Your JSON array:`;
         <p
           style={{
             fontSize: "1.2rem",
-            color: "#6B6B63",
+            color: "#5E5D59",
             maxWidth: "600px",
             margin: "0 auto",
           }}
@@ -376,12 +376,12 @@ Your JSON array:`;
       {/* API Key Input */}
       <div
         style={{
-          backgroundColor: "#F7F4EE",
-          borderRadius: "12px",
+          backgroundColor: "#F3F1EB",
+          borderRadius: "4px",
           padding: "1.5rem",
           margin: "1rem auto 2rem",
           maxWidth: "800px",
-          border: "1px solid #D8D4CC",
+          border: "1px solid #E3E0D8",
         }}
       >
         <div
@@ -400,7 +400,7 @@ Your JSON array:`;
               style={{
                 margin: "0.25rem 0 0 0",
                 fontSize: "0.8rem",
-                color: "#6B6B63",
+                color: "#5E5D59",
               }}
             >
               Using:{" "}
@@ -411,10 +411,10 @@ Your JSON array:`;
           <button
             onClick={() => setShowApiKeyInput(!showApiKeyInput)}
             style={{
-              background: "#4299e1",
+              background: "#C2522D",
               color: "white",
               border: "none",
-              borderRadius: "6px",
+              borderRadius: "4px",
               padding: "0.5rem 1rem",
               cursor: "pointer",
               fontSize: "0.9rem",
@@ -431,7 +431,7 @@ Your JSON array:`;
                 display: "block",
                 marginBottom: "0.5rem",
                 fontSize: "0.9rem",
-                color: "#1A1A18",
+                color: "#141413",
               }}
             >
               OpenRouter API Key (get free key at openrouter.ai)
@@ -444,17 +444,17 @@ Your JSON array:`;
               style={{
                 width: "100%",
                 padding: "0.75rem",
-                borderRadius: "6px",
-                border: "1px solid #D8D4CC",
-                backgroundColor: "#FFFFFF",
-                color: "#1A1A18",
+                borderRadius: "4px",
+                border: "1px solid #E3E0D8",
+                backgroundColor: "#FAF9F6",
+                color: "#141413",
                 fontSize: "0.9rem",
               }}
             />
             <p
               style={{
                 fontSize: "0.8rem",
-                color: "#6B6B63",
+                color: "#5E5D59",
                 marginTop: "0.5rem",
                 margin: "0.5rem 0 0 0",
               }}
@@ -496,18 +496,18 @@ Your JSON array:`;
               key={index}
               onClick={() => applyPreset(preset)}
               style={{
-                background: "linear-gradient(135deg, #F7F4EE 0%, #FFFFFF 100%)",
+                background: "#C2522D",
                 border: `2px solid ${preset.color}`,
-                borderRadius: "12px",
+                borderRadius: "4px",
                 padding: "1rem",
-                color: "#1A1A18",
+                color: "#141413",
                 cursor: "pointer",
                 textAlign: "center",
                 transition: "all 0.3s ease",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow = `0 8px 25px ${preset.color}30`;
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "none";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
@@ -534,7 +534,7 @@ Your JSON array:`;
               <div
                 style={{
                   fontSize: "0.7rem",
-                  color: "#6B6B63",
+                  color: "#5E5D59",
                   lineHeight: "1.2",
                 }}
               >
@@ -555,11 +555,11 @@ Your JSON array:`;
       >
         <div
           style={{
-            backgroundColor: "#F7F4EE",
-            borderRadius: "16px",
+            backgroundColor: "#F3F1EB",
+            borderRadius: "4px",
             padding: "2rem",
             marginBottom: "2rem",
-            border: "1px solid #D8D4CC",
+            border: "1px solid #E3E0D8",
           }}
         >
           <h2
@@ -581,7 +581,7 @@ Your JSON array:`;
                 marginBottom: "0.5rem",
                 fontSize: "1rem",
                 fontWeight: "500",
-                color: "#1A1A18",
+                color: "#141413",
               }}
             >
               Topic or Main Message
@@ -594,10 +594,10 @@ Your JSON array:`;
               style={{
                 width: "100%",
                 padding: "1rem",
-                borderRadius: "8px",
-                border: "1px solid #D8D4CC",
-                backgroundColor: "#FFFFFF",
-                color: "#1A1A18",
+                borderRadius: "4px",
+                border: "1px solid #E3E0D8",
+                backgroundColor: "#FAF9F6",
+                color: "#141413",
                 fontSize: "1rem",
                 resize: "vertical",
                 minHeight: "80px",
@@ -613,7 +613,7 @@ Your JSON array:`;
                 marginBottom: "0.5rem",
                 fontSize: "1rem",
                 fontWeight: "500",
-                color: "#1A1A18",
+                color: "#141413",
               }}
             >
               AI Model
@@ -624,10 +624,10 @@ Your JSON array:`;
               style={{
                 width: "100%",
                 padding: "1rem",
-                borderRadius: "8px",
-                border: "1px solid #D8D4CC",
-                backgroundColor: "#FFFFFF",
-                color: "#1A1A18",
+                borderRadius: "4px",
+                border: "1px solid #E3E0D8",
+                backgroundColor: "#FAF9F6",
+                color: "#141413",
                 fontSize: "1rem",
               }}
             >
@@ -640,7 +640,7 @@ Your JSON array:`;
             <p
               style={{
                 fontSize: "0.8rem",
-                color: "#6B6B63",
+                color: "#5E5D59",
                 marginTop: "0.5rem",
                 margin: "0.5rem 0 0 0",
               }}
@@ -666,7 +666,7 @@ Your JSON array:`;
                   marginBottom: "0.5rem",
                   fontSize: "0.9rem",
                   fontWeight: "500",
-                  color: "#1A1A18",
+                  color: "#141413",
                 }}
               >
                 Thread Length
@@ -677,10 +677,10 @@ Your JSON array:`;
                 style={{
                   width: "100%",
                   padding: "0.75rem",
-                  borderRadius: "6px",
-                  border: "1px solid #D8D4CC",
-                  backgroundColor: "#FFFFFF",
-                  color: "#1A1A18",
+                  borderRadius: "4px",
+                  border: "1px solid #E3E0D8",
+                  backgroundColor: "#FAF9F6",
+                  color: "#141413",
                   fontSize: "0.9rem",
                 }}
               >
@@ -700,7 +700,7 @@ Your JSON array:`;
                   marginBottom: "0.5rem",
                   fontSize: "0.9rem",
                   fontWeight: "500",
-                  color: "#1A1A18",
+                  color: "#141413",
                 }}
               >
                 Tone & Style
@@ -711,10 +711,10 @@ Your JSON array:`;
                 style={{
                   width: "100%",
                   padding: "0.75rem",
-                  borderRadius: "6px",
-                  border: "1px solid #D8D4CC",
-                  backgroundColor: "#FFFFFF",
-                  color: "#1A1A18",
+                  borderRadius: "4px",
+                  border: "1px solid #E3E0D8",
+                  backgroundColor: "#FAF9F6",
+                  color: "#141413",
                   fontSize: "0.9rem",
                 }}
               >
@@ -734,7 +734,7 @@ Your JSON array:`;
                   marginBottom: "0.5rem",
                   fontSize: "0.9rem",
                   fontWeight: "500",
-                  color: "#1A1A18",
+                  color: "#141413",
                 }}
               >
                 Target Audience
@@ -745,10 +745,10 @@ Your JSON array:`;
                 style={{
                   width: "100%",
                   padding: "0.75rem",
-                  borderRadius: "6px",
-                  border: "1px solid #D8D4CC",
-                  backgroundColor: "#FFFFFF",
-                  color: "#1A1A18",
+                  borderRadius: "4px",
+                  border: "1px solid #E3E0D8",
+                  backgroundColor: "#FAF9F6",
+                  color: "#141413",
                   fontSize: "0.9rem",
                 }}
               >
@@ -786,7 +786,7 @@ Your JSON array:`;
                 style={{
                   width: "1.2rem",
                   height: "1.2rem",
-                  accentColor: "#1da1f2",
+                  accentColor: "#C2522D",
                 }}
               />
               Include Hashtags
@@ -807,7 +807,7 @@ Your JSON array:`;
                 style={{
                   width: "1.2rem",
                   height: "1.2rem",
-                  accentColor: "#1da1f2",
+                  accentColor: "#C2522D",
                 }}
               />
               Include Call-to-Action
@@ -821,11 +821,11 @@ Your JSON array:`;
             style={{
               width: "100%",
               background: isLoading
-                ? "#D8D4CC"
-                : "linear-gradient(135deg, #1da1f2 0%, #1d9bf0 100%)",
-              color: isLoading ? "#6B6B63" : "white",
+                ? "#E3E0D8"
+                : "#C2522D",
+              color: isLoading ? "#5E5D59" : "white",
               border: "none",
-              borderRadius: "10px",
+              borderRadius: "4px",
               padding: "1rem 2rem",
               fontSize: "1.1rem",
               fontWeight: "600",
@@ -838,9 +838,9 @@ Your JSON array:`;
             }}
             onMouseEnter={(e) => {
               if (!isLoading) {
-                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.transform = "translateY(0)";
                 e.currentTarget.style.boxShadow =
-                  "0 10px 30px rgba(29, 161, 242, 0.4)";
+                  "none";
               }
             }}
             onMouseLeave={(e) => {
@@ -858,10 +858,10 @@ Your JSON array:`;
         {generatedThread.length > 0 && (
           <div
             style={{
-              backgroundColor: "#F7F4EE",
-              borderRadius: "16px",
+              backgroundColor: "#F3F1EB",
+              borderRadius: "4px",
               padding: "2rem",
-              border: "1px solid #D8D4CC",
+              border: "1px solid #E3E0D8",
             }}
           >
             <div
@@ -885,10 +885,10 @@ Your JSON array:`;
                 id="copy-all"
                 onClick={copyAllTweets}
                 style={{
-                  background: "#10b981",
+                  background: "#2F6F3E",
                   color: "white",
                   border: "none",
-                  borderRadius: "6px",
+                  borderRadius: "4px",
                   padding: "0.5rem 1rem",
                   cursor: "pointer",
                   fontSize: "0.9rem",
@@ -904,11 +904,11 @@ Your JSON array:`;
                 <div
                   key={tweet.id}
                   style={{
-                    backgroundColor: "#FFFFFF",
-                    borderRadius: "12px",
+                    backgroundColor: "#FAF9F6",
+                    borderRadius: "4px",
                     padding: "1.5rem",
                     marginBottom: "1rem",
-                    border: "1px solid #D8D4CC",
+                    border: "1px solid #E3E0D8",
                   }}
                 >
                   <div
@@ -921,10 +921,10 @@ Your JSON array:`;
                   >
                     <div
                       style={{
-                        background: "#1da1f2",
+                        background: "#C2522D",
                         color: "white",
                         padding: "0.25rem 0.75rem",
-                        borderRadius: "12px",
+                        borderRadius: "4px",
                         fontSize: "0.8rem",
                         fontWeight: "500",
                       }}
@@ -963,10 +963,10 @@ Your JSON array:`;
                       id={`copy-${tweet.id}`}
                       onClick={() => copyTweet(tweet.content, tweet.id)}
                       style={{
-                        background: "#D8D4CC",
-                        color: "#6B6B63",
+                        background: "#E3E0D8",
+                        color: "#5E5D59",
                         border: "none",
-                        borderRadius: "6px",
+                        borderRadius: "4px",
                         padding: "0.5rem 1rem",
                         cursor: "pointer",
                         fontSize: "0.8rem",
@@ -977,10 +977,10 @@ Your JSON array:`;
                     <button
                       onClick={() => openInTwitter(tweet.content)}
                       style={{
-                        background: "#1da1f2",
+                        background: "#C2522D",
                         color: "white",
                         border: "none",
-                        borderRadius: "6px",
+                        borderRadius: "4px",
                         padding: "0.5rem 1rem",
                         cursor: "pointer",
                         fontSize: "0.8rem",
@@ -999,9 +999,9 @@ Your JSON array:`;
             {/* Tips */}
             <div
               style={{
-                background: "rgba(29, 161, 242, 0.1)",
-                border: "1px solid rgba(29, 161, 242, 0.3)",
-                borderRadius: "8px",
+                background: "rgba(194, 82, 45, 0.08)",
+                border: "1px solid rgba(194, 82, 45, 0.08)",
+                borderRadius: "4px",
                 padding: "1rem",
                 marginTop: "1.5rem",
               }}
@@ -1009,7 +1009,7 @@ Your JSON array:`;
               <h4
                 style={{
                   margin: "0 0 0.5rem 0",
-                  color: "#1da1f2",
+                  color: "#C2522D",
                   fontSize: "0.9rem",
                 }}
               >
@@ -1020,7 +1020,7 @@ Your JSON array:`;
                   margin: 0,
                   paddingLeft: "1.2rem",
                   fontSize: "0.85rem",
-                  color: "#1A1A18",
+                  color: "#141413",
                 }}
               >
                 <li>
@@ -1048,7 +1048,7 @@ Your JSON array:`;
       >
         <p
           style={{
-            color: "#6B6B63",
+            color: "#5E5D59",
             fontSize: "0.9rem",
             lineHeight: "1.6",
           }}
