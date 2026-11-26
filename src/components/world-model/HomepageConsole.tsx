@@ -56,7 +56,7 @@ const stats = [
   { value: "0.646", label: "LongMemEval at a 2K token budget (BudgetBench)", href: "/budgetbench-explained" },
   { value: "15+", label: "Vector backends behind one embenx API", href: "/embenx-python-embedding-toolkit/" },
   { value: "~1.3 MB", label: "Quecto agent core, two direct dependencies", href: "/quecto/" },
-  { value: "3", label: "MoE models fixed upstream by one mlx-lm PR", href: "https://github.com/ml-explore/mlx-lm/pull/1795" },
+  { value: "7.8K", label: "Stars on mlx-lm (1.2K forks), where my merged PR fixed LoRA on 3 MoE models", href: "https://github.com/ml-explore/mlx-lm/pull/1795" },
 ]
 
 const areas = [
