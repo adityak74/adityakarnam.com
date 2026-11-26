@@ -2,154 +2,49 @@ import * as React from "react"
 import type { HeadFC, PageProps } from "gatsby"
 import Layout from "@lekoarts/gatsby-theme-minimal-blog/src/components/layout"
 import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
-import {
-  ConsoleList,
-  Divider,
-  Panel,
-  StatusRow,
-  TwoColumnGrid,
-  WorldModelHero,
-  WorldModelPageShell,
-  WorldModelSection,
-  labPalette,
-} from "../components/world-model/pages-systems-stack-now/WorldModelPageChrome"
+import { Page, Title, Section, RuledList, Row } from "../components/world-model/pages-systems-stack-now/editorial"
 
-type ComponentStatus = {
-  name: string
-  status: string
-  detail: string
-  note: string
-}
-
-const serviceStatus: ComponentStatus[] = [
+const services: Row[] = [
+  { key: "site", meta: "Operational", title: "Website", body: "Static pages and navigation render normally." },
   {
-    name: "Website",
-    status: "Operational",
-    detail: "Static pages, navigation, and shared lab chrome are rendering normally.",
-    note: "Updated from the latest local build and previewed in browser QA.",
+    key: "chat",
+    meta: "Operational",
+    title: "Hero chat",
+    body: "Multi-turn chat on the homepage, grounded through Cloudflare AI Search. Falls back to curated copy when retrieval or generation is unavailable.",
   },
   {
-    name: "Hero chat",
-    status: "Operational",
-    detail: "The multi-turn, persona-adaptive chat on the homepage is grounded via Cloudflare AI Search.",
-    note: "Falls back to curated copy when retrieval or generation is unavailable.",
+    key: "content",
+    meta: "Operational",
+    title: "Content system",
+    body: "Posts and pages are generated from the Gatsby source tree. No external CMS.",
   },
   {
-    name: "Content system",
-    status: "Operational",
-    detail: "Field notes, systems pages, and project write-ups are generated from the Gatsby source tree.",
-    note: "No external CMS dependency.",
+    key: "build",
+    meta: "Operational",
+    title: "Build pipeline",
+    body: "Production builds complete. Gatsby still prints the known configstore EPERM warning in this sandbox; the output is produced and checked in preview.",
   },
-  {
-    name: "Build pipeline",
-    status: "Operational",
-    detail: "Production builds complete successfully; Gatsby still emits the known configstore EPERM warning in this sandbox.",
-    note: "The build output is still produced and verified in preview.",
-  },
-  {
-    name: "Local preview",
-    status: "Operational",
-    detail: "The static preview server is the fastest way to inspect the published output in this workspace.",
-    note: "Use it for visual QA after each significant UI change.",
-  },
-]
-
-const recentChecks = [
-  "Desktop and mobile layout checked for the homepage, systems, field notes, about, and stack pages.",
-  "Shared card and section spacing tightened so content reads like a status dashboard, not a loose landing page.",
-  "Navigation footer now includes the status page for quick access.",
 ]
 
 const knownIssues = [
-  "Gatsby build in this sandbox still ends with the existing `~/.config/gatsby/config.json` EPERM warning.",
-  "Hero chat answers fall back to curated copy unless the AI Search route can reach the retrieval and generation backend.",
-  "This page is a status-style view, not a live uptime monitor with external probes yet.",
+  "Gatsby build in this sandbox ends with the existing ~/.config/gatsby/config.json EPERM warning.",
+  "Hero chat answers fall back to curated copy unless the AI Search route can reach its backend.",
+  "This is a manual status page, not a live uptime monitor. There are no external probes.",
 ]
 
 const StatusPage = (_props: PageProps) => (
   <Layout>
-    <WorldModelPageShell>
-      <WorldModelHero
-        eyebrow="Status"
-        title="Service status for the lab."
-        description="A status-page view for the site, APIs, and publishing system. It is intentionally modeled like a product status console, but stays honest about what is actually running in this repo."
-        aside={
-          <div>
-            <div
-              style={{
-                color: labPalette.slate,
-                fontFamily: "'JetBrains Mono', 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace",
-                fontSize: "0.76rem",
-                letterSpacing: "0.06em",
-                marginBottom: "0.85rem",
-                textTransform: "uppercase",
-              }}
-            >
-              Overall state
-            </div>
-            <StatusRow label="Primary status" value="Operational" />
-            <StatusRow label="Last checked" value="Local preview and build verification" />
-            <StatusRow label="Scope" value="Website, APIs, content, and preview pipeline" />
-          </div>
-        }
-      />
-
-      <Divider />
-
-      <WorldModelSection
-        eyebrow="Service Map"
-        title="What is up right now"
-        description="These are the components that matter for visitors and for the publication workflow behind the site."
-      >
-        <TwoColumnGrid>
-          {serviceStatus.map((service) => (
-            <Panel key={service.name} accent={service.status === "Operational" ? "green" : "cyan"}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.6rem",
-                  marginBottom: "0.35rem",
-                }}
-              >
-                <span
-                  aria-hidden="true"
-                  style={{
-                    width: "10px",
-                    height: "10px",
-                    borderRadius: "999px",
-                    background: service.status === "Operational" ? "#2f8f4e" : "#C2522D",
-                    boxShadow:
-                      service.status === "Operational"
-                        ? "0 0 0 4px rgba(47, 143, 78, 0.12)"
-                        : "0 0 0 4px rgba(194, 82, 45, 0.12)",
-                    flexShrink: 0,
-                  }}
-                />
-                <StatusRow label={service.name} value={service.status} />
-              </div>
-              <p style={{ color: labPalette.body, lineHeight: 1.7, margin: "0.9rem 0 0" }}>{service.detail}</p>
-              <p style={{ color: labPalette.slate, lineHeight: 1.65, margin: "0.75rem 0 0" }}>{service.note}</p>
-            </Panel>
-          ))}
-        </TwoColumnGrid>
-      </WorldModelSection>
-
-      <WorldModelSection
-        eyebrow="Recent Checks"
-        title="What was verified most recently"
-        description="This section summarizes the last manual verification pass across the website and the lab pages."
-      >
-        <TwoColumnGrid>
-          <Panel accent="cyan">
-            <ConsoleList items={recentChecks} />
-          </Panel>
-          <Panel accent="green">
-            <ConsoleList items={knownIssues} />
-          </Panel>
-        </TwoColumnGrid>
-      </WorldModelSection>
-    </WorldModelPageShell>
+    <Page>
+      <Title eyebrow="Status" lede="What is running on this site, and what is known to be imperfect. Last checked with a local build and preview.">
+        Site status
+      </Title>
+      <Section label="Services">
+        <RuledList rows={services} />
+      </Section>
+      <Section label="Known issues">
+        <RuledList rows={knownIssues.map((t, i) => ({ key: String(i), meta: `Open`, title: t }))} />
+      </Section>
+    </Page>
   </Layout>
 )
 

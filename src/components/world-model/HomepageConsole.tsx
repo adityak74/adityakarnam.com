@@ -1,424 +1,141 @@
 /** @jsx jsx */
+import GeneNetwork from "./GeneNetwork"
 import * as React from "react"
-import { Box, Flex, Grid, Heading, Link as ThemeLink, Text, jsx } from "theme-ui"
+import { Box, jsx } from "theme-ui"
 import { Link } from "gatsby"
-import { openSourceContributions, siteIdentity, systems, worldModelStack } from "./data"
-import { openSourceImpact } from "./impact"
 import HeroChat from "./HeroChat"
 
-const cardStyles = {
-  border: "1px solid",
-  borderColor: "divide",
-  borderRadius: "10px",
-  background: "#FFFFFF",
+const c = { ink: "#141413", sec: "#5E5D59", rule: "#E3E0D8", panel: "#F3F1EB", accent: "#C2522D" }
+const mono = "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace"
+const serif = "'Fraunces', 'Source Serif 4', Georgia, serif"
+
+const linkSx = {
+  color: "inherit",
+  textDecoration: "underline",
+  textDecorationColor: c.rule,
+  textUnderlineOffset: "3px",
+  transition: "color .15s, text-decoration-color .15s",
+  "&:hover": { color: c.accent, textDecorationColor: c.accent },
 }
+const labelSx = { fontFamily: mono, fontSize: "12px", letterSpacing: ".06em", textTransform: "uppercase" as const, color: c.sec }
 
-const sectionLabelStyles = {
-  display: "block",
-  color: "secondary",
-  fontFamily: "monospace",
-  fontSize: "11px",
-  letterSpacing: "0.08em",
-  textTransform: "uppercase" as const,
-  mb: 2,
-}
+type Row = { tag: string; title: string; note: string; href: string; year: string; external?: boolean }
 
-const featuredSystems = systems.slice(0, 6)
+const research: Row[] = [
+  { tag: "Paper", title: "BudgetBench: memory strategy evaluation under a fixed token budget", note: "On LongMemEval (500 questions), retrieval at a 2K budget scored 0.646; truncation needed 8K to reach 0.650. arXiv:2609.13149.", href: "/budgetbench-explained", year: "2026" },
+  { tag: "Distillation", title: "Ornith-1.5-9B, two-teacher distillation on MLX", note: "A 4.9 GB build scores +5.5 MMLU and +3.0 HumanEval over the 8.9 GB release it replaces; the gain comes from reasoning termination, not knowledge.", href: "/distilling-ornith-9b-two-teacher-mlx/", year: "2026" },
+  { tag: "Inference", title: "Speculative decoding on Apple Silicon", note: "Qwen3.8-27B with a 0.8B draft model peaks at a 119% decode speedup, after patching mlx_lm to accept its hybrid attention cache.", href: "/mlx-speculative-decoding-qwen3-8-apple-silicon/", year: "2026" },
+  { tag: "Inference", title: "Why batching does not fix decode", note: "On an M5 Pro, GEMM holds a flat ~80x throughput advantage over GEMV, which is why batching helps prefill and barely touches decode.", href: "/mlx-gemv-gemm-roofline-apple-silicon/", year: "2026" },
+  { tag: "Retrieval", title: "Tokens per paper: DocLang vs Docling vs raw PDF", note: "DocLang costs 2.7x markdown tokens on a stock tokenizer and loses on retrieval; 38% of the paper was bibliography and boilerplate.", href: "/tokens-per-paper-doclang-docling-pdf/", year: "2026" },
+  { tag: "Numerics", title: "MLX non-determinism on Apple Silicon", note: "Batch-invariance tests from 512 to 4096 matrices, with bfloat16, float16 and float32 error behavior.", href: "/mlx-non-determinism-apple-silicon", year: "2025" },
+]
 
-const howIThinkLayers = worldModelStack.filter((layer) =>
-  ["Agent Runtime", "State + Memory Layer", "Retrieval + Context Layer", "Model Routing + Local/Cloud Inference", "Observability + Evaluation"].includes(
-    layer.name,
-  ),
+const writing: Row[] = [
+  { tag: "", title: "I wrote the practical systems guide I wanted for building coding agents", note: "", href: "/building-a-coding-agent-harness/", year: "2026-10" },
+  { tag: "", title: "BudgetBench explained", note: "", href: "/budgetbench-explained", year: "2026-09" },
+  { tag: "", title: "LoRA fine-tuning crashed on three MoE models in mlx-lm. The fix was one line, three times.", note: "", href: "/mlx-lm-lora-moe-stop-gradient-fix/", year: "2026-09" },
+  { tag: "", title: "The batch size that breaks local LLM serving on Apple Silicon", note: "", href: "/mlx-batch-concurrency-memory-wall-apple-silicon/", year: "2026-08" },
+  { tag: "", title: "Building Quecto: from minimal harness to evaluable agent", note: "", href: "/ai-research/building-quecto-from-minimal-harness-to-evaluable-agent", year: "2026-07" },
+  { tag: "", title: "What is an AI agent harness?", note: "", href: "/ai-research/what-is-an-ai-agent-harness", year: "2026-07" },
+]
+
+const systems: Row[] = [
+  { tag: "mlx-lm", title: "PR #1795, merged", note: "Added mx.stop_gradient to MoE router indices so LoRA training no longer crashes on granitemoe, granitemoehybrid and lfm2_moe.", href: "https://github.com/ml-explore/mlx-lm/pull/1795", year: "", external: true },
+  { tag: "embenx", title: "Retrieval library for agent memory", note: "One Collection API across 15+ vector backends, with hybrid search, temporal memory and an MCP server.", href: "/embenx-python-embedding-toolkit/", year: "" },
+  { tag: "subagent-fleet", title: "Local compute control plane", note: "Routes coding-agent subagents across local Ollama machines with health checks, warmup and a live dashboard.", href: "/subagent-fleet-local-ai-compute-control-plane", year: "" },
+  { tag: "quecto", title: "Minimal Rust coding-agent harness", note: "A ~1.3 MB synchronous core with two direct dependencies, SQLite-backed sessions and an approval-gated sandbox.", href: "/quecto/", year: "" },
+  { tag: "awesome-agentic-memory", title: "Map of agent memory frameworks", note: "mem0, Letta, Zep, A-MEM and others compared by memory type, backend and MCP support.", href: "/awesome-agentic-memory/", year: "" },
+]
+
+const A = ({ href, external, children }: { href: string; external?: boolean; children: React.ReactNode }) =>
+  external ? (
+    <a href={href} target="_blank" rel="noopener noreferrer" sx={linkSx}>{children}</a>
+  ) : (
+    <Link to={href} sx={linkSx}>{children}</Link>
+  )
+
+const Section = ({ title, more, children }: { title: string; more?: React.ReactNode; children: React.ReactNode }) => (
+  <Box as="section" sx={{ mt: [6, 7], borderTop: `1px solid ${c.rule}`, pt: 3 }}>
+    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", mb: 3 }}>
+      <h2 sx={{ ...labelSx, m: 0, fontWeight: 400, fontSize: "12px" }}>{title}</h2>
+      {more ? <span sx={{ fontSize: "14px" }}>{more}</span> : null}
+    </Box>
+    {children}
+  </Box>
 )
 
-const HomepageConsole = () => {
-  return (
-    <Box sx={{ color: "text" }}>
-      <Box
-        sx={{
-          position: "relative",
-          overflow: "hidden",
-          borderRadius: "16px",
-          px: [4, 5, 5],
-          py: [5, 5, 6],
-          mb: [5, 6],
-          background:
-            "radial-gradient(circle at top left, rgba(212, 165, 116, 0.16), transparent 26%), linear-gradient(180deg, #ffffff 0%, #faf9f7 100%)",
-          border: "1px solid",
-          borderColor: "divide",
-          boxShadow: "0 4px 24px rgba(26,26,24,0.08)",
-        }}
+const List = ({ rows, left }: { rows: Row[]; left: "tag" | "year" }) => (
+  <ul sx={{ listStyle: "none", m: 0, p: 0 }}>
+    {rows.map((r) => (
+      <li
+        key={r.href}
+        sx={{ display: "grid", gridTemplateColumns: ["1fr", "130px 1fr"], columnGap: 4, py: 3, borderBottom: `1px solid ${c.rule}`, "&:last-child": { borderBottom: 0 } }}
       >
-        <Grid columns={[1, null, "1.45fr 0.85fr"]} gap={[5, 6]}>
-          <Box>
-            <Text sx={sectionLabelStyles}>{siteIdentity.labName}</Text>
-            <Heading
-              as="h1"
-              sx={{
-                fontFamily: "serif",
-                fontSize: ["2.75rem", "3.75rem", "4.6rem"],
-                lineHeight: 1.04,
-                mb: 2,
-                maxWidth: "11ch",
-                fontWeight: 500,
-              }}
-            >
-              {siteIdentity.tagline}
-            </Heading>
-            <Text sx={{ color: "secondary", fontSize: "17px", lineHeight: 1.65, maxWidth: "44rem", mb: 2 }}>
-              I work on the systems layer behind next-generation AI agents: memory, retrieval, model routing,
-              evaluation, local inference, and runtimes that help agents maintain state, simulate outcomes, and act
-              reliably.
-            </Text>
-            <Text sx={{ color: "secondary", fontSize: "17px", lineHeight: 1.65, maxWidth: "42rem", mb: 3 }}>
-              The future of AI is not just larger language models. It is infrastructure that lets models understand
-              environments, reason across time, and interact with the world.
-            </Text>
-            <Grid columns={[2, null, 4]} gap={2} sx={{ maxWidth: "46rem", mb: 3 }}>
-              {openSourceImpact.heroMetrics.map((metric) => (
-                <Box key={metric.label} sx={{ borderLeft: "2px solid", borderColor: "primary", pl: 2 }}>
-                  <Text sx={{ color: "text", fontFamily: "monospace", fontSize: [1, 2], fontWeight: 600, mb: 0 }}>
-                    {metric.value}
-                  </Text>
-                  <Text sx={{ color: "secondary", fontSize: "11px", lineHeight: 1.35, mb: 0 }}>{metric.label}</Text>
-                </Box>
-              ))}
-            </Grid>
-            <Flex sx={{ gap: 3, flexWrap: "wrap", alignItems: "center" }}>
-              <Link
-                to="/systems/"
-                sx={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  color: "#ffffff",
-                  bg: "primary",
-                  px: 3,
-                  py: 2,
-                  borderRadius: "8px",
-                  textDecoration: "none",
-                  fontWeight: 500,
-                  ":hover": {
-                    bg: "#A8421F",
-                  },
-                }}
-              >
-                Explore Current Systems
-              </Link>
-              <Link
-                to="/ai-research/"
-                sx={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  color: "text",
-                  border: "1px solid",
-                  borderColor: "divide",
-                  px: 3,
-                  py: 2,
-                  borderRadius: "8px",
-                  textDecoration: "none",
-                  fontWeight: 500,
-                  ":hover": {
-                    borderColor: "primary",
-                    color: "primary",
-                  },
-                }}
-              >
-                Published Research
-              </Link>
-            </Flex>
-          </Box>
+        <span sx={{ ...labelSx, pt: ["0", "4px"], mb: [1, 0] }}>{left === "tag" ? r.tag : r.year}</span>
+        <div>
+          <div sx={{ fontFamily: serif, fontSize: "1.2rem", lineHeight: 1.3, fontWeight: 500, letterSpacing: "-0.01em" }}>
+            <A href={r.href} external={r.external}>{r.title}</A>
+            {left === "tag" && r.year ? <span sx={{ ...labelSx, ml: 2 }}>{r.year}</span> : null}
+          </div>
+          {r.note ? <p sx={{ m: 0, mt: 1, color: c.sec, fontSize: "16px", lineHeight: 1.6, maxWidth: "68ch" }}>{r.note}</p> : null}
+        </div>
+      </li>
+    ))}
+  </ul>
+)
 
-          <Box sx={{ ...cardStyles, p: [3, 4], background: "#F2F0EC" }}>
-            <Text sx={{ ...sectionLabelStyles, mb: 2 }}>Operating Loop</Text>
-            <Text sx={{ color: "secondary", fontSize: "17px", lineHeight: 1.65, mb: 3 }}>
-              {siteIdentity.supportingLine}
-            </Text>
-            <Grid columns={1} gap={2}>
-              {siteIdentity.loop.map((step, index) => (
-                <Box key={step} sx={{ borderTop: "1px solid", borderColor: "divide", pt: 2 }}>
-                  <Text sx={{ color: "primary", fontFamily: "monospace", fontSize: 0, mb: 1 }}>
-                    0{index + 1}
-                  </Text>
-                  <Text sx={{ color: "text", fontSize: 1 }}>{step}</Text>
-                </Box>
-              ))}
-            </Grid>
-          </Box>
-        </Grid>
+const HomepageConsole = () => (
+  <Box sx={{ color: c.ink, pt: [4, 5], pb: 6, fontSize: "17px", lineHeight: 1.65 }}>
+    <div sx={{ display: "grid", gridTemplateColumns: ["1fr", "1fr 260px"], gap: 4, alignItems: "center" }}>
+    <div>
+    <p sx={{ ...labelSx, m: 0, mb: 3 }}>Aditya Karnam</p>
+    <h1 sx={{ fontFamily: serif, fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.12, fontSize: "clamp(2.4rem, 5vw, 3.6rem)", m: 0, maxWidth: "20ch" }}>
+      I build the infrastructure layer for reliable agents.
+    </h1>
+    <p sx={{ mt: 4, mb: 3, maxWidth: "68ch" }}>
+      I am an AI researcher and senior software engineer. My work covers agent memory, retrieval, local inference, model routing, evals and agent harnesses.
+    </p>
+    <p sx={{ m: 0, maxWidth: "68ch", color: c.sec }}>
+      Most of it is measured on a laptop: fixed budgets, small models, and numbers I can reproduce. I publish the harnesses and the null results alongside the wins, and fix upstream when I find a bug.
+    </p>
+    <p sx={{ mt: 3, fontSize: "16px" }}>
+      <A href="/ai-research">Research</A> · <A href="/blog">Writing</A> · <A href="/about">About</A> · <a href="#contact" sx={linkSx}>Contact</a>
+    </p>
+    </div>
+    <div sx={{ display: ["none", "block"] }}><GeneNetwork /></div>
+    </div>
+
+    <details sx={{ mt: 4, "& > summary": { ...labelSx, cursor: "pointer", "&:hover": { color: c.accent } } }}>
+      <summary>Ask my work</summary>
+      <Box sx={{ mt: 3 }}>
+        <HeroChat />
       </Box>
+    </details>
 
-      <Box
-        sx={{
-          ...cardStyles,
-          display: "grid",
-          gridTemplateColumns: ["1fr", null, "1.35fr 0.65fr"],
-          gap: [4, 5],
-          alignItems: "center",
-          p: [4, 5],
-          mb: [5, 6],
-          background: "#1A1A18",
-          color: "#FAF9F7",
-          borderColor: "#1A1A18",
-          overflow: "hidden",
-        }}
-      >
-        <Box>
-          <Text sx={{ ...sectionLabelStyles, color: "#E08A62" }}>New book · 75-page practical systems guide</Text>
-          <Heading as="h2" sx={{ color: "#FAF9F7", fontSize: ["1.7rem", "2.2rem"], fontWeight: 500, lineHeight: 1.16, maxWidth: "20ch", mb: 2 }}>
-            Build a coding agent harness from the model call outward.
-          </Heading>
-          <Text sx={{ color: "#C8C3B9", lineHeight: 1.65, fontSize: "17px", maxWidth: "48rem", mb: 3 }}>
-            A hands-on guide to tools, bounded loops, repository context, policy, and the production concerns around them. Build the runnable Rust core, then compare its architecture with Quecto.
-          </Text>
-          <Flex sx={{ gap: 3, flexWrap: "wrap", alignItems: "center" }}>
-            <Link
-              to="/books/coding-agent-harness/"
-              sx={{ display: "inline-flex", alignItems: "center", color: "#1A1A18", bg: "#E08A62", px: 3, py: 2, borderRadius: "8px", textDecoration: "none", fontWeight: 600 }}
-            >
-              Preview and download the book →
-            </Link>
-            <ThemeLink href="https://github.com/adityak74/quecto" target="_blank" rel="noreferrer" sx={{ color: "#F0C6A8", fontSize: 1 }}>
-              See Quecto on GitHub →
-            </ThemeLink>
-          </Flex>
-        </Box>
-        <Link to="/books/coding-agent-harness/" aria-label="Open Building a Coding Agent Harness book page" sx={{ display: "block", justifySelf: ["center", null, "end"], width: "min(100%, 250px)" }}>
-          <img
-            src="/books/building-a-coding-agent-harness-cover.png"
-            alt="Cover of Building a Coding Agent Harness by Aditya Karnam and Arjun Jaggi"
-            loading="lazy"
-            sx={{ display: "block", width: "100%", borderRadius: "6px", boxShadow: "0 18px 42px rgba(0,0,0,0.34)" }}
-          />
-        </Link>
-      </Box>
+    <Section title="Research" more={<A href="/ai-research">All research</A>}>
+      <List rows={research} left="tag" />
+    </Section>
 
-      <Box sx={{ ...cardStyles, p: [4, 5], mb: [5, 6], background: "#F7F4EE" }}>
-        <Grid columns={[1, null, "1.25fr 0.75fr"]} gap={[4, 5]}>
-          <Box>
-            <Text sx={sectionLabelStyles}>{openSourceImpact.featuredProject.eyebrow}</Text>
-            <Heading as="h2" sx={{ fontSize: ["1.5rem", "1.8rem"], fontWeight: 500, lineHeight: 1.3, mb: 2 }}>
-              {openSourceImpact.featuredProject.title}
-            </Heading>
-            <Text sx={{ color: "secondary", lineHeight: 1.65, fontSize: "17px", mb: 3 }}>
-              {openSourceImpact.featuredProject.description}
-            </Text>
-            <Flex sx={{ gap: 3, flexWrap: "wrap" }}>
-              {openSourceImpact.featuredProject.links.map((link) => (
-                <ThemeLink key={link.href} href={link.href} target="_blank" rel="noreferrer" sx={{ color: "primary", fontSize: 1 }}>
-                  {link.label} →
-                </ThemeLink>
-              ))}
-            </Flex>
-          </Box>
-          <Box sx={{ borderTop: ["1px solid", null, "none"], borderLeft: ["none", null, "1px solid"], borderColor: "divide", pt: [3, null, 0], pl: [0, null, 4] }}>
-            {openSourceImpact.featuredProject.metrics.map((metric) => (
-              <Text key={metric} sx={{ color: "text", fontFamily: "monospace", fontSize: [1, 2], mb: 2 }}>
-                {metric}
-              </Text>
-            ))}
-            <Box sx={{ borderTop: "1px solid", borderColor: "divide", mt: 3, pt: 3 }}>
-              <Text sx={{ color: "text", fontWeight: 500, mb: 1 }}>{openSourceImpact.googleDriveAction.name}</Text>
-              <Text sx={{ color: "secondary", fontSize: 1, lineHeight: 1.5, mb: 2 }}>{openSourceImpact.googleDriveAction.description}</Text>
-              <ThemeLink href={openSourceImpact.googleDriveAction.href} target="_blank" rel="noreferrer" sx={{ color: "primary", fontSize: 1 }}>
-                {openSourceImpact.googleDriveAction.metrics.join(" · ")} →
-              </ThemeLink>
-            </Box>
-            <Text sx={{ color: "secondary", fontSize: "11px", mt: 3, mb: 0 }}>{openSourceImpact.snapshotLabel}</Text>
-          </Box>
-        </Grid>
-      </Box>
+    <Section title="Selected writing" more={<A href="/blog">All posts</A>}>
+      <List rows={writing} left="year" />
+    </Section>
 
-      <Box sx={{ ...cardStyles, p: [4, 5], mb: [5, 6] }}>
-        <Text sx={sectionLabelStyles}>Contributed to Open Source</Text>
-        <Heading as="h2" sx={{ fontSize: ["1.4rem", "1.7rem"], fontWeight: 500, lineHeight: 1.35, maxWidth: "46rem", mb: 3 }}>
-          Landed upstream in {openSourceImpact.upstreamProjects.join(", ")}.
-        </Heading>
-        <Grid columns={[1]} gap={3}>
-          {openSourceContributions.map((contribution) => (
-            <Box
-              key={contribution.prHref}
-              sx={{
-                border: "1px solid",
-                borderColor: "divide",
-                borderRadius: "10px",
-                p: 3,
-                background: "muted",
-              }}
-            >
-              <Flex sx={{ justifyContent: "space-between", alignItems: "baseline", gap: 2, flexWrap: "wrap", mb: 1 }}>
-                <Heading as="h3" sx={{ fontSize: "1.1rem", fontWeight: 500 }}>
-                  {contribution.project}
-                </Heading>
-                <Text sx={{ color: "secondary", fontFamily: "monospace", fontSize: "11px" }}>
-                  {contribution.status}
-                </Text>
-              </Flex>
-              <Text sx={{ color: "secondary", lineHeight: 1.55, fontSize: 1, mb: 2 }}>{contribution.summary}</Text>
-              <Flex sx={{ gap: 3, flexWrap: "wrap" }}>
-                <ThemeLink
-                  href={contribution.prHref}
-                  target="_blank"
-                  rel="noreferrer"
-                  sx={{ color: "primary", fontSize: 1 }}
-                >
-                  {contribution.repo} · {contribution.prLabel} →
-                </ThemeLink>
-                {contribution.writeUpHref && (
-                  <Link to={contribution.writeUpHref} sx={{ color: "primary", textDecoration: "none", fontSize: 1 }}>
-                    Write-up →
-                  </Link>
-                )}
-              </Flex>
-            </Box>
-          ))}
-        </Grid>
-      </Box>
+    <Section title="Open source and systems">
+      <List rows={systems} left="tag" />
+    </Section>
 
-      <Box sx={{ ...cardStyles, p: [4, 5], mb: [5, 6] }}>
-        <Flex sx={{ justifyContent: "space-between", alignItems: "flex-end", gap: 3, flexWrap: "wrap", mb: 4 }}>
-          <Box>
-            <Text sx={sectionLabelStyles}>Proof</Text>
-            <Heading as="h2" sx={{ fontSize: ["1.4rem", "1.7rem"], fontWeight: 500, lineHeight: 1.35, maxWidth: "46rem" }}>
-              Six systems that show the work, not just describe it.
-            </Heading>
-          </Box>
-          <Link to="/systems/" sx={{ color: "primary", textDecoration: "none", fontFamily: "monospace", fontSize: 0 }}>
-            View full index →
-          </Link>
-        </Flex>
-        <Grid columns={[1, null, 3]} gap={3}>
-          {featuredSystems.map((system) => {
-            const primaryLink = system.links[0]
-            const external = primaryLink.href.startsWith("http")
-            return (
-              <Box
-                key={system.name}
-                sx={{
-                  border: "1px solid",
-                  borderColor: "divide",
-                  borderRadius: "10px",
-                  p: 3,
-                  background: "muted",
-                }}
-              >
-                <Heading as="h3" sx={{ fontSize: "1.1rem", mb: 1, fontWeight: 500 }}>
-                  {system.name}
-                </Heading>
-                <Text sx={{ color: "secondary", fontFamily: "monospace", fontSize: "11px", mb: 2 }}>
-                  {system.tags.slice(0, 2).join(" · ")}
-                </Text>
-                <Text sx={{ color: "secondary", lineHeight: 1.55, fontSize: 1, mb: 2 }}>{system.whyItMatters}</Text>
-                {external ? (
-                  <ThemeLink
-                    href={primaryLink.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    sx={{ color: "primary", fontSize: 1 }}
-                  >
-                    {primaryLink.label} →
-                  </ThemeLink>
-                ) : (
-                  <Link to={primaryLink.href} sx={{ color: "primary", textDecoration: "none", fontSize: 1 }}>
-                    {primaryLink.label} →
-                  </Link>
-                )}
-              </Box>
-            )
-          })}
-        </Grid>
-      </Box>
+    <Section title="Currently" more={<A href="/now">Now</A>}>
+      <p sx={{ m: 0, maxWidth: "68ch" }}>
+        Making local agent runtimes observable (subagent-fleet), turning retrieval into durable memory infrastructure (embenx), and keeping the agent-memory map current. Next up: a write-up on why agent memory is not just retrieval.
+      </p>
+    </Section>
 
-      <Box sx={{ bg: "emphasisBg", color: "emphasisText", borderRadius: "10px", p: [4, 5], mb: [5, 6] }}>
-        <Text sx={{ ...sectionLabelStyles, color: "#B8B2A0" }}>How I Think</Text>
-        <Text sx={{ color: "#B8B2A0", lineHeight: 1.65, mb: 3, fontSize: "17px", maxWidth: "52rem" }}>
-          AI agents need more than a foundation model — they need infrastructure for state, memory, retrieval, tool
-          use, model routing, and evaluation, with interfaces and simulation loops layered on top as that foundation
-          matures. My research explores that connective tissue between models and reliable action.
-        </Text>
-        <Grid columns={[1, null, 2]} gap={3}>
-          {howIThinkLayers.map((layer, index) => (
-            <Box
-              key={layer.name}
-              sx={{
-                borderTop: "1px solid",
-                borderColor: "rgba(237,232,221,0.16)",
-                pt: 3,
-              }}
-            >
-              <Text sx={{ color: "#E08A62", fontFamily: "monospace", fontSize: "11px", mb: 1 }}>
-                Layer 0{index + 1}
-              </Text>
-              <Heading as="h3" sx={{ fontSize: "1.2rem", mb: 1, fontWeight: 500, color: "emphasisText" }}>
-                {layer.name}
-              </Heading>
-              <Text sx={{ color: "#B8B2A0", lineHeight: 1.55, fontSize: 1 }}>{layer.description}</Text>
-            </Box>
-          ))}
-        </Grid>
-      </Box>
-
-      <Box sx={{ ...cardStyles, p: [4, 5], mb: [5, 6], background: "#F7F4EE" }}>
-        <Flex sx={{ justifyContent: "space-between", alignItems: "flex-start", gap: 3, flexWrap: "wrap" }}>
-          <Box sx={{ maxWidth: "48rem" }}>
-            <Text sx={sectionLabelStyles}>Latest Signal</Text>
-            <Heading as="h2" sx={{ fontSize: ["1.5rem", "1.8rem"], fontWeight: 500, mb: 2 }}>
-              Local LLM serving on Apple Silicon, evaluated instead of guessed
-            </Heading>
-            <Text sx={{ color: "secondary", lineHeight: 1.65, fontSize: "17px" }}>
-              Ran the same workload set through Ollama, vLLM Metal, and SGLang on an Apple M5 Pro, with a warmed
-              response-quality eval suite and Gemma 4 as a second judge — then a Qwen 3.5 sweep from 0.8B to 9B.
-            </Text>
-          </Box>
-          <Link
-            to="/benchmarking-local-llms-ollama-vllm-sglang-apple-silicon/"
-            sx={{ color: "primary", textDecoration: "none", fontFamily: "monospace", fontSize: 0, whiteSpace: "nowrap" }}
-          >
-            Open eval note →
-          </Link>
-        </Flex>
-      </Box>
-
-      <HeroChat />
-
-      <Box
-        sx={{
-          display: "grid",
-          gap: 1,
-          justifyItems: "center",
-          mx: "auto",
-          mt: [4, 5],
-          maxWidth: "36rem",
-          px: 3,
-          textAlign: "center",
-        }}
-      >
-        <Text
-          as="p"
-          lang="sa"
-          sx={{
-            color: "secondary",
-            fontSize: 1,
-            letterSpacing: "0.01em",
-            mb: 0,
-          }}
-        >
-          रूपं देहि जयं देहि यशो देहि द्विषो जहि॥
-        </Text>
-        <Text
-          as="p"
-          sx={{
-            color: "secondary",
-            fontSize: "12px",
-            fontStyle: "italic",
-            opacity: 0.75,
-            mb: 0,
-          }}
-        >
-          May I be granted excellence, victory, worthy recognition, and freedom from hostility.
-        </Text>
-      </Box>
-    </Box>
-  )
-}
+    <Section title="Contact">
+      <p id="contact" sx={{ m: 0, maxWidth: "68ch" }}>
+        Find me on <A href="https://github.com/adityak74" external>GitHub</A>, <A href="https://www.linkedin.com/in/adityakarnamgrao/" external>LinkedIn</A> or <A href="https://twitter.com/aditya_karnam" external>Twitter</A>.
+      </p>
+    </Section>
+  </Box>
+)
 
 export default HomepageConsole

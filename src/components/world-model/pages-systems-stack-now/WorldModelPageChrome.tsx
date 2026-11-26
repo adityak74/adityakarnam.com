@@ -34,7 +34,7 @@ type TagListProps = {
 }
 
 const palette = {
-  page: "#FAF9F7",
+  page: "#FAF9F6",
   pageGlow: "rgba(212, 165, 116, 0.12)",
   pageGlowSecondary: "rgba(194, 82, 45, 0.06)",
   panel: "#FFFFFF",
@@ -51,6 +51,7 @@ const palette = {
 
 const monospaceFamily =
   "'JetBrains Mono', 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace"
+const serifFamily = "Fraunces, 'Source Serif 4', Georgia, serif"
 const sansFamily =
   "'Styrene A', 'Styrene B', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
 
@@ -58,7 +59,7 @@ export const labPalette = palette
 
 export const styles = {
   label: {
-    color: palette.cyan,
+    color: palette.body,
     display: "block",
     fontFamily: monospaceFamily,
     fontSize: "0.72rem",
@@ -68,11 +69,11 @@ export const styles = {
   },
   sectionHeading: {
     color: palette.heading,
-    fontFamily: sansFamily,
-    fontSize: "clamp(2rem, 4vw, 3.25rem)",
-    fontWeight: 500,
-    letterSpacing: "-0.03em",
-    lineHeight: 1.08,
+    fontFamily: serifFamily,
+    fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
+    fontWeight: 400,
+    letterSpacing: "-0.02em",
+    lineHeight: 1.15,
     margin: 0,
   },
   sectionBody: {
@@ -86,37 +87,8 @@ export const styles = {
 }
 
 export const WorldModelPageShell = ({ children }: ShellProps) => (
-  <div
-    style={{
-      background:
-        `radial-gradient(circle at top left, ${palette.pageGlow}, transparent 26%), ` +
-        `radial-gradient(circle at top right, ${palette.pageGlowSecondary}, transparent 22%), ` +
-        palette.page,
-      border: `1px solid ${palette.border}`,
-      borderRadius: "16px",
-      color: palette.text,
-      fontFamily: sansFamily,
-      marginTop: "2rem",
-      overflow: "hidden",
-      position: "relative",
-      boxShadow: "0 4px 24px rgba(26,26,24,0.08)",
-    }}
-  >
-    <div
-      aria-hidden="true"
-      style={{
-        backgroundImage:
-          `linear-gradient(${palette.grid} 1px, transparent 1px), ` +
-          `linear-gradient(90deg, ${palette.grid} 1px, transparent 1px)`,
-        backgroundPosition: "center center",
-        backgroundSize: "72px 72px",
-        inset: 0,
-        opacity: 0.18,
-        pointerEvents: "none",
-        position: "absolute",
-      }}
-    />
-    <div style={{ padding: "clamp(1.5rem, 2.6vw, 2.25rem)", position: "relative" }}>{children}</div>
+  <div style={{ background: palette.page, color: palette.text, fontFamily: sansFamily, margin: "2rem auto 0", maxWidth: "880px" }}>
+    {children}
   </div>
 )
 
@@ -125,7 +97,7 @@ export const WorldModelHero = ({ eyebrow, title, description, aside }: HeroProps
     style={{
       display: "grid",
       gap: "2rem",
-      gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+      gridTemplateColumns: "1fr",
       paddingBottom: "1.5rem",
     }}
   >
@@ -134,13 +106,13 @@ export const WorldModelHero = ({ eyebrow, title, description, aside }: HeroProps
       <h1
         style={{
           color: palette.heading,
-          fontFamily: sansFamily,
-          fontSize: "clamp(2.8rem, 7vw, 4.9rem)",
-          fontWeight: 500,
-          letterSpacing: "-0.03em",
-          lineHeight: 1.04,
+          fontFamily: serifFamily,
+          fontSize: "clamp(2.4rem, 5vw, 3.6rem)",
+          fontWeight: 400,
+          letterSpacing: "-0.02em",
+          lineHeight: 1.12,
           margin: 0,
-          maxWidth: "12ch",
+          maxWidth: "20ch",
         }}
       >
         {title}
@@ -162,7 +134,7 @@ export const WorldModelHero = ({ eyebrow, title, description, aside }: HeroProps
 )
 
 export const WorldModelSection = ({ eyebrow, title, description, children }: SectionProps) => (
-  <section style={{ padding: "2rem 0 0" }}>
+  <section style={{ padding: "2.5rem 0 0", marginTop: "2.5rem", borderTop: `1px solid ${palette.border}` }}>
     {eyebrow ? <span style={styles.label}>{eyebrow}</span> : null}
     <h2 style={styles.sectionHeading}>{title}</h2>
     {description ? <p style={styles.sectionBody}>{description}</p> : null}
@@ -170,38 +142,9 @@ export const WorldModelSection = ({ eyebrow, title, description, children }: Sec
   </section>
 )
 
-export const Panel = ({ children, accent = "slate" }: PanelProps) => {
-  const accentColor = accent === "cyan" ? palette.cyan : accent === "green" ? palette.green : palette.slate
-
-  return (
-    <div
-      style={{
-        background: palette.panel,
-        border: `1px solid ${palette.border}`,
-        borderRadius: "12px",
-        boxShadow: `0 1px 2px rgba(26,26,24,0.06)`,
-        height: "100%",
-        padding: "1.25rem",
-        position: "relative",
-      }}
-    >
-      <div
-        aria-hidden="true"
-        style={{
-          background: accentColor,
-          borderRadius: "999px",
-          height: "6px",
-          left: "1.25rem",
-          position: "absolute",
-          top: "1rem",
-          width: "44px",
-          opacity: 0.55,
-        }}
-      />
-      <div style={{ paddingTop: "0.75rem" }}>{children}</div>
-    </div>
-  )
-}
+export const Panel = ({ children }: PanelProps) => (
+  <div style={{ borderTop: `1px solid ${palette.border}`, height: "100%", padding: "1rem 0 0" }}>{children}</div>
+)
 
 export const TwoColumnGrid = ({ children }: ShellProps) => (
   <div
@@ -246,7 +189,7 @@ export const ConsoleList = ({ items }: TagListProps) => (
           lineHeight: 1.65,
         }}
       >
-        <span style={{ color: palette.cyan }}>•</span>
+        <span style={{ color: palette.slate }}>–</span>
         <span>{item}</span>
       </div>
     ))}
@@ -260,7 +203,7 @@ export const TagList = ({ items }: TagListProps) => (
         key={item}
         style={{
           border: `1px solid ${palette.border}`,
-          borderRadius: "999px",
+          borderRadius: "3px",
           color: palette.body,
           fontFamily: monospaceFamily,
           fontSize: "0.75rem",
@@ -280,9 +223,10 @@ export const InlineLink = ({ to, children }: InlineLinkProps) => (
   <Link
     to={to}
     style={{
-      color: palette.cyan,
-      fontWeight: 500,
-      textDecoration: "none",
+      color: palette.text,
+      textDecoration: "underline",
+      textDecorationColor: palette.border,
+      textUnderlineOffset: "3px",
     }}
   >
     {children}

@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import * as React from "react"
-import { jsx, Box } from "theme-ui"
+import { jsx } from "theme-ui"
 import { Link } from "gatsby"
 import ItemTags from "@lekoarts/gatsby-theme-minimal-blog/src/components/item-tags"
 
@@ -12,58 +12,41 @@ type BlogListItemProps = {
     excerpt: string
     description: string
     timeToRead?: number
-    tags?: {
-      name: string
-      slug: string
-    }[]
+    tags?: { name: string; slug: string }[]
   }
   showTags?: boolean
 }
 
-const BlogListItem = ({ post, showTags = true }: BlogListItemProps) => {
-  const isAutoblog = post.tags?.some((t) => t.name === `autoblog`)
-  const visibleTags = post.tags?.filter((t) => t.name !== `autoblog`) ?? []
+const meta = {
+  fontFamily: `monospace`,
+  fontSize: `12px`,
+  letterSpacing: `0.06em`,
+  textTransform: `uppercase` as const,
+  color: `secondary`,
+  a: { color: `secondary`, textDecoration: `none`, ":hover": { color: `primary` } },
+}
 
+const BlogListItem = ({ post, showTags = true }: BlogListItemProps) => {
+  const visibleTags = post.tags?.filter((t) => t.name !== `autoblog`) ?? []
   return (
-    <Box mb={5}>
-      <div sx={{ display: `flex`, alignItems: `center`, gap: `0.5rem`, flexWrap: `wrap` }}>
+    <article sx={{ py: 3, borderBottom: `1px solid`, borderColor: `divide`, display: `grid`, gridTemplateColumns: [`1fr`, `9rem 1fr`], gap: [1, 4] }}>
+      <div sx={meta}>
+        <time>{post.date}</time>
+      </div>
+      <div>
         <Link
           to={post.slug}
-          sx={(t) => ({ ...t.styles?.a, fontSize: [1, 2, 3], color: `text`, ":hover": { color: `accent` } })}
+          sx={{ fontFamily: `heading`, fontSize: [`1.2rem`, `1.35rem`], lineHeight: 1.25, letterSpacing: `-0.015em`, color: `heading`, textDecoration: `none`, ":hover": { color: `primary` } }}
         >
           {post.title}
         </Link>
-        {isAutoblog && (
-          <span sx={{
-            fontSize: `0.65rem`,
-            fontWeight: `600`,
-            letterSpacing: `0.04em`,
-            textTransform: `uppercase`,
-            color: `secondary`,
-            bg: `muted`,
-            border: `1px solid`,
-            borderColor: `divide`,
-            px: `0.45rem`,
-            py: `0.1rem`,
-            borderRadius: `4px`,
-            fontFamily: `monospace`,
-            lineHeight: `1.6`,
-            flexShrink: 0,
-          }}>
-            AI Generated
-          </span>
+        {visibleTags.length > 0 && showTags && (
+          <div sx={{ ...meta, mt: 1 }}>
+            <ItemTags tags={visibleTags} />
+          </div>
         )}
       </div>
-      <p sx={{ color: `secondary`, mt: 1, a: { color: `secondary` }, fontSize: [1, 1, 2] }}>
-        <time>{post.date}</time>
-        {visibleTags.length > 0 && showTags && (
-          <React.Fragment>
-            {` — `}
-            <ItemTags tags={visibleTags} />
-          </React.Fragment>
-        )}
-      </p>
-    </Box>
+    </article>
   )
 }
 

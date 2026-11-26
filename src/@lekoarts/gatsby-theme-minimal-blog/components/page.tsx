@@ -24,7 +24,7 @@ const Page: React.FC<React.PropsWithChildren<PageProps<MBPageProps>>> = ({ data:
         {page.title}
       </Heading>
     )}
-    <section sx={{ my: 5, variant: `layout.content` }}>{children}</section>
+    <section sx={{ mt: 4, mb: 5, maxWidth: `68ch`, variant: `layout.content` }}>{children}</section>
   </Layout>
 )
 

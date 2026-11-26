@@ -10,7 +10,7 @@ const config: GatsbyConfig = {
     // See all options: https://github.com/LekoArts/gatsby-themes/blob/main/themes/gatsby-theme-minimal-blog/gatsby-config.mjs
     siteTitle: `Aditya Karnam`,
     siteTitleAlt: `Aditya Karnam — AI Researcher`,
-    siteHeadline: `Aditya Karnam is an AI researcher building the infrastructure layer around agents: memory, retrieval, model routing, local inference, agent runtimes, and evals.`,
+    siteHeadline: `Aditya Karnam is an AI researcher and senior software engineer building the infrastructure layer for reliable agents: memory, retrieval, local inference, model routing, evals and agent harnesses.`,
     siteUrl: `https://adityakarnam.com`,
     siteDescription: `Aditya Karnam is an AI researcher focused on agent runtimes, memory, retrieval, model routing, local inference, and evaluation systems.`,
     siteImage: `/banner-aditya.png`,
@@ -24,15 +24,11 @@ const config: GatsbyConfig = {
       options: {
         navigation: [
           {
-            title: `AI Research`,
+            title: `Research`,
             slug: `/ai-research`,
           },
           {
-            title: `AI Toolkit`,
-            slug: `/ai-toolkit`,
-          },
-          {
-            title: `Thoughts`,
+            title: `Writing`,
             slug: `/blog`,
           },
           {
@@ -40,16 +36,8 @@ const config: GatsbyConfig = {
             slug: `/systems`,
           },
           {
-            title: `Field Notes`,
-            slug: `/field-notes`,
-          },
-          {
-            title: `Quecto`,
-            slug: `/quecto`,
-          },
-          {
-            title: `Value Lab`,
-            slug: `/value-lab`,
+            title: `Toolkit`,
+            slug: `/ai-toolkit`,
           },
           {
             title: `About`,

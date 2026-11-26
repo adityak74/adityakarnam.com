@@ -1,124 +1,64 @@
 import * as React from "react"
 import type { HeadFC, PageProps } from "gatsby"
-import { Link } from "gatsby"
 import Layout from "@lekoarts/gatsby-theme-minimal-blog/src/components/layout"
 import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
-import {
-  ConsoleList,
-  Divider,
-  Panel,
-  StatusRow,
-  TagList,
-  WorldModelHero,
-  WorldModelPageShell,
-  WorldModelSection,
-  labPalette,
-} from "../components/world-model/pages-systems-stack-now/WorldModelPageChrome"
+import { Page, Title, Section, RuledList, Row } from "../components/world-model/pages-systems-stack-now/editorial"
 
-type InternalLinkEntry = {
-  label: string
-  to: string
-}
-
-type ExternalLinkEntry = {
-  label: string
-  href: string
-}
-
-type LinkEntry = InternalLinkEntry | ExternalLinkEntry
-
-type SystemEntry = {
-  name: string
-  tags: string[]
-  researchQuestion: string
-  systemBuilt: string
-  whyItMatters: string
-  status: string
-  proof: string[]
-  links: LinkEntry[]
-}
-
-const systems: SystemEntry[] = [
+const systems: Row[] = [
   {
-    name: "subagent-fleet",
-    tags: ["local inference", "model routing", "coding agents", "ollama", "litellm"],
-    researchQuestion:
-      "Can local machines become a coordinated compute fleet for coding agents instead of a pile of disconnected Ollama endpoints?",
-    systemBuilt:
-      "An open-source control plane that generates LiteLLM routing config, Claude Code-style agent definitions, environment files, model warmup flows, and a live SSE dashboard from one fleet topology.",
-    whyItMatters:
-      "It turns agent role design into infrastructure. Planner, implementer, reviewer, and summarizer workloads can route to different models and machines with visible runtime behavior.",
-    status: "Active experiment · open source",
-    proof: [
-      "One declarative fleet.yaml drives routes, agent files, and warmup flows.",
-      "Live dashboard exposes node health, routing, trace stream, and warm model state.",
-      "Published eval compares the local fleet against Sonnet 5 and GPT-4o-mini.",
-    ],
+    key: "fleet",
+    meta: "Open source",
+    tag: "local inference · routing · ollama · litellm",
+    title: "subagent-fleet",
+    body: "Question: can local machines act as one compute fleet for coding agents, instead of a pile of disconnected Ollama endpoints? One declarative fleet.yaml generates LiteLLM routes, Claude Code-style agent files, env files and warmup flows. A live dashboard shows node health, routing, the trace stream and warm models. The published eval compares the fleet against Sonnet 5 and GPT-4o-mini.",
     links: [
-      { label: "System write-up", to: "/subagent-fleet-local-ai-compute-control-plane" },
-      { label: "Docs site", href: "https://adityak74.github.io/subagent-fleet/" },
+      { label: "Write-up", to: "/subagent-fleet-local-ai-compute-control-plane" },
+      { label: "Docs", href: "https://adityak74.github.io/subagent-fleet/" },
       { label: "GitHub", href: "https://github.com/adityak74/subagent-fleet" },
     ],
   },
   {
-    name: "embenx",
-    tags: ["retrieval", "memory layer", "hybrid search", "temporal memory", "mcp"],
-    researchQuestion:
-      "Can retrieval infrastructure become backend-agnostic without giving up the features agents need for durable memory?",
-    systemBuilt:
-      "A Python retrieval library with a unified Collection API across 15+ vector backends, plus hybrid search, metadata filtering, reranking, temporal memory, self-healing retrieval, and a built-in MCP server.",
-    whyItMatters:
-      "AI agent systems need a memory layer that survives backend changes and exposes retrieval behavior explicitly instead of burying it in one-off adapters.",
-    status: "Shipping library · active development",
-    proof: [
-      "One API spans FAISS, pgvector, LanceDB, Milvus, Qdrant, and more.",
-      "TemporalCollection adds recency-aware retrieval for session and episodic memory.",
-      "The roadmap already points toward state hydration and trajectory retrieval.",
-    ],
+    key: "embenx",
+    meta: "Library",
+    tag: "retrieval · memory · hybrid search · mcp",
+    title: "embenx",
+    body: "Question: can retrieval be backend-agnostic without losing the features agents need for durable memory? A Collection API spans 15+ backends including FAISS, pgvector, LanceDB, Milvus and Qdrant, with hybrid search, metadata filtering, reranking, a TemporalCollection for recency-aware memory, and a built-in MCP server.",
     links: [
       { label: "Guide", to: "/embenx-python-embedding-toolkit" },
-      { label: "Docs site", href: "https://adityak74.github.io/embenx/" },
+      { label: "Docs", href: "https://adityak74.github.io/embenx/" },
       { label: "GitHub", href: "https://github.com/adityak74/embenx" },
     ],
   },
   {
-    name: "AI Toolkit",
-    tags: ["workflow tooling", "prompt evaluation", "prompt rewriting", "interfaces"],
-    researchQuestion:
-      "What lightweight tooling helps make LLM workflows more inspectable before they become larger agent systems?",
-    systemBuilt:
-      "A practical tool suite with an Intelligent Prompt Composer, a Prompt Grader & Rewriter, and a Tweet Thread Generator for shaping prompts, checking quality dimensions, and creating repeatable outputs.",
-    whyItMatters:
-      "Even small tools reinforce the same thesis: useful agent systems need explicit structure, evaluation hints, guardrails, and visible operator control.",
-    status: "Live product page",
-    proof: [
-      "Prompt Grader scores prompts across goals, constraints, output format, evaluation hints, and guardrails.",
-      "Composer exposes role, tone, output format, verbosity, and thinking mode as controllable inputs.",
-      "The toolkit acts as a low-friction proving ground for runtime ergonomics.",
-    ],
+    key: "quecto",
+    meta: "Open source",
+    tag: "harness · coding agent · rust",
+    title: "Quecto",
+    body: "Question: how small can an agent harness be and still be evaluable? A 1.3 MB core and a 5.5 MB coding agent, with approval gating, a sandbox denylist, post-edit verification gates and SQLite session persistence.",
     links: [
-      { label: "Toolkit page", to: "/ai-toolkit" },
-      { label: "Prompt Composer", to: "/ai-toolkit/intelligent-prompt-composer" },
+      { label: "Project", to: "/quecto/" },
+      { label: "GitHub", href: "https://github.com/adityak74/quecto" },
+    ],
+  },
+  {
+    key: "toolkit",
+    meta: "Live",
+    tag: "prompt evaluation · tooling",
+    title: "AI Toolkit",
+    body: "Question: what lightweight tooling makes LLM workflows inspectable before they become agent systems? A Prompt Composer, a Prompt Grader and Rewriter that scores goals, constraints, output format, evaluation hints and guardrails, and a thread generator.",
+    links: [
+      { label: "Toolkit", to: "/ai-toolkit" },
       { label: "Prompt Grader", to: "/ai-toolkit/prompt-grader/" },
     ],
   },
   {
-    name: "awesome-agentic-memory",
-    tags: ["memory research", "mcp", "knowledge graphs", "field mapping"],
-    researchQuestion:
-      "What does the current memory landscape look like when you compare agent frameworks, MCP servers, vector databases, and temporal-memory approaches side by side?",
-    systemBuilt:
-      "A curated, continuously updated landscape page covering agent memory frameworks, MCP memory servers, vector backends, and research directions relevant to long-horizon agents.",
-    whyItMatters:
-      "Owning a category requires mapping the space, not just shipping one project. This page makes the memory layer legible and helps place new work in context.",
-    status: "Public resource · active curation",
-    proof: [
-      "Includes a framework comparison across memory types, backends, and MCP support.",
-      "Highlights embenx inside a wider ecosystem instead of treating it in isolation.",
-      "Connects production tooling to research-oriented memory patterns.",
-    ],
+    key: "memory",
+    meta: "Resource",
+    tag: "memory research · mcp",
+    title: "awesome-agentic-memory",
+    body: "A curated, regularly updated map of agent memory frameworks, MCP memory servers, vector backends and research directions, with a framework comparison across memory types and MCP support.",
     links: [
-      { label: "Resource page", to: "/awesome-agentic-memory/" },
+      { label: "Page", to: "/awesome-agentic-memory/" },
       { label: "GitHub", href: "https://github.com/aviskaar/awesome-agentic-memory" },
     ],
   },
@@ -126,127 +66,17 @@ const systems: SystemEntry[] = [
 
 const SystemsPage = (_props: PageProps) => (
   <Layout>
-    <WorldModelPageShell>
-      <WorldModelHero
-        eyebrow="Current Systems"
-        title="Research artifacts, not portfolio cards."
-        description="These systems map to the infrastructure layer behind reliable AI agents: runtime control, memory, retrieval, interface design, and practical evaluation."
-        aside={
-          <div>
-            <div
-              style={{
-                color: labPalette.slate,
-                fontFamily:
-                  "'JetBrains Mono', 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace",
-                fontSize: "0.76rem",
-                letterSpacing: "0.06em",
-                textTransform: "uppercase",
-              }}
-            >
-              Observe → Model → Simulate → Act → Evaluate → Update
-            </div>
-            <ConsoleList
-              items={[
-                "runtime control through subagent-fleet",
-                "retrieval and memory abstractions through embenx",
-                "prompt shaping and review loops through AI Toolkit",
-                "ecosystem mapping through awesome-agentic-memory",
-              ]}
-            />
-          </div>
-        }
-      />
-
-      <Divider />
-
-      <WorldModelSection
-        eyebrow="Artifact Index"
-        title="Current systems"
-        description="Each page below is framed as a system with a question, a build artifact, and a claim about what the next AI infrastructure layer needs."
+    <Page>
+      <Title
+        eyebrow="Systems"
+        lede="Software I have built for the infrastructure behind reliable agents: runtime control, retrieval and memory, evaluation, and tooling."
       >
-        <div style={{ display: "grid", gap: "1rem" }}>
-          {systems.map(system => (
-            <Panel key={system.name} accent={system.name === "embenx" ? "green" : "cyan"}>
-              <div
-                style={{
-                  alignItems: "flex-start",
-                  display: "grid",
-                  gap: "1rem",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-                }}
-              >
-                <div>
-                  <h3
-                    style={{
-                      color: labPalette.heading,
-                      fontSize: "1.7rem",
-                      letterSpacing: "-0.04em",
-                      margin: "0 0 0.8rem",
-                    }}
-                  >
-                    {system.name}
-                  </h3>
-                  <TagList items={system.tags} />
-                  <div style={{ marginTop: "1rem" }}>
-                    <StatusRow label="Research question" value={system.researchQuestion} />
-                    <StatusRow label="System built" value={system.systemBuilt} />
-                    <StatusRow label="Why it matters" value={system.whyItMatters} />
-                    <StatusRow label="Status" value={system.status} />
-                  </div>
-                </div>
-                <div>
-                  <div
-                    style={{
-                      color: labPalette.slate,
-                      fontFamily:
-                        "'JetBrains Mono', 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace",
-                      fontSize: "0.76rem",
-                      letterSpacing: "0.06em",
-                      marginBottom: "0.85rem",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    Proof points
-                  </div>
-                  <ConsoleList items={system.proof} />
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.85rem", marginTop: "1rem" }}>
-                    {system.links.map(link =>
-                      "to" in link ? (
-                        <Link
-                          key={link.label}
-                          to={link.to}
-                          style={{
-                            color: labPalette.cyan,
-                            fontSize: "0.95rem",
-                            textDecoration: "none",
-                          }}
-                        >
-                          {link.label}
-                        </Link>
-                      ) : (
-                        <a
-                          key={link.label}
-                          href={link.href}
-                          rel="noreferrer"
-                          target="_blank"
-                          style={{
-                            color: labPalette.green,
-                            fontSize: "0.95rem",
-                            textDecoration: "none",
-                          }}
-                        >
-                          {link.label}
-                        </a>
-                      )
-                    )}
-                  </div>
-                </div>
-              </div>
-            </Panel>
-          ))}
-        </div>
-      </WorldModelSection>
-    </WorldModelPageShell>
+        Systems
+      </Title>
+      <Section label="Index">
+        <RuledList rows={systems} />
+      </Section>
+    </Page>
   </Layout>
 )
 

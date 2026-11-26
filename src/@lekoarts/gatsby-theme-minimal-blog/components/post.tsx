@@ -31,63 +31,46 @@ export type MBPostProps = {
   }
 }
 
-const shadow = `0 1px 2px rgba(0,0,0,0.04)`
+const mono = {
+  fontFamily: `monospace`,
+  fontSize: `12px`,
+  letterSpacing: `0.06em`,
+  textTransform: `uppercase` as const,
+  color: `secondary`,
+}
 
 const Post: React.FC<React.PropsWithChildren<PageProps<MBPostProps>>> = ({ data: { post }, children }) => (
   <Layout>
-    <Heading as="h1" variant="styles.h1">
-      {post.title}
-    </Heading>
-    <p sx={{ color: `secondary`, mt: 3, a: { color: `secondary` }, fontSize: [1, 1, 2], display: `flex`, alignItems: `center`, flexWrap: `wrap`, gap: `0.5rem` }}>
-      {post.tags?.some((t) => t.name === `autoblog`) && (
-        <span sx={{
-          fontSize: `0.7rem`,
-          fontWeight: `600`,
-          letterSpacing: `0.04em`,
-          textTransform: `uppercase`,
-          color: `secondary`,
-          backgroundColor: (t: any) => t.colors?.modes?.dark ? `rgba(255,255,255,0.06)` : `rgba(0,0,0,0.05)`,
-          bg: `muted`,
-          border: `1px solid`,
-          borderColor: `divide`,
-          px: `0.5rem`,
-          py: `0.15rem`,
-          borderRadius: `4px`,
-          fontFamily: `monospace`,
-          lineHeight: `1.6`,
-        }}>
-          AI Generated
-        </span>
-      )}
-      <time>{post.date}</time>
-      {post.tags && (
-        <React.Fragment>
-          {` — `}
-          <ItemTags tags={post.tags.filter((t) => t.name !== `autoblog`)} />
-        </React.Fragment>
-      )}
-      {post.timeToRead && ` — `}
-      {post.timeToRead && <span>{post.timeToRead} min read</span>}
-    </p>
-    <section
-      sx={{
-        my: 5,
-        ".gatsby-resp-image-wrapper": {
-          my: [4, 4, 5],
-          borderRadius: `6px`,
-          border: `1px solid`,
-          borderColor: `divide`,
-          boxShadow: shadow,
-          ".gatsby-resp-image-image": {
-            borderRadius: `6px`,
-          },
-        },
-        variant: `layout.content`,
-      }}
-    >
-      {children}
-    </section>
-    <PostFooter post={post} />
+    <article sx={{ maxWidth: `68ch` }}>
+      <header sx={{ mb: 5 }}>
+        <p
+          sx={{ ...mono, m: 0, mb: 3, display: `flex`, flexWrap: `wrap`, gap: `0.5rem 1rem`, a: { color: `secondary`, textDecoration: `none`, ":hover": { color: `primary` } } }}
+        >
+          <time>{post.date}</time>
+          {post.tags && post.tags.filter((t) => t.name !== `autoblog`).length > 0 && (
+            <span>
+              <ItemTags tags={post.tags.filter((t) => t.name !== `autoblog`)} />
+            </span>
+          )}
+          {post.timeToRead ? <span>{post.timeToRead} min read</span> : null}
+          {post.tags?.some((t) => t.name === `autoblog`) && <span sx={{ color: `primary` }}>AI generated</span>}
+        </p>
+        <Heading as="h1" variant="styles.h1" sx={{ mt: 0, mb: 0 }}>
+          {post.title}
+        </Heading>
+      </header>
+      <section
+        sx={{
+          mb: 5,
+          ".gatsby-resp-image-wrapper": { my: 4, borderRadius: `4px` },
+          "h2, h3": { scrollMarginTop: `1rem` },
+          variant: `layout.content`,
+        }}
+      >
+        {children}
+      </section>
+      <PostFooter post={post} />
+    </article>
   </Layout>
 )
 

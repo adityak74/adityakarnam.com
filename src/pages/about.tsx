@@ -1,303 +1,98 @@
 /** @jsx jsx */
 import * as React from "react"
-import { HeadFC, Link } from "gatsby"
-import { Box, Flex, Grid, Heading, Text, jsx } from "theme-ui"
+import { HeadFC } from "gatsby"
+import { jsx } from "theme-ui"
 import Layout from "@lekoarts/gatsby-theme-minimal-blog/src/components/layout"
 import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
-import {
-  ConsoleCard,
-  ConsoleShell,
-  HeroStat,
-  SectionBlock,
-  SignalPill,
-  ThreeColumnGrid,
-  TwoColumnGrid,
-  consoleColors,
-} from "../components/world-model/pages-field-notes-about/primitives"
+import { Page, Title, Section, Prose, TextLink } from "../components/world-model/pages-systems-stack-now/editorial"
 import { openSourceImpact } from "../components/world-model/impact"
 
-const proofPoints = [
-  {
-    title: "subagent-fleet",
-    href: "/subagent-fleet-local-ai-compute-control-plane/",
-    label: "Local inference + routing",
-    description:
-      "A local AI compute control plane for Claude Code-style subagents, Ollama nodes, LiteLLM routing, model warmup, and runtime visibility.",
-  },
-  {
-    title: "embenx",
-    href: "/embenx-python-embedding-toolkit/",
-    label: "Retrieval + memory",
-    description:
-      "A unified retrieval layer across vector backends, with temporal memory, filtering, reranking, and an MCP interface for agent use.",
-  },
-  {
-    title: "MLX non-determinism",
-    href: "/mlx-non-determinism-apple-silicon/",
-    label: "Inference reliability",
-    description:
-      "A reproducibility investigation into Apple Silicon LLM inference and the batch-invariance failures that make local evaluation harder than it looks.",
-  },
-  {
-    title: "AI Toolkit",
-    href: "/ai-toolkit/",
-    label: "Workflow instrumentation",
-    description:
-      "Prompt and workflow utilities that translate abstract LLM advice into concrete tooling, grading, and repeatable interfaces.",
-  },
-  {
-    title: "awesome-agentic-memory",
-    href: "/awesome-agentic-memory/",
-    label: "Memory landscape",
-    description:
-      "A curated map of agent memory patterns, systems, and open questions that informs how I think about long-horizon agent state.",
-  },
-  {
-    title: "ERBGA paper",
-    href: "https://profiles.umsl.edu/en/publications/efficient-reduced-bias-genetic-algorithm-erbga-for-generic-commun-2",
-    label: "Research grounding",
-    description:
-      "Earlier published work on reduced-bias genetic algorithms for community detection, which still shapes how I think about search, structure, and system behavior.",
-  },
-]
+const AboutPage = () => (
+  <Layout>
+    <Page>
+      <Title eyebrow="About">Aditya Karnam</Title>
 
-const principles = [
-  "Useful AI systems need inspectable memory, not hidden context glued together by luck.",
-  "Model choice is a systems problem. Routing, locality, latency, and failure modes matter as much as raw benchmark scores.",
-  "Agent infrastructure should expose state transitions, tool calls, and evaluation traces so behavior can be audited over time.",
-  "Local-first capability matters because serious experimentation gets easier when builders can control cost, privacy, and iteration speed.",
-]
+      <Section>
+        <Prose>
+          <p>
+            I am an AI researcher and senior software engineer. I build the infrastructure layer for reliable agents:
+            memory, retrieval, model routing, local inference, and the evaluation that tells you whether any of it
+            works.
+          </p>
+          <p>
+            I came to this from systems and research. My master's thesis at the University of Missouri-St. Louis was
+            a genetic algorithm for community detection (ERBGA), which I applied to Alzheimer's disease gene networks. Since then I have published on small-model
+            fine-tuning for medicine (MEDFIT-LLM, 2025) and on memory evaluation under a fixed token budget
+            (BudgetBench, 2026).
+          </p>
+        </Prose>
+      </Section>
 
-const AboutPage = () => {
-  return (
-    <Layout>
-      <Box sx={{ display: `grid`, gap: [3, 4], my: [3, 4] }}>
-        <ConsoleShell>
-          <Grid sx={{ gridTemplateColumns: [`1fr`, `1fr`, `1.45fr 0.95fr`], gap: 3, alignItems: `start` }}>
-            <Box>
-              <SignalPill>Aditya Karnam - AI Researcher</SignalPill>
-              <Heading
-                as="h1"
-                sx={{
-                  color: consoleColors.text,
-                  fontSize: [5, 6, 7],
-                  mt: 3,
-                  mb: 3,
-                  maxWidth: `12ch`,
-                }}
-              >
-                Building the systems layer for agents that remember, simulate, and act.
-              </Heading>
-              <Text sx={{ color: consoleColors.muted, fontSize: [2, 2, 3], maxWidth: `60ch`, mb: 3 }}>
-                I work on the infrastructure between foundation models and real-world agency: state, memory,
-                retrieval, routing, evaluation, local inference, and the runtimes that make agent behavior more
-                reliable over time.
-              </Text>
-              <Text sx={{ color: consoleColors.soft, fontSize: [1, 2], maxWidth: `62ch` }}>
-                The systems layer around AI agents lets them maintain state, retrieve memory,
-                simulate outcomes, route between models, use tools, and interact with environments without collapsing
-                back into a one-shot prompt.
-              </Text>
-              <Text sx={{ mt: 3 }}>
-                <a
-                  href="/resume.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{
-                    color: consoleColors.accent,
-                    fontFamily: `monospace`,
-                    fontSize: [1, 2],
-                    textDecoration: `none`,
-                    borderBottom: `1px dashed ${consoleColors.accent}`,
-                    ":hover": { color: consoleColors.text, borderBottomStyle: `solid` },
-                  }}
-                >
-                  view resume (pdf) ↗
-                </a>
-              </Text>
-            </Box>
+      <Section label="Work" title="What I work on">
+        <Prose>
+          <p>
+            Three threads. <strong>Memory and retrieval:</strong> embenx puts one API over 15+ vector backends and
+            adds temporal memory and an MCP server. BudgetBench asks how memory strategies compare when the input
+            budget is the constraint.
+          </p>
+          <p>
+            <strong>Local inference:</strong> I measure what serving stacks do on Apple Silicon, including where
+            decode slows at long context, where batching stops helping, and why identical inputs give different
+            outputs. I also distilled Ornith-1.5-9B to a 4.9 GB build that beats the 8.9 GB release it replaces.
+          </p>
+          <p>
+            <strong>Harnesses and runtimes:</strong> Quecto is a small Rust coding agent built to be evaluated.
+            subagent-fleet routes coding-agent roles across local machines. The write-up of what I learned is{` `}
+            <TextLink to="/ai-research/what-is-an-ai-agent-harness/">What is an AI agent harness</TextLink>.
+          </p>
+        </Prose>
+      </Section>
 
-            <Box
-              sx={{
-                border: `1px solid ${consoleColors.border}`,
-                borderRadius: 12,
-                p: 3,
-                bg: consoleColors.panelAlt,
-              }}
-            >
-              <Text sx={{ display: `block`, color: consoleColors.accent, fontFamily: `monospace`, fontSize: 0, mb: 2 }}>
-                Research Notes
-              </Text>
-              <Box as="pre" sx={{ m: 0, p: 0, bg: `transparent`, border: `none`, color: consoleColors.text, fontSize: 1 }}>
-                <code>
-                  {`initializing systems stack...
-loading memory layer...
-attaching retrieval interfaces...
-routing local + cloud models...
-starting evaluation loop...
-status: ready`}
-                </code>
-              </Box>
-            </Box>
-          </Grid>
+      <Section label="Method" title="How I work">
+        <Prose>
+          <p>
+            I start from a failure I can reproduce and write down the number before I change anything. If a result
+            is null, or I find a bug in my own measurements, it goes in the write-up. The BudgetBench post includes
+            both.
+          </p>
+          <p>
+            I prefer small systems whose state is visible: traces, tool calls and eval results that someone else can
+            inspect. I run things locally first because cost, privacy and iteration speed are easier to control.
+          </p>
+        </Prose>
+      </Section>
 
-          <Grid sx={{ gridTemplateColumns: [`repeat(2, minmax(0, 1fr))`, `repeat(4, minmax(0, 1fr))`], gap: 3, mt: 4 }}>
-            <HeroStat label="Primary wedge" value="Memory + routing + evals" />
-            <HeroStat label="Mode" value="Research-driven engineering" />
-            <HeroStat label="Bias" value="Local-first systems" />
-            <HeroStat label="Throughline" value="Explicit runtime behavior" />
-          </Grid>
-        </ConsoleShell>
+      <Section label="Open source" title="Outside my own repositories">
+        <Prose>
+          <p>
+            {openSourceImpact.featuredProject.name} is an MCP server for scholarly retrieval, with{` `}
+            {openSourceImpact.featuredProject.metrics.join(", ")}. I contributed a fix to mlx-lm (
+            <TextLink href="https://github.com/ml-explore/mlx-lm/pull/1795">PR #1795</TextLink>), and have merged work
+            in {openSourceImpact.upstreamProjects.slice(1).join(", ")}.{` `}
+            <span sx={{ color: `#5E5D59`, fontSize: `15px` }}>({openSourceImpact.snapshotLabel}.)</span>
+          </p>
+          <p>
+            More on <TextLink to="/ai-research/">the research page</TextLink>,{` `}
+            <TextLink to="/systems/">systems</TextLink> and <TextLink to="/stack/">the stack</TextLink>.
+          </p>
+        </Prose>
+      </Section>
 
-        <SectionBlock
-          eyebrow="Open-source impact"
-          title="Adoption, upstream trust, and technical depth"
-          description="The work is strongest where these three forms of proof meet: tools people use, contributions accepted by other maintainers, and systems built to make agent behavior more reliable."
-        >
-          <ThreeColumnGrid>
-            <ConsoleCard title="Adoption" accent={consoleColors.accent}>
-              <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [2, 3], mb: 2 }}>
-                {openSourceImpact.featuredProject.name}
-              </Heading>
-              <Text sx={{ color: consoleColors.muted, mb: 2 }}>
-                Scholarly retrieval for MCP clients, distributed through PyPI and the MCP ecosystem.
-              </Text>
-              <Text sx={{ color: consoleColors.accent, fontFamily: "monospace", fontSize: 1 }}>
-                {openSourceImpact.featuredProject.metrics.join(" · ")}
-              </Text>
-            </ConsoleCard>
-            <ConsoleCard title="Upstream trust" accent={consoleColors.accentAlt}>
-              <Text sx={{ color: consoleColors.muted }}>
-                Merged work in {openSourceImpact.upstreamProjects.join(", ")} shows the same systems work holding up outside my own repositories.
-              </Text>
-            </ConsoleCard>
-            <ConsoleCard title="Technical depth" accent={consoleColors.warning}>
-              <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [2, 3], mb: 2 }}>
-                {openSourceImpact.technicalDepth.name}
-              </Heading>
-              <Text sx={{ color: consoleColors.muted }}>{openSourceImpact.technicalDepth.description}</Text>
-            </ConsoleCard>
-          </ThreeColumnGrid>
-          <Text sx={{ color: consoleColors.soft, fontSize: 0, mt: 3, mb: 0 }}>{openSourceImpact.snapshotLabel}</Text>
-        </SectionBlock>
-
-        <SectionBlock
-          eyebrow="Research Position"
-          title="The infrastructure layer I care about"
-          description="I am less interested in AI as a chat interface and more interested in the systems that make agents durable, inspectable, and composable."
-        >
-          <ThreeColumnGrid>
-            <ConsoleCard title="State + memory" accent={consoleColors.accent}>
-              <Text sx={{ color: consoleColors.muted }}>
-                Agents need a durable working model of users, goals, tasks, tools, failures, and environments. That
-                means memory should be explicit, updatable, and debuggable.
-              </Text>
-            </ConsoleCard>
-            <ConsoleCard title="Retrieval + routing" accent={consoleColors.accentAlt}>
-              <Text sx={{ color: consoleColors.muted }}>
-                The right context and the right model are both routing problems. Retrieval, backend abstraction, local
-                inference, and multi-model orchestration are part of the same systems question.
-              </Text>
-            </ConsoleCard>
-            <ConsoleCard title="Evaluation + observability" accent={consoleColors.warning}>
-              <Text sx={{ color: consoleColors.muted }}>
-                If an agent operates over time, it should be scored over time. I care about traces, failure modes,
-                repeatability, and evals that reflect system behavior rather than one isolated answer.
-              </Text>
-            </ConsoleCard>
-          </ThreeColumnGrid>
-        </SectionBlock>
-
-        <SectionBlock
-          eyebrow="Public Proof"
-          title="What already exists in public"
-          description="These artifacts are the clearest public evidence of the direction: memory systems, local routing, inference reliability, workflow tooling, and earlier research."
-        >
-          <Grid sx={{ gridTemplateColumns: [`1fr`, `repeat(2, minmax(0, 1fr))`], gap: 3 }}>
-            {proofPoints.map(item => {
-              const isInternal = item.href.startsWith(`/`)
-
-              return (
-                <ConsoleCard key={item.title} title={item.label} accent={consoleColors.accentAlt}>
-                  <Heading as="h3" sx={{ color: consoleColors.text, fontSize: [2, 3], mb: 2 }}>
-                    {item.title}
-                  </Heading>
-                  <Text sx={{ color: consoleColors.muted, mb: 3 }}>{item.description}</Text>
-                  {isInternal ? (
-                    <Link
-                      to={item.href}
-                      sx={{
-                        color: consoleColors.accent,
-                        fontFamily: `monospace`,
-                        textDecoration: `none`,
-                      }}
-                    >
-                      Open artifact
-                    </Link>
-                  ) : (
-                    <a
-                      href={item.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      sx={{
-                        color: consoleColors.accent,
-                        fontFamily: `monospace`,
-                        textDecoration: `none`,
-                      }}
-                    >
-                      Open source
-                    </a>
-                  )}
-                </ConsoleCard>
-              )
-            })}
-          </Grid>
-        </SectionBlock>
-
-        <SectionBlock
-          eyebrow="Principles"
-          title="How I evaluate this space"
-          description="The site thesis is not that bigger models solve everything. It is that better systems design will decide which AI products actually hold up."
-        >
-          <TwoColumnGrid>
-            {principles.map(principle => (
-              <ConsoleCard key={principle} title="Operating principle">
-                <Text sx={{ color: consoleColors.muted }}>{principle}</Text>
-              </ConsoleCard>
-            ))}
-          </TwoColumnGrid>
-        </SectionBlock>
-
-        <Box
-          sx={{
-            borderTop: `1px solid`,
-            borderColor: `divide`,
-            pt: 4,
-            display: `grid`,
-            gap: 2,
-          }}
-        >
-          <Heading as="h2" sx={{ fontSize: [3, 4] }}>
-            Current focus
-          </Heading>
-          <Text sx={{ color: `secondary`, maxWidth: `70ch` }}>
-            Right now the strongest threads are local-first agent infrastructure, memory and retrieval abstractions,
-            runtime visibility for coding agents, and evaluation layers that reflect behavior over time instead of just
-            prompt quality in isolation.
-          </Text>
-          <Flex sx={{ gap: 2, flexWrap: `wrap`, mt: 2 }}>
-            <Link to="/field-notes/" sx={{ fontFamily: `monospace`, color: `accent`, textDecoration: `none` }}>
-              Read field notes
-            </Link>
-            <Link to="/subagent-fleet-local-ai-compute-control-plane/" sx={{ fontFamily: `monospace`, color: `accent`, textDecoration: `none` }}>
-              Explore subagent-fleet
-            </Link>
-          </Flex>
-        </Box>
-      </Box>
-    </Layout>
-  )
-}
+      <Section label="Contact" title="Get in touch">
+        <Prose>
+          <p>
+            The best way to reach me is{` `}
+            <TextLink href="https://www.linkedin.com/in/adityakarnamgrao/">LinkedIn</TextLink> or{` `}
+            <TextLink href="https://twitter.com/aditya_karnam">Twitter</TextLink>. Code is on{` `}
+            <TextLink href="https://github.com/adityak74">GitHub</TextLink>, papers on{` `}
+            <TextLink href="https://scholar.google.com/citations?user=WujCeDkAAAAJ&hl=en">Google Scholar</TextLink>,
+            and my <TextLink href="/resume.pdf">resume</TextLink> is a PDF.
+          </p>
+        </Prose>
+      </Section>
+    </Page>
+  </Layout>
+)
 
 export default AboutPage
 
