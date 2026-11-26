@@ -145,8 +145,8 @@ export default McpInstallPage
 
 export const Head: HeadFC = () => (
   <Seo
-    title="Install Aditya Karnam's Portfolio MCP"
-    description="Install the public, read-only Aditya Karnam Portfolio MCP connector for Claude and agent workflows."
+    title="Install the Portfolio MCP Connector"
+    description="Install the public, read-only Portfolio MCP connector for Claude and other agent clients to query Aditya Karnam's projects, writing and research with sources."
     pathname="/mcp-install/"
   />
 )

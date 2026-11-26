@@ -69,8 +69,8 @@ export default function Blog({ data }: { data: BlogData }) {
 
 export const Head: HeadFC = () => (
   <Seo
-    title="Thoughts"
-    description="Every post from Aditya Karnam, AI research engineer: agents, memory, retrieval, local inference, model routing, and evals."
+    title="Writing: Agents, Memory, Local Inference"
+    description="Essays and experiment write-ups by Aditya Karnam, AI research engineer: agent harnesses, memory evaluation, MLX inference benchmarks, distillation and retrieval."
     pathname="/blog/"
   />
 )

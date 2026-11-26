@@ -84,8 +84,8 @@ export default SystemsPage
 
 export const Head: HeadFC = () => (
   <Seo
-    title="Systems"
-    description="Current systems by Aditya Karnam across runtime control, retrieval, memory infrastructure, and operator-facing AI tooling."
+    title="Systems: Agent Runtimes and Retrieval"
+    description="Software systems by Aditya Karnam: subagent-fleet (local compute control plane), embenx (retrieval), Quecto (Rust agent harness) and agent memory tooling."
     pathname="/systems/"
   />
 )

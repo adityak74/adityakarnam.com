@@ -69,8 +69,8 @@ export default NowPage
 
 export const Head: HeadFC = () => (
   <Seo
-    title="Now"
-    description="Current experiments, active research fronts, and reading paths across local agent runtimes, retrieval, memory systems, and AI tooling."
+    title="Now: Current Research and Experiments"
+    description="What Aditya Karnam is working on now: local agent runtimes, retrieval, agent memory infrastructure and evaluation, with a suggested reading order."
     pathname="/now/"
   />
 )

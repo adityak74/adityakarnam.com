@@ -98,8 +98,8 @@ export default AboutPage
 
 export const Head: HeadFC = () => (
   <Seo
-    title="About"
-    description="Aditya Karnam is an AI research engineer building the infrastructure layer for agents: memory, retrieval, routing, local inference, and evaluation systems."
+    title="About: AI Research Engineer"
+    description="Aditya Karnam is an AI research engineer building reliable agent infrastructure: memory, retrieval, routing, local inference and evals. Background and contact."
     pathname="/about/"
   />
 )

@@ -114,6 +114,7 @@ export const Head: HeadFC<MBPostProps> = ({ data: { post } }) => {
         image={post.banner ? post.banner?.childImageSharp?.resize?.src : undefined}
         pathname={post.slug}
         canonicalUrl={post.canonicalUrl}
+        article
       />
       <script
         type="application/ld+json"

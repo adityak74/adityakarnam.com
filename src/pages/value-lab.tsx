@@ -333,5 +333,5 @@ const ValueLabPage = (_props: PageProps) => (
 export default ValueLabPage
 
 export const Head: HeadFC = () => (
-  <Seo title="Coding Agent Value Lab" description={valueLab.subtitle} pathname="/value-lab/" />
+  <Seo title="Coding Agent Value Lab: Measured Results" description={`${valueLab.subtitle} Measured results with ranges, methods and limitations.`} pathname="/value-lab/" />
 )
