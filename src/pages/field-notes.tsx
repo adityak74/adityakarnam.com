@@ -2,7 +2,7 @@ import * as React from "react"
 import { graphql, HeadFC, PageProps } from "gatsby"
 import Layout from "@lekoarts/gatsby-theme-minimal-blog/src/components/layout"
 import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
-import { Page, Title, Section, RuledList, Row } from "../components/world-model/pages-systems-stack-now/editorial"
+import { Page, Title, Section, RuledList, Row, Explore } from "../components/world-model/pages-systems-stack-now/editorial"
 
 type PostNode = {
   slug: string
@@ -56,6 +56,7 @@ const FieldNotesPage = ({ data }: PageProps<FieldNotesData>) => {
         <Section label="Notes">
           <RuledList rows={rows} />
         </Section>
+        <Explore keys={["writing", "research", "about"]} />
       </Page>
     </Layout>
   )

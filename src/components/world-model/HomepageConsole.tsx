@@ -208,6 +208,24 @@ const HomepageConsole = () => (
       </p>
     </Section>
 
+    <Section title="Explore the site">
+      <div sx={{ display: "grid", gridTemplateColumns: ["1fr 1fr", "repeat(3, 1fr)"], gap: [3, 4] }}>
+        {[
+          ["/ai-research", "Research", "Papers, experiments, questions"],
+          ["/blog", "Writing", "Agents, memory, local inference"],
+          ["/systems", "Systems", "Runtimes, retrieval, tooling"],
+          ["/quecto", "Quecto", "A 1.3 MB agent harness in Rust"],
+          ["/ai-toolkit", "Toolkit", "Prompt tools, memory frameworks"],
+          ["/about", "About", "From genetics to AI systems"],
+        ].map(([to, t, d]) => (
+          <Box as={Link as any} key={to} {...{ to }} sx={{ display: "block", textDecoration: "none", color: "inherit", py: 2, "&:hover .t": { color: c.accent }, "&:hover .a": { transform: "translateX(6px)", color: c.accent } }}>
+            <span className="t" sx={{ fontFamily: serif, fontSize: "1.35rem", letterSpacing: "-0.015em", transition: "color .15s" }}>{t} <span className="a" sx={{ display: "inline-block", color: c.sec, transition: "transform .2s, color .15s" }}>→</span></span>
+            <span sx={{ display: "block", mt: 1, fontSize: "15px", lineHeight: 1.5, color: c.sec }}>{d}</span>
+          </Box>
+        ))}
+      </div>
+    </Section>
+
     <Section title="Contact">
       <p id="contact" sx={{ m: 0, maxWidth: "68ch" }}>
         Find me on <A href="https://github.com/adityak74" external>GitHub</A>, <A href="https://www.linkedin.com/in/adityakarnamgrao/" external>LinkedIn</A> or <A href="https://twitter.com/aditya_karnam" external>Twitter</A>.

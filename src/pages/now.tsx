@@ -2,7 +2,7 @@ import * as React from "react"
 import type { HeadFC, PageProps } from "gatsby"
 import Layout from "@lekoarts/gatsby-theme-minimal-blog/src/components/layout"
 import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
-import { Page, Title, Section, RuledList, Row } from "../components/world-model/pages-systems-stack-now/editorial"
+import { Page, Title, Section, RuledList, Row, Explore } from "../components/world-model/pages-systems-stack-now/editorial"
 import NowOrbit from "../components/world-model/anim/NowOrbit"
 
 const tracks: Row[] = [
@@ -76,6 +76,7 @@ const NowPage = (_props: PageProps) => (
           <li>AI Toolkit, for the smaller interfaces that inform the larger systems.</li>
         </ol>
       </Section>
+      <Explore keys={["about", "systems", "writing"]} />
     </Page>
   </Layout>
 )

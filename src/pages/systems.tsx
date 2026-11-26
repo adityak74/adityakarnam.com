@@ -3,7 +3,7 @@ import type { HeadFC, PageProps } from "gatsby"
 import Layout from "@lekoarts/gatsby-theme-minimal-blog/src/components/layout"
 import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
 import FleetRouter from "../components/world-model/anim/FleetRouter"
-import { Page, Title, Section, RuledList, Row } from "../components/world-model/pages-systems-stack-now/editorial"
+import { Page, Title, Section, RuledList, Row, Explore } from "../components/world-model/pages-systems-stack-now/editorial"
 
 const systems: Row[] = [
   {
@@ -92,6 +92,7 @@ const SystemsPage = (_props: PageProps) => (
       <Section label="Index">
         <RuledList rows={systems} />
       </Section>
+      <Explore keys={["quecto", "research", "writing"]} />
     </Page>
   </Layout>
 )

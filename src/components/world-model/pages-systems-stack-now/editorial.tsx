@@ -204,3 +204,44 @@ export const Pre = ({ children }: Kids) => (
     {children}
   </pre>
 )
+
+export const SITE_MAP: Record<string, { to: string; title: string; text: string }> = {
+  research: { to: "/ai-research/", title: "Research", text: "Papers, experiments and the questions behind them." },
+  writing: { to: "/blog/", title: "Writing", text: "Long-form notes on agents, memory and local inference." },
+  systems: { to: "/systems/", title: "Systems", text: "Open-source runtimes, retrieval and tooling I built." },
+  quecto: { to: "/quecto/", title: "Quecto", text: "A 1.3 MB agent harness in Rust, built to be evaluated." },
+  toolkit: { to: "/ai-toolkit/", title: "Toolkit", text: "Prompt tools and agent-memory frameworks to try." },
+  about: { to: "/about/", title: "About", text: "The path from genetics to AI systems, as an animated thesis." },
+  now: { to: "/now/", title: "Now", text: "What is in motion this month." },
+  stack: { to: "/stack/", title: "Stack", text: "The hardware and software I work with." },
+  notes: { to: "/field-notes/", title: "Field notes", text: "Short observations from experiments." },
+}
+
+export const Explore = ({ keys, label = "Keep exploring" }: { keys: string[]; label?: string }) => (
+  <nav aria-label={label} sx={{ mt: [5, 6], pt: 3, borderTop: `1px solid ${ed.hairline}` }}>
+    <span sx={{ display: `block`, fontFamily: ed.mono, fontSize: `12px`, letterSpacing: `0.06em`, textTransform: `uppercase`, color: ed.blue, mb: 3 }}>
+      {label}
+    </span>
+    <div sx={{ display: `grid`, gridTemplateColumns: [`1fr`, `repeat(${Math.min(keys.length, 3)}, 1fr)`], gap: [3, 4] }}>
+      {keys.map((k) => {
+        const it = SITE_MAP[k]
+        return (
+          <Link
+            key={k}
+            to={it.to}
+            sx={{
+              display: `block`, textDecoration: `none`, color: ed.ink, py: 2,
+              "&:hover .t": { color: ed.clay }, "&:hover .a": { transform: `translateX(6px)`, color: ed.clay },
+            }}
+          >
+            <span className="t" sx={{ fontFamily: ed.serif, fontSize: `1.35rem`, lineHeight: 1.2, letterSpacing: `-0.015em`, transition: `color .15s` }}>
+              {it.title}{` `}
+              <span className="a" sx={{ display: `inline-block`, color: ed.secondary, transition: `transform .2s, color .15s` }}>→</span>
+            </span>
+            <span sx={{ display: `block`, mt: 1, fontSize: `15px`, lineHeight: 1.5, color: ed.secondary, maxWidth: `32ch` }}>{it.text}</span>
+          </Link>
+        )
+      })}
+    </div>
+  </nav>
+)

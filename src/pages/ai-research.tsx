@@ -12,6 +12,7 @@ import {
   RuledList,
   TextLink,
   Row,
+  Explore,
 } from "../components/world-model/pages-systems-stack-now/editorial"
 import BudgetTiers from "../components/world-model/anim/BudgetTiers"
 
@@ -199,6 +200,7 @@ const AiResearchPage = () => (
           {` `}and <TextLink to="/ai-systems-design-field-guide/">the AI Systems Design Field Guide</TextLink>.
         </p>
       </Section>
+      <Explore keys={["writing", "systems", "about"]} />
     </Page>
   </Layout>
 )

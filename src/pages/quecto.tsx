@@ -16,6 +16,7 @@ import {
   Pre,
   Row,
   ed,
+  Explore,
 } from "../components/world-model/pages-systems-stack-now/editorial"
 
 const sizes = [
@@ -158,6 +159,7 @@ $ quecto-agent chat`}
           </p>
         </Prose>
       </Section>
+      <Explore keys={["systems", "writing", "now"]} />
     </Page>
   </Layout>
 )

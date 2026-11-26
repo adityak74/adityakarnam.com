@@ -4,7 +4,7 @@ import { HeadFC } from "gatsby"
 import { jsx } from "theme-ui"
 import Layout from "@lekoarts/gatsby-theme-minimal-blog/src/components/layout"
 import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
-import { Page, Title, Section, Prose, TextLink } from "../components/world-model/pages-systems-stack-now/editorial"
+import { Page, Title, Section, Prose, TextLink, Explore } from "../components/world-model/pages-systems-stack-now/editorial"
 import ThesisScenes from "../components/world-model/anim/ThesisScenes"
 import CommunityNetwork from "../components/world-model/anim/CommunityNetwork"
 import { openSourceImpact } from "../components/world-model/impact"
@@ -114,6 +114,7 @@ const AboutPage = () => (
           </p>
         </Prose>
       </Section>
+      <Explore keys={["research", "now", "writing"]} />
     </Page>
   </Layout>
 )
