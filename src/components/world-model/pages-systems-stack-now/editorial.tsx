@@ -168,7 +168,7 @@ export const RuledList = ({ rows }: { rows: Row[] }) => (
             <p sx={{ m: 0, maxWidth: `68ch`, fontSize: `17px`, lineHeight: 1.65, color: ed.secondary }}>{r.body}</p>
           ) : null}
           {r.links && r.links.length ? (
-            <div sx={{ display: `flex`, flexWrap: `wrap`, gap: 3, mt: 2, fontSize: `15px` }}>
+            <div sx={{ display: `flex`, flexWrap: `wrap`, columnGap: 3, rowGap: 0, mt: 1, fontSize: `15px`, a: { display: `inline-block`, py: `7px` } }}>
               {r.links.map(l => (
                 <TextLink key={l.label} to={l.to} href={l.href}>
                   {l.label}

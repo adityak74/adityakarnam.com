@@ -27,7 +27,7 @@ const Footer = () => {
         justifyContent: `space-between`,
         gap: 3,
         ...mono,
-        a: { color: `secondary`, textDecoration: `none`, ":hover": { color: `primary` } },
+        a: { color: `secondary`, textDecoration: `none`, display: `inline-block`, py: `8px`, ":hover": { color: `primary` } },
       }}
     >
       <div>
@@ -46,7 +46,7 @@ const Footer = () => {
           }}
         />
       </div>
-      <div sx={{ display: `flex`, flexWrap: `wrap`, columnGap: 3, rowGap: 1 }}>
+      <div sx={{ display: `flex`, flexWrap: `wrap`, columnGap: 3, rowGap: 0 }}>
         {(externalLinks || []).filter((l: { name: string }) => KEEP.includes(l.name)).map((l: { name: string; url: string }) => (
           <a key={l.url} href={l.url} {...(l.url.startsWith(`http`) ? { target: `_blank`, rel: `noopener noreferrer` } : {})}>
             {l.name}
