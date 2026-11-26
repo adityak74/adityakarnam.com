@@ -4,11 +4,12 @@ export function Head() {
   return (
     <>
       <title>box breathing</title>
+      <meta name="robots" content="noindex" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <style>{`
-        body { margin: 0; padding: 0; background: #15140F; }
+        body { margin: 0; padding: 0; background: #FAF9F6; }
         #box-breathing-root * { margin: 0; padding: 0; box-sizing: border-box; }
-        #box-breathing-root { background: #15140F; height: 100vh; overflow: hidden; user-select: none; }
+        #box-breathing-root { background: #FAF9F6; height: 100vh; overflow: hidden; user-select: none; }
         #box-breathing-root canvas { position: fixed; inset: 0; width: 100%; height: 100%; }
         #phase-label, #count, #cycles, #hint, .bl {
           position: fixed;
@@ -19,47 +20,47 @@ export function Head() {
         #phase-label {
           left: 50%; transform: translateX(-50%);
           font-size: 11px; letter-spacing: .65em; text-transform: lowercase;
-          color: rgba(255,255,255,.33); white-space: nowrap;
+          color: rgba(20,20,19,.7); white-space: nowrap;
         }
         #count {
           top: 50%; left: 50%; transform: translate(-50%,-50%);
-          font-size: 54px; font-weight: 300; color: rgba(255,255,255,.1);
+          font-size: 54px; font-weight: 300; color: rgba(20,20,19,.45);
         }
         #cycles {
           bottom: 22px; right: 22px; font-size: 10px; letter-spacing: .3em;
-          color: rgba(255,255,255,.13); text-transform: lowercase;
+          color: rgba(20,20,19,.5); text-transform: lowercase;
         }
         #hint {
           bottom: 22px; left: 22px; font-size: 10px; letter-spacing: .25em;
-          color: rgba(255,255,255,.1); text-transform: lowercase;
+          color: rgba(20,20,19,.45); text-transform: lowercase;
           opacity: 0; transition: opacity 1.5s;
         }
         .bl {
           font-size: 9px; letter-spacing: .42em; text-transform: lowercase;
-          color: rgba(255,255,255,.1); transition: color .8s; display: none;
+          color: rgba(20,20,19,.45); transition: color .8s; display: none;
         }
         #start {
           position: fixed; inset: 0; display: flex; flex-direction: column;
           align-items: center; justify-content: center; gap: 18px;
-          z-index: 20; background: #15140F; transition: opacity 2.2s ease;
+          z-index: 20; background: #FAF9F6; transition: opacity 2.2s ease;
         }
         #start.fade { opacity: 0; pointer-events: none; }
         .st {
           font-family: Georgia, serif; font-weight: normal; font-size: 13px;
-          letter-spacing: .88em; text-transform: lowercase; color: rgba(255,255,255,.3);
+          letter-spacing: .88em; text-transform: lowercase; color: rgba(20,20,19,.65);
         }
         .sr { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
         .sp { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .sn { font-family: Georgia, serif; font-size: 30px; font-weight: 300; color: rgba(255,255,255,.2); }
-        .sl { font-family: Georgia, serif; font-size: 9px; letter-spacing: .2em; color: rgba(255,255,255,.14); text-transform: lowercase; }
-        .sd { font-size: 16px; color: rgba(255,255,255,.1); padding-bottom: 8px; }
+        .sn { font-family: Georgia, serif; font-size: 30px; font-weight: 300; color: rgba(20,20,19,.6); }
+        .sl { font-family: Georgia, serif; font-size: 9px; letter-spacing: .2em; color: rgba(20,20,19,.5); text-transform: lowercase; }
+        .sd { font-size: 16px; color: rgba(20,20,19,.45); padding-bottom: 8px; }
         .sb {
-          margin-top: 28px; background: none; border: 1px solid rgba(255,255,255,.1);
-          color: rgba(255,255,255,.26); padding: 13px 52px;
+          margin-top: 28px; background: none; border: 1px solid rgba(20,20,19,.3);
+          color: rgba(20,20,19,.7); padding: 13px 52px;
           font-family: Georgia, serif; font-size: 10px; letter-spacing: .55em;
           text-transform: lowercase; cursor: pointer; transition: all .5s;
         }
-        .sb:hover { border-color: rgba(255,255,255,.28); color: rgba(255,255,255,.55); }
+        .sb:hover { border-color: #C2522D; color: #C2522D; }
       `}</style>
     </>
   )
@@ -149,7 +150,7 @@ const BoxBreathingPage = () => {
         el.style.display = "block"
         el.style.color = i === phaseIdx
           ? hsl(PH[i].h, PH[i].s, PH[i].l + 12, .46)
-          : "rgba(255,255,255,.08)"
+          : "rgba(20,20,19,.35)"
       })
     }
 
@@ -180,7 +181,7 @@ const BoxBreathingPage = () => {
     }
 
     function drawOrb(orbR: number, fill: number, h: number, s: number, l: number) {
-      for (let i = 5; i >= 1; i--) {
+      for (let i = 0; i >= 1; i--) { // halos removed (flat style)
         const gr = orbR * (1 + i * .62)
         const ga = (.048 - i * .007) * (.1 + fill * .9)
         const g  = ctx.createRadialGradient(cx, cy, orbR * .12, cx, cy, gr)
@@ -216,14 +217,14 @@ const BoxBreathingPage = () => {
       ctx.beginPath()
       ctx.moveTo(K[0][0], K[0][1])
       for (let i = 1; i <= 4; i++) ctx.lineTo(K[i][0], K[i][1])
-      ctx.strokeStyle = "rgba(255,255,255,.042)"
+      ctx.strokeStyle = "rgba(20,20,19,.1)"
       ctx.lineWidth = 1
       ctx.stroke()
 
       for (let i = 0; i < 4; i++) {
         ctx.beginPath()
         ctx.arc(K[i][0], K[i][1], 1.5, 0, Math.PI * 2)
-        ctx.fillStyle = "rgba(255,255,255,.08)"
+        ctx.fillStyle = "rgba(20,20,19,.25)"
         ctx.fill()
       }
 
@@ -332,8 +333,7 @@ const BoxBreathingPage = () => {
       const vg = ctx.createRadialGradient(cx, cy, R * 1.4, cx, cy, Math.hypot(W, H) * .65)
       vg.addColorStop(0, "rgba(0,0,0,0)")
       vg.addColorStop(1, "rgba(0,0,0,.62)")
-      ctx.fillStyle = vg
-      ctx.fillRect(0, 0, W, H)
+      void vg // no vignette: flat paper background
     }
 
     function loop(now: number) {
@@ -342,7 +342,7 @@ const BoxBreathingPage = () => {
       prevNow = now
       ambT += dt * .00024
 
-      ctx.fillStyle = "#15140F"
+      ctx.fillStyle = "#FAF9F6"
       ctx.fillRect(0, 0, W, H)
 
       if (!running || paused) {
@@ -386,8 +386,7 @@ const BoxBreathingPage = () => {
       const bgG = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 5.5)
       bgG.addColorStop(0, hsl(ch, cs, cl, .05 * (0.08 + fill * .92)))
       bgG.addColorStop(1, "rgba(0,0,0,0)")
-      ctx.fillStyle = bgG
-      ctx.fillRect(0, 0, W, H)
+      void bgG // no background glow
 
       drawRipples(dt)
       drawParticles(ph.name, et, fill, ch, cs, cl)

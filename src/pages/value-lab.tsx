@@ -1,4 +1,6 @@
+/** @jsx jsx */
 import * as React from "react"
+import { jsx } from "theme-ui"
 import type { HeadFC, PageProps } from "gatsby"
 import Layout from "@lekoarts/gatsby-theme-minimal-blog/src/components/layout"
 import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
@@ -19,19 +21,11 @@ import WeeklyChanges, {
   formatWeeklyChangesMarkdown,
   type WeeklyChangesData,
 } from "../components/value-lab/WeeklyChanges"
-import {
-  Divider,
-  Panel,
-  TagList,
-  TwoColumnGrid,
-  WorldModelHero,
-  WorldModelPageShell,
-  WorldModelSection,
-  labPalette,
-  styles,
-} from "../components/world-model/pages-systems-stack-now/WorldModelPageChrome"
+import { ed, Page, Title, Section, Prose, TextLink } from "../components/world-model/pages-systems-stack-now/editorial"
 
-type Accent = "cyan" | "green" | "slate"
+const mono = ed.mono
+const label: React.CSSProperties = { color: ed.secondary, display: "block", fontFamily: mono, fontSize: "12px", letterSpacing: "0.06em", marginBottom: "0.5rem", textTransform: "uppercase" }
+const rule: React.CSSProperties = { borderTop: `1px solid ${ed.hairline}`, padding: "1.25rem 0" }
 
 const evidenceLabels: Record<string, string> = {
   official_verified: "Official verified",
@@ -211,140 +205,133 @@ const CopyMarkdownButton = () => {
       type="button"
       onClick={copy}
       style={{
-        background: copied ? labPalette.green : "transparent",
-        border: `1px solid ${labPalette.border}`,
-        borderRadius: "999px",
-        color: labPalette.text,
+        background: "transparent",
+        border: `1px solid ${ed.hairline}`,
+        borderRadius: "4px",
+        color: copied ? ed.clay : ed.ink,
         cursor: "pointer",
-        fontFamily: "'JetBrains Mono', monospace",
-        fontSize: "0.76rem",
-        padding: "0.55rem 0.85rem",
+        fontFamily: mono,
+        fontSize: "12px",
+        letterSpacing: "0.06em",
+        padding: "0.5rem 0.8rem",
+        textTransform: "uppercase",
       }}
     >
-      {copied ? "Copied Markdown" : "Copy as Markdown"}
+      {copied ? "Copied" : "Copy as Markdown"}
     </button>
   )
 }
 
+const summaryCards = dashboardCards.filter(card => card.group === "summary")
+const supportingCards = dashboardCards.filter(card => card.group === "supporting")
+
 const ValueLabPage = (_props: PageProps) => (
   <Layout>
-    <WorldModelPageShell>
-      <WorldModelHero
-        eyebrow="Coding Agent Value Lab"
-        title={valueLab.title}
-        description={valueLab.subtitle}
-        aside={
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", alignItems: "flex-start" }}>
-              <div>
-                <span style={styles.label}>Decision lens</span>
-                <p style={{ color: labPalette.heading, fontSize: "1.15rem", lineHeight: 1.4, margin: 0 }}>
-                  {valueLab.positioning}
-                </p>
-              </div>
-              <CopyMarkdownButton />
-            </div>
-            <TagList items={[valueLab.status, `Updated ${valueLab.updatedAt}`, "Evidence-first"]} />
-          </div>
-        }
-      />
+    <Page>
+      <Title eyebrow="Coding Agent Value Lab" lede={valueLab.subtitle}>
+        {valueLab.title}
+      </Title>
+
+      <Section>
+        <Prose>
+          <p>{valueLab.positioning}</p>
+        </Prose>
+        <p style={{ color: ed.secondary, fontFamily: mono, fontSize: "12px", letterSpacing: "0.06em", margin: "1rem 0", textTransform: "uppercase" }}>
+          {valueLab.status} / Updated {valueLab.updatedAt}
+        </p>
+        <CopyMarkdownButton />
+      </Section>
 
       <WeeklyChanges data={weeklyChanges} evidenceLabels={evidenceLabels} />
 
-      {dashboardCards.filter(card => card.group === "summary").length > 0 ? (
-        <WorldModelSection eyebrow="Dashboard" title="Measured research at a glance.">
-          <DashboardCardGrid cards={dashboardCards.filter(card => card.group === "summary")} />
-        </WorldModelSection>
+      {summaryCards.length > 0 ? (
+        <Section label="Summary" title="Measured results">
+          <DashboardCardGrid cards={summaryCards} />
+        </Section>
       ) : null}
 
-      <Divider />
+      <Section label="Recommendation" title={valueLab.recommendation.title}>
+        <Prose>
+          <p>{valueLab.recommendation.summary}</p>
+        </Prose>
+        <div style={{ ...rule, display: "grid", gap: "1rem", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", marginTop: "1.5rem" }}>
+          {valueLab.recommendation.metrics.map(metric => (
+            <div key={metric.label}>
+              <span style={label}>{metric.label}</span>
+              <div style={{ color: ed.ink, fontFamily: mono, fontSize: "1.25rem" }}>{metric.value}</div>
+            </div>
+          ))}
+        </div>
+      </Section>
 
-      <WorldModelSection eyebrow="Recommendation" title={valueLab.recommendation.title} description={valueLab.recommendation.summary}>
-        <Panel accent="cyan">
-          <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}>
-            {valueLab.recommendation.metrics.map(metric => (
-              <div key={metric.label}>
-                <span style={styles.label}>{metric.label}</span>
-                <div style={{ color: labPalette.heading, fontFamily: "'JetBrains Mono', monospace", fontSize: "1.4rem" }}>{metric.value}</div>
-              </div>
-            ))}
+      <Section label="Filters" title="Workloads, access modes, goals">
+        <Prose>
+          <p>The data is meant to be sliced by these. They do not filter anything yet.</p>
+        </Prose>
+        <p style={{ color: ed.secondary, fontFamily: mono, fontSize: "12px", letterSpacing: "0.04em", lineHeight: 2, marginTop: "1rem" }}>
+          {[...valueLab.controls.workloads, ...valueLab.controls.accessModes, ...valueLab.controls.goals].map(control => control.label).join(" / ")}
+        </p>
+      </Section>
+
+      <Section label="Insights" title="What the data shows">
+        {valueLab.insights.map(insight => (
+          <div key={insight.id} style={rule}>
+            <span style={label}>{insight.label}</span>
+            <h3 style={{ color: ed.ink, fontFamily: ed.serif, fontSize: "1.25rem", fontWeight: 500, lineHeight: 1.3, margin: "0 0 0.5rem" }}>{insight.title}</h3>
+            <p style={{ color: ed.secondary, lineHeight: 1.65, margin: "0 0 0.5rem", maxWidth: "68ch" }}>{insight.body}</p>
+            <small style={{ color: ed.secondary, fontFamily: mono, fontSize: "12px" }}>{evidenceLabels[insight.evidence] ?? insight.evidence}</small>
           </div>
-        </Panel>
-      </WorldModelSection>
-
-      <WorldModelSection eyebrow="Research controls" title="Ask the page a practical question." description="The controls are part of the data contract now; the research pipeline can connect them to filtered recommendations as coverage grows.">
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.7rem" }}>
-          {[...valueLab.controls.workloads, ...valueLab.controls.accessModes, ...valueLab.controls.goals].map(control => (
-            <span key={control.id} style={{ border: `1px solid ${labPalette.border}`, borderRadius: "999px", color: labPalette.body, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.76rem", padding: "0.55rem 0.8rem" }}>{control.label}</span>
-          ))}
-        </div>
-      </WorldModelSection>
-
-      <WorldModelSection eyebrow="Today's insights" title="What the research layer is designed to surface.">
-        <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
-          {valueLab.insights.map(insight => (
-            <Panel key={insight.id} accent={insight.accent as Accent}>
-              <span style={styles.label}>{insight.label}</span>
-              <h3 style={{ color: labPalette.heading, fontSize: "1.2rem", lineHeight: 1.25, margin: 0 }}>{insight.title}</h3>
-              <p style={{ color: labPalette.body, lineHeight: 1.6 }}>{insight.body}</p>
-              <small style={{ color: labPalette.slate, fontFamily: "'JetBrains Mono', monospace" }}>{evidenceLabels[insight.evidence] ?? insight.evidence}</small>
-            </Panel>
-          ))}
-          {valueLab.insights.length === 0 ? (
-            <Panel accent="slate">
-              <span style={styles.label}>Research boundary</span>
-              <h3 style={{ color: labPalette.heading, fontSize: "1.2rem", lineHeight: 1.25, margin: 0 }}>Cost conclusions are waiting for sourced run usage.</h3>
-              <p style={{ color: labPalette.body, lineHeight: 1.6 }}>The current benchmark publishes measured accuracy, but not the token usage required to calculate cost per evaluated task.</p>
-            </Panel>
-          ) : null}
-        </div>
-      </WorldModelSection>
+        ))}
+        {valueLab.insights.length === 0 ? (
+          <div style={rule}>
+            <h3 style={{ color: ed.ink, fontFamily: ed.serif, fontSize: "1.25rem", fontWeight: 500, lineHeight: 1.3, margin: "0 0 0.5rem" }}>No cost conclusions yet</h3>
+            <p style={{ color: ed.secondary, lineHeight: 1.65, margin: 0, maxWidth: "68ch" }}>
+              The benchmark publishes measured accuracy but not the token usage needed to compute cost per evaluated task.
+            </p>
+          </div>
+        ) : null}
+      </Section>
 
       {charts.map(chart => (
-        <WorldModelSection
-          key={chart.id}
-          eyebrow="Measured comparison"
-          title={chart.title}
-          description={chart.description ?? chart.yLabel}
-        >
+        <Section key={chart.id} label="Measured comparison">
           <ChartView chart={chart} />
-        </WorldModelSection>
+        </Section>
       ))}
 
-      {dashboardCards.filter(card => card.group === "supporting").length > 0 ? (
-        <WorldModelSection eyebrow="Supporting evidence" title="Context for the measured results.">
-          <DashboardCardGrid cards={dashboardCards.filter(card => card.group === "supporting")} />
-        </WorldModelSection>
+      {supportingCards.length > 0 ? (
+        <Section label="Supporting evidence" title="Context">
+          <DashboardCardGrid cards={supportingCards} />
+        </Section>
       ) : null}
 
-      <WorldModelSection eyebrow="Methodology" title="Useful ranges over false precision." description={valueLab.methodology.summary}>
-        <TwoColumnGrid>
-          <Panel accent="green">
-            <span style={styles.label}>Assumptions</span>
-            <ul style={{ color: labPalette.body, lineHeight: 1.7, margin: 0, paddingLeft: "1.2rem" }}>
-              {valueLab.methodology.assumptions.map(assumption => <li key={assumption}>{assumption}</li>)}
-            </ul>
-          </Panel>
-          <Panel accent="slate">
-            <span style={styles.label}>Raw data</span>
-            <p style={{ color: labPalette.body, lineHeight: 1.6, marginTop: 0 }}>
-              Every published claim will retain its benchmark version, harness, reasoning level, evidence class, date, and source.
-            </p>
-            <span style={{ color: labPalette.cyan }}>Data contract is versioned with the page</span>
-            {sources.length > 0 ? (
-              <div style={{ display: "grid", gap: "0.45rem", marginTop: "1rem" }}>
-                {sources.map(source => <a key={source.url} href={source.url} rel="noreferrer" target="_blank" style={{ color: labPalette.cyan }}>{source.label}</a>)}
-              </div>
-            ) : null}
-          </Panel>
-        </TwoColumnGrid>
-      </WorldModelSection>
-    </WorldModelPageShell>
+      <Section label="Methodology" title="Ranges, not point estimates">
+        <Prose>
+          <p>{valueLab.methodology.summary}</p>
+        </Prose>
+        <div style={{ ...rule, marginTop: "1.5rem" }}>
+          <span style={label}>Assumptions</span>
+          <ul style={{ color: ed.secondary, lineHeight: 1.7, margin: 0, maxWidth: "68ch", paddingLeft: "1.2rem" }}>
+            {valueLab.methodology.assumptions.map(assumption => <li key={assumption}>{assumption}</li>)}
+          </ul>
+        </div>
+        <div style={rule}>
+          <span style={label}>Raw data</span>
+          <Prose>
+            <p>Each claim keeps its benchmark version, harness, reasoning level, evidence class, date and source. The data format is versioned with the page.</p>
+          </Prose>
+          {sources.length > 0 ? (
+            <div style={{ display: "grid", gap: "0.4rem", marginTop: "1rem" }}>
+              {sources.map(source => <span key={source.url}><TextLink href={source.url}>{source.label}</TextLink></span>)}
+            </div>
+          ) : null}
+        </div>
+      </Section>
+    </Page>
   </Layout>
 )
 
 export default ValueLabPage
 
 export const Head: HeadFC = () => (
-  <Seo title="Coding Agent Value Lab" description={valueLab.subtitle} pathname="/value-lab/" />
+  <Seo title="Coding Agent Value Lab: Measured Results" description={`${valueLab.subtitle} Measured results with ranges, methods and limitations.`} pathname="/value-lab/" />
 )

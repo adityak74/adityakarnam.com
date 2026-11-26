@@ -45,7 +45,7 @@ function PortfolioAppShell({ app }: { app: McpApp }) {
 
   return (
     <PageShell>
-      <main style={{ display: "grid", gap: "1rem", margin: "0 auto", maxWidth: "960px", width: "100%" }}>
+      <main style={{ display: "grid", gap: "1rem", margin: "0 auto", maxWidth: "880px", width: "100%" }}>
         <header
           style={{
             alignItems: "end",
@@ -57,21 +57,17 @@ function PortfolioAppShell({ app }: { app: McpApp }) {
         >
           <div>
             <EyebrowLabel>Portfolio MCP</EyebrowLabel>
-            <SectionHeading style={{ fontSize: "clamp(2rem, 7vw, 3.35rem)" }}>Recruiter lab</SectionHeading>
+            <SectionHeading style={{ fontSize: "clamp(2rem, 7vw, 3.35rem)" }}>Fit check</SectionHeading>
           </div>
           <nav
             aria-label="Portfolio app tabs"
             style={{
-              background: palette.panel,
-              border: `1px solid ${palette.border}`,
-              borderRadius: "999px",
-              boxShadow: "0 1px 2px rgba(26,26,24,0.06)",
+              borderBottom: `1px solid ${palette.border}`,
               display: "flex",
               gap: "0.25rem",
               maxWidth: "100%",
               overflowX: "auto",
-              padding: "0.25rem",
-            }}
+                          }}
           >
             <button className="tab-button" type="button" aria-pressed={tab === "fit"} onClick={() => setTab("fit")}>
               Fit Check

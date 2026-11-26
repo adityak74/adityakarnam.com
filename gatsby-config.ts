@@ -9,10 +9,10 @@ const config: GatsbyConfig = {
     // You can also add new values here to query them like usual
     // See all options: https://github.com/LekoArts/gatsby-themes/blob/main/themes/gatsby-theme-minimal-blog/gatsby-config.mjs
     siteTitle: `Aditya Karnam`,
-    siteTitleAlt: `Aditya Karnam — AI Researcher`,
-    siteHeadline: `Aditya Karnam is an AI researcher building the infrastructure layer around agents: memory, retrieval, model routing, local inference, agent runtimes, and evals.`,
+    siteTitleAlt: `Aditya Karnam — AI Research Engineer`,
+    siteHeadline: `Aditya Karnam is an AI research engineer working across the AI stack, from hardware and inference to agents, evals and software factories.`,
     siteUrl: `https://adityakarnam.com`,
-    siteDescription: `Aditya Karnam is an AI researcher focused on agent runtimes, memory, retrieval, model routing, local inference, and evaluation systems.`,
+    siteDescription: `Aditya Karnam is an AI research engineer working on inference performance, model distillation, agent systems, retrieval and memory, and evaluation.`,
     siteImage: `/banner-aditya.png`,
     siteLanguage: `en`,
     author: `@aditya_karnam`,
@@ -24,15 +24,11 @@ const config: GatsbyConfig = {
       options: {
         navigation: [
           {
-            title: `AI Research`,
+            title: `Research`,
             slug: `/ai-research`,
           },
           {
-            title: `AI Toolkit`,
-            slug: `/ai-toolkit`,
-          },
-          {
-            title: `Thoughts`,
+            title: `Writing`,
             slug: `/blog`,
           },
           {
@@ -40,16 +36,8 @@ const config: GatsbyConfig = {
             slug: `/systems`,
           },
           {
-            title: `Field Notes`,
-            slug: `/field-notes`,
-          },
-          {
-            title: `Quecto`,
-            slug: `/quecto`,
-          },
-          {
-            title: `Value Lab`,
-            slug: `/value-lab`,
+            title: `Live`,
+            slug: `/live`,
           },
           {
             title: `About`,
@@ -109,11 +97,12 @@ const config: GatsbyConfig = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `Aditya Karnam - AI Researcher`,
+        name: `Aditya Karnam - AI Research Engineer`,
         short_name: `adityakarnam`,
-        description: `AI research and infrastructure: agent runtimes, memory, retrieval, routing, and evaluation systems by Aditya Karnam.`,
+        description: `AI research and engineering across hardware, inference, models, agents and evals, by Aditya Karnam.`,
         start_url: `/`,
-        background_color: `#02090d`,
+        background_color: `#FAF9F6`,
+        theme_color: `#FAF9F6`,
         display: `standalone`,
         icons: [
           {

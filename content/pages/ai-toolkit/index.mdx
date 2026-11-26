@@ -1,6 +1,6 @@
 ---
 slug: "/ai-toolkit"
-title: "AI Toolkit: Free Prompt Tools, No Signup"
+title: "AI Toolkit"
 description: "Four browser-based tools that run without an account: a prompt grader and rewriter, a Fable creative-prompt grader, a prompt composer, and a thread generator."
 keywords:
   [
@@ -16,10 +16,10 @@ hideTitle: true
 ---
 
 <div style={{ 
-  fontFamily: "'Styrene A', 'Styrene B', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
+  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
   backgroundColor: "#FFFFFF",
   minHeight: "100vh",
-  color: "#1A1A18",
+  color: "#141413",
   padding: "2rem 0"
 }}>
   <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 1rem" }}>
@@ -28,19 +28,19 @@ hideTitle: true
       <h1 style={{
         fontSize: "3rem",
         fontWeight: "400",
-        color: "#1A1A18",
+        color: "#141413",
         marginBottom: "1rem"
       }}>
         AI Toolkit
       </h1>
       <p style={{
         fontSize: "1.2rem",
-        color: "#6B6B63",
+        color: "#5E5D59",
         maxWidth: "600px",
         margin: "0 auto",
         lineHeight: "1.6"
       }}>
-        A collection of intelligent tools to supercharge your AI workflows and boost productivity.
+        Four small prompt tools that run in your browser. No account needed.
       </p>
     </div>
 
@@ -55,20 +55,20 @@ hideTitle: true
       {/* Intelligent Prompt Composer Card */}
       <div style={{
         backgroundColor: "#FFFFFF",
-        borderRadius: "16px",
+        borderRadius: "4px",
         padding: "2rem",
-        border: "1px solid #D8D4CC",
-        boxShadow: "0 10px 25px rgba(26,26,24,0.08)",
+        border: "1px solid #E3E0D8",
+        boxShadow: "none",
         transition: "transform 0.3s ease, box-shadow 0.3s ease",
         cursor: "pointer"
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-5px)";
-        e.currentTarget.style.boxShadow = "0 20px 40px rgba(26,26,24,0.12)";
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = "none";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "0 10px 25px rgba(26,26,24,0.08)";
+        e.currentTarget.style.boxShadow = "none";
       }}
       onClick={() => window.open('/ai-toolkit/intelligent-prompt-composer', '_blank')}
       >
@@ -86,7 +86,7 @@ hideTitle: true
           <h3 style={{
             fontSize: "1.5rem",
             fontWeight: "600",
-            color: "#1A1A18",
+            color: "#141413",
             margin: 0
           }}>
             Intelligent Prompt Composer
@@ -94,12 +94,12 @@ hideTitle: true
         </div>
 
         <p style={{
-          color: "#1A1A18",
+          color: "#141413",
           fontSize: "1rem",
           lineHeight: "1.6",
           marginBottom: "1.5rem"
         }}>
-          Transform simple prompts into powerful, structured conversations. Get 10x better results from ChatGPT, Claude, Perplexity, and any AI platform.
+          Turns a rough prompt into a structured one with role, context, constraints and output format. Works with any chat model.
         </p>
 
         <div style={{
@@ -109,30 +109,30 @@ hideTitle: true
           marginBottom: "1.5rem"
         }}>
           <span style={{
-            background: "#D8D4CC",
-            color: "#1A1A18",
+            background: "#E3E0D8",
+            color: "#141413",
             padding: "0.25rem 0.75rem",
-            borderRadius: "12px",
+            borderRadius: "4px",
             fontSize: "0.8rem",
             fontWeight: "500"
           }}>
             Multi-Platform
           </span>
           <span style={{
-            background: "#D8D4CC",
-            color: "#1A1A18",
+            background: "#E3E0D8",
+            color: "#141413",
             padding: "0.25rem 0.75rem",
-            borderRadius: "12px",
+            borderRadius: "4px",
             fontSize: "0.8rem",
             fontWeight: "500"
           }}>
             Quick Presets
           </span>
           <span style={{
-            background: "#D8D4CC",
-            color: "#1A1A18",
+            background: "#E3E0D8",
+            color: "#141413",
             padding: "0.25rem 0.75rem",
-            borderRadius: "12px",
+            borderRadius: "4px",
             fontSize: "0.8rem",
             fontWeight: "500"
           }}>
@@ -149,7 +149,7 @@ hideTitle: true
             display: "flex",
             alignItems: "center",
             gap: "0.5rem",
-            color: "#6B6B63",
+            color: "#5E5D59",
             fontSize: "0.9rem"
           }}>
             <span>⚡</span>
@@ -159,7 +159,7 @@ hideTitle: true
             background: "#C2522D",
             color: "#FFFFFF",
             padding: "0.5rem 1rem",
-            borderRadius: "8px",
+            borderRadius: "4px",
             fontSize: "0.9rem",
             fontWeight: "500",
             display: "flex",
@@ -173,21 +173,21 @@ hideTitle: true
 
       {/* Prompt Grader & Rewriter Card */}
       <div style={{
-        backgroundColor: "#F7F4EE",
-        borderRadius: "16px",
+        backgroundColor: "#F3F1EB",
+        borderRadius: "4px",
         padding: "2rem",
-        border: "1px solid #D8D4CC",
-        boxShadow: "0 10px 25px rgba(26,26,24,0.08)",
+        border: "1px solid #E3E0D8",
+        boxShadow: "none",
         cursor: "pointer",
         transition: "all 0.3s ease"
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-5px)";
-        e.currentTarget.style.boxShadow = "0 20px 40px rgba(26,26,24,0.12)";
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = "none";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "0 10px 25px rgba(26,26,24,0.08)";
+        e.currentTarget.style.boxShadow = "none";
       }}
       onClick={() => window.open('/ai-toolkit/prompt-grader', '_blank')}
       >
@@ -205,7 +205,7 @@ hideTitle: true
           <h3 style={{
             fontSize: "1.5rem",
             fontWeight: "600",
-            color: "#1A1A18",
+            color: "#141413",
             margin: 0
           }}>
             Prompt Grader & Rewriter
@@ -213,7 +213,7 @@ hideTitle: true
         </div>
 
         <p style={{
-          color: "#1A1A18",
+          color: "#141413",
           fontSize: "1rem",
           lineHeight: "1.6",
           marginBottom: "1.5rem"
@@ -228,30 +228,30 @@ hideTitle: true
           marginBottom: "1.5rem"
         }}>
           <span style={{
-            background: "#D8D4CC",
-            color: "#1A1A18",
+            background: "#E3E0D8",
+            color: "#141413",
             padding: "0.25rem 0.75rem",
-            borderRadius: "12px",
+            borderRadius: "4px",
             fontSize: "0.8rem",
             fontWeight: "500"
           }}>
             Score 0-100
           </span>
           <span style={{
-            background: "#D8D4CC",
-            color: "#1A1A18",
+            background: "#E3E0D8",
+            color: "#141413",
             padding: "0.25rem 0.75rem",
-            borderRadius: "12px",
+            borderRadius: "4px",
             fontSize: "0.8rem",
             fontWeight: "500"
           }}>
             3 Rewrites
           </span>
           <span style={{
-            background: "#D8D4CC",
-            color: "#1A1A18",
+            background: "#E3E0D8",
+            color: "#141413",
             padding: "0.25rem 0.75rem",
-            borderRadius: "12px",
+            borderRadius: "4px",
             fontSize: "0.8rem",
             fontWeight: "500"
           }}>
@@ -268,7 +268,7 @@ hideTitle: true
             display: "flex",
             alignItems: "center",
             gap: "0.5rem",
-            color: "#6B6B63",
+            color: "#5E5D59",
             fontSize: "0.9rem"
           }}>
             <span>⚡</span>
@@ -278,7 +278,7 @@ hideTitle: true
             background: "#C2522D",
             color: "#FFFFFF",
             padding: "0.5rem 1rem",
-            borderRadius: "8px",
+            borderRadius: "4px",
             fontSize: "0.9rem",
             fontWeight: "500",
             display: "flex",
@@ -292,21 +292,21 @@ hideTitle: true
 
       {/* Fable Prompt Grader Card */}
       <div style={{
-        backgroundColor: "#F7F4EE",
-        borderRadius: "16px",
+        backgroundColor: "#F3F1EB",
+        borderRadius: "4px",
         padding: "2rem",
-        border: "1px solid #D8D4CC",
-        boxShadow: "0 10px 25px rgba(26,26,24,0.08)",
+        border: "1px solid #E3E0D8",
+        boxShadow: "none",
         cursor: "pointer",
         transition: "all 0.3s ease"
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-5px)";
-        e.currentTarget.style.boxShadow = "0 20px 40px rgba(26,26,24,0.12)";
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = "none";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "0 10px 25px rgba(26,26,24,0.08)";
+        e.currentTarget.style.boxShadow = "none";
       }}
       onClick={() => window.open('/ai-toolkit/fable-prompt-grader', '_blank')}
       >
@@ -324,7 +324,7 @@ hideTitle: true
           <h3 style={{
             fontSize: "1.5rem",
             fontWeight: "600",
-            color: "#1A1A18",
+            color: "#141413",
             margin: 0
           }}>
             Fable Prompt Grader
@@ -332,7 +332,7 @@ hideTitle: true
         </div>
 
         <p style={{
-          color: "#1A1A18",
+          color: "#141413",
           fontSize: "1rem",
           lineHeight: "1.6",
           marginBottom: "1.5rem"
@@ -347,30 +347,30 @@ hideTitle: true
           marginBottom: "1.5rem"
         }}>
           <span style={{
-            background: "#D8D4CC",
-            color: "#1A1A18",
+            background: "#E3E0D8",
+            color: "#141413",
             padding: "0.25rem 0.75rem",
-            borderRadius: "12px",
+            borderRadius: "4px",
             fontSize: "0.8rem",
             fontWeight: "500"
           }}>
             Score 0-100
           </span>
           <span style={{
-            background: "#D8D4CC",
-            color: "#1A1A18",
+            background: "#E3E0D8",
+            color: "#141413",
             padding: "0.25rem 0.75rem",
-            borderRadius: "12px",
+            borderRadius: "4px",
             fontSize: "0.8rem",
             fontWeight: "500"
           }}>
             Story Rewrites
           </span>
           <span style={{
-            background: "#D8D4CC",
-            color: "#1A1A18",
+            background: "#E3E0D8",
+            color: "#141413",
             padding: "0.25rem 0.75rem",
-            borderRadius: "12px",
+            borderRadius: "4px",
             fontSize: "0.8rem",
             fontWeight: "500"
           }}>
@@ -387,7 +387,7 @@ hideTitle: true
             display: "flex",
             alignItems: "center",
             gap: "0.5rem",
-            color: "#6B6B63",
+            color: "#5E5D59",
             fontSize: "0.9rem"
           }}>
             <span>⚡</span>
@@ -397,7 +397,7 @@ hideTitle: true
             background: "#C2522D",
             color: "#FFFFFF",
             padding: "0.5rem 1rem",
-            borderRadius: "8px",
+            borderRadius: "4px",
             fontSize: "0.9rem",
             fontWeight: "500",
             display: "flex",
@@ -411,21 +411,21 @@ hideTitle: true
 
       {/* Tweet Thread Generator Card */}
       <div style={{
-        backgroundColor: "#F7F4EE",
-        borderRadius: "16px",
+        backgroundColor: "#F3F1EB",
+        borderRadius: "4px",
         padding: "2rem",
-        border: "1px solid #D8D4CC",
-        boxShadow: "0 10px 25px rgba(26,26,24,0.08)",
+        border: "1px solid #E3E0D8",
+        boxShadow: "none",
         cursor: "pointer",
         transition: "all 0.3s ease"
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-5px)";
-        e.currentTarget.style.boxShadow = "0 20px 40px rgba(26,26,24,0.12)";
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = "none";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "0 10px 25px rgba(26,26,24,0.08)";
+        e.currentTarget.style.boxShadow = "none";
       }}
       onClick={() => window.open('/ai-toolkit/tweet-thread-generator', '_blank')}
       >
@@ -443,7 +443,7 @@ hideTitle: true
           <h3 style={{
             fontSize: "1.5rem",
             fontWeight: "600",
-            color: "#1A1A18",
+            color: "#141413",
             margin: 0
           }}>
             Tweet Thread Generator
@@ -451,7 +451,7 @@ hideTitle: true
         </div>
 
         <p style={{
-          color: "#1A1A18",
+          color: "#141413",
           fontSize: "1rem",
           lineHeight: "1.6",
           marginBottom: "1.5rem"
@@ -466,30 +466,30 @@ hideTitle: true
           marginBottom: "1.5rem"
         }}>
           <span style={{
-            background: "#D8D4CC",
-            color: "#1A1A18",
+            background: "#E3E0D8",
+            color: "#141413",
             padding: "0.25rem 0.75rem",
-            borderRadius: "12px",
+            borderRadius: "4px",
             fontSize: "0.8rem",
             fontWeight: "500"
           }}>
             Multiple Threads
           </span>
           <span style={{
-            background: "#D8D4CC",
-            color: "#1A1A18",
+            background: "#E3E0D8",
+            color: "#141413",
             padding: "0.25rem 0.75rem",
-            borderRadius: "12px",
+            borderRadius: "4px",
             fontSize: "0.8rem",
             fontWeight: "500"
           }}>
             Smart Presets
           </span>
           <span style={{
-            background: "#D8D4CC",
-            color: "#1A1A18",
+            background: "#E3E0D8",
+            color: "#141413",
             padding: "0.25rem 0.75rem",
-            borderRadius: "12px",
+            borderRadius: "4px",
             fontSize: "0.8rem",
             fontWeight: "500"
           }}>
@@ -506,7 +506,7 @@ hideTitle: true
             display: "flex",
             alignItems: "center",
             gap: "0.5rem",
-            color: "#6B6B63",
+            color: "#5E5D59",
             fontSize: "0.9rem"
           }}>
             <span>⚡</span>
@@ -516,7 +516,7 @@ hideTitle: true
             background: "#C2522D",
             color: "#FFFFFF",
             padding: "0.5rem 1rem",
-            borderRadius: "8px",
+            borderRadius: "4px",
             fontSize: "0.9rem",
             fontWeight: "500",
             display: "flex",
@@ -534,15 +534,15 @@ hideTitle: true
     <div style={{
       textAlign: "center",
       paddingTop: "2rem",
-      borderTop: "1px solid #D8D4CC"
+      borderTop: "1px solid #E3E0D8"
     }}>
       <p style={{
-        color: "#6B6B63",
+        color: "#5E5D59",
         fontSize: "0.9rem",
         margin: 0
       }}>
         Have suggestions for new tools? <a href="mailto:contact@adityakarnam.com" style={{
-          color: "#1A1A18",
+          color: "#141413",
           textDecoration: "underline"
         }}>Let me know!</a>
       </p>
