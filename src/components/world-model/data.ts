@@ -476,6 +476,30 @@ export const systems: SystemArtifact[] = [
     },
   },
   {
+    name: "ijdsir-format",
+    slug: "/ijdsir-format/",
+    tags: ["Typst", "academic-publishing", "claude-code", "journal-template", "dental-research"],
+    researchQuestion: "Can a Claude Code workflow reliably reformat a .docx research manuscript to strict journal specifications without altering its content?",
+    systemBuilt:
+      "Typst templates matching the IJDSIR dental journal manuscript and covering letter formats, plus a Claude Code workflow that converts a .docx paper into journal-ready Typst output without modifying the underlying content.",
+    whyItMatters:
+      "Journal formatting is a high-friction, error-prone step in academic publishing. This workflow offloads the entire reformatting pass to an agent, letting researchers focus on content while guaranteeing compliance with submission requirements.",
+    status: "Active experiment",
+    links: [
+      { label: "GitHub", href: "https://github.com/adityak74/ijdsir-format" },
+    ],
+    explanationModes: {
+      "Research Idea":
+        "ijdsir-format explores whether a document reformatting workflow can be fully agent-driven — taking an author's raw .docx and producing a submission-ready manuscript without any manual layout work.",
+      "System Design":
+        "The system pairs Typst templates that encode IJDSIR's style rules with a Claude Code workflow that extracts content from a .docx input and renders it into the correct template, preserving all text and citations.",
+      "Business Value":
+        "Researchers and clinicians submitting to specialist journals can automate the formatting step entirely, reducing submission turnaround and eliminating a common source of desk rejections.",
+      "Code Walkthrough":
+        "Start with the Typst template definitions for the manuscript and cover letter, then inspect the Claude Code workflow that drives .docx ingestion, content extraction, and template rendering.",
+    },
+  },
+  {
     name: "ERBGA",
     slug: "/erbga/",
     tags: ["graph algorithms", "community detection", "genetic algorithms", "MCP", "Python"],
