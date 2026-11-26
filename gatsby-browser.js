@@ -4,6 +4,7 @@ import PromptComposer from "./src/components/PromptComposer";
 import PromptGrader from "./src/components/PromptGrader";
 import FablePromptGrader from "./src/components/FablePromptGrader";
 import TweetThreadGenerator from "./src/components/TweetThreadGenerator";
+import PeekGuide from "./src/components/PeekGuide";
 
 // Easter egg: Konami code shows a 1UP toast.
 export const onClientEntry = () => {
@@ -75,3 +76,10 @@ export const onRouteUpdate = () => {
     if (el.getBoundingClientRect().top > window.innerHeight * 0.9) { el.classList.add("rv"); io.observe(el) }
   })
 }
+
+export const wrapPageElement = ({ element, props }) => (
+  <>
+    {element}
+    <PeekGuide pathname={props.location.pathname} />
+  </>
+);

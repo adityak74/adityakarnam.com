@@ -4,6 +4,7 @@ import PromptComposer from "./src/components/PromptComposer";
 import PromptGrader from "./src/components/PromptGrader";
 import FablePromptGrader from "./src/components/FablePromptGrader";
 import TweetThreadGenerator from "./src/components/TweetThreadGenerator";
+import PeekGuide from "./src/components/PeekGuide";
 
 export const wrapRootElement = ({ element }) => {
   const { MDXProvider } = require("@mdx-js/react");
@@ -21,6 +22,13 @@ export const wrapRootElement = ({ element }) => {
     </MDXProvider>
   );
 };
+
+export const wrapPageElement = ({ element, props }) => (
+  <>
+    {element}
+    <PeekGuide pathname={props.location.pathname} />
+  </>
+);
 
 // Preserve existing JS onRenderBody implementation (migrated from gatsby-ssr.js)
 export const onRenderBody = ({ setHeadComponents }) => {
