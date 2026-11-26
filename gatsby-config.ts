@@ -40,6 +40,10 @@ const config: GatsbyConfig = {
             slug: `/live`,
           },
           {
+            title: `Course`,
+            slug: `/course`,
+          },
+          {
             title: `About`,
             slug: `/about`,
           },
