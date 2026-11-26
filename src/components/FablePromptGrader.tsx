@@ -156,10 +156,10 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
       if (button) {
         const originalText = button.textContent;
         button.textContent = "✓ Copied!";
-        button.style.backgroundColor = "#10b981";
+        button.style.backgroundColor = "#2F6F3E";
         setTimeout(() => {
           button.textContent = originalText;
-          button.style.backgroundColor = "#F7F4EE";
+          button.style.backgroundColor = "#F3F1EB";
         }, 2000);
       }
     } catch (err) {
@@ -202,9 +202,9 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
       className="max-w-6xl mx-auto"
       style={{
         fontFamily: "'Styrene A', 'Styrene B', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
-        backgroundColor: "#FFFFFF",
+        backgroundColor: "#FAF9F6",
         minHeight: "100vh",
-        color: "#1A1A18",
+        color: "#141413",
       }}
     >
       {/* Title */}
@@ -219,7 +219,7 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
           style={{
             fontSize: "2.5rem",
             fontWeight: "600",
-            color: "#1A1A18",
+            color: "#141413",
             marginBottom: "0.5rem",
             lineHeight: "1.2",
           }}
@@ -229,7 +229,7 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
         <p
           style={{
             fontSize: "1.1rem",
-            color: "#6B6B63",
+            color: "#5E5D59",
             marginBottom: 0,
             lineHeight: "1.6",
             maxWidth: "700px",
@@ -247,10 +247,10 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
         <div
           style={{
             display: "inline-flex",
-            backgroundColor: "#F7F4EE",
-            borderRadius: "12px",
+            backgroundColor: "#F3F1EB",
+            borderRadius: "4px",
             padding: "0.5rem",
-            border: "1px solid #D8D4CC",
+            border: "1px solid #E3E0D8",
           }}
         >
           {["grader", "examples", "faq"].map((tab) => (
@@ -259,9 +259,9 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
               onClick={() => setActiveTab(tab)}
               style={{
                 backgroundColor: activeTab === tab ? ACCENT : "transparent",
-                color: activeTab === tab ? "#1A1A18" : "#6B6B63",
+                color: activeTab === tab ? "#141413" : "#5E5D59",
                 border: "none",
-                borderRadius: "8px",
+                borderRadius: "4px",
                 padding: "0.75rem 1.5rem",
                 fontSize: "1rem",
                 fontWeight: "500",
@@ -281,12 +281,12 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
       {activeTab === "grader" && (
         <div
           style={{
-            backgroundColor: "#F7F4EE",
-            borderRadius: "16px",
+            backgroundColor: "#F3F1EB",
+            borderRadius: "4px",
             padding: "2.5rem",
             marginBottom: "2rem",
-            border: "1px solid #D8D4CC",
-            boxShadow: "0 10px 25px rgba(26,26,24,0.08)",
+            border: "1px solid #E3E0D8",
+            boxShadow: "none",
           }}
         >
           {/* Input Section */}
@@ -296,7 +296,7 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                 display: "block",
                 fontWeight: "600",
                 marginBottom: "0.75rem",
-                color: "#1A1A18",
+                color: "#141413",
                 fontSize: "1.1rem",
               }}
             >
@@ -308,8 +308,8 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
               placeholder="Enter your creative writing prompt to analyze and improve..."
               style={{
                 width: "100%",
-                border: "1px solid #D8D4CC",
-                borderRadius: "12px",
+                border: "1px solid #E3E0D8",
+                borderRadius: "4px",
                 padding: "1.25rem",
                 fontSize: "1rem",
                 minHeight: "120px",
@@ -317,11 +317,11 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                 outline: "none",
                 fontFamily: "inherit",
                 lineHeight: "1.5",
-                backgroundColor: "#FFFFFF",
-                color: "#1A1A18",
+                backgroundColor: "#FAF9F6",
+                color: "#141413",
               }}
               onFocus={(e) => (e.target.style.borderColor = ACCENT)}
-              onBlur={(e) => (e.target.style.borderColor = "#D8D4CC")}
+              onBlur={(e) => (e.target.style.borderColor = "#E3E0D8")}
             />
           </div>
 
@@ -340,7 +340,7 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                   display: "block",
                   fontWeight: "600",
                   marginBottom: "0.5rem",
-                  color: "#1A1A18",
+                  color: "#141413",
                   fontSize: "0.9rem",
                 }}
               >
@@ -353,12 +353,12 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                 placeholder="e.g. quiet sci-fi, tense horror, warm literary fiction"
                 style={{
                   width: "100%",
-                  border: "1px solid #D8D4CC",
-                  borderRadius: "8px",
+                  border: "1px solid #E3E0D8",
+                  borderRadius: "4px",
                   padding: "0.75rem",
                   fontSize: "0.9rem",
-                  backgroundColor: "#FFFFFF",
-                  color: "#1A1A18",
+                  backgroundColor: "#FAF9F6",
+                  color: "#141413",
                   outline: "none",
                 }}
               />
@@ -370,7 +370,7 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                   display: "block",
                   fontWeight: "600",
                   marginBottom: "0.5rem",
-                  color: "#1A1A18",
+                  color: "#141413",
                   fontSize: "0.9rem",
                 }}
               >
@@ -383,12 +383,12 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                 placeholder="e.g. first person, close third, wry and observant"
                 style={{
                   width: "100%",
-                  border: "1px solid #D8D4CC",
-                  borderRadius: "8px",
+                  border: "1px solid #E3E0D8",
+                  borderRadius: "4px",
                   padding: "0.75rem",
                   fontSize: "0.9rem",
-                  backgroundColor: "#FFFFFF",
-                  color: "#1A1A18",
+                  backgroundColor: "#FAF9F6",
+                  color: "#141413",
                   outline: "none",
                 }}
               />
@@ -403,7 +403,7 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                 backgroundColor: ACCENT,
                 color: "white",
                 padding: "1rem 2rem",
-                borderRadius: "12px",
+                borderRadius: "4px",
                 border: "none",
                 fontSize: "1.1rem",
                 fontWeight: "600",
@@ -412,7 +412,7 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = ACCENT_DARK;
-                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.transform = "translateY(0)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = ACCENT;
@@ -427,11 +427,11 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
           {gradingResult && (
             <div
               style={{
-                backgroundColor: "#F7F4EE",
-                borderRadius: "16px",
+                backgroundColor: "#F3F1EB",
+                borderRadius: "4px",
                 padding: "2rem",
                 marginBottom: "2rem",
-                border: "1px solid #D8D4CC",
+                border: "1px solid #E3E0D8",
               }}
             >
               {/* Score Display */}
@@ -442,7 +442,7 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                     fontWeight: "700",
                     color:
                       gradingResult.totalScore >= 80
-                        ? "#10b981"
+                        ? "#2F6F3E"
                         : gradingResult.totalScore >= 60
                         ? "#f59e0b"
                         : "#ef4444",
@@ -454,7 +454,7 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                 <div
                   style={{
                     fontSize: "1.2rem",
-                    color: "#1A1A18",
+                    color: "#141413",
                     fontWeight: "500",
                   }}
                 >
@@ -479,16 +479,16 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                   <div
                     key={key}
                     style={{
-                      backgroundColor: "#F7F4EE",
+                      backgroundColor: "#F3F1EB",
                       padding: "1rem",
-                      borderRadius: "8px",
+                      borderRadius: "4px",
                       textAlign: "center",
                     }}
                   >
                     <div
                       style={{
                         fontSize: "0.8rem",
-                        color: "#6B6B63",
+                        color: "#5E5D59",
                         marginBottom: "0.25rem",
                       }}
                     >
@@ -501,7 +501,7 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                       style={{
                         fontSize: "1.5rem",
                         fontWeight: "600",
-                        color: score > 0 ? "#10b981" : "#ef4444",
+                        color: score > 0 ? "#2F6F3E" : "#ef4444",
                       }}
                     >
                       {score > 0 ? "✓" : "✗"}
@@ -519,7 +519,7 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                 style={{
                   fontSize: "1.5rem",
                   fontWeight: "600",
-                  color: "#1A1A18",
+                  color: "#141413",
                   marginBottom: "1.5rem",
                   textAlign: "center",
                 }}
@@ -554,10 +554,10 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                   <div
                     key={block.key}
                     style={{
-                      backgroundColor: "#F7F4EE",
-                      borderRadius: "12px",
+                      backgroundColor: "#F3F1EB",
+                      borderRadius: "4px",
                       padding: "1.5rem",
-                      border: "1px solid #D8D4CC",
+                      border: "1px solid #E3E0D8",
                     }}
                   >
                     <div
@@ -574,7 +574,7 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                         style={{
                           fontSize: "1.1rem",
                           fontWeight: "600",
-                          color: "#1A1A18",
+                          color: "#141413",
                           margin: 0,
                         }}
                       >
@@ -585,10 +585,10 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                           id={block.id}
                           onClick={() => copyToClipboard(block.text, block.id)}
                           style={{
-                            backgroundColor: "#F7F4EE",
-                            color: "#1A1A18",
-                            border: "1px solid #D8D4CC",
-                            borderRadius: "6px",
+                            backgroundColor: "#F3F1EB",
+                            color: "#141413",
+                            border: "1px solid #E3E0D8",
+                            borderRadius: "4px",
                             padding: "0.5rem 1rem",
                             fontSize: "0.8rem",
                             cursor: "pointer",
@@ -602,7 +602,7 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                             backgroundColor: ACCENT,
                             color: "white",
                             border: "none",
-                            borderRadius: "6px",
+                            borderRadius: "4px",
                             padding: "0.5rem 1rem",
                             fontSize: "0.8rem",
                             cursor: "pointer",
@@ -617,13 +617,13 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                     </div>
                     <div
                       style={{
-                        backgroundColor: "#F7F4EE",
+                        backgroundColor: "#F3F1EB",
                         padding: "1rem",
-                        borderRadius: "8px",
+                        borderRadius: "4px",
                         fontFamily: "ui-monospace, SFMono-Regular, monospace",
                         fontSize: "0.9rem",
                         lineHeight: "1.5",
-                        color: "#1A1A18",
+                        color: "#141413",
                         whiteSpace: block.pre ? "pre-line" : "normal",
                       }}
                     >
@@ -640,19 +640,19 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
       {activeTab === "examples" && (
         <div
           style={{
-            backgroundColor: "#F7F4EE",
-            borderRadius: "16px",
+            backgroundColor: "#F3F1EB",
+            borderRadius: "4px",
             padding: "2.5rem",
             marginBottom: "2rem",
-            border: "1px solid #D8D4CC",
-            boxShadow: "0 10px 25px rgba(26,26,24,0.08)",
+            border: "1px solid #E3E0D8",
+            boxShadow: "none",
           }}
         >
           <h3
             style={{
               fontSize: "1.5rem",
               fontWeight: "600",
-              color: "#1A1A18",
+              color: "#141413",
               marginBottom: "2rem",
               textAlign: "center",
             }}
@@ -665,10 +665,10 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
               <div
                 key={index}
                 style={{
-                  backgroundColor: "#F7F4EE",
-                  borderRadius: "12px",
+                  backgroundColor: "#F3F1EB",
+                  borderRadius: "4px",
                   padding: "1.5rem",
-                  border: "1px solid #D8D4CC",
+                  border: "1px solid #E3E0D8",
                 }}
               >
                 <div style={{ marginBottom: "1rem" }}>
@@ -684,12 +684,12 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                   </h4>
                   <div
                     style={{
-                      backgroundColor: "#F7F4EE",
+                      backgroundColor: "#F3F1EB",
                       padding: "1rem",
-                      borderRadius: "8px",
+                      borderRadius: "4px",
                       fontFamily: "ui-monospace, SFMono-Regular, monospace",
                       fontSize: "0.9rem",
-                      color: "#1A1A18",
+                      color: "#141413",
                     }}
                   >
                     {example.before}
@@ -701,7 +701,7 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                     style={{
                       fontSize: "1rem",
                       fontWeight: "600",
-                      color: "#10b981",
+                      color: "#2F6F3E",
                       marginBottom: "0.5rem",
                     }}
                   >
@@ -709,12 +709,12 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                   </h4>
                   <div
                     style={{
-                      backgroundColor: "#F7F4EE",
+                      backgroundColor: "#F3F1EB",
                       padding: "1rem",
-                      borderRadius: "8px",
+                      borderRadius: "4px",
                       fontFamily: "ui-monospace, SFMono-Regular, monospace",
                       fontSize: "0.9rem",
-                      color: "#1A1A18",
+                      color: "#141413",
                     }}
                   >
                     {example.after}
@@ -725,7 +725,7 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                   style={{
                     backgroundColor: "#F5EAE3",
                     padding: "1rem",
-                    borderRadius: "8px",
+                    borderRadius: "4px",
                     border: `1px solid ${ACCENT}`,
                   }}
                 >
@@ -748,19 +748,19 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
       {activeTab === "faq" && (
         <div
           style={{
-            backgroundColor: "#F7F4EE",
-            borderRadius: "16px",
+            backgroundColor: "#F3F1EB",
+            borderRadius: "4px",
             padding: "2.5rem",
             marginBottom: "2rem",
-            border: "1px solid #D8D4CC",
-            boxShadow: "0 10px 25px rgba(26,26,24,0.08)",
+            border: "1px solid #E3E0D8",
+            boxShadow: "none",
           }}
         >
           <h3
             style={{
               fontSize: "1.5rem",
               fontWeight: "600",
-              color: "#1A1A18",
+              color: "#141413",
               marginBottom: "2rem",
               textAlign: "center",
             }}
@@ -804,10 +804,10 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
               <div
                 key={index}
                 style={{
-                  backgroundColor: "#F7F4EE",
-                  borderRadius: "12px",
+                  backgroundColor: "#F3F1EB",
+                  borderRadius: "4px",
                   padding: "1.5rem",
-                  border: "1px solid #D8D4CC",
+                  border: "1px solid #E3E0D8",
                 }}
               >
                 <h4
@@ -823,7 +823,7 @@ For each beat, write 1-2 sentences of outline, then write the full scene in pros
                 <div
                   style={{
                     fontSize: "0.95rem",
-                    color: "#1A1A18",
+                    color: "#141413",
                     lineHeight: "1.6",
                     whiteSpace: "pre-line",
                   }}

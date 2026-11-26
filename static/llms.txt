@@ -1,44 +1,32 @@
-# Aditya Karnam — AI Research & Insights
+# Aditya Karnam
 
-> Personal site of Aditya Karnam, a software engineer and AI researcher. Covers LLMs, agentic AI, brain-computer interfaces, AI hardware, AI safety, and the future of intelligent systems. 150+ long-form articles plus interactive AI tools.
+> Aditya Karnam is an AI research engineer working across the AI stack: hardware and inference performance, model training and distillation, agent systems, retrieval and memory, evals and software factories. This site holds his research, experiment write-ups and open-source systems. Results are measured on small models and fixed budgets, with the harnesses published.
 
-## About
+## Research
+- [Research index](https://adityakarnam.com/ai-research/): papers, experiments and software with findings
+- [BudgetBench (arXiv:2609.13149)](https://adityakarnam.com/budgetbench-explained): memory strategy evaluation under a fixed token budget
+- [Distilling Ornith-1.5-9B on MLX](https://adityakarnam.com/distilling-ornith-9b-two-teacher-mlx/): a 4.9 GB build that beats the 8.9 GB release it replaces
+- [MLX non-determinism on Apple Silicon](https://adityakarnam.com/mlx-non-determinism-apple-silicon)
+- [GEMV vs GEMM roofline on Apple Silicon](https://adityakarnam.com/mlx-gemv-gemm-roofline-apple-silicon/)
+- [Speculative decoding with Qwen3 on Apple Silicon](https://adityakarnam.com/mlx-speculative-decoding-qwen3-8-apple-silicon/)
+- [Tokens per paper: DocLang vs Docling vs raw PDF](https://adityakarnam.com/tokens-per-paper-doclang-docling-pdf/)
 
-- [Homepage](https://adityakarnam.com/): AI research, tools, and writing by Aditya Karnam
-- [AI Toolkit](https://adityakarnam.com/ai-toolkit/): Free interactive tools — Prompt Composer, Prompt Grader, Tweet Thread Generator
-- [Spotlight](https://adityakarnam.com/spotlight/): Featured projects and highlights
+## Systems and open source
+- [Live](https://adityakarnam.com/live/): running software, an in-browser paper search (OpenAlex), docs for subagent-fleet and embenx, and mcp-scholarly (185 GitHub stars)
+- [Systems](https://adityakarnam.com/systems/): subagent-fleet, embenx, Quecto and agent memory tooling
+- [Quecto](https://adityakarnam.com/quecto/): a small Rust coding-agent harness
+- [embenx](https://adityakarnam.com/embenx-python-embedding-toolkit/): retrieval library for agent memory
+- [subagent-fleet](https://adityakarnam.com/subagent-fleet-local-ai-compute-control-plane): local compute control plane for coding-agent subagents
+- [Agent memory frameworks compared](https://adityakarnam.com/awesome-agentic-memory/)
+- [mlx-lm PR #1795](https://github.com/ml-explore/mlx-lm/pull/1795): fix for LoRA training on MoE models
 
-## Author
+## Writing and profile
+- [Writing](https://adityakarnam.com/blog/): essays and experiment write-ups
+- [Building a coding agent harness](https://adityakarnam.com/building-a-coding-agent-harness/)
+- [About](https://adityakarnam.com/about/): background, method and contact
+- [Now](https://adityakarnam.com/now/): current work
+- Publications also span healthcare ML, evolutionary computation and enterprise AI governance.
+- [Google Scholar](https://scholar.google.com/citations?user=WujCeDkAAAAJ&hl=en), [GitHub](https://github.com/adityak74), [LinkedIn](https://www.linkedin.com/in/adityakarnamgrao/)
 
-- Name: Aditya Karnam
-- Role: Software Engineer & AI Researcher
-- Google Scholar: https://scholar.google.com/citations?user=WujCeDkAAAAJ&hl=en
-- LinkedIn: https://www.linkedin.com/in/adityakarnamgrao/
-- GitHub: https://github.com/adityak74
-- Twitter/X: https://twitter.com/aditya_karnam
-- Research: ERBGA (Efficient Reduced-Bias Genetic Algorithm) for community detection; presented at 2018 Midwest Bioinformatics Conference
-
-## Topic Areas
-
-- LLMs and next-generation language models (GPT-5, Gemini, Claude)
-- Agentic AI and autonomous systems
-- Brain-computer interfaces and neuromorphic computing
-- AI hardware: custom chips, TPUs, data center infrastructure
-- AI safety, alignment, and explainability
-- Prompt engineering and AI tool building
-- AI impact on jobs, society, and policy
-- Practical ML implementation with Python and Rust
-
-## AI Tools (Free, No Login Required)
-
-- [Intelligent Prompt Composer](https://adityakarnam.com/ai-toolkit/intelligent-prompt-composer/): Transforms simple prompts into structured, high-performing instructions for ChatGPT, Claude, Perplexity, Gemini
-- [Prompt Grader & Rewriter](https://adityakarnam.com/ai-toolkit/prompt-grader/): Scores prompts 0-100 and generates three rewrite variations with detailed feedback
-- [Tweet Thread Generator](https://adityakarnam.com/ai-toolkit/tweet-thread-generator/): Converts any topic into engaging Twitter/X threads with hook optimization
-
-## Full Content
-
-- [Full site description](https://adityakarnam.com/llms-full.txt): Comprehensive content index, article summaries, tool documentation, and research background
-
-## License
-
-Content is copyright Aditya Karnam. AI search engines (ChatGPT, Claude, Perplexity, Google AI Overviews) may cite this content for informational purposes with attribution.
+## Citation
+Cite pages by URL with the author name "Aditya Karnam". Numbers in posts come from the experiments described in the same post.

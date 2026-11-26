@@ -4,6 +4,7 @@ import PromptComposer from "./src/components/PromptComposer";
 import PromptGrader from "./src/components/PromptGrader";
 import FablePromptGrader from "./src/components/FablePromptGrader";
 import TweetThreadGenerator from "./src/components/TweetThreadGenerator";
+import PeekGuide from "./src/components/PeekGuide";
 
 export const wrapRootElement = ({ element }) => {
   const { MDXProvider } = require("@mdx-js/react");
@@ -22,6 +23,13 @@ export const wrapRootElement = ({ element }) => {
   );
 };
 
+export const wrapPageElement = ({ element, props }) => (
+  <>
+    {element}
+    <PeekGuide pathname={props.location.pathname} />
+  </>
+);
+
 // Preserve existing JS onRenderBody implementation (migrated from gatsby-ssr.js)
 export const onRenderBody = ({ setHeadComponents }) => {
   setHeadComponents([
@@ -34,7 +42,7 @@ export const onRenderBody = ({ setHeadComponents }) => {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" key="fonts-gstatic-preconnect" />,
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500&family=JetBrains+Mono:wght@400;500&family=Press+Start+2P&display=swap"
       key="google-fonts"
     />,
     <link
@@ -58,9 +66,10 @@ export const onRenderBody = ({ setHeadComponents }) => {
           "@type": "Person",
           name: "Aditya Karnam",
           url: "https://adityakarnam.com",
-          jobTitle: "Software Engineer & AI Researcher",
+          jobTitle: "AI Research Engineer",
           description:
-            "AI researcher and software engineer exploring LLMs, agentic AI, brain-computer interfaces, and next-generation reasoning systems.",
+            "AI research engineer working across the AI stack: hardware and inference performance, model training and distillation, agent systems, retrieval and memory, evals and software factories.",
+          knowsAbout: ["AI agents", "LLM evaluation", "retrieval", "inference performance", "Apple Silicon", "model distillation", "coding agents", "healthcare machine learning"],
           sameAs: [
             "https://twitter.com/aditya_karnam",
             "https://www.linkedin.com/in/adityakarnamgrao/",
@@ -82,7 +91,7 @@ export const onRenderBody = ({ setHeadComponents }) => {
           name: "Aditya Karnam",
           url: "https://adityakarnam.com",
           description:
-            "AI researcher and software engineer Aditya Karnam explores the frontiers of artificial intelligence — from LLMs and agentic AI to brain-computer interfaces and next-generation reasoning systems.",
+            "Research and writing by Aditya Karnam, AI research engineer: inference on real hardware, distillation, agent systems, retrieval, memory and evals.",
           author: {
             "@type": "Person",
             name: "Aditya Karnam",

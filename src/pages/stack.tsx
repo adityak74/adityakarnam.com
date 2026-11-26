@@ -2,136 +2,67 @@ import * as React from "react"
 import type { HeadFC, PageProps } from "gatsby"
 import Layout from "@lekoarts/gatsby-theme-minimal-blog/src/components/layout"
 import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
-import {
-  ConsoleList,
-  Divider,
-  Panel,
-  WorldModelHero,
-  WorldModelPageShell,
-  WorldModelSection,
-  labPalette,
-} from "../components/world-model/pages-systems-stack-now/WorldModelPageChrome"
+import { Page, Title, Section, RuledList, Row, Explore } from "../components/world-model/pages-systems-stack-now/editorial"
 
-const stackLayers = [
+const layers: Row[] = [
   {
-    layer: "Applied systems",
-    note: "Applications that need durable context, tool use, and long-horizon behavior instead of a single prompt-response loop.",
-    work: "The public expression here is still emerging, but the supporting layers below are already visible in the codebase.",
+    key: "runtime",
+    meta: "Layer 1",
+    title: "Agent runtime",
+    body: "Role-aware execution, topology, health and operational control. subagent-fleet is the clearest example: one fleet topology generates routes, agent definitions, warmup flows and dashboard state.",
   },
   {
-    layer: "Agent runtime",
-    note: "Role-aware execution, topology, health, and operational control for agent work.",
-    work: "subagent-fleet provides the cleanest example: one fleet topology generating routes, agent definitions, warmup flows, and dashboard state.",
+    key: "memory",
+    meta: "Layer 2",
+    title: "State and memory",
+    body: "Durable context about goals, preferences and prior work. awesome-agentic-memory maps the category; embenx builds temporal and agentic memory primitives.",
   },
   {
-    layer: "State + memory layer",
-    note: "Durable context about goals, preferences, observations, and prior work across sessions.",
-    work: "awesome-agentic-memory maps the broader category, while embenx pushes toward practical temporal and agentic memory primitives.",
+    key: "retrieval",
+    meta: "Layer 3",
+    title: "Retrieval and context",
+    body: "Search, filtering, reranking and context assembly without backend lock-in. embenx unifies 15+ backends and adds hybrid search, metadata filtering and reranking hooks.",
   },
   {
-    layer: "Retrieval + context layer",
-    note: "Search, filtering, reranking, and context assembly without backend lock-in.",
-    work: "embenx unifies retrieval across 15+ backends and adds hybrid search, metadata filtering, and reranking hooks.",
+    key: "tools",
+    meta: "Layer 4",
+    title: "Tools and environment",
+    body: "Where models meet MCP tools, code interfaces and external systems. embenx ships an MCP server, and subagent-fleet generates assistant-facing agent definitions.",
   },
   {
-    layer: "Simulation / prediction layer",
-    note: "The ability to test futures, compare actions, or retrieve state-action trajectories before committing.",
-    work: "The strongest signal today is directional: the embenx roadmap includes trajectory retrieval for world models, but this layer is still being built out.",
+    key: "routing",
+    meta: "Layer 5",
+    title: "Model routing and inference",
+    body: "Choosing the model and machine for the job. subagent-fleet routes through LiteLLM across local Ollama nodes. My MLX posts measure what that local inference does under load.",
   },
   {
-    layer: "Tool + environment interface",
-    note: "The surface where models connect to MCP tools, code interfaces, and external systems.",
-    work: "embenx ships an MCP server, awesome-agentic-memory tracks MCP-native memory servers, and subagent-fleet generates assistant-facing agent interfaces.",
+    key: "eval",
+    meta: "Layer 6",
+    title: "Observability and evaluation",
+    body: "Behavior should be inspectable and benchmarkable over time. subagent-fleet has live traces and a published eval; BudgetBench evaluates memory under a fixed token budget.",
   },
   {
-    layer: "Model routing + local/cloud inference",
-    note: "Choosing the right model and machine for the job rather than treating inference as one generic endpoint.",
-    work: "subagent-fleet sits directly here with LiteLLM routing across local Ollama nodes and role-specific models.",
-  },
-  {
-    layer: "Observability + evaluation",
-    note: "Behavior should be inspectable, benchmarkable, and visible over time.",
-    work: "subagent-fleet includes live traces and published evals, while AI Toolkit exposes smaller-scale scoring and prompt-structure heuristics.",
+    key: "sim",
+    meta: "Layer 7",
+    title: "Simulation and prediction",
+    body: "Testing futures before committing to an action. This one is still early: the embenx roadmap includes trajectory retrieval, and nothing more is built yet.",
   },
 ]
 
 const StackPage = (_props: PageProps) => (
   <Layout>
-    <WorldModelPageShell>
-      <WorldModelHero
-        eyebrow="Systems Stack"
-        title="Building the systems layer between models and reliable agency."
-        description="The next frontier is not just better conversation. It is infrastructure that lets models maintain state, retrieve memory, route intelligently, use tools, and remain inspectable while acting over time."
-        aside={
-          <ConsoleList
-            items={[
-              "applied systems",
-              "agent runtime",
-              "state + memory",
-              "retrieval + context",
-              "simulation / prediction",
-              "tool + environment interface",
-              "model routing + local/cloud inference",
-              "observability + evaluation",
-            ]}
-          />
-        }
-      />
-
-      <Divider />
-
-      <WorldModelSection
-        eyebrow="Stack Map"
-        title="The systems stack"
-        description="This page defines the category through concrete layers and ties each layer back to work already published on this site."
+    <Page>
+      <Title
+        eyebrow="Stack"
+        lede="Better conversation is not the missing piece. Agents need infrastructure that keeps state, retrieves memory, routes between models, uses tools, and stays inspectable while it acts."
       >
-        <div style={{ display: "grid", gap: "1rem" }}>
-          {stackLayers.map((item, index) => (
-            <Panel key={item.layer} accent={index % 2 === 0 ? "cyan" : "green"}>
-              <div
-                style={{
-                  display: "grid",
-                  gap: "0.9rem",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-                }}
-              >
-                <div>
-                  <div
-                    style={{
-                      color: labPalette.green,
-                      fontFamily:
-                        "'JetBrains Mono', 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace",
-                      fontSize: "0.78rem",
-                      letterSpacing: "0.06em",
-                      marginBottom: "0.55rem",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    Layer {index + 1}
-                  </div>
-                  <h3
-                    style={{
-                      color: labPalette.heading,
-                      fontSize: "1.25rem",
-                      letterSpacing: "-0.03em",
-                      margin: 0,
-                    }}
-                  >
-                    {item.layer}
-                  </h3>
-                </div>
-                <div>
-                  <p style={{ color: labPalette.text, margin: 0, lineHeight: 1.7 }}>{item.note}</p>
-                  <p style={{ color: labPalette.body, lineHeight: 1.75, margin: "0.8rem 0 0" }}>
-                    {item.work}
-                  </p>
-                </div>
-              </div>
-            </Panel>
-          ))}
-        </div>
-      </WorldModelSection>
-    </WorldModelPageShell>
+        The systems layer between models and reliable agents
+      </Title>
+      <Section label="Layers">
+        <RuledList rows={layers} />
+      </Section>
+      <Explore keys={["systems", "research", "now"]} />
+    </Page>
   </Layout>
 )
 

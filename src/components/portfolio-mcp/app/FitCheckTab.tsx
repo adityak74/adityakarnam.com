@@ -64,7 +64,7 @@ export function FitCheckTab({ app }: { app: App }) {
       {state.status === "empty" && (
         <Panel accent="green">
           <EyebrowLabel>Examples</EyebrowLabel>
-          <SectionHeading style={{ fontSize: "1.35rem" }}>Start from a realistic hiring brief</SectionHeading>
+          <SectionHeading style={{ fontSize: "1.35rem" }}>Start from an example role</SectionHeading>
           <BodyText style={{ marginTop: "0.7rem" }}>Pick a preset to populate the role field, then press Check fit.</BodyText>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "0.55rem", marginTop: "1rem" }}>
             {rolePresets.map((preset) => (

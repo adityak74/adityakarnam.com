@@ -23,91 +23,98 @@ type SignalPillProps = {
   children: React.ReactNode
 }
 
+// Design contract palette. Keys kept stable for existing consumers.
 export const consoleColors = {
-  bg: "#FAF9F7",
-  panel: "#FFFFFF",
-  panelAlt: "#F2F0EC",
-  border: "#D8D4CC",
-  borderStrong: "#CFC9BE",
-  text: "#1A1A18",
-  muted: "#6B6B63",
-  soft: "#8A857C",
+  bg: "#FAF9F6",
+  panel: "#FAF9F6",
+  panelAlt: "#F3F1EB",
+  border: "#E3E0D8",
+  borderStrong: "#E3E0D8",
+  text: "#141413",
+  muted: "#5E5D59",
+  soft: "#5E5D59",
   accent: "#C2522D",
-  accentAlt: "#D4A574",
-  warning: "#B67A45",
+  accentAlt: "#5E5D59",
+  warning: "#C2522D",
+}
+
+export const monoLabelSx = {
+  fontFamily: `monospace`,
+  fontSize: `12px`,
+  lineHeight: 1.5,
+  letterSpacing: `0.06em`,
+  textTransform: `uppercase` as const,
+  color: consoleColors.muted,
 }
 
 export const pageShellSx = {
   color: consoleColors.text,
-  background: `linear-gradient(180deg, #FFFFFF 0%, ${consoleColors.bg} 100%)`,
-  border: `1px solid ${consoleColors.border}`,
-  borderRadius: 16,
-  overflow: `hidden`,
   position: `relative` as const,
-  boxShadow: `0 4px 24px rgba(26, 26, 24, 0.08)`,
 }
 
-export const ConsoleShell = ({ children }: ShellProps) => (
-  <Box sx={pageShellSx}>
-    <Box
-      sx={{
-        px: [3, 4],
-        py: [2, 3],
-        borderBottom: `1px solid ${consoleColors.border}`,
-        bg: `#FAF9F7`,
-      }}
-    >
-      <Text
-        sx={{
-          display: `block`,
-          fontFamily: `monospace`,
-          fontSize: 0,
-          color: consoleColors.soft,
-          letterSpacing: `0.04em`,
-          textTransform: `uppercase`,
-        }}
-      >
-        Aditya Karnam · AI Research Notes
+/** Mono uppercase label. */
+export const Eyebrow = ({ children }: ShellProps) => (
+  <Text sx={{ display: `block`, mb: 2, ...monoLabelSx }}>{children}</Text>
+)
+
+/** Serif h1 with optional lede paragraph. */
+export const PageTitle = ({
+  eyebrow,
+  title,
+  lede,
+}: {
+  eyebrow?: string
+  title: string
+  lede?: React.ReactNode
+}) => (
+  <Box sx={{ mb: [4, 5] }}>
+    {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
+    <Heading as="h1" sx={{ variant: `styles.h1`, mt: 0, mb: lede ? 3 : 0, maxWidth: `20ch` }}>
+      {title}
+    </Heading>
+    {lede ? (
+      <Text as="p" sx={{ color: consoleColors.muted, fontSize: [`18px`, `20px`], lineHeight: 1.55, maxWidth: `60ch` }}>
+        {lede}
       </Text>
-    </Box>
-    <Box sx={{ p: [2, 3, 4] }}>{children}</Box>
+    ) : null}
   </Box>
 )
 
+/** Hairline-ruled list. Children are rows; each gets a top rule, last gets a bottom rule. */
+export const RuledList = ({ children }: ShellProps) => (
+  <Box
+    as="div"
+    sx={{
+      borderTop: `1px solid ${consoleColors.border}`,
+      "& > *": { borderBottom: `1px solid ${consoleColors.border}`, py: 3 },
+    }}
+  >
+    {children}
+  </Box>
+)
+
+export const ConsoleShell = ({ children }: ShellProps) => (
+  <Box sx={{ ...pageShellSx, pb: 3, mb: [3, 4] }}>{children}</Box>
+)
+
 export const SectionBlock = ({ eyebrow, title, description, children }: SectionProps) => (
-  <Box sx={{ mb: [4, 5, 6] }}>
+  <Box sx={{ mt: [5, 6], mb: [4, 5], borderTop: `1px solid ${consoleColors.border}`, pt: 4 }}>
     <Box sx={{ mb: 4 }}>
-      {eyebrow ? (
-        <Text
-          sx={{
-            display: `block`,
-            textTransform: `uppercase`,
-            letterSpacing: `0.06em`,
-            fontSize: 0,
-            fontFamily: `monospace`,
-            color: consoleColors.accent,
-            mb: 2,
-          }}
-        >
-          {eyebrow}
-        </Text>
-      ) : null}
+      {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
       <Heading
         as="h2"
         sx={{
-          color: consoleColors.text,
-          fontSize: [`2rem`, `2.4rem`, `2.9rem`],
+          variant: `styles.h2`,
+          mt: 0,
           mb: description ? 2 : 0,
-          maxWidth: `18ch`,
-          fontWeight: 500,
-          letterSpacing: `-0.03em`,
-          lineHeight: 1.08,
+          maxWidth: `24ch`,
+          lineHeight: 1.15,
         }}
       >
         {title}
       </Heading>
       {description ? (
-        <Text sx={{ color: consoleColors.muted, maxWidth: `60ch`, fontSize: `17px`, lineHeight: 1.65 }}>
+        <Text as="p" sx={{ color: consoleColors.muted, maxWidth: `62ch`, fontSize: `17px`, lineHeight: 1.65 }}>
           {description}
         </Text>
       ) : null}
@@ -116,82 +123,35 @@ export const SectionBlock = ({ eyebrow, title, description, children }: SectionP
   </Box>
 )
 
-export const ConsoleCard = ({ title, children, accent = consoleColors.accent }: CardProps) => (
-  <Box
-    sx={{
-      bg: consoleColors.panel,
-      border: `1px solid ${consoleColors.border}`,
-      borderRadius: 12,
-      display: `grid`,
-      gap: 2,
-      p: [3, 4],
-      height: `100%`,
-      minWidth: 0,
-      boxShadow: `0 1px 2px rgba(26, 26, 24, 0.06)`,
-    }}
-  >
-    <Text
-      sx={{
-        display: `block`,
-        fontFamily: `monospace`,
-        color: accent,
-        fontSize: 0,
-        lineHeight: 1.45,
-        textTransform: `uppercase`,
-        letterSpacing: `0.06em`,
-        mb: 1,
-      }}
-    >
-      {title}
-    </Text>
-    <Box sx={{ minWidth: 0, pt: 1 }}>{children}</Box>
+// ponytail: `accent` prop kept for API stability, ignored (single accent used sparingly).
+export const ConsoleCard = ({ title, children }: CardProps) => (
+  <Box sx={{ borderTop: `1px solid ${consoleColors.border}`, pt: 3, display: `grid`, gap: 2, minWidth: 0, height: `100%`, alignContent: `start` }}>
+    <Text sx={{ display: `block`, ...monoLabelSx }}>{title}</Text>
+    <Box sx={{ minWidth: 0 }}>{children}</Box>
   </Box>
 )
 
 export const SignalPill = ({ children }: SignalPillProps) => (
-  <Box
-    as="span"
-    sx={{
-      display: `block`,
-      width: `fit-content`,
-      alignItems: `center`,
-      px: 2,
-      py: 1,
-      mb: 3,
-      borderRadius: 999,
-      border: `1px solid ${consoleColors.border}`,
-      bg: consoleColors.panelAlt,
-      color: consoleColors.muted,
-      fontFamily: `monospace`,
-      fontSize: 0,
-      letterSpacing: `0.02em`,
-    }}
-  >
+  <Text as="span" sx={{ display: `block`, width: `fit-content`, mb: 3, ...monoLabelSx, color: consoleColors.accent }}>
     {children}
-  </Box>
+  </Text>
 )
 
 export const HeroStat = ({ label, value }: { label: string; value: string }) => (
-  <Box
-    sx={{
-      borderTop: `1px solid ${consoleColors.border}`,
-      pt: 3,
-      minWidth: 0,
-    }}
-  >
-    <Text sx={{ display: `block`, fontFamily: `monospace`, color: consoleColors.soft, fontSize: 0, mb: 1 }}>
-      {label}
+  <Box sx={{ borderTop: `1px solid ${consoleColors.border}`, pt: 3, minWidth: 0 }}>
+    <Text sx={{ display: `block`, mb: 1, ...monoLabelSx }}>{label}</Text>
+    <Text sx={{ display: `block`, color: consoleColors.text, fontFamily: `heading`, fontSize: [3, 4], letterSpacing: `-0.02em` }}>
+      {value}
     </Text>
-    <Text sx={{ display: `block`, color: consoleColors.text, fontSize: [2, 3], fontWeight: 500 }}>{value}</Text>
   </Box>
 )
 
 export const TwoColumnGrid = ({ children }: ShellProps) => (
-  <Grid sx={{ gridTemplateColumns: [`1fr`, `1fr`, `repeat(2, minmax(0, 1fr))`], gap: 4 }}>{children}</Grid>
+  <Grid sx={{ gridTemplateColumns: [`1fr`, `1fr`, `repeat(2, minmax(0, 1fr))`], gap: [4, 5] }}>{children}</Grid>
 )
 
 export const ThreeColumnGrid = ({ children }: ShellProps) => (
-  <Grid sx={{ gridTemplateColumns: [`1fr`, `repeat(2, minmax(0, 1fr))`, `repeat(3, minmax(0, 1fr))`], gap: 4 }}>
+  <Grid sx={{ gridTemplateColumns: [`1fr`, `repeat(2, minmax(0, 1fr))`, `repeat(3, minmax(0, 1fr))`], gap: [4, 5] }}>
     {children}
   </Grid>
 )

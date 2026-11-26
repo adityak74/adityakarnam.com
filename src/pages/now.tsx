@@ -2,204 +2,82 @@ import * as React from "react"
 import type { HeadFC, PageProps } from "gatsby"
 import Layout from "@lekoarts/gatsby-theme-minimal-blog/src/components/layout"
 import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
-import {
-  ConsoleList,
-  Divider,
-  InlineLink,
-  Panel,
-  TagList,
-  TwoColumnGrid,
-  WorldModelHero,
-  WorldModelPageShell,
-  WorldModelSection,
-  labPalette,
-} from "../components/world-model/pages-systems-stack-now/WorldModelPageChrome"
+import { Page, Title, Section, RuledList, Row, Explore } from "../components/world-model/pages-systems-stack-now/editorial"
+import NowOrbit from "../components/world-model/anim/NowOrbit"
 
-type InternalLinkEntry = {
-  label: string
-  to: string
-}
-
-type ExternalLinkEntry = {
-  label: string
-  href: string
-}
-
-type LinkEntry = InternalLinkEntry | ExternalLinkEntry
-
-type ActiveTrack = {
-  title: string
-  status: string
-  detail: string
-  links: LinkEntry[]
-}
-
-const activeTracks: ActiveTrack[] = [
+const tracks: Row[] = [
   {
+    key: "fleet",
+    meta: "Active",
     title: "Local agent runtime control",
-    status: "Active",
-    detail:
-      "The freshest published signal is subagent-fleet, dated July 1, 2026. The work centers on role-aware routing, local node health, warmup, and observability for Claude Code-style subagents.",
+    body: "subagent-fleet: role-aware routing, node health, model warmup and observability for Claude Code-style subagents across local machines.",
     links: [
-      { label: "Read subagent-fleet", to: "/subagent-fleet-local-ai-compute-control-plane" },
-      { label: "Docs site", href: "https://adityak74.github.io/subagent-fleet/" },
+      { label: "Write-up", to: "/subagent-fleet-local-ai-compute-control-plane" },
+      { label: "Docs", href: "https://adityak74.github.io/subagent-fleet/" },
     ],
   },
   {
-    title: "Retrieval becoming memory infrastructure",
-    status: "Shipping",
-    detail:
-      "embenx is the clearest retrieval-layer artifact: one API across many backends, with hybrid search, temporal memory, reranking hooks, and MCP-native long-term memory support.",
+    key: "embenx",
+    meta: "Shipping",
+    title: "Retrieval as memory infrastructure",
+    body: "embenx: one API across many backends, with hybrid search, temporal memory, reranking hooks and MCP-native long-term memory.",
     links: [
-      { label: "Read embenx guide", to: "/embenx-python-embedding-toolkit" },
-      { label: "Project docs", href: "https://adityak74.github.io/embenx/" },
+      { label: "Guide", to: "/embenx-python-embedding-toolkit" },
+      { label: "Docs", href: "https://adityak74.github.io/embenx/" },
     ],
   },
   {
-    title: "Memory landscape mapping",
-    status: "Ongoing",
-    detail:
-      "awesome-agentic-memory is the ecosystem map. It keeps the memory layer legible by comparing frameworks, MCP servers, and backend patterns instead of treating memory as one product feature.",
-    links: [{ label: "Open the memory map", to: "/awesome-agentic-memory/" }],
+    key: "memory",
+    meta: "Ongoing",
+    title: "Mapping the memory landscape",
+    body: "awesome-agentic-memory compares frameworks, MCP servers and backend patterns, so memory is not treated as one product feature.",
+    links: [{ label: "Open the map", to: "/awesome-agentic-memory/" }],
   },
   {
-    title: "Operator tooling and prompt surfaces",
-    status: "Live",
-    detail:
-      "AI Toolkit remains a practical sandbox for prompt composition, grading, rewriting, and output shaping. It is smaller than the other systems but useful as an interface-design proving ground.",
-    links: [
-      { label: "Open AI Toolkit", to: "/ai-toolkit" },
-      { label: "Prompt Grader", to: "/ai-toolkit/prompt-grader/" },
-    ],
+    key: "toolkit",
+    meta: "Live",
+    title: "Prompt tooling",
+    body: "AI Toolkit: prompt composition, grading and rewriting. Smaller than the other systems, and a useful place to test interface ideas.",
+    links: [{ label: "AI Toolkit", to: "/ai-toolkit" }],
   },
-]
-
-const plannedArtifacts = [
-  "Missing infrastructure layer for reliable AI agents",
-  "From RAG to state: why agent memory is not just retrieval",
-  "Local-first AI infrastructure for agent builders",
 ]
 
 const NowPage = (_props: PageProps) => (
   <Layout>
-    <WorldModelPageShell>
-      <WorldModelHero
+    <Page>
+      <Title
         eyebrow="Now"
-        title="Current experiments and active fronts."
-        description="This page is a working board for what matters right now in the lab. It stays grounded in the artifacts already published here instead of turning into a vague status page."
-        aside={
-          <div>
-            <div
-              style={{
-                color: labPalette.slate,
-                fontFamily:
-                  "'JetBrains Mono', 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace",
-                fontSize: "0.76rem",
-                letterSpacing: "0.06em",
-                marginBottom: "0.85rem",
-                textTransform: "uppercase",
-              }}
-            >
-              Current focus
-            </div>
-            <ConsoleList
-              items={[
-                "making local agent runtimes observable",
-                "turning retrieval into durable memory infrastructure",
-                "mapping the memory ecosystem with MCP in view",
-                "keeping human-facing tooling explicit and inspectable",
-              ]}
-            />
-          </div>
-        }
-      />
-
-      <Divider />
-
-      <WorldModelSection
-        eyebrow="Active Board"
-        title="What is in motion"
-        description="The active board emphasizes specific published work and the concrete system questions it is pushing on."
+        lede="What I am working on at the moment. It only lists things that have already been published here."
       >
-        <div style={{ display: "grid", gap: "1rem" }}>
-          {activeTracks.map(track => (
-            <Panel key={track.title} accent={track.status === "Shipping" ? "green" : "cyan"}>
-              <div
-                style={{
-                  alignItems: "start",
-                  display: "grid",
-                  gap: "1rem",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-                }}
-              >
-                <div>
-                  <h3
-                    style={{
-                      color: labPalette.heading,
-                      fontSize: "1.35rem",
-                      letterSpacing: "-0.03em",
-                      margin: "0 0 0.75rem",
-                    }}
-                  >
-                    {track.title}
-                  </h3>
-                  <TagList items={[track.status, "AI agent infrastructure"]} />
-                </div>
-                <div>
-                  <p style={{ color: labPalette.body, lineHeight: 1.75, margin: 0 }}>{track.detail}</p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.85rem", marginTop: "0.9rem" }}>
-                    {track.links.map(link =>
-                      "to" in link ? (
-                        <InlineLink key={link.label} to={link.to}>
-                          {link.label}
-                        </InlineLink>
-                      ) : (
-                        <a
-                          key={link.label}
-                          href={link.href}
-                          rel="noreferrer"
-                          target="_blank"
-                          style={{ color: labPalette.green, textDecoration: "none" }}
-                        >
-                          {link.label}
-                        </a>
-                      )
-                    )}
-                  </div>
-                </div>
-              </div>
-            </Panel>
-          ))}
+        Current work
+      </Title>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem 3rem", alignItems: "center", marginBottom: 48 }}>
+        <div style={{ flex: "1 1 280px", maxWidth: "46ch", fontSize: 17, lineHeight: 1.65 }}>
+          <p style={{ margin: 0 }}>
+            Four threads of work are in orbit around what I am doing now: the subagent-fleet runtime, embenx
+            retrieval, the agent-memory map, and the harness write-up. The inner ones move fastest.
+          </p>
+          <p style={{ margin: "1rem 0 0", fontFamily: "'JetBrains Mono', monospace", fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: "#5E5D59", lineHeight: 1.7 }}>
+            Point at a ring to slow it down<br />and read its label.
+          </p>
         </div>
-      </WorldModelSection>
-
-      <WorldModelSection
-        eyebrow="Reading Path"
-        title="If you want to understand the current wedge"
-        description="This is the shortest path through the existing work if you want the thesis before the broader site catches up."
-      >
-        <TwoColumnGrid>
-          <Panel accent="cyan">
-            <ConsoleList
-              items={[
-                "Start with subagent-fleet for runtime orchestration and local model routing.",
-                "Read embenx next for retrieval, temporal memory, and MCP-native long-term context.",
-                "Use awesome-agentic-memory to place both projects inside the wider memory landscape.",
-                "Finish with AI Toolkit to see the smaller operator-facing interfaces that inform the bigger systems.",
-              ]}
-            />
-          </Panel>
-          <Panel accent="green">
-            <h3 style={{ marginTop: 0, color: labPalette.heading }}>Planned field notes</h3>
-            <p style={{ color: labPalette.body, lineHeight: 1.75 }}>
-              These are still planned, not published. They are listed here to show where the
-              writing likely expands next.
-            </p>
-            <ConsoleList items={plannedArtifacts.map(item => `planned field note: ${item}`)} />
-          </Panel>
-        </TwoColumnGrid>
-      </WorldModelSection>
-    </WorldModelPageShell>
+        <div style={{ flex: "0 1 400px", width: "100%", maxWidth: 400, marginLeft: "auto" }}>
+          <NowOrbit />
+        </div>
+      </div>
+      <Section label="In motion">
+        <RuledList rows={tracks} />
+      </Section>
+      <Section label="Reading order" title="If you want the thesis">
+        <ol style={{ maxWidth: "68ch", fontSize: 17, lineHeight: 1.65, paddingLeft: "1.2rem", margin: 0 }}>
+          <li>subagent-fleet, for runtime orchestration and local model routing.</li>
+          <li>embenx, for retrieval, temporal memory and MCP-native context.</li>
+          <li>awesome-agentic-memory, to place both in the wider landscape.</li>
+          <li>AI Toolkit, for the smaller interfaces that inform the larger systems.</li>
+        </ol>
+      </Section>
+      <Explore keys={["about", "systems", "writing"]} />
+    </Page>
   </Layout>
 )
 
@@ -207,8 +85,8 @@ export default NowPage
 
 export const Head: HeadFC = () => (
   <Seo
-    title="Now"
-    description="Current experiments, active research fronts, and reading paths across local agent runtimes, retrieval, memory systems, and AI tooling."
+    title="Now: Current Research and Experiments"
+    description="What Aditya Karnam is working on now: local agent runtimes, retrieval, agent memory infrastructure and evaluation, with a suggested reading order."
     pathname="/now/"
   />
 )

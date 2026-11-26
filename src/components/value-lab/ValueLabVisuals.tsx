@@ -1,5 +1,16 @@
 import * as React from "react"
-import { Panel, labPalette, styles } from "../world-model/pages-systems-stack-now/WorldModelPageChrome"
+import { ed } from "../world-model/pages-systems-stack-now/editorial"
+
+const mono = ed.mono
+const labPalette = { heading: ed.ink, body: ed.secondary, slate: ed.secondary, border: ed.hairline, panel: ed.paper, panelSoft: ed.hairline, cyan: ed.ink, green: ed.secondary }
+const styles = {
+  label: { color: ed.secondary, display: "block", fontFamily: mono, fontSize: "12px", letterSpacing: "0.06em", marginBottom: "0.5rem", textTransform: "uppercase" } as React.CSSProperties,
+}
+
+// Hairline-ruled block, no box.
+const Panel = ({ children }: { children: React.ReactNode; accent?: string }) => (
+  <div style={{ borderTop: `1px solid ${ed.hairline}`, padding: "1.25rem 0" }}>{children}</div>
+)
 
 export type DashboardCard = {
   id: string
@@ -152,7 +163,7 @@ const panelAccent = (accent: string): "cyan" | "green" | "slate" => {
 
 const ChartIntro = ({ chart }: { chart: ChartBase }) => (
   <div style={{ marginBottom: "1rem" }}>
-    <h3 style={{ color: labPalette.heading, fontSize: "1.1rem", lineHeight: 1.3, margin: 0 }}>{chart.title}</h3>
+    <h3 style={{ color: labPalette.heading, fontFamily: ed.serif, fontWeight: 500, fontSize: "1.25rem", lineHeight: 1.3, margin: 0 }}>{chart.title}</h3>
     {chart.description || chart.yLabel ? (
       <p style={{ color: labPalette.body, lineHeight: 1.55, margin: "0.35rem 0 0" }}>{chart.description ?? chart.yLabel}</p>
     ) : null}
@@ -160,7 +171,7 @@ const ChartIntro = ({ chart }: { chart: ChartBase }) => (
 )
 
 export const SourceRunDetails = ({ sourceRunIds }: { sourceRunIds: string[] }) => (
-  <details style={{ color: labPalette.slate, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.72rem", marginTop: "0.65rem" }}>
+  <details style={{ color: labPalette.slate, fontFamily: "'JetBrains Mono', 'IBM Plex Mono', monospace", fontSize: "12px", marginTop: "0.65rem" }}>
     <summary style={{ cursor: "pointer" }}>{sourceRunIds.length} source run{sourceRunIds.length === 1 ? "" : "s"}</summary>
     <code style={{ display: "block", lineHeight: 1.5, marginTop: "0.4rem", overflowWrap: "anywhere", whiteSpace: "pre-wrap" }}>
       {sourceRunIds.length > 0 ? sourceRunIds.join("\n") : "No source run IDs supplied."}
@@ -177,9 +188,9 @@ export const DashboardCardGrid = ({ cards }: { cards: DashboardCard[] }) => {
         <div key={card.id} role="listitem">
           <Panel accent={panelAccent(card.accent)}>
             <span style={styles.label}>{card.label}</span>
-            <div style={{ color: labPalette.heading, fontFamily: "'JetBrains Mono', monospace", fontSize: "1.35rem", lineHeight: 1.25 }}>{card.value}</div>
+            <div style={{ color: labPalette.heading, fontFamily: "'JetBrains Mono', 'IBM Plex Mono', monospace", fontSize: "1.35rem", lineHeight: 1.25 }}>{card.value}</div>
             <p style={{ color: labPalette.body, lineHeight: 1.55, margin: "0.7rem 0" }}>{card.detail}</p>
-            <small style={{ color: labPalette.slate, fontFamily: "'JetBrains Mono', monospace" }}>{evidenceLabels[card.evidence] ?? card.evidence}</small>
+            <small style={{ color: labPalette.slate, fontFamily: "'JetBrains Mono', 'IBM Plex Mono', monospace" }}>{evidenceLabels[card.evidence] ?? card.evidence}</small>
             <SourceRunDetails sourceRunIds={card.sourceRunIds} />
           </Panel>
         </div>
@@ -196,13 +207,13 @@ export const RankedBarChart = ({ chart }: { chart: RankedBarChartData | LegacyBa
         <div key={point.configurationId}>
           <div style={{ alignItems: "baseline", display: "flex", flexWrap: "wrap", gap: "0.35rem 1rem", justifyContent: "space-between" }}>
             <span style={{ color: labPalette.heading, fontSize: "0.9rem" }}>{point.label}</span>
-            <span style={{ color: labPalette.cyan, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.82rem", whiteSpace: "nowrap" }}>{percentage(point.value)}</span>
+            <span style={{ color: labPalette.cyan, fontFamily: "'JetBrains Mono', 'IBM Plex Mono', monospace", fontSize: "0.82rem", whiteSpace: "nowrap" }}>{percentage(point.value)}</span>
           </div>
-          <div aria-hidden="true" style={{ background: labPalette.panelSoft, borderRadius: "999px", height: "8px", marginTop: "0.35rem", overflow: "hidden" }}>
-            <div style={{ background: labPalette.cyan, borderRadius: "999px", height: "100%", width: `${boundedPercent(point.value)}%` }} />
+          <div aria-hidden="true" style={{ background: labPalette.panelSoft, height: "8px", marginTop: "0.35rem", overflow: "hidden" }}>
+            <div style={{ background: labPalette.cyan, height: "100%", width: `${boundedPercent(point.value)}%` }} />
           </div>
           {point.low !== undefined && point.high !== undefined ? (
-            <small style={{ color: labPalette.slate, fontFamily: "'JetBrains Mono', monospace" }}>Interval {percentage(point.low)}–{percentage(point.high)}</small>
+            <small style={{ color: labPalette.slate, fontFamily: "'JetBrains Mono', 'IBM Plex Mono', monospace" }}>Interval {percentage(point.low)}–{percentage(point.high)}</small>
           ) : null}
           {chart.type === "ranked_bar" ? <SourceRunDetails sourceRunIds={point.sourceRunIds} /> : null}
         </div>
@@ -226,7 +237,7 @@ export const HarnessDumbbellChart = ({ chart }: { chart: DumbbellChartData }) =>
           <div key={point.id}>
             <div style={{ alignItems: "baseline", display: "flex", flexWrap: "wrap", gap: "0.35rem 0.8rem", justifyContent: "space-between" }}>
               <span style={{ color: labPalette.heading, fontSize: "0.9rem" }}>{point.label}</span>
-              {point.benchmark ? <small style={{ color: labPalette.slate, fontFamily: "'JetBrains Mono', monospace" }}>{point.benchmark}</small> : null}
+              {point.benchmark ? <small style={{ color: labPalette.slate, fontFamily: "'JetBrains Mono', 'IBM Plex Mono', monospace" }}>{point.benchmark}</small> : null}
             </div>
             <svg aria-label={description} role="img" viewBox="0 0 100 18" style={{ display: "block", height: "38px", margin: "0.25rem 0", overflow: "visible", width: "100%" }}>
               <title>{description}</title>
@@ -235,7 +246,7 @@ export const HarnessDumbbellChart = ({ chart }: { chart: DumbbellChartData }) =>
               <circle cx={left} cy="9" fill={labPalette.cyan} r="3" />
               <circle cx={right} cy="9" fill={labPalette.green} r="3" />
             </svg>
-            <div style={{ color: labPalette.body, display: "flex", flexWrap: "wrap", fontFamily: "'JetBrains Mono', monospace", fontSize: "0.76rem", gap: "0.35rem 1rem", justifyContent: "space-between" }}>
+            <div style={{ color: labPalette.body, display: "flex", flexWrap: "wrap", fontFamily: "'JetBrains Mono', 'IBM Plex Mono', monospace", fontSize: "0.76rem", gap: "0.35rem 1rem", justifyContent: "space-between" }}>
               <span>{point.left.label} {percentage(point.left.value)}</span>
               <span>{point.right.label} {percentage(point.right.value)}</span>
               <span style={{ color: labPalette.slate }}>Observed difference {points(point.delta)}</span>
@@ -259,10 +270,10 @@ export const CoverageChart = ({ chart }: { chart: CoverageChartData }) => {
           <div key={point.label}>
             <div style={{ alignItems: "baseline", display: "flex", gap: "1rem", justifyContent: "space-between" }}>
               <span style={{ color: labPalette.heading, fontSize: "0.9rem" }}>{point.label}</span>
-              <span style={{ color: labPalette.heading, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.82rem" }}>{point.value}</span>
+              <span style={{ color: labPalette.heading, fontFamily: "'JetBrains Mono', 'IBM Plex Mono', monospace", fontSize: "0.82rem" }}>{point.value}</span>
             </div>
-            <div aria-hidden="true" style={{ background: labPalette.panelSoft, borderRadius: "999px", height: "8px", marginTop: "0.35rem", overflow: "hidden" }}>
-              <div style={{ background: labPalette.slate, borderRadius: "999px", height: "100%", width: `${(point.value / maximum) * 100}%` }} />
+            <div aria-hidden="true" style={{ background: labPalette.panelSoft, height: "8px", marginTop: "0.35rem", overflow: "hidden" }}>
+              <div style={{ background: labPalette.slate, height: "100%", width: `${(point.value / maximum) * 100}%` }} />
             </div>
             <SourceRunDetails sourceRunIds={point.sourceRunIds} />
           </div>
@@ -282,7 +293,7 @@ const UnsupportedChart = ({ chart }: { chart: ChartBase & { type: string } }) =>
   <div role="alert">
     <Panel accent="slate">
       <span style={styles.label}>Unsupported chart type</span>
-      <p style={{ color: labPalette.body, lineHeight: 1.6, margin: 0 }}>Chart “{chart.title}” uses unsupported type “{chart.type}”. Add a renderer before publishing this data.</p>
+      <p style={{ color: labPalette.body, lineHeight: 1.6, margin: 0 }}>Chart “{chart.title}” has type “{chart.type}”, which has no renderer yet.</p>
     </Panel>
   </div>
 )
@@ -318,11 +329,11 @@ const ScatterChart = ({ chart }: { chart: ScatterChartData }) => {
         {chart.points.map(point => (
           <div key={point.configurationId} style={{ borderTop: `1px solid ${labPalette.border}`, paddingTop: "0.75rem" }}>
             <div style={{ alignItems: "baseline", display: "flex", flexWrap: "wrap", gap: "0.35rem 1rem", justifyContent: "space-between" }}>
-              <span style={{ color: labPalette.heading, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.78rem" }}>{point.configurationId}</span>
-              <span style={{ color: labPalette.cyan, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.78rem" }}>${point.x.toFixed(2)} · {percentage(point.y)}</span>
+              <span style={{ color: labPalette.heading, fontFamily: "'JetBrains Mono', 'IBM Plex Mono', monospace", fontSize: "0.78rem" }}>{point.configurationId}</span>
+              <span style={{ color: labPalette.cyan, fontFamily: "'JetBrains Mono', 'IBM Plex Mono', monospace", fontSize: "0.78rem" }}>${point.x.toFixed(2)} · {percentage(point.y)}</span>
             </div>
             <small style={{ color: labPalette.slate, display: "block", lineHeight: 1.5, marginTop: "0.3rem" }}>
-              Pricing: <a href={point.priceSourceUrl} rel="noreferrer" target="_blank" style={{ color: labPalette.cyan }}>{point.priceSourceId}</a> · effective {point.priceEffectiveFrom}
+              Pricing: <a href={point.priceSourceUrl} rel="noreferrer" target="_blank" style={{ color: ed.clay }}>{point.priceSourceId}</a> · effective {point.priceEffectiveFrom}
             </small>
             <SourceRunDetails sourceRunIds={point.sourceRunIds} />
           </div>

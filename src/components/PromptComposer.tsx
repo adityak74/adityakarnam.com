@@ -45,7 +45,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
       thinking: "Think Moderate / Careful",
       be100xSpecific: true,
       laserFocused: true,
-      color: "#3b82f6",
+      color: "#C2522D",
     },
     {
       name: "🔬 Research",
@@ -69,7 +69,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
       thinking: "Think Moderate / Careful",
       be100xSpecific: true,
       laserFocused: true,
-      color: "#10b981",
+      color: "#2F6F3E",
     },
     {
       name: "✨ Creative",
@@ -102,10 +102,10 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
       if (button) {
         const originalText = button.textContent;
         button.textContent = "✓ Copied!";
-        button.style.backgroundColor = "#10b981";
+        button.style.backgroundColor = "#2F6F3E";
         setTimeout(() => {
           button.textContent = originalText;
-          button.style.backgroundColor = "#3b82f6";
+          button.style.backgroundColor = "#C2522D";
         }, 2000);
       }
     } catch (err) {
@@ -144,9 +144,9 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
       className="max-w-4xl mx-auto"
       style={{
         fontFamily: "'Styrene A', 'Styrene B', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
-        backgroundColor: "#FFFFFF",
+        backgroundColor: "#FAF9F6",
         minHeight: "100vh",
-        color: "#1A1A18",
+        color: "#141413",
       }}
     >
       {/* Title */}
@@ -161,7 +161,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
           style={{
             fontSize: "2.5rem",
             fontWeight: "600",
-            color: "#1A1A18",
+            color: "#141413",
             marginBottom: "0.5rem",
             lineHeight: "1.2",
           }}
@@ -171,7 +171,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
         <p
           style={{
             fontSize: "1.1rem",
-            color: "#6B6B63",
+            color: "#5E5D59",
             marginBottom: 0,
             lineHeight: "1.6",
           }}
@@ -184,13 +184,12 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
 
       <div
         style={{
-          backgroundColor: "#F7F4EE",
-          borderRadius: "16px",
+          backgroundColor: "#F3F1EB",
+          borderRadius: "4px",
           padding: "2.5rem",
           marginBottom: "2rem",
-          border: "1px solid #D8D4CC",
-          boxShadow:
-            "0 10px 25px rgba(26,26,24,0.08), 0 6px 12px rgba(0, 0, 0, 0.2)",
+          border: "1px solid #E3E0D8",
+          boxShadow: "none",
           backdropFilter: "blur(10px)",
         }}
       >
@@ -201,7 +200,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
               display: "block",
               fontWeight: "600",
               marginBottom: "0.75rem",
-              color: "#1A1A18",
+              color: "#141413",
               fontSize: "1.1rem",
             }}
           >
@@ -213,8 +212,8 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
             placeholder="Ask anything..."
             style={{
               width: "100%",
-              border: "1px solid #D8D4CC",
-              borderRadius: "12px",
+              border: "1px solid #E3E0D8",
+              borderRadius: "4px",
               padding: "1.25rem",
               fontSize: "1rem",
               minHeight: "120px",
@@ -222,16 +221,16 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
               outline: "none",
               fontFamily: "inherit",
               lineHeight: "1.5",
-              backgroundColor: "#FFFFFF",
-              color: "#1A1A18",
+              backgroundColor: "#FAF9F6",
+              color: "#141413",
             }}
             onFocus={(e) => (e.target.style.borderColor = "#C2522D")}
-            onBlur={(e) => (e.target.style.borderColor = "#D8D4CC")}
+            onBlur={(e) => (e.target.style.borderColor = "#E3E0D8")}
           />
           <p
             style={{
               fontSize: "0.85rem",
-              color: "#6B6B63",
+              color: "#5E5D59",
               marginTop: "0.5rem",
               marginBottom: 0,
             }}
@@ -247,7 +246,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
             style={{
               fontSize: "1rem",
               fontWeight: "600",
-              color: "#1A1A18",
+              color: "#141413",
               marginBottom: "1rem",
               textAlign: "center",
             }}
@@ -267,10 +266,10 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                 key={index}
                 onClick={() => applyPreset(preset)}
                 style={{
-                  backgroundColor: "#F7F4EE",
-                  color: "#1A1A18",
-                  border: "1px solid #D8D4CC",
-                  borderRadius: "8px",
+                  backgroundColor: "#F3F1EB",
+                  color: "#141413",
+                  border: "1px solid #E3E0D8",
+                  borderRadius: "4px",
                   padding: "1rem 0.75rem",
                   fontSize: "0.9rem",
                   fontWeight: "500",
@@ -283,12 +282,12 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                   gap: "0.25rem",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#D8D4CC";
+                  e.currentTarget.style.backgroundColor = "#E3E0D8";
                   e.currentTarget.style.borderColor = "#C2522D";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#F7F4EE";
-                  e.currentTarget.style.borderColor = "#D8D4CC";
+                  e.currentTarget.style.backgroundColor = "#F3F1EB";
+                  e.currentTarget.style.borderColor = "#E3E0D8";
                 }}
               >
                 <span style={{ fontSize: "1.5rem" }}>{preset.icon}</span>
@@ -299,7 +298,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
           <p
             style={{
               fontSize: "0.8rem",
-              color: "#6B6B63",
+              color: "#5E5D59",
               textAlign: "center",
               margin: 0,
             }}
@@ -313,17 +312,17 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
         <div
           style={{
             padding: "1.5rem",
-            backgroundColor: "#F7F4EE",
-            borderRadius: "16px",
+            backgroundColor: "#F3F1EB",
+            borderRadius: "4px",
             marginBottom: "2rem",
-            border: "1px solid #D8D4CC",
+            border: "1px solid #E3E0D8",
           }}
         >
           <h3
             style={{
               fontSize: "1rem",
               fontWeight: "600",
-              color: "#1A1A18",
+              color: "#141413",
               marginBottom: "1.5rem",
               textAlign: "center",
             }}
@@ -345,7 +344,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                   display: "block",
                   fontWeight: "600",
                   marginBottom: "0.5rem",
-                  color: "#1A1A18",
+                  color: "#141413",
                   fontSize: "0.9rem",
                 }}
               >
@@ -359,16 +358,16 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                 placeholder="e.g., Senior Product Manager"
                 style={{
                   width: "100%",
-                  border: "2px solid #D8D4CC",
-                  borderRadius: "10px",
+                  border: "2px solid #E3E0D8",
+                  borderRadius: "4px",
                   padding: "0.75rem",
                   fontSize: "0.9rem",
-                  backgroundColor: "#F7F4EE",
-                  color: "#1A1A18",
+                  backgroundColor: "#F3F1EB",
+                  color: "#141413",
                   outline: "none",
                 }}
-                onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
-                onBlur={(e) => (e.target.style.borderColor = "#D8D4CC")}
+                onFocus={(e) => (e.target.style.borderColor = "#C2522D")}
+                onBlur={(e) => (e.target.style.borderColor = "#E3E0D8")}
               />
               <datalist id="role-suggestions">
                 {roleExamples.map((example) => (
@@ -384,7 +383,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                   display: "block",
                   fontWeight: "600",
                   marginBottom: "0.5rem",
-                  color: "#1A1A18",
+                  color: "#141413",
                   fontSize: "0.9rem",
                 }}
               >
@@ -395,17 +394,17 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                 onChange={(e) => setTone(e.target.value)}
                 style={{
                   width: "100%",
-                  border: "1px solid #D8D4CC",
-                  borderRadius: "6px",
+                  border: "1px solid #E3E0D8",
+                  borderRadius: "4px",
                   padding: "0.75rem",
                   fontSize: "0.9rem",
-                  backgroundColor: "#FFFFFF",
-                  color: "#1A1A18",
+                  backgroundColor: "#FAF9F6",
+                  color: "#141413",
                   cursor: "pointer",
                   outline: "none",
                 }}
                 onFocus={(e) => (e.target.style.borderColor = "#C2522D")}
-                onBlur={(e) => (e.target.style.borderColor = "#D8D4CC")}
+                onBlur={(e) => (e.target.style.borderColor = "#E3E0D8")}
               >
                 <option>Formal</option>
                 <option>Casual</option>
@@ -423,7 +422,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                   display: "block",
                   fontWeight: "600",
                   marginBottom: "0.5rem",
-                  color: "#1A1A18",
+                  color: "#141413",
                   fontSize: "0.9rem",
                 }}
               >
@@ -434,17 +433,17 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                 onChange={(e) => setFormat(e.target.value)}
                 style={{
                   width: "100%",
-                  border: "1px solid #D8D4CC",
-                  borderRadius: "6px",
+                  border: "1px solid #E3E0D8",
+                  borderRadius: "4px",
                   padding: "0.75rem",
                   fontSize: "0.9rem",
-                  backgroundColor: "#FFFFFF",
-                  color: "#1A1A18",
+                  backgroundColor: "#FAF9F6",
+                  color: "#141413",
                   cursor: "pointer",
                   outline: "none",
                 }}
                 onFocus={(e) => (e.target.style.borderColor = "#C2522D")}
-                onBlur={(e) => (e.target.style.borderColor = "#D8D4CC")}
+                onBlur={(e) => (e.target.style.borderColor = "#E3E0D8")}
               >
                 <option>Markdown table</option>
                 <option>JSON only</option>
@@ -463,7 +462,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                   display: "block",
                   fontWeight: "600",
                   marginBottom: "0.5rem",
-                  color: "#1A1A18",
+                  color: "#141413",
                   fontSize: "0.9rem",
                 }}
               >
@@ -474,17 +473,17 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                 onChange={(e) => setVerbosity(e.target.value)}
                 style={{
                   width: "100%",
-                  border: "1px solid #D8D4CC",
-                  borderRadius: "6px",
+                  border: "1px solid #E3E0D8",
+                  borderRadius: "4px",
                   padding: "0.75rem",
                   fontSize: "0.9rem",
-                  backgroundColor: "#FFFFFF",
-                  color: "#1A1A18",
+                  backgroundColor: "#FAF9F6",
+                  color: "#141413",
                   cursor: "pointer",
                   outline: "none",
                 }}
                 onFocus={(e) => (e.target.style.borderColor = "#C2522D")}
-                onBlur={(e) => (e.target.style.borderColor = "#D8D4CC")}
+                onBlur={(e) => (e.target.style.borderColor = "#E3E0D8")}
               >
                 <option>Minimal</option>
                 <option>Concise</option>
@@ -500,7 +499,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                   display: "block",
                   fontWeight: "600",
                   marginBottom: "0.5rem",
-                  color: "#1A1A18",
+                  color: "#141413",
                   fontSize: "0.9rem",
                 }}
               >
@@ -511,17 +510,17 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                 onChange={(e) => setThinking(e.target.value)}
                 style={{
                   width: "100%",
-                  border: "1px solid #D8D4CC",
-                  borderRadius: "6px",
+                  border: "1px solid #E3E0D8",
+                  borderRadius: "4px",
                   padding: "0.75rem",
                   fontSize: "0.9rem",
-                  backgroundColor: "#FFFFFF",
-                  color: "#1A1A18",
+                  backgroundColor: "#FAF9F6",
+                  color: "#141413",
                   cursor: "pointer",
                   outline: "none",
                 }}
                 onFocus={(e) => (e.target.style.borderColor = "#C2522D")}
-                onBlur={(e) => (e.target.style.borderColor = "#D8D4CC")}
+                onBlur={(e) => (e.target.style.borderColor = "#E3E0D8")}
               >
                 <option>Think Little / Fast</option>
                 <option>Think Moderate / Careful</option>
@@ -537,7 +536,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                 gridColumn: "span 2",
                 marginTop: "1rem",
                 paddingTop: "1rem",
-                borderTop: "1px solid #D8D4CC",
+                borderTop: "1px solid #E3E0D8",
               }}
             >
               <label
@@ -545,7 +544,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                   display: "block",
                   fontWeight: "600",
                   marginBottom: "1rem",
-                  color: "#1A1A18",
+                  color: "#141413",
                   fontSize: "0.9rem",
                 }}
               >
@@ -568,10 +567,10 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                     justifyContent: "space-between",
                     padding: "0.75rem 1rem",
                     border: `1px solid ${
-                      be100xSpecific ? "#C2522D" : "#D8D4CC"
+                      be100xSpecific ? "#C2522D" : "#E3E0D8"
                     }`,
-                    borderRadius: "8px",
-                    backgroundColor: be100xSpecific ? "#EAF7EF" : "#F7F4EE",
+                    borderRadius: "4px",
+                    backgroundColor: be100xSpecific ? "#EAF7EF" : "#F3F1EB",
                     cursor: "pointer",
                     transition: "all 0.2s ease",
                     userSelect: "none",
@@ -583,7 +582,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                   }}
                   onMouseLeave={(e) => {
                     if (!be100xSpecific) {
-                      e.currentTarget.style.borderColor = "#D8D4CC";
+                      e.currentTarget.style.borderColor = "#E3E0D8";
                     }
                   }}
                 >
@@ -592,13 +591,13 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                       style={{
                         fontWeight: "600",
                         fontSize: "0.9rem",
-                        color: "#1A1A18",
+                        color: "#141413",
                         marginBottom: "0.25rem",
                       }}
                     >
                       🎯 Be 100x Specific
                     </div>
-                    <div style={{ fontSize: "0.75rem", color: "#6B6B63" }}>
+                    <div style={{ fontSize: "0.75rem", color: "#5E5D59" }}>
                       Demands ultra-detailed responses
                     </div>
                   </div>
@@ -606,7 +605,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                     style={{
                       width: "48px",
                       height: "28px",
-                      backgroundColor: be100xSpecific ? "#C2522D" : "#D8D4CC",
+                      backgroundColor: be100xSpecific ? "#C2522D" : "#E3E0D8",
                       borderRadius: "14px",
                       position: "relative",
                       transition: "all 0.2s ease",
@@ -617,13 +616,13 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                       style={{
                         width: "20px",
                         height: "20px",
-                        backgroundColor: "#F0EDE5",
+                        backgroundColor: "#FAF9F6",
                         borderRadius: "50%",
                         position: "absolute",
                         top: "4px",
                         left: be100xSpecific ? "24px" : "4px",
                         transition: "all 0.2s ease",
-                        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                        boxShadow: "none",
                       }}
                     />
                   </div>
@@ -637,9 +636,9 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                     alignItems: "center",
                     justifyContent: "space-between",
                     padding: "0.75rem 1rem",
-                    border: `1px solid ${laserFocused ? "#C2522D" : "#D8D4CC"}`,
-                    borderRadius: "8px",
-                    backgroundColor: laserFocused ? "#EAF7EF" : "#F7F4EE",
+                    border: `1px solid ${laserFocused ? "#C2522D" : "#E3E0D8"}`,
+                    borderRadius: "4px",
+                    backgroundColor: laserFocused ? "#EAF7EF" : "#F3F1EB",
                     cursor: "pointer",
                     transition: "all 0.2s ease",
                     userSelect: "none",
@@ -651,7 +650,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                   }}
                   onMouseLeave={(e) => {
                     if (!laserFocused) {
-                      e.currentTarget.style.borderColor = "#D8D4CC";
+                      e.currentTarget.style.borderColor = "#E3E0D8";
                     }
                   }}
                 >
@@ -660,13 +659,13 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                       style={{
                         fontWeight: "600",
                         fontSize: "0.9rem",
-                        color: "#1A1A18",
+                        color: "#141413",
                         marginBottom: "0.25rem",
                       }}
                     >
                       ⚡ Laser Focused Action Oriented
                     </div>
-                    <div style={{ fontSize: "0.75rem", color: "#6B6B63" }}>
+                    <div style={{ fontSize: "0.75rem", color: "#5E5D59" }}>
                       Ensures actionable, specific outcomes
                     </div>
                   </div>
@@ -674,7 +673,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                     style={{
                       width: "48px",
                       height: "28px",
-                      backgroundColor: laserFocused ? "#C2522D" : "#D8D4CC",
+                      backgroundColor: laserFocused ? "#C2522D" : "#E3E0D8",
                       borderRadius: "14px",
                       position: "relative",
                       transition: "all 0.2s ease",
@@ -685,13 +684,13 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
                       style={{
                         width: "20px",
                         height: "20px",
-                        backgroundColor: "#F0EDE5",
+                        backgroundColor: "#FAF9F6",
                         borderRadius: "50%",
                         position: "absolute",
                         top: "4px",
                         left: laserFocused ? "24px" : "4px",
                         transition: "all 0.2s ease",
-                        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                        boxShadow: "none",
                       }}
                     />
                   </div>
@@ -708,7 +707,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
               display: "block",
               fontWeight: "600",
               marginBottom: "0.75rem",
-              color: "#1A1A18",
+              color: "#141413",
               fontSize: "1rem",
             }}
           >
@@ -720,16 +719,16 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
             style={{
               width: "100%",
               padding: "1.25rem",
-              border: "1px solid #D8D4CC",
-              borderRadius: "8px",
+              border: "1px solid #E3E0D8",
+              borderRadius: "4px",
               height: "160px",
               fontFamily:
                 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
               fontSize: "0.9rem",
-              backgroundColor: "#FFFFFF",
+              backgroundColor: "#FAF9F6",
               resize: "none",
               lineHeight: "1.5",
-              color: "#1A1A18",
+              color: "#141413",
             }}
           />
         </div>
@@ -746,11 +745,11 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
             id="copy-button"
             onClick={copyToClipboard}
             style={{
-              backgroundColor: "#F7F4EE",
-              color: "#1A1A18",
+              backgroundColor: "#F3F1EB",
+              color: "#141413",
               padding: "1rem 1.5rem",
-              borderRadius: "8px",
-              border: "1px solid #D8D4CC",
+              borderRadius: "4px",
+              border: "1px solid #E3E0D8",
               fontSize: "1rem",
               fontWeight: "500",
               cursor: "pointer",
@@ -761,13 +760,13 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
               gap: "0.5rem",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#D8D4CC";
+              e.currentTarget.style.backgroundColor = "#E3E0D8";
               e.currentTarget.style.borderColor = "#C2522D";
             }}
             onMouseLeave={(e) => {
               if (e.currentTarget.textContent !== "✓ Copied!") {
-                e.currentTarget.style.backgroundColor = "#F7F4EE";
-                e.currentTarget.style.borderColor = "#D8D4CC";
+                e.currentTarget.style.backgroundColor = "#F3F1EB";
+                e.currentTarget.style.borderColor = "#E3E0D8";
               }
             }}
           >
@@ -780,8 +779,8 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
               backgroundColor: "#C2522D",
               color: "white",
               padding: "1rem 1.5rem",
-              borderRadius: "8px",
-              border: "1px solid #D8D4CC",
+              borderRadius: "4px",
+              border: "1px solid #E3E0D8",
               fontSize: "1rem",
               fontWeight: "500",
               cursor: "pointer",
@@ -808,8 +807,8 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
               backgroundColor: "#C2522D",
               color: "white",
               padding: "1rem 1.5rem",
-              borderRadius: "8px",
-              border: "1px solid #D8D4CC",
+              borderRadius: "4px",
+              border: "1px solid #E3E0D8",
               fontSize: "1rem",
               fontWeight: "500",
               cursor: "pointer",
@@ -836,8 +835,8 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
               backgroundColor: "#C2522D",
               color: "white",
               padding: "1rem 1.5rem",
-              borderRadius: "8px",
-              border: "1px solid #D8D4CC",
+              borderRadius: "4px",
+              border: "1px solid #E3E0D8",
               fontSize: "1rem",
               fontWeight: "500",
               cursor: "pointer",
@@ -863,7 +862,7 @@ Thinking mode: ${thinking}.${be100xSpecific ? "\nBe 100x specific." : ""}${
           style={{
             textAlign: "center",
             fontSize: "0.85rem",
-            color: "#6B6B63",
+            color: "#5E5D59",
             marginTop: "1.5rem",
             marginBottom: 0,
             lineHeight: "1.4",
