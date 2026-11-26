@@ -475,6 +475,54 @@ export const systems: SystemArtifact[] = [
         "Start with the distillation training script and teacher model configuration, then inspect the MLX training loop, loss functions combining teacher signals, and the evaluation pipeline that benchmarks the student against baselines.",
     },
   },
+  {
+    name: "ERBGA",
+    slug: "/erbga/",
+    tags: ["graph algorithms", "community detection", "genetic algorithms", "MCP", "Python"],
+    researchQuestion: "Can a genetic algorithm that searches over edge cuts guarantee connected communities while optimising any objective?",
+    systemBuilt:
+      "An open-source Python library and MCP server for graph community detection — a genetic algorithm that always returns connected communities and can optimise any user-defined objective, with proven-optimal results on classic benchmarks.",
+    whyItMatters:
+      "Community detection tools like Louvain can return disconnected communities, a flaw Leiden partially addressed. ERBGA rules it out by construction, while staying objective-agnostic and shipping a first-class agent interface through MCP.",
+    status: "Active / shipping",
+    links: [
+      { label: "GitHub", href: "https://github.com/adityak74/ERBGA" },
+    ],
+    explanationModes: {
+      "Research Idea":
+        "ERBGA explores whether encoding community membership as edge cuts — rather than node labels — can guarantee structural validity (connected communities) while keeping the objective fully swappable.",
+      "System Design":
+        "It encodes partitions as edge-cut sets, evolves them with reduced-bias crossover and mutation, and evaluates against any objective function without access to its gradients. An MCP server and JSON CLI make it agent-accessible.",
+      "Business Value":
+        "Teams using community detection in recommendation, network analysis, or knowledge graph pipelines get a library that cannot silently return invalid communities, with a clear path to swap in any custom objective.",
+      "Code Walkthrough":
+        "Start with detect_communities in the Python API, then inspect the genetic operators, objective interface, MCP server entry point, and the CLI's --format json path that agents consume.",
+    },
+  },
+  {
+    name: "cc-creativity-skills",
+    slug: "/cc-creativity-skills/",
+    tags: ["claude-code", "agent skills", "creativity", "plugin"],
+    researchQuestion: "Can creativity methodologies from landmark books on the craft be distilled into a Claude Code skill that reliably elevates creative output?",
+    systemBuilt:
+      "A Claude Code plugin marketplace entry — the creative-source skill — that distills seven books on how creation actually works into a persistent creative intelligence layer for Claude Code sessions.",
+    whyItMatters:
+      "Most LLM creative outputs default to the expected. cc-creativity-skills encodes deliberate creative methods — pausing, diverging privately, choosing with intention — as an agent skill that changes how Claude approaches any creative task.",
+    status: "Shipping",
+    links: [
+      { label: "GitHub", href: "https://github.com/adityak74/cc-creativity-skills" },
+    ],
+    explanationModes: {
+      "Research Idea":
+        "cc-creativity-skills asks whether creativity frameworks from design, writing, and art can be operationalized as agent behavior rules rather than prompt injections — changing the mode of thinking, not just the instructions.",
+      "System Design":
+        "The skill activates on creative trigger phrases, pauses before producing, generates multiple directions privately, then surfaces choices with named reasoning — implementing a deliberate creative process as agent behavior.",
+      "Business Value":
+        "Developers using Claude Code for creative tasks — naming, marketing copy, narrative design, conceptual framing — get outputs that feel crafted rather than generated, without manually prompt-engineering creative sessions.",
+      "Code Walkthrough":
+        "Start with the skill definition and activation conditions, then inspect the internal divergence step, direction scoring, and the final framing pass that presents choices with their creative logic exposed.",
+    },
+  },
 ]
 
 export const openSourceContributions: OpenSourceContribution[] = [
