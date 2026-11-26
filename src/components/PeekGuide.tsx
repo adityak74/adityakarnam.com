@@ -56,7 +56,7 @@ const pick = (path: string): Hint => {
   const pool = [...(HINTS[here] || []), ...EXTRA_PAGES, ...ARTICLES].filter((h) => norm(h.to) !== here)
   return pool[Math.floor(Math.random() * pool.length)] || FALLBACKS[0]
 }
-const SKIP = ["/404", "/box-breathing", "/status", "/mcp-install"]
+const SKIP = ["/404", "/box-breathing", "/status", "/mcp-install", "/live"]
 
 const PeekGuide = ({ pathname }: { pathname: string }) => {
   const [open, setOpen] = React.useState(false)
@@ -95,9 +95,9 @@ const PeekGuide = ({ pathname }: { pathname: string }) => {
       }}
     >
       <div style={{ position: "relative", background: "#FAF9F6", border: "1px solid #141413", borderRadius: 2, padding: "9px 12px", marginBottom: 14, maxWidth: 210, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, lineHeight: 1.5, letterSpacing: ".02em" }}>
-        <button type="button" onClick={dismiss} aria-label="Dismiss" tabIndex={open ? 0 : -1} style={{ position: "absolute", top: 1, right: 4, background: "none", border: 0, cursor: "pointer", color: "#5E5D59", fontSize: 13, lineHeight: 1, padding: 2 }}>×</button>
+        <button type="button" onClick={dismiss} aria-label="Dismiss" tabIndex={open ? 0 : -1} style={{ position: "absolute", top: 0, right: 0, background: "none", border: 0, cursor: "pointer", color: "#5E5D59", fontSize: 16, lineHeight: 1, padding: "8px 10px" }}>×</button>
         <span style={{ display: "block", paddingRight: 12 }}>{hint.text}</span>
-        <Link to={hint.to} tabIndex={open ? 0 : -1} style={{ color: "#C2522D", textDecoration: "none", display: "inline-block", marginTop: 4 }}>Go there →</Link>
+        <Link to={hint.to} tabIndex={open ? 0 : -1} style={{ color: "#C2522D", textDecoration: "none", display: "inline-block", marginTop: 2, padding: "8px 0" }}>Go there →</Link>
       </div>
       <div style={{ animation: open ? "peek-bob 2.4s ease-in-out infinite" : "none", transformOrigin: "bottom" }}>
         <PixelSprite name="chefFace" size={56} />

@@ -44,6 +44,7 @@ const Header = ({ children }: { children?: React.ReactNode }) => {
               sx={{
                 color: `secondary`,
                 textDecoration: `none`,
+                py: `6px`,
                 ":hover, &.active": { color: `heading` },
                 "&.active": { textDecoration: `underline`, textDecorationColor: `primary`, textUnderlineOffset: `0.35em`, textDecorationThickness: `1px` },
               }}

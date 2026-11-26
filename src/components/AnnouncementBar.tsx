@@ -55,7 +55,7 @@ const AnnouncementBar = () => {
       ) : (
         <Link to={it.href} sx={linkSx}>{body}</Link>
       )}
-      <div sx={{ display: `flex`, gap: `4px`, flex: `0 0 auto` }}>
+      <div sx={{ display: [`none`, `flex`], gap: `0px`, flex: `0 0 auto` }}>
         {ITEMS.map((x, k) => (
           <button
             key={x.tag}
@@ -63,7 +63,7 @@ const AnnouncementBar = () => {
             aria-label={`Show highlight ${k + 1}: ${x.tag}`}
             aria-current={k === i}
             onClick={() => setI(k)}
-            sx={{ width: `14px`, height: `18px`, p: 0, border: 0, bg: `transparent`, cursor: `pointer`, display: `flex`, alignItems: `center`, justifyContent: `center` }}
+            sx={{ width: `20px`, height: `28px`, p: 0, border: 0, bg: `transparent`, cursor: `pointer`, display: `flex`, alignItems: `center`, justifyContent: `center` }}
           >
             <span sx={{ display: `block`, width: `6px`, height: `6px`, bg: k === i ? `blue` : `divide`, transition: `background .2s` }} />
           </button>

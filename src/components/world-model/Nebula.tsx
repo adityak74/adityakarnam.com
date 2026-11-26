@@ -17,7 +17,7 @@ const roll = (salt: number) => {
   return {
     clouds: Array.from({ length: 3 + Math.floor(R() * 2) }, (_, i) => ({
       // warm colours read stronger on paper than cool ones, so weight them down/up to even the hours out
-      x: rnd(0.1, 0.9), y: rnd(0.1, 0.9), r: rnd(0.32, 0.6), rgb: pal[i], a: Math.max(0.09, rnd(0.07, 0.13)) * (WARM.includes(pal[i]) ? 0.75 : 1.4),
+      x: rnd(0.1, 0.9), y: rnd(0.1, 0.9), r: rnd(0.32, 0.6), rgb: pal[i], a: Math.min(0.12, Math.max(0.1, rnd(0.07, 0.13))) * (WARM.includes(pal[i]) ? 0.9 : 1.4),
       dx: rnd(-0.3, 0.3), dy: rnd(-0.45, 0.45),
     })),
     stars: Array.from({ length: 60 + Math.floor(R() * 80) }, () => ({ x: R(), y: R(), z: rnd(0.15, 1), k: R(), rgb: pal[Math.floor(R() * 3)] })),
@@ -61,7 +61,7 @@ export const NebulaCanvas = ({ p, strength = 1, salt = 0 }: { p: number; strengt
       g.beginPath(); g.moveTo(gx - 7, gy); g.lineTo(gx + 7, gy); g.moveTo(gx, gy - 7); g.lineTo(gx, gy + 7); g.stroke()
     }
   }, [p, strength, look])
-  return <canvas ref={ref} aria-hidden="true" sx={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", WebkitMaskImage: "radial-gradient(ellipse at center, #000 35%, transparent 72%)", maskImage: "radial-gradient(ellipse at center, #000 35%, transparent 72%)" }} />
+  return <canvas ref={ref} aria-hidden="true" sx={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", WebkitMaskImage: "radial-gradient(ellipse at center, #000 20%, transparent 66%)", maskImage: "radial-gradient(ellipse at center, #000 20%, transparent 66%)" }} />
 }
 
 // Drop-in backdrop: parent needs position:relative + isolation:isolate. Parallax follows page scroll; static under reduced motion.
@@ -83,7 +83,7 @@ export const NebulaBackdrop = ({ strength = 0.6, bleed = 60, salt = 0 }: { stren
     return () => { window.removeEventListener("scroll", on); window.removeEventListener("resize", on); if (raf) cancelAnimationFrame(raf) }
   }, [])
   return (
-    <div ref={ref} aria-hidden="true" sx={{ position: "absolute", top: -bleed, bottom: -bleed, left: -40, right: -40, zIndex: -1, pointerEvents: "none" }}>
+    <div ref={ref} aria-hidden="true" sx={{ position: "absolute", top: -bleed, bottom: -bleed, left: ["0px", "-24px"], right: ["0px", "-24px"], zIndex: -1, pointerEvents: "none" }}>
       <NebulaCanvas p={p} strength={strength} salt={salt} />
     </div>
   )

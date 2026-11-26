@@ -65,7 +65,8 @@ const ScrollStory = () => {
           {/* stage */}
           <div sx={{ position: "relative", minHeight: ["340px", "380px"] }}>
             {STEPS.map((s, i) => {
-              const d = pos - (i + 0.5) // 0 when centred
+              const raw = pos - (i + 0.5) // 0 when centred
+              const d = i === 0 ? Math.max(raw, 0) : i === N - 1 ? Math.min(raw, 0) : raw // first/last stage hold at the ends
               const o = clamp(1 - Math.abs(d) * 2.4)
               return (
                 <div
