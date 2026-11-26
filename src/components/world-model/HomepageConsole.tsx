@@ -88,7 +88,6 @@ const HomepageConsole = () => (
   <Box sx={{ color: c.ink, pt: [4, 5], pb: 6, fontSize: "17px", lineHeight: 1.65 }}>
     <div sx={{ display: "grid", gridTemplateColumns: ["1fr", "1fr 260px"], gap: 4, alignItems: "center" }}>
     <div>
-    <p sx={{ ...labelSx, m: 0, mb: 3 }}>Aditya Karnam</p>
     <h1 sx={{ fontFamily: serif, fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.12, fontSize: "clamp(2.4rem, 5vw, 3.6rem)", m: 0, maxWidth: "20ch" }}>
       I build the infrastructure layer for reliable agents.
     </h1>
