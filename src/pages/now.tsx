@@ -51,8 +51,19 @@ const NowPage = (_props: PageProps) => (
       >
         Current work
       </Title>
-      <div style={{ marginBottom: 48 }}>
-        <NowOrbit />
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem 3rem", alignItems: "center", marginBottom: 48 }}>
+        <div style={{ flex: "1 1 280px", maxWidth: "46ch", fontSize: 17, lineHeight: 1.65 }}>
+          <p style={{ margin: 0 }}>
+            Four threads of work are in orbit around what I am doing now: the subagent-fleet runtime, embenx
+            retrieval, the agent-memory map, and the harness write-up. The inner ones move fastest.
+          </p>
+          <p style={{ margin: "1rem 0 0", fontFamily: "'JetBrains Mono', monospace", fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: "#5E5D59", lineHeight: 1.7 }}>
+            Point at a ring to slow it down<br />and read its label.
+          </p>
+        </div>
+        <div style={{ flex: "0 1 400px", width: "100%", maxWidth: 400, marginLeft: "auto" }}>
+          <NowOrbit />
+        </div>
       </div>
       <Section label="In motion">
         <RuledList rows={tracks} />

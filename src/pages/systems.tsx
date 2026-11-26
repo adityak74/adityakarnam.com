@@ -74,8 +74,20 @@ const SystemsPage = (_props: PageProps) => (
       >
         Systems
       </Title>
-      <div style={{ maxWidth: 400, margin: "-1rem 0 3rem auto" }}>
-        <FleetRouter />
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem 3rem", alignItems: "center", margin: "0 0 3rem" }}>
+        <div style={{ flex: "1 1 280px", maxWidth: "46ch", fontSize: 17, lineHeight: 1.65 }}>
+          <p style={{ margin: 0 }}>
+            The animation shows how subagent-fleet treats a set of local machines as one compute pool: requests
+            enter a router, the router picks a healthy node with spare capacity, and traffic moves when a node
+            drops.
+          </p>
+          <p style={{ margin: "1rem 0 0", fontFamily: "'JetBrains Mono', monospace", fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: "#5E5D59", lineHeight: 1.7 }}>
+            Hover a node to label it.<br />Click a node to take it down and watch traffic re-route.
+          </p>
+        </div>
+        <div style={{ flex: "0 1 400px", width: "100%", maxWidth: 400, marginLeft: "auto" }}>
+          <FleetRouter />
+        </div>
       </div>
       <Section label="Index">
         <RuledList rows={systems} />

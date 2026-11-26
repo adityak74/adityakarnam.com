@@ -56,8 +56,20 @@ const QuectoPage = (_props: PageProps) => (
         <TextLink to="/ai-research/building-quecto-from-minimal-harness-to-evaluable-agent/">Build notes</TextLink>
       </div>
 
-      <div sx={{ maxWidth: 400, mb: [4, 5] }}>
-        <AgentLoop />
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem 3rem", alignItems: "center", marginBottom: "3rem" }}>
+        <div style={{ flex: "1 1 280px", maxWidth: "46ch", fontSize: 17, lineHeight: 1.65 }}>
+          <p style={{ margin: 0 }}>
+            A coding agent is a loop: prompt the model, run the tool call it asks for, feed the result back. Quecto
+            keeps that loop small and puts an approval gate in front of every tool call, so its behavior can be
+            inspected and evaluated.
+          </p>
+          <p style={{ margin: "1rem 0 0", fontFamily: "'JetBrains Mono', monospace", fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: "#5E5D59", lineHeight: 1.7 }}>
+            Click the APPROVE? box to block the tool call<br />and watch the loop stop.
+          </p>
+        </div>
+        <div style={{ flex: "0 1 400px", width: "100%", maxWidth: 400, marginLeft: "auto" }}>
+          <AgentLoop />
+        </div>
       </div>
 
       <Section label="Size" title="1.3 MB core, 5.5 MB agent">
