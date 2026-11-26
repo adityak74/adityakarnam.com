@@ -2,6 +2,7 @@
 import { jsx } from "theme-ui";
 import { Link } from "gatsby";
 import useMinimalBlogConfig from "@lekoarts/gatsby-theme-minimal-blog/src/hooks/use-minimal-blog-config";
+import AnnouncementBar from "../../../components/AnnouncementBar";
 import replaceSlashes from "@lekoarts/gatsby-theme-minimal-blog/src/utils/replaceSlashes";
 
 const Header = ({ children }: { children?: React.ReactNode }) => {
@@ -9,27 +10,7 @@ const Header = ({ children }: { children?: React.ReactNode }) => {
 
   return (
     <header sx={{ pt: [3, 4], mb: [5, 6] }}>
-      <a
-        href="https://arxiv.org/abs/2609.13149"
-        target="_blank"
-        rel="noopener noreferrer"
-        sx={{
-          display: `block`,
-          mb: 3,
-          py: 2,
-          px: 3,
-          bg: `muted`,
-          color: `secondary`,
-          textDecoration: `none`,
-          fontFamily: `monospace`,
-          fontSize: `12px`,
-          letterSpacing: `0.04em`,
-          borderRadius: `2px`,
-          ":hover": { color: `heading` },
-        }}
-      >
-        <span sx={{ bg: `blue`, color: `background`, px: `6px`, py: `1px`, borderRadius: `2px`, mr: 2 }}>NEW</span>BudgetBench: memory strategy evaluation under a fixed token budget (arXiv:2609.13149) &rarr;
-      </a>
+      <AnnouncementBar />
       <div
         sx={{
           display: `flex`,

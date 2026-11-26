@@ -16,10 +16,43 @@ const HINTS: Record<string, Hint[]> = {
   "/blog/": [H("/ai-research/", "Hungry for papers? Try Research."), H("/systems/", "Prefer code? Systems has it."), H("/about/", "Psst. The About page animates.")],
 }
 const FALLBACKS = [H("/ai-research/", "Also check out my research."), H("/systems/", "Psst. Systems is worth a look."), H("/about/", "Say hi on the About page.")]
-const pick = (a: Hint[], path: string) => {
-  const ok = a.filter((h) => h.to !== path)
-  const pool = ok.length ? ok : FALLBACKS
-  return pool[Math.floor(Math.random() * pool.length)]
+const EXTRA_PAGES = [
+  H("/ai-toolkit/", "Free prompt tools, fresh off the grill."),
+  H("/awesome-agentic-memory/", "A map of agent memory frameworks. Bring snacks."),
+  H("/field-notes/", "Short notes, no filler. Field notes."),
+  H("/stack/", "Curious what I cook with? The stack."),
+]
+const ARTICLES = [
+  H("/distilling-ornith-9b-two-teacher-mlx/", "A 4.9 GB model that beats the 8.9 GB one. Recipe inside."),
+  H("/mlx-speculative-decoding-qwen3-8-apple-silicon/", "119% faster decode on a laptop. Yes, really."),
+  H("/mlx-long-context-kv-cache-apple-silicon/", "Why does decode slow down at long context? Read this."),
+  H("/mlx-gemv-gemm-roofline-apple-silicon/", "Batching does not fix decode. Here is the roofline math."),
+  H("/mlx-non-determinism-apple-silicon/", "Same input, different output. Why? Read on."),
+  H("/mlx-lm-lora-moe-stop-gradient-fix/", "One missing stop_gradient crashed three models."),
+  H("/mlx-batch-concurrency-memory-wall-apple-silicon/", "Where exactly does Apple Silicon hit the memory wall?"),
+  H("/mlx-errors-apple-silicon-troubleshooting/", "Stuck on an MLX error? Recipes inside."),
+  H("/embenx-python-embedding-toolkit/", "15+ vector backends, one API. Taste test."),
+  H("/subagent-fleet-local-ai-compute-control-plane/", "Turn your spare Macs into one compute fleet."),
+  H("/budgetbench-explained/", "Memory under a token budget: the paper, explained."),
+  H("/medfit-llm-explained/", "Small models, medical tasks. How it went."),
+  H("/ai-research/building-quecto-from-minimal-harness-to-evaluable-agent/", "How Quecto grew from tiny harness to evaluable agent."),
+  H("/ai-research/what-is-an-ai-agent-harness/", "What even is an AI agent harness? Start here."),
+  H("/building-a-coding-agent-harness/", "Building a coding agent harness, step by step."),
+  H("/tokens-per-paper-doclang-docling-pdf/", "How many tokens is a research paper? I counted."),
+  H("/agent-plugins-spec-v1/", "A spec for agent plugins, v1."),
+  H("/india-agent-infrastructure-layer/", "A look at India's agent infrastructure layer."),
+  H("/portfolio-mcp-server/", "You can query my portfolio over MCP."),
+  H("/hero-rag-chat-architecture/", "How the Ask my work chat on the homepage works."),
+  H("/benchmarking-local-llms-ollama-vllm-sglang-apple-silicon/", "Ollama vs vLLM vs SGLang on Apple Silicon."),
+  H("/overkill-ml-lab-homelab-rivals-aws/", "The homelab that accidentally rivals AWS."),
+  H("/ai-toolkit/prompt-grader/", "Grade your prompt for free. Be brave."),
+  H("/ornith-9b-local-model-quecto-code-review-claude-sonnet-5/", "A local 9B model reviews code against Claude. Verdict inside."),
+]
+const norm = (x: string) => (x.endsWith("/") ? x : x + "/")
+const pick = (path: string): Hint => {
+  const here = norm(path)
+  const pool = [...(HINTS[here] || []), ...EXTRA_PAGES, ...ARTICLES].filter((h) => norm(h.to) !== here)
+  return pool[Math.floor(Math.random() * pool.length)] || FALLBACKS[0]
 }
 const SKIP = ["/404", "/box-breathing", "/status", "/mcp-install"]
 
@@ -30,11 +63,11 @@ const PeekGuide = ({ pathname }: { pathname: string }) => {
 
   React.useEffect(() => {
     setOpen(false)
-    const h = pick(HINTS[path] || FALLBACKS, path)
+    const h = pick(path)
     setHint(h)
     let off = false
     try { off = sessionStorage.getItem("peek-off") === "1" } catch (e) { /* ignore */ }
-    if (off || SKIP.some((s) => path.startsWith(s)) || h.to === path) return
+    if (off || SKIP.some((s) => path.startsWith(s)) || norm(h.to) === path) return
     const show = () => setOpen(true)
     const onScroll = () => {
       const h = document.documentElement.scrollHeight - window.innerHeight
