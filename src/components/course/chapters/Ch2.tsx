@@ -39,7 +39,7 @@ const Ch2 = () => (
       <p>
         The cache has a second cost: memory. It sits in the same RAM as the weights, and it grows with context and with every concurrent request. That is the capacity limit from Chapter 1, and it is why the batch concurrency post says the wall arrives sooner at longer context. Use the slider to see both effects on the same model.
       </p>
-      <Figure caption="Decode speed: measured medians from the long-context post. Cache size: computed from the stated model geometry.">
+      <Figure caption="Decode speed: measured medians from the long-context post.">
         <KVCache />
       </Figure>
       <Callout>
