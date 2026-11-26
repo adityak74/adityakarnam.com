@@ -5,6 +5,7 @@ import { jsx } from "theme-ui"
 import Layout from "@lekoarts/gatsby-theme-minimal-blog/src/components/layout"
 import Seo from "@lekoarts/gatsby-theme-minimal-blog/src/components/seo"
 import { Page, Title, Section, Prose, TextLink } from "../components/world-model/pages-systems-stack-now/editorial"
+import ThesisScenes from "../components/world-model/anim/ThesisScenes"
 import CommunityNetwork from "../components/world-model/anim/CommunityNetwork"
 import { openSourceImpact } from "../components/world-model/impact"
 
@@ -22,7 +23,7 @@ const AboutPage = () => (
           </p>
           <p>
             I came to this from systems and research. My master's thesis at the University of Missouri-St. Louis was
-            a genetic algorithm for community detection (ERBGA), which I applied to Alzheimer's disease gene networks. Since then I have published on small-model
+            a genetic algorithm for community detection (ERBGA), which I applied to a network of Alzheimer's disease SNPs. Since then I have published on small-model
             fine-tuning for medicine (MEDFIT-LLM, 2025) and on memory evaluation under a fixed token budget
             (BudgetBench, 2026).
           </p>
@@ -31,6 +32,14 @@ const AboutPage = () => (
           <CommunityNetwork />
         </div>
         </div>
+      </Section>
+
+      <Section label="Thesis" title="Finding structure in a 6,672-edge genetic network">
+        <ThesisScenes />
+        <p style={{ marginTop: 20, fontSize: 15 }}>
+          <TextLink href="https://irl.umsl.edu/thesis/331/">Read the thesis</TextLink> (UMSL, 2018). The graph in the early scenes is a sketch; the
+          counts, parameters and operators are from the thesis.
+        </p>
       </Section>
 
       <Section label="Work" title="What I work on">

@@ -16,13 +16,13 @@ const BLUE: RGB = [47, 93, 140]
 const COMM = [CLAY, BLUE, INK, SEC]
 const STAGES = [
   { name: "01 DNA", at: 0 },
-  { name: "02 GENES", at: 3 },
+  { name: "02 SNPS", at: 3 },
   { name: "03 NETWORK", at: 5.5 },
   { name: "04 COMMUNITIES", at: 9 },
 ]
 const N = 28
 const HELIX_Y = 62
-const NAMES: Record<number, string> = { 0: "APOE", 9: "APP", 18: "PSEN1", 27: "TREM2" } // illustrative labels
+const NAMES: Record<number, string> = {} // illustrative labels
 
 type RGB = [number, number, number]
 const clamp = (v: number) => Math.min(1, Math.max(0, v))
@@ -120,7 +120,7 @@ const CommunityNetwork = () => {
       ctx.font = "10px 'JetBrains Mono', monospace"
       ctx.textBaseline = "top"
       ctx.fillStyle = rgba(SEC, 0.9)
-      ctx.fillText("ALZHEIMER'S DISEASE GENE NETWORK · ILLUSTRATIVE", 0, 0)
+      ctx.fillText("ALZHEIMER'S DISEASE SNP NETWORK · ILLUSTRATIVE", 0, 0)
 
       // helix: rungs then strands, drawn in left to right with a soft leading edge
       const maxX = 14 + reveal * (W - 28)
@@ -153,7 +153,7 @@ const CommunityNetwork = () => {
       }
       if (t > 2.4 && t < 5) {
         ctx.fillStyle = rgba(CLAY, Math.min(seg(t, 2.4, 3), 1 - seg(t, 4.2, 5)))
-        ctx.fillText("GENES", 14, HELIX_Y + 34)
+        ctx.fillText("SNPs", 14, HELIX_Y + 34)
       }
 
       // hover target: community of nearest node once communities have formed
@@ -274,7 +274,7 @@ const CommunityNetwork = () => {
     <canvas
       ref={ref}
       role="img"
-      aria-label="Animation of the thesis pipeline: DNA, genes along it, a gene interaction network, and the communities found in that network by the ERBGA algorithm. Gene names are illustrative."
+      aria-label="Animation of the thesis pipeline: DNA, SNPs along it, a SNP interaction network, and the communities found in that network by the ERBGA algorithm."
       style={{ width: "100%", maxWidth: W, aspectRatio: `${W} / ${H}`, touchAction: "pan-y", cursor: "crosshair" }}
     />
   )
