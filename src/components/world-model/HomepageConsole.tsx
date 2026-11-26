@@ -49,10 +49,14 @@ const systems: Row[] = [
 ]
 
 const stats = [
-  { value: "4.9 GB", label: "Ornith build that beats the 8.9 GB release" },
-  { value: "119%", label: "Decode speedup, speculative decoding on Apple Silicon" },
-  { value: "~80x", label: "GEMM over GEMV throughput on an M5 Pro" },
-  { value: "0.646", label: "LongMemEval at a 2K token budget (BudgetBench)" },
+  { value: "4.9 GB", label: "Ornith build that beats the 8.9 GB release", href: "/distilling-ornith-9b-two-teacher-mlx/" },
+  { value: "+5.5", label: "MMLU points over that 8.9 GB release", href: "/distilling-ornith-9b-two-teacher-mlx/" },
+  { value: "119%", label: "Decode speedup, speculative decoding on Apple Silicon", href: "/mlx-speculative-decoding-qwen3-8-apple-silicon/" },
+  { value: "~80x", label: "GEMM over GEMV throughput on an M5 Pro", href: "/mlx-gemv-gemm-roofline-apple-silicon/" },
+  { value: "0.646", label: "LongMemEval at a 2K token budget (BudgetBench)", href: "/budgetbench-explained" },
+  { value: "15+", label: "Vector backends behind one embenx API", href: "/embenx-python-embedding-toolkit/" },
+  { value: "~1.3 MB", label: "Quecto agent core, two direct dependencies", href: "/quecto/" },
+  { value: "3", label: "MoE models fixed upstream by one mlx-lm PR", href: "https://github.com/ml-explore/mlx-lm/pull/1795" },
 ]
 
 const areas = [
@@ -127,14 +131,21 @@ const HomepageConsole = () => (
     <div><HeroStack /></div>
     </div>
 
-    <div sx={{ mt: [5, 6], display: "grid", gridTemplateColumns: ["1fr 1fr", "repeat(4, 1fr)"], borderTop: `2px solid ${c.blue}`, borderBottom: `1px solid ${c.rule}` }}>
-      {stats.map((s, i) => (
-        <div key={s.label} sx={{ py: 4, pr: 3, pl: [i % 2 ? 3 : 0, i ? 3 : 0], borderLeft: [i % 2 ? `1px solid ${c.rule}` : 0, i ? `1px solid ${c.rule}` : 0] }}>
-          <div sx={{ fontFamily: serif, fontSize: "clamp(2rem, 4vw, 2.8rem)", lineHeight: 1, letterSpacing: "-0.02em", color: c.blue }}>{s.value}</div>
-          <div sx={{ ...labelSx, mt: 2, lineHeight: 1.5 }}>{s.label}</div>
-        </div>
-      ))}
-    </div>
+    <Section title="Wins">
+      <div sx={{ display: "grid", gridTemplateColumns: ["1fr 1fr", "repeat(4, 1fr)"], borderTop: `2px solid ${c.blue}` }}>
+        {stats.map((st, i) => (
+          <Box
+            as={st.href.startsWith("http") ? "a" : (Link as any)}
+            key={st.label}
+            {...(st.href.startsWith("http") ? { href: st.href, target: "_blank", rel: "noopener noreferrer" } : { to: st.href })}
+            sx={{ display: "block", py: 4, pr: 3, pl: [i % 2 ? 3 : 0, i % 4 ? 3 : 0], borderLeft: [i % 2 ? `1px solid ${c.rule}` : 0, i % 4 ? `1px solid ${c.rule}` : 0], borderBottom: `1px solid ${c.rule}`, textDecoration: "none", color: "inherit", "&:hover .v": { color: c.accent } }}
+          >
+            <div className="v" sx={{ fontFamily: serif, fontSize: "clamp(2rem, 4vw, 2.8rem)", lineHeight: 1, letterSpacing: "-0.02em", color: c.blue, transition: "color .15s" }}>{st.value}</div>
+            <div sx={{ ...labelSx, mt: 2, lineHeight: 1.5 }}>{st.label}</div>
+          </Box>
+        ))}
+      </div>
+    </Section>
 
     <details sx={{ mt: 4, "& > summary": { ...labelSx, cursor: "pointer", "&:hover": { color: c.accent } } }}>
       <summary>Ask my work</summary>
