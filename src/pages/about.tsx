@@ -15,7 +15,7 @@ const AboutPage = () => (
       <Section>
         <Prose>
           <p>
-            I am an AI researcher and senior software engineer. I build the infrastructure layer for reliable agents:
+            I am an AI research engineer. I build the infrastructure layer for reliable agents:
             memory, retrieval, model routing, local inference, and the evaluation that tells you whether any of it
             works.
           </p>
@@ -99,7 +99,7 @@ export default AboutPage
 export const Head: HeadFC = () => (
   <Seo
     title="About"
-    description="Aditya Karnam is an AI researcher building the infrastructure layer for agents: memory, retrieval, routing, local inference, and evaluation systems."
+    description="Aditya Karnam is an AI research engineer building the infrastructure layer for agents: memory, retrieval, routing, local inference, and evaluation systems."
     pathname="/about/"
   />
 )

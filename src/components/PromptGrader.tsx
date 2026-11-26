@@ -141,10 +141,10 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
       if (button) {
         const originalText = button.textContent;
         button.textContent = "✓ Copied!";
-        button.style.backgroundColor = "#10b981";
+        button.style.backgroundColor = "#2F6F3E";
         setTimeout(() => {
           button.textContent = originalText;
-          button.style.backgroundColor = "#F7F4EE";
+          button.style.backgroundColor = "#F3F1EB";
         }, 2000);
       }
     } catch (err) {
@@ -192,9 +192,9 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
       className="max-w-6xl mx-auto"
       style={{
         fontFamily: "'Styrene A', 'Styrene B', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
-        backgroundColor: "#FFFFFF",
+        backgroundColor: "#FAF9F6",
         minHeight: "100vh",
-        color: "#1A1A18",
+        color: "#141413",
       }}
     >
       {/* Title */}
@@ -209,7 +209,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
           style={{
             fontSize: "2.5rem",
             fontWeight: "600",
-            color: "#1A1A18",
+            color: "#141413",
             marginBottom: "0.5rem",
             lineHeight: "1.2",
           }}
@@ -219,7 +219,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
         <p
           style={{
             fontSize: "1.1rem",
-            color: "#6B6B63",
+            color: "#5E5D59",
             marginBottom: 0,
             lineHeight: "1.6",
           }}
@@ -235,10 +235,10 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
         <div
           style={{
             display: "inline-flex",
-            backgroundColor: "#F7F4EE",
-            borderRadius: "12px",
+            backgroundColor: "#F3F1EB",
+            borderRadius: "4px",
             padding: "0.5rem",
-            border: "1px solid #D8D4CC",
+            border: "1px solid #E3E0D8",
           }}
         >
           {["grader", "examples", "faq"].map((tab) => (
@@ -247,9 +247,9 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
               onClick={() => setActiveTab(tab)}
               style={{
                 backgroundColor: activeTab === tab ? "#C2522D" : "transparent",
-                color: activeTab === tab ? "#1A1A18" : "#6B6B63",
+                color: activeTab === tab ? "#141413" : "#5E5D59",
                 border: "none",
-                borderRadius: "8px",
+                borderRadius: "4px",
                 padding: "0.75rem 1.5rem",
                 fontSize: "1rem",
                 fontWeight: "500",
@@ -269,12 +269,12 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
       {activeTab === "grader" && (
         <div
           style={{
-            backgroundColor: "#F7F4EE",
-            borderRadius: "16px",
+            backgroundColor: "#F3F1EB",
+            borderRadius: "4px",
             padding: "2.5rem",
             marginBottom: "2rem",
-            border: "1px solid #D8D4CC",
-            boxShadow: "0 10px 25px rgba(26,26,24,0.08)",
+            border: "1px solid #E3E0D8",
+            boxShadow: "none",
           }}
         >
           {/* Input Section */}
@@ -284,7 +284,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                 display: "block",
                 fontWeight: "600",
                 marginBottom: "0.75rem",
-                color: "#1A1A18",
+                color: "#141413",
                 fontSize: "1.1rem",
               }}
             >
@@ -296,8 +296,8 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
               placeholder="Enter your prompt to analyze and improve..."
               style={{
                 width: "100%",
-                border: "1px solid #D8D4CC",
-                borderRadius: "12px",
+                border: "1px solid #E3E0D8",
+                borderRadius: "4px",
                 padding: "1.25rem",
                 fontSize: "1rem",
                 minHeight: "120px",
@@ -305,11 +305,11 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                 outline: "none",
                 fontFamily: "inherit",
                 lineHeight: "1.5",
-                backgroundColor: "#FFFFFF",
-                color: "#1A1A18",
+                backgroundColor: "#FAF9F6",
+                color: "#141413",
               }}
               onFocus={(e) => (e.target.style.borderColor = "#C2522D")}
-              onBlur={(e) => (e.target.style.borderColor = "#D8D4CC")}
+              onBlur={(e) => (e.target.style.borderColor = "#E3E0D8")}
             />
           </div>
 
@@ -328,7 +328,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                   display: "block",
                   fontWeight: "600",
                   marginBottom: "0.5rem",
-                  color: "#1A1A18",
+                  color: "#141413",
                   fontSize: "0.9rem",
                 }}
               >
@@ -339,12 +339,12 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                 onChange={(e) => setTargetModel(e.target.value)}
                 style={{
                   width: "100%",
-                  border: "1px solid #D8D4CC",
-                  borderRadius: "8px",
+                  border: "1px solid #E3E0D8",
+                  borderRadius: "4px",
                   padding: "0.75rem",
                   fontSize: "0.9rem",
-                  backgroundColor: "#FFFFFF",
-                  color: "#1A1A18",
+                  backgroundColor: "#FAF9F6",
+                  color: "#141413",
                   cursor: "pointer",
                   outline: "none",
                 }}
@@ -362,7 +362,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                   display: "block",
                   fontWeight: "600",
                   marginBottom: "0.5rem",
-                  color: "#1A1A18",
+                  color: "#141413",
                   fontSize: "0.9rem",
                 }}
               >
@@ -375,12 +375,12 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                 placeholder="What should the AI accomplish?"
                 style={{
                   width: "100%",
-                  border: "1px solid #D8D4CC",
-                  borderRadius: "8px",
+                  border: "1px solid #E3E0D8",
+                  borderRadius: "4px",
                   padding: "0.75rem",
                   fontSize: "0.9rem",
-                  backgroundColor: "#FFFFFF",
-                  color: "#1A1A18",
+                  backgroundColor: "#FAF9F6",
+                  color: "#141413",
                   outline: "none",
                 }}
               />
@@ -392,7 +392,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                   display: "block",
                   fontWeight: "600",
                   marginBottom: "0.5rem",
-                  color: "#1A1A18",
+                  color: "#141413",
                   fontSize: "0.9rem",
                 }}
               >
@@ -405,12 +405,12 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                 placeholder="Any limitations, requirements, or guidelines..."
                 style={{
                   width: "100%",
-                  border: "1px solid #D8D4CC",
-                  borderRadius: "8px",
+                  border: "1px solid #E3E0D8",
+                  borderRadius: "4px",
                   padding: "0.75rem",
                   fontSize: "0.9rem",
-                  backgroundColor: "#FFFFFF",
-                  color: "#1A1A18",
+                  backgroundColor: "#FAF9F6",
+                  color: "#141413",
                   outline: "none",
                 }}
               />
@@ -425,7 +425,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                 backgroundColor: "#C2522D",
                 color: "white",
                 padding: "1rem 2rem",
-                borderRadius: "12px",
+                borderRadius: "4px",
                 border: "none",
                 fontSize: "1.1rem",
                 fontWeight: "600",
@@ -434,7 +434,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = "#A8421F";
-                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.transform = "translateY(0)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = "#C2522D";
@@ -449,11 +449,11 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
           {gradingResult && (
             <div
               style={{
-                backgroundColor: "#F7F4EE",
-                borderRadius: "16px",
+                backgroundColor: "#F3F1EB",
+                borderRadius: "4px",
                 padding: "2rem",
                 marginBottom: "2rem",
-                border: "1px solid #D8D4CC",
+                border: "1px solid #E3E0D8",
               }}
             >
               {/* Score Display */}
@@ -464,7 +464,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                     fontWeight: "700",
                     color:
                       gradingResult.totalScore >= 80
-                        ? "#10b981"
+                        ? "#2F6F3E"
                         : gradingResult.totalScore >= 60
                         ? "#f59e0b"
                         : "#ef4444",
@@ -476,7 +476,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                 <div
                   style={{
                     fontSize: "1.2rem",
-                    color: "#1A1A18",
+                    color: "#141413",
                     fontWeight: "500",
                   }}
                 >
@@ -501,16 +501,16 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                   <div
                     key={key}
                     style={{
-                      backgroundColor: "#F7F4EE",
+                      backgroundColor: "#F3F1EB",
                       padding: "1rem",
-                      borderRadius: "8px",
+                      borderRadius: "4px",
                       textAlign: "center",
                     }}
                   >
                     <div
                       style={{
                         fontSize: "0.8rem",
-                        color: "#6B6B63",
+                        color: "#5E5D59",
                         marginBottom: "0.25rem",
                       }}
                     >
@@ -522,7 +522,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                       style={{
                         fontSize: "1.5rem",
                         fontWeight: "600",
-                        color: score > 0 ? "#10b981" : "#ef4444",
+                        color: score > 0 ? "#2F6F3E" : "#ef4444",
                       }}
                     >
                       {score > 0 ? "✓" : "✗"}
@@ -540,7 +540,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                 style={{
                   fontSize: "1.5rem",
                   fontWeight: "600",
-                  color: "#1A1A18",
+                  color: "#141413",
                   marginBottom: "1.5rem",
                   textAlign: "center",
                 }}
@@ -552,10 +552,10 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                 {/* Concise Version */}
                 <div
                   style={{
-                    backgroundColor: "#F7F4EE",
-                    borderRadius: "12px",
+                    backgroundColor: "#F3F1EB",
+                    borderRadius: "4px",
                     padding: "1.5rem",
-                    border: "1px solid #D8D4CC",
+                    border: "1px solid #E3E0D8",
                   }}
                 >
                   <div
@@ -570,7 +570,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                       style={{
                         fontSize: "1.1rem",
                         fontWeight: "600",
-                        color: "#1A1A18",
+                        color: "#141413",
                         margin: 0,
                       }}
                     >
@@ -583,10 +583,10 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                           copyToClipboard(rewrites.concise, "copy-concise")
                         }
                         style={{
-                          backgroundColor: "#F7F4EE",
-                          color: "#1A1A18",
-                          border: "1px solid #D8D4CC",
-                          borderRadius: "6px",
+                          backgroundColor: "#F3F1EB",
+                          color: "#141413",
+                          border: "1px solid #E3E0D8",
+                          borderRadius: "4px",
                           padding: "0.5rem 1rem",
                           fontSize: "0.8rem",
                           cursor: "pointer",
@@ -600,7 +600,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                           backgroundColor: "#C2522D",
                           color: "white",
                           border: "none",
-                          borderRadius: "6px",
+                          borderRadius: "4px",
                           padding: "0.5rem 1rem",
                           fontSize: "0.8rem",
                           cursor: "pointer",
@@ -617,7 +617,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                           backgroundColor: "#C2522D",
                           color: "white",
                           border: "none",
-                          borderRadius: "6px",
+                          borderRadius: "4px",
                           padding: "0.5rem 1rem",
                           fontSize: "0.8rem",
                           cursor: "pointer",
@@ -632,13 +632,13 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                   </div>
                   <div
                     style={{
-                      backgroundColor: "#F7F4EE",
+                      backgroundColor: "#F3F1EB",
                       padding: "1rem",
-                      borderRadius: "8px",
+                      borderRadius: "4px",
                       fontFamily: "ui-monospace, SFMono-Regular, monospace",
                       fontSize: "0.9rem",
                       lineHeight: "1.5",
-                      color: "#1A1A18",
+                      color: "#141413",
                     }}
                   >
                     {rewrites.concise}
@@ -648,10 +648,10 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                 {/* Structured Version */}
                 <div
                   style={{
-                    backgroundColor: "#F7F4EE",
-                    borderRadius: "12px",
+                    backgroundColor: "#F3F1EB",
+                    borderRadius: "4px",
                     padding: "1.5rem",
-                    border: "1px solid #D8D4CC",
+                    border: "1px solid #E3E0D8",
                   }}
                 >
                   <div
@@ -666,7 +666,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                       style={{
                         fontSize: "1.1rem",
                         fontWeight: "600",
-                        color: "#1A1A18",
+                        color: "#141413",
                         margin: 0,
                       }}
                     >
@@ -682,10 +682,10 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                           )
                         }
                         style={{
-                          backgroundColor: "#F7F4EE",
-                          color: "#1A1A18",
-                          border: "1px solid #D8D4CC",
-                          borderRadius: "6px",
+                          backgroundColor: "#F3F1EB",
+                          color: "#141413",
+                          border: "1px solid #E3E0D8",
+                          borderRadius: "4px",
                           padding: "0.5rem 1rem",
                           fontSize: "0.8rem",
                           cursor: "pointer",
@@ -699,7 +699,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                           backgroundColor: "#C2522D",
                           color: "white",
                           border: "none",
-                          borderRadius: "6px",
+                          borderRadius: "4px",
                           padding: "0.5rem 1rem",
                           fontSize: "0.8rem",
                           cursor: "pointer",
@@ -716,7 +716,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                           backgroundColor: "#C2522D",
                           color: "white",
                           border: "none",
-                          borderRadius: "6px",
+                          borderRadius: "4px",
                           padding: "0.5rem 1rem",
                           fontSize: "0.8rem",
                           cursor: "pointer",
@@ -731,13 +731,13 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                   </div>
                   <div
                     style={{
-                      backgroundColor: "#F7F4EE",
+                      backgroundColor: "#F3F1EB",
                       padding: "1rem",
-                      borderRadius: "8px",
+                      borderRadius: "4px",
                       fontFamily: "ui-monospace, SFMono-Regular, monospace",
                       fontSize: "0.9rem",
                       lineHeight: "1.5",
-                      color: "#1A1A18",
+                      color: "#141413",
                       whiteSpace: "pre-line",
                     }}
                   >
@@ -748,10 +748,10 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                 {/* JSON Version */}
                 <div
                   style={{
-                    backgroundColor: "#F7F4EE",
-                    borderRadius: "12px",
+                    backgroundColor: "#F3F1EB",
+                    borderRadius: "4px",
                     padding: "1.5rem",
-                    border: "1px solid #D8D4CC",
+                    border: "1px solid #E3E0D8",
                   }}
                 >
                   <div
@@ -766,7 +766,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                       style={{
                         fontSize: "1.1rem",
                         fontWeight: "600",
-                        color: "#1A1A18",
+                        color: "#141413",
                         margin: 0,
                       }}
                     >
@@ -779,10 +779,10 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                           copyToClipboard(rewrites.jsonStrict, "copy-json")
                         }
                         style={{
-                          backgroundColor: "#F7F4EE",
-                          color: "#1A1A18",
-                          border: "1px solid #D8D4CC",
-                          borderRadius: "6px",
+                          backgroundColor: "#F3F1EB",
+                          color: "#141413",
+                          border: "1px solid #E3E0D8",
+                          borderRadius: "4px",
                           padding: "0.5rem 1rem",
                           fontSize: "0.8rem",
                           cursor: "pointer",
@@ -796,7 +796,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                           backgroundColor: "#C2522D",
                           color: "white",
                           border: "none",
-                          borderRadius: "6px",
+                          borderRadius: "4px",
                           padding: "0.5rem 1rem",
                           fontSize: "0.8rem",
                           cursor: "pointer",
@@ -813,7 +813,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                           backgroundColor: "#C2522D",
                           color: "white",
                           border: "none",
-                          borderRadius: "6px",
+                          borderRadius: "4px",
                           padding: "0.5rem 1rem",
                           fontSize: "0.8rem",
                           cursor: "pointer",
@@ -828,13 +828,13 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                   </div>
                   <div
                     style={{
-                      backgroundColor: "#F7F4EE",
+                      backgroundColor: "#F3F1EB",
                       padding: "1rem",
-                      borderRadius: "8px",
+                      borderRadius: "4px",
                       fontFamily: "ui-monospace, SFMono-Regular, monospace",
                       fontSize: "0.9rem",
                       lineHeight: "1.5",
-                      color: "#1A1A18",
+                      color: "#141413",
                       whiteSpace: "pre-line",
                     }}
                   >
@@ -850,19 +850,19 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
       {activeTab === "examples" && (
         <div
           style={{
-            backgroundColor: "#F7F4EE",
-            borderRadius: "16px",
+            backgroundColor: "#F3F1EB",
+            borderRadius: "4px",
             padding: "2.5rem",
             marginBottom: "2rem",
-            border: "1px solid #D8D4CC",
-            boxShadow: "0 10px 25px rgba(26,26,24,0.08)",
+            border: "1px solid #E3E0D8",
+            boxShadow: "none",
           }}
         >
           <h3
             style={{
               fontSize: "1.5rem",
               fontWeight: "600",
-              color: "#1A1A18",
+              color: "#141413",
               marginBottom: "2rem",
               textAlign: "center",
             }}
@@ -875,10 +875,10 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
               <div
                 key={index}
                 style={{
-                  backgroundColor: "#F7F4EE",
-                  borderRadius: "12px",
+                  backgroundColor: "#F3F1EB",
+                  borderRadius: "4px",
                   padding: "1.5rem",
-                  border: "1px solid #D8D4CC",
+                  border: "1px solid #E3E0D8",
                 }}
               >
                 <div style={{ marginBottom: "1rem" }}>
@@ -894,12 +894,12 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                   </h4>
                   <div
                     style={{
-                      backgroundColor: "#F7F4EE",
+                      backgroundColor: "#F3F1EB",
                       padding: "1rem",
-                      borderRadius: "8px",
+                      borderRadius: "4px",
                       fontFamily: "ui-monospace, SFMono-Regular, monospace",
                       fontSize: "0.9rem",
-                      color: "#1A1A18",
+                      color: "#141413",
                     }}
                   >
                     {example.before}
@@ -911,7 +911,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                     style={{
                       fontSize: "1rem",
                       fontWeight: "600",
-                      color: "#10b981",
+                      color: "#2F6F3E",
                       marginBottom: "0.5rem",
                     }}
                   >
@@ -919,12 +919,12 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                   </h4>
                   <div
                     style={{
-                      backgroundColor: "#F7F4EE",
+                      backgroundColor: "#F3F1EB",
                       padding: "1rem",
-                      borderRadius: "8px",
+                      borderRadius: "4px",
                       fontFamily: "ui-monospace, SFMono-Regular, monospace",
                       fontSize: "0.9rem",
-                      color: "#1A1A18",
+                      color: "#141413",
                     }}
                   >
                     {example.after}
@@ -935,14 +935,14 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                   style={{
                     backgroundColor: "#EAF7EF",
                     padding: "1rem",
-                    borderRadius: "8px",
-                    border: "1px solid #10b981",
+                    borderRadius: "4px",
+                    border: "1px solid #2F6F3E",
                   }}
                 >
                   <div
                     style={{
                       fontSize: "0.85rem",
-                      color: "#10b981",
+                      color: "#2F6F3E",
                       fontWeight: "500",
                     }}
                   >
@@ -958,19 +958,19 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
       {activeTab === "faq" && (
         <div
           style={{
-            backgroundColor: "#F7F4EE",
-            borderRadius: "16px",
+            backgroundColor: "#F3F1EB",
+            borderRadius: "4px",
             padding: "2.5rem",
             marginBottom: "2rem",
-            border: "1px solid #D8D4CC",
-            boxShadow: "0 10px 25px rgba(26,26,24,0.08)",
+            border: "1px solid #E3E0D8",
+            boxShadow: "none",
           }}
         >
           <h3
             style={{
               fontSize: "1.5rem",
               fontWeight: "600",
-              color: "#1A1A18",
+              color: "#141413",
               marginBottom: "2rem",
               textAlign: "center",
             }}
@@ -1014,10 +1014,10 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
               <div
                 key={index}
                 style={{
-                  backgroundColor: "#F7F4EE",
-                  borderRadius: "12px",
+                  backgroundColor: "#F3F1EB",
+                  borderRadius: "4px",
                   padding: "1.5rem",
-                  border: "1px solid #D8D4CC",
+                  border: "1px solid #E3E0D8",
                 }}
               >
                 <h4
@@ -1033,7 +1033,7 @@ Emit only valid JSON. No additional text or formatting outside the JSON structur
                 <div
                   style={{
                     fontSize: "0.95rem",
-                    color: "#1A1A18",
+                    color: "#141413",
                     lineHeight: "1.6",
                     whiteSpace: "pre-line",
                   }}

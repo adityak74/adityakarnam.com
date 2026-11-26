@@ -58,9 +58,10 @@ export const onRenderBody = ({ setHeadComponents }) => {
           "@type": "Person",
           name: "Aditya Karnam",
           url: "https://adityakarnam.com",
-          jobTitle: "Software Engineer & AI Researcher",
+          jobTitle: "AI Research Engineer",
           description:
-            "AI researcher and software engineer exploring LLMs, agentic AI, brain-computer interfaces, and next-generation reasoning systems.",
+            "AI research engineer building the infrastructure layer for reliable agents: memory, retrieval, local inference, model routing, evals and agent harnesses.",
+          knowsAbout: ["AI agents", "LLM evaluation", "retrieval", "local inference", "model distillation"],
           sameAs: [
             "https://twitter.com/aditya_karnam",
             "https://www.linkedin.com/in/adityakarnamgrao/",
@@ -82,7 +83,7 @@ export const onRenderBody = ({ setHeadComponents }) => {
           name: "Aditya Karnam",
           url: "https://adityakarnam.com",
           description:
-            "AI researcher and software engineer Aditya Karnam explores the frontiers of artificial intelligence — from LLMs and agentic AI to brain-computer interfaces and next-generation reasoning systems.",
+            "Research and writing by Aditya Karnam, AI research engineer: agent memory, retrieval, local inference, model routing and evaluation.",
           author: {
             "@type": "Person",
             name: "Aditya Karnam",

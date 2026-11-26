@@ -14,131 +14,80 @@ type TagListProps = {
 }
 
 export const palette = {
-  page: "#FAF9F7",
-  pageGlow: "rgba(212, 165, 116, 0.12)",
-  pageGlowSecondary: "rgba(194, 82, 45, 0.06)",
-  panel: "#FFFFFF",
-  panelSoft: "#F2F0EC",
-  border: "#D8D4CC",
-  text: "#1A1A18",
-  body: "#6B6B63",
-  heading: "#1A1A18",
-  cyan: "#C2522D",
-  green: "#D4A574",
-  slate: "#8A857C",
-  grid: "rgba(216, 212, 204, 0.55)",
+  page: "#FAF9F6",
+  panel: "#FAF9F6",
+  panelSoft: "#F3F1EB",
+  border: "#E3E0D8",
+  text: "#141413",
+  body: "#5E5D59",
+  heading: "#141413",
+  cyan: "#C2522D", // clay accent: small marks only
+  green: "#5E5D59",
+  slate: "#5E5D59",
 }
 
 export const monospaceFamily =
   "'JetBrains Mono', 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace"
-export const sansFamily =
-  "'Styrene A', 'Styrene B', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+export const sansFamily = "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+export const serifFamily = "Fraunces, 'Source Serif 4', 'Source Serif Pro', Georgia, serif"
 
 export const themeStyles = {
   label: {
-    color: palette.cyan,
+    color: palette.body,
     display: "block",
     fontFamily: monospaceFamily,
-    fontSize: "0.72rem",
+    fontSize: "12px",
     letterSpacing: "0.06em",
     marginBottom: "0.75rem",
     textTransform: "uppercase",
   } satisfies React.CSSProperties,
   sectionHeading: {
     color: palette.heading,
-    fontFamily: sansFamily,
+    fontFamily: serifFamily,
     fontSize: "clamp(1.55rem, 5vw, 2.25rem)",
-    fontWeight: 500,
-    letterSpacing: "-0.03em",
-    lineHeight: 1.1,
+    fontWeight: 400,
+    letterSpacing: "-0.02em",
+    lineHeight: 1.15,
     margin: 0,
   } satisfies React.CSSProperties,
   body: {
     color: palette.body,
     fontFamily: sansFamily,
-    fontSize: "1rem",
+    fontSize: "17px",
     lineHeight: 1.65,
     margin: 0,
   } satisfies React.CSSProperties,
   cardGrid: {
     display: "grid",
-    gap: "1rem",
+    gap: "0",
   } satisfies React.CSSProperties,
 }
 
 export const PageShell = ({ children }: ShellProps) => (
   <div
     style={{
-      background:
-        `radial-gradient(circle at top left, ${palette.pageGlow}, transparent 26%), ` +
-        `radial-gradient(circle at top right, ${palette.pageGlowSecondary}, transparent 22%), ` +
-        palette.page,
+      background: palette.page,
       color: palette.text,
       fontFamily: sansFamily,
       minHeight: "100vh",
-      overflow: "hidden",
-      position: "relative",
     }}
   >
-    <div
-      aria-hidden="true"
-      style={{
-        backgroundImage:
-          `linear-gradient(${palette.grid} 1px, transparent 1px), ` +
-          `linear-gradient(90deg, ${palette.grid} 1px, transparent 1px)`,
-        backgroundPosition: "center center",
-        backgroundSize: "72px 72px",
-        inset: 0,
-        opacity: 0.18,
-        pointerEvents: "none",
-        position: "absolute",
-      }}
-    />
-    <div
-      style={{
-        display: "grid",
-        gap: "1rem",
-        padding: "clamp(1rem, 3vw, 1.6rem)",
-        position: "relative",
-      }}
-    >
-      {children}
-    </div>
+    <div style={{ padding: "clamp(1rem, 3vw, 1.6rem)" }}>{children}</div>
   </div>
 )
 
-export const Panel = ({ children, accent = "slate", style }: PanelProps) => {
-  const accentColor = accent === "cyan" ? palette.cyan : accent === "green" ? palette.green : palette.slate
-
-  return (
-    <div
-      style={{
-        background: palette.panel,
-        border: `1px solid ${palette.border}`,
-        borderRadius: "12px",
-        boxShadow: "0 1px 2px rgba(26,26,24,0.06)",
-        padding: "1.25rem",
-        position: "relative",
-        ...style,
-      }}
-    >
-      <div
-        aria-hidden="true"
-        style={{
-          background: accentColor,
-          borderRadius: "999px",
-          height: "6px",
-          left: "1.25rem",
-          opacity: 0.55,
-          position: "absolute",
-          top: "1rem",
-          width: "44px",
-        }}
-      />
-      <div style={{ paddingTop: "0.75rem" }}>{children}</div>
-    </div>
-  )
-}
+// Hairline-ruled block, no box. `accent` is kept for call-site compatibility.
+export const Panel = ({ children, style }: PanelProps) => (
+  <div
+    style={{
+      borderTop: `1px solid ${palette.border}`,
+      padding: "1.25rem 0",
+      ...style,
+    }}
+  >
+    {children}
+  </div>
+)
 
 export const EyebrowLabel = ({ children }: ShellProps) => <span style={themeStyles.label}>{children}</span>
 
@@ -175,12 +124,12 @@ export const ConsoleList = ({ items }: TagListProps) => (
           color: palette.body,
           display: "flex",
           fontFamily: sansFamily,
-          fontSize: "1rem",
+          fontSize: "17px",
           gap: "0.7rem",
           lineHeight: 1.65,
         }}
       >
-        <span style={{ color: palette.cyan }}>•</span>
+        <span style={{ color: palette.cyan }}>–</span>
         <span>{item}</span>
       </div>
     ))}
@@ -200,7 +149,7 @@ export const StatusRow = ({ label, value }: { label: string; value: string }) =>
       style={{
         color: palette.slate,
         fontFamily: monospaceFamily,
-        fontSize: "0.74rem",
+        fontSize: "12px",
         letterSpacing: "0.06em",
         textTransform: "uppercase",
       }}

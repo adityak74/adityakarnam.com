@@ -66,7 +66,7 @@ export default FieldNotesPage
 export const Head: HeadFC = () => (
   <Seo
     title="Field Notes"
-    description="Field notes from Aditya Karnam, AI researcher: essays and source-grounded notes on memory, routing, local inference, and agent systems."
+    description="Field notes from Aditya Karnam, AI research engineer: essays and source-grounded notes on memory, routing, local inference, and agent systems."
     pathname="/field-notes/"
   />
 )

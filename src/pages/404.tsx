@@ -1,11 +1,21 @@
 import * as React from "react"
 import type { PageProps } from "gatsby"
 import Layout from "@lekoarts/gatsby-theme-minimal-blog/src/components/layout"
+import { Page, Title, Section, Prose, TextLink } from "../components/world-model/pages-systems-stack-now/editorial"
 
 const NotFound = (_props: PageProps) => (
   <Layout>
-    <h1>404 - Page Not Found</h1>
-    <p>Unfortunately we couldn't find what you were looking for :(</p>
+    <Page>
+      <Title eyebrow="404">This page does not exist.</Title>
+      <Section>
+        <Prose>
+          <p>
+            The link may be old or mistyped. Try <TextLink to="/ai-research/">Research</TextLink> or{` `}
+            <TextLink to="/blog">Writing</TextLink>.
+          </p>
+        </Prose>
+      </Section>
+    </Page>
   </Layout>
 )
 

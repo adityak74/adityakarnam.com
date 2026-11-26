@@ -92,7 +92,7 @@ const HomepageConsole = () => (
       I build the infrastructure layer for reliable agents.
     </h1>
     <p sx={{ mt: 4, mb: 3, maxWidth: "68ch" }}>
-      I am an AI researcher and senior software engineer. My work covers agent memory, retrieval, local inference, model routing, evals and agent harnesses.
+      I am an AI research engineer. My work covers agent memory, retrieval, local inference, model routing, evals and agent harnesses.
     </p>
     <p sx={{ m: 0, maxWidth: "68ch", color: c.sec }}>
       Most of it is measured on a laptop: fixed budgets, small models, and numbers I can reproduce. I publish the harnesses and the null results alongside the wins, and fix upstream when I find a bug.
