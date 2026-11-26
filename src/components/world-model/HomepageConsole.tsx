@@ -116,7 +116,7 @@ const HomepageConsole = () => (
     <div sx={{ display: "grid", gridTemplateColumns: ["1fr", "1fr", "1fr 400px"], gap: 4, alignItems: "center" }}>
     <div>
     <h1 sx={{ fontFamily: serif, fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.12, fontSize: "clamp(2.4rem, 5vw, 3.6rem)", m: 0, maxWidth: "20ch" }}>
-      I work across the AI stack, from silicon to software factories.
+      I work across <em sx={{ fontStyle: "italic", color: "#C2522D" }}>the AI stack</em>, from <em sx={{ fontStyle: "italic", color: "#2F5D8C" }}>silicon to software factories</em>.
     </h1>
     <p sx={{ mt: 4, mb: 3, maxWidth: "68ch" }}>
       I am an AI research engineer. I work on the full path from hardware to product: inference performance on Apple Silicon, small-model training and distillation, agent systems and harnesses, retrieval and memory, evals, and the software factories that put them to work.
