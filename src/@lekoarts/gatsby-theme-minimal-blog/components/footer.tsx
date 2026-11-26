@@ -9,6 +9,8 @@ const mono = {
   textTransform: `uppercase` as const,
 }
 
+const KEEP = [`Resume`, `GitHub`, `LinkedIn`, `Google Scholar`, `Twitter`]
+
 const Footer = () => {
   const { externalLinks } = useMinimalBlogConfig()
   return (
@@ -30,16 +32,12 @@ const Footer = () => {
     >
       <div>&copy; {new Date().getFullYear()} Aditya Karnam</div>
       <div sx={{ display: `flex`, flexWrap: `wrap`, columnGap: 3, rowGap: 1 }}>
-        {(externalLinks || []).map((l: { name: string; url: string }) => (
+        {(externalLinks || []).filter((l: { name: string }) => KEEP.includes(l.name)).map((l: { name: string; url: string }) => (
           <a key={l.url} href={l.url} {...(l.url.startsWith(`http`) ? { target: `_blank`, rel: `noopener noreferrer` } : {})}>
             {l.name}
           </a>
         ))}
         <a href="/now/">Now</a>
-        <a href="/field-notes/">Field Notes</a>
-        <a href="/quecto/">Quecto</a>
-        <a href="/value-lab/">Value Lab</a>
-        <a href="/status/">Status</a>
       </div>
     </footer>
   )
