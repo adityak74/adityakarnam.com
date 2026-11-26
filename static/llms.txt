@@ -12,6 +12,7 @@
 - [Tokens per paper: DocLang vs Docling vs raw PDF](https://adityakarnam.com/tokens-per-paper-doclang-docling-pdf/)
 
 ## Systems and open source
+- [Live](https://adityakarnam.com/live/): running software, an in-browser paper search (OpenAlex), docs for subagent-fleet and embenx, and mcp-scholarly (185 GitHub stars)
 - [Systems](https://adityakarnam.com/systems/): subagent-fleet, embenx, Quecto and agent memory tooling
 - [Quecto](https://adityakarnam.com/quecto/): a small Rust coding-agent harness
 - [embenx](https://adityakarnam.com/embenx-python-embedding-toolkit/): retrieval library for agent memory

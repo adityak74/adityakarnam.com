@@ -7,6 +7,7 @@ import { Link } from "gatsby"
 type Item = { tag: string; text: string; href: string; ext?: boolean }
 const ITEMS: Item[] = [
   { tag: "NEW", text: "BudgetBench: memory strategy evaluation under a fixed token budget (arXiv:2609.13149)", href: "https://arxiv.org/abs/2609.13149", ext: true },
+  { tag: "LIVE", text: "Search research papers right from the site, and try the tools I run", href: "/live/" },
   { tag: "DISTILLED", text: "A 4.9 GB Ornith build beats the 8.9 GB release it replaces", href: "/distilling-ornith-9b-two-teacher-mlx/" },
   { tag: "MERGED", text: "mlx-lm PR #1795 fixes LoRA training on 3 MoE models", href: "https://github.com/ml-explore/mlx-lm/pull/1795", ext: true },
   { tag: "OPEN SOURCE", text: "subagent-fleet turns local machines into one compute fleet for coding agents", href: "/subagent-fleet-local-ai-compute-control-plane/" },

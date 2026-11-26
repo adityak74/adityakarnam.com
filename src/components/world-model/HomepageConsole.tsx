@@ -125,7 +125,7 @@ const HomepageConsole = () => (
       Most of it is measured on a laptop: fixed budgets, small models, and numbers I can reproduce. I publish the harnesses and the null results alongside the wins, and fix upstream when I find a bug.
     </p>
     <p sx={{ mt: 3, fontSize: "16px" }}>
-      <A href="/ai-research">Research</A> · <A href="/blog">Writing</A> · <A href="/about">About</A> · <a href="#contact" sx={linkSx}>Contact</a>
+      <A href="/ai-research">Research</A> · <A href="/blog">Writing</A> · <A href="/live">Live</A> · <A href="/about">About</A> · <a href="#contact" sx={linkSx}>Contact</a>
     </p>
     </div>
     <div><HeroStack /></div>
@@ -214,6 +214,7 @@ const HomepageConsole = () => (
           ["/ai-research", "Research", "Papers, experiments, questions"],
           ["/blog", "Writing", "Agents, memory, local inference"],
           ["/systems", "Systems", "Runtimes, retrieval, tooling"],
+          ["/live", "Live", "Try paper search and running tools"],
           ["/quecto", "Quecto", "A 1.3 MB agent harness in Rust"],
           ["/ai-toolkit", "Toolkit", "Prompt tools, memory frameworks"],
           ["/about", "About", "From genetics to AI systems"],

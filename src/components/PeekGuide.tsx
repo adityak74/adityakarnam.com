@@ -7,16 +7,18 @@ import PixelSprite from "./PixelSprite"
 type Hint = { to: string; text: string }
 const H = (to: string, text: string): Hint => ({ to, text })
 const HINTS: Record<string, Hint[]> = {
-  "/": [H("/about/", "Psst. My thesis is an animation."), H("/quecto/", "A whole agent in 1.3 MB. Peek inside."), H("/ai-research/", "Fresh papers, still warm."), H("/blog/", "Fresh from the kitchen: new posts.")],
-  "/ai-research/": [H("/systems/", "Also check out what I built."), H("/blog/", "The long versions live in Writing."), H("/about/", "Want the origin story? Genetics, then AI.")],
-  "/systems/": [H("/quecto/", "Quecto is the fun one. Try it."), H("/ai-research/", "The experiments behind these are here."), H("/now/", "Currently simmering: see Now.")],
+  "/": [H("/about/", "Psst. My thesis is an animation."), H("/quecto/", "A whole agent in 1.3 MB. Peek inside."), H("/ai-research/", "Fresh papers, still warm."), H("/blog/", "Fresh from the kitchen: new posts."), H("/live/", "Want to poke something? Try Live.")],
+  "/ai-research/": [H("/systems/", "Also check out what I built."), H("/blog/", "The long versions live in Writing."), H("/about/", "Want the origin story? Genetics, then AI."), H("/live/", "Try the paper-search demo.")],
+  "/systems/": [H("/quecto/", "Quecto is the fun one. Try it."), H("/ai-research/", "The experiments behind these are here."), H("/now/", "Currently simmering: see Now."), H("/live/", "These run. See them live.")],
   "/quecto/": [H("/now/", "See what I'm cooking up now."), H("/systems/", "More tools like this one in Systems."), H("/blog/", "I wrote up how it was built.")],
-  "/about/": [H("/blog/", "Also check out my writing."), H("/ai-research/", "Curious what came after the thesis?"), H("/systems/", "Wanna see the things I shipped?")],
+  "/about/": [H("/blog/", "Also check out my writing."), H("/ai-research/", "Curious what came after the thesis?"), H("/systems/", "Wanna see the things I shipped?"), H("/live/", "From thesis to running software: Live.")],
   "/now/": [H("/ai-research/", "The research behind this is here."), H("/about/", "Meet the person behind the pixels."), H("/quecto/", "Insert coin: try Quecto.")],
   "/blog/": [H("/ai-research/", "Hungry for papers? Try Research."), H("/systems/", "Prefer code? Systems has it."), H("/about/", "Psst. The About page animates.")],
 }
 const FALLBACKS = [H("/ai-research/", "Also check out my research."), H("/systems/", "Psst. Systems is worth a look."), H("/about/", "Say hi on the About page.")]
 const EXTRA_PAGES = [
+  H("/live/", "Psst. Search research papers right on the page."),
+  H("/live/", "Running software, not slides. Live."),
   H("/ai-toolkit/", "Free prompt tools, fresh off the grill."),
   H("/awesome-agentic-memory/", "A map of agent memory frameworks. Bring snacks."),
   H("/field-notes/", "Short notes, no filler. Field notes."),

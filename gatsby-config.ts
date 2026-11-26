@@ -36,8 +36,8 @@ const config: GatsbyConfig = {
             slug: `/systems`,
           },
           {
-            title: `Toolkit`,
-            slug: `/ai-toolkit`,
+            title: `Live`,
+            slug: `/live`,
           },
           {
             title: `About`,

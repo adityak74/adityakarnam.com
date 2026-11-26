@@ -210,6 +210,7 @@ export const SITE_MAP: Record<string, { to: string; title: string; text: string 
   writing: { to: "/blog/", title: "Writing", text: "Long-form notes on agents, memory and local inference." },
   systems: { to: "/systems/", title: "Systems", text: "Open-source runtimes, retrieval and tooling I built." },
   quecto: { to: "/quecto/", title: "Quecto", text: "A 1.3 MB agent harness in Rust, built to be evaluated." },
+  live: { to: "/live/", title: "Live", text: "Running software and a live paper search you can try." },
   toolkit: { to: "/ai-toolkit/", title: "Toolkit", text: "Prompt tools and agent-memory frameworks to try." },
   about: { to: "/about/", title: "About", text: "The path from genetics to AI systems, as an animated thesis." },
   now: { to: "/now/", title: "Now", text: "What is in motion this month." },
