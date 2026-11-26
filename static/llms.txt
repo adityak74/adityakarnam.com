@@ -1,6 +1,6 @@
 # Aditya Karnam
 
-> Aditya Karnam is an AI research engineer building the infrastructure layer for reliable agents: memory, retrieval, local inference, model routing, evals and agent harnesses. This site holds his research, experiment write-ups and open-source systems. Results are measured on small models and fixed budgets, with the harnesses published.
+> Aditya Karnam is an AI research engineer working across the AI stack: hardware and inference performance, model training and distillation, agent systems, retrieval and memory, evals and software factories. This site holds his research, experiment write-ups and open-source systems. Results are measured on small models and fixed budgets, with the harnesses published.
 
 ## Research
 - [Research index](https://adityakarnam.com/ai-research/): papers, experiments and software with findings
@@ -24,6 +24,7 @@
 - [Building a coding agent harness](https://adityakarnam.com/building-a-coding-agent-harness/)
 - [About](https://adityakarnam.com/about/): background, method and contact
 - [Now](https://adityakarnam.com/now/): current work
+- Publications also span healthcare ML, evolutionary computation and enterprise AI governance.
 - [Google Scholar](https://scholar.google.com/citations?user=WujCeDkAAAAJ&hl=en), [GitHub](https://github.com/adityak74), [LinkedIn](https://www.linkedin.com/in/adityakarnamgrao/)
 
 ## Citation

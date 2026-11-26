@@ -10,9 +10,9 @@ const config: GatsbyConfig = {
     // See all options: https://github.com/LekoArts/gatsby-themes/blob/main/themes/gatsby-theme-minimal-blog/gatsby-config.mjs
     siteTitle: `Aditya Karnam`,
     siteTitleAlt: `Aditya Karnam — AI Research Engineer`,
-    siteHeadline: `Aditya Karnam is an AI research engineer building the infrastructure layer for reliable agents: memory, retrieval, local inference, model routing, evals and agent harnesses.`,
+    siteHeadline: `Aditya Karnam is an AI research engineer working across the AI stack, from hardware and inference to agents, evals and software factories.`,
     siteUrl: `https://adityakarnam.com`,
-    siteDescription: `Aditya Karnam is an AI research engineer focused on agent runtimes, memory, retrieval, model routing, local inference, and evaluation systems.`,
+    siteDescription: `Aditya Karnam is an AI research engineer working on inference performance, model distillation, agent systems, retrieval and memory, and evaluation.`,
     siteImage: `/banner-aditya.png`,
     siteLanguage: `en`,
     author: `@aditya_karnam`,
@@ -99,7 +99,7 @@ const config: GatsbyConfig = {
       options: {
         name: `Aditya Karnam - AI Research Engineer`,
         short_name: `adityakarnam`,
-        description: `AI research and infrastructure: agent runtimes, memory, retrieval, routing, and evaluation systems by Aditya Karnam.`,
+        description: `AI research and engineering across hardware, inference, models, agents and evals, by Aditya Karnam.`,
         start_url: `/`,
         background_color: `#FAF9F6`,
         theme_color: `#FAF9F6`,

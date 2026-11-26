@@ -6,12 +6,12 @@ import { Page, Title, Section, Prose, TextLink } from "../components/world-model
 const NotFound = (_props: PageProps) => (
   <Layout>
     <Page>
-      <Title eyebrow="404">This page does not exist.</Title>
+      <Title eyebrow="404">Game over. This page does not exist.</Title>
       <Section>
         <Prose>
           <p>
             The link may be old or mistyped. Try <TextLink to="/ai-research/">Research</TextLink> or{` `}
-            <TextLink to="/blog">Writing</TextLink>.
+            <TextLink to="/blog">Writing</TextLink>. Continue? Press any link.
           </p>
         </Prose>
       </Section>

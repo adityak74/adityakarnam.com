@@ -1,5 +1,6 @@
 /** @jsx jsx */
 import GeneNetwork from "./GeneNetwork"
+import PixelSprite from "../PixelSprite"
 import * as React from "react"
 import { Box, jsx } from "theme-ui"
 import { Link } from "gatsby"
@@ -89,10 +90,10 @@ const HomepageConsole = () => (
     <div sx={{ display: "grid", gridTemplateColumns: ["1fr", "1fr 260px"], gap: 4, alignItems: "center" }}>
     <div>
     <h1 sx={{ fontFamily: serif, fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.12, fontSize: "clamp(2.4rem, 5vw, 3.6rem)", m: 0, maxWidth: "20ch" }}>
-      I build the infrastructure layer for reliable agents.
+      I work across the AI stack, from silicon to software factories.
     </h1>
     <p sx={{ mt: 4, mb: 3, maxWidth: "68ch" }}>
-      I am an AI research engineer. My work covers agent memory, retrieval, local inference, model routing, evals and agent harnesses.
+      I am an AI research engineer. I work on the full path from hardware to product: inference performance on Apple Silicon, small-model training and distillation, agent systems and harnesses, retrieval and memory, evals, and the software factories that put them to work.
     </p>
     <p sx={{ m: 0, maxWidth: "68ch", color: c.sec }}>
       Most of it is measured on a laptop: fixed budgets, small models, and numbers I can reproduce. I publish the harnesses and the null results alongside the wins, and fix upstream when I find a bug.
@@ -121,6 +122,19 @@ const HomepageConsole = () => (
 
     <Section title="Open source and systems">
       <List rows={systems} left="tag" />
+    </Section>
+
+    <Section title="Off the clock">
+      <div sx={{ display: "flex", gap: 4, alignItems: "center", flexWrap: "wrap" }}>
+        <div sx={{ display: "flex", gap: 3 }}>
+          <PixelSprite name="cartridge" size={44} label="Game cartridge" />
+          <PixelSprite name="pot" size={44} label="Cooking pot" />
+          <PixelSprite name="chef" size={44} label="Chef hat" />
+        </div>
+        <p sx={{ m: 0, maxWidth: "52ch", flex: "1 1 260px" }}>
+          I love old NES games and I cook. Both are lessons in constraints: a few kilobytes of RAM, one pan, whatever is in the fridge. I bring the same habit to benchmarks.
+        </p>
+      </div>
     </Section>
 
     <Section title="Currently" more={<A href="/now">Now</A>}>

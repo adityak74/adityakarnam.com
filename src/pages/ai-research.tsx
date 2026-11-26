@@ -137,12 +137,26 @@ const publications: Row[] = [
   },
 ]
 
+// Source: Google Scholar profile (WujCeDkAAAAJ). Order: newest first.
+const papers: Row[] = [
+  { key: "p-budgetbench", meta: "2026", tag: "arXiv", title: "BudgetBench: a budget-tiered protocol and pilot harness for memory strategy evaluation in local LLM agents", body: "With A. Jaggi.", links: [{ label: "arXiv:2609.13149", href: "https://arxiv.org/abs/2609.13149" }] },
+  { key: "p-control-plane", meta: "2026", tag: "Concept paper", title: "The Enterprise AI Control Plane: a governance and orchestration framework for LLM deployments at scale", body: "With A. Jaggi. Part of a series of concept papers on enterprise agent governance, trust, identity and security." },
+  { key: "p-medfit", meta: "2025", tag: "Conference", title: "MEDFIT-LLM: medical enhancements through domain-focused fine-tuning of small language models", body: "With A. Jaggi and S. Naidu.", links: [{ label: "Paper", href: "https://ieeexplore.ieee.org/abstract/document/11042816" }] },
+  { key: "p-glucose", meta: "2025", tag: "Journal", title: "Automated analysis of glucose response patterns in type 1 diabetes using machine learning and computer vision", body: "International Journal of Advanced Computer Science and Applications 16(5)." },
+  { key: "p-breathwork", meta: "2025", tag: "Journal", title: "Neural network-enabled diagnostic framework for correlating Ayurvedic breathwork protocols with adaptive skin microbiome dynamics", body: "Mathematical Modelling of Engineering Problems 12(6)." },
+  { key: "p-governance", meta: "2025", tag: "Study", title: "Quantifying adaptive governance success: a mixed-methods analysis of 500 organizations", body: "With A. Jaggi." },
+  { key: "p-cag", meta: "2024", tag: "arXiv", title: "CAG: chunked augmented generation for Google Chrome's built-in Gemini Nano", body: "With V. Vellaiyappan Surulimuthu.", links: [{ label: "arXiv:2412.18708", href: "https://arxiv.org/abs/2412.18708" }] },
+  { key: "p-cardiac", meta: "2024", tag: "Journal", title: "AI-enhanced neural network framework for cardiac arrest prognostics", body: "Frontiers in Health Informatics 13(3)." },
+  { key: "p-erbga-paper", meta: "2018", tag: "Thesis", title: "Efficient reduced-bias genetic algorithm (ERBGA) for generic community detection objectives", body: "With C. Janikow, S. Bhatia and S. Climer. University of Missouri-St. Louis." },
+  { key: "p-benes", meta: "2016", tag: "Journal", title: "Transmission in Benes network", body: "International Journal of Pure and Applied Mathematics 109(8)." },
+]
+
 const AiResearchPage = () => (
   <Layout>
     <Page>
       <Title
         eyebrow="Research"
-        lede="I work on the layer between a foundation model and a reliable agent: how it remembers, how it is routed, how it is served, and how anyone knows it worked."
+        lede="I work across the AI stack: how models run on real hardware, how they are trained and distilled, how agents are built around them, and how anyone knows it worked."
       >
         Research and engineering notes
       </Title>
@@ -155,7 +169,7 @@ const AiResearchPage = () => (
             answer instead of the behavior over time.
           </p>
           <p>
-            So the work follows three questions. How should memory be evaluated when the context budget is the
+            The work follows three questions, and each reaches from the hardware up. How should memory be evaluated when the context budget is the
             constraint? What do local inference stacks actually do under load, and where are they not reproducible?
             What does a harness need to expose so its behavior can be audited? Each item below is an attempt to
             answer one of them with a measurement.
@@ -163,7 +177,11 @@ const AiResearchPage = () => (
         </Prose>
       </Section>
 
-      <Section label="Work" title="Publications, experiments and software">
+      <Section label="Papers" title="Publications">
+        <RuledList rows={papers} />
+      </Section>
+
+      <Section label="Work" title="Experiments and software">
         <RuledList rows={publications} />
         <p sx={{ mt: 4, mb: 0, fontSize: `15px` }}>
           Full citation record on{` `}

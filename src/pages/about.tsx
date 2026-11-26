@@ -15,9 +15,8 @@ const AboutPage = () => (
       <Section>
         <Prose>
           <p>
-            I am an AI research engineer. I build the infrastructure layer for reliable agents:
-            memory, retrieval, model routing, local inference, and the evaluation that tells you whether any of it
-            works.
+            I am an AI research engineer. I work across the stack, from hardware and inference performance to
+            training, agent systems, retrieval, evals and the software factories that build with them.
           </p>
           <p>
             I came to this from systems and research. My master's thesis at the University of Missouri-St. Louis was
@@ -44,6 +43,16 @@ const AboutPage = () => (
             <strong>Harnesses and runtimes:</strong> Quecto is a small Rust coding agent built to be evaluated.
             subagent-fleet routes coding-agent roles across local machines. The write-up of what I learned is{` `}
             <TextLink to="/ai-research/what-is-an-ai-agent-harness/">What is an AI agent harness</TextLink>.
+          </p>
+        </Prose>
+      </Section>
+
+      <Section label="Off the clock" title="Cartridges and kitchens">
+        <Prose>
+          <p>
+            I love old NES games, and I cook. They shaped how I work. An 8-bit game fits in a few tens of kilobytes
+            because someone cut everything that did not earn its place. A good meal comes from a short ingredient list,
+            heat you control, and tasting as you go. I try to build and evaluate things the same way.
           </p>
         </Prose>
       </Section>
@@ -99,7 +108,7 @@ export default AboutPage
 export const Head: HeadFC = () => (
   <Seo
     title="About: AI Research Engineer"
-    description="Aditya Karnam is an AI research engineer building reliable agent infrastructure: memory, retrieval, routing, local inference and evals. Background and contact."
+    description="Aditya Karnam is an AI research engineer working across the AI stack: inference, distillation, agents, retrieval and evals. Background, NES and cooking, contact."
     pathname="/about/"
   />
 )

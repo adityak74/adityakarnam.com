@@ -34,7 +34,7 @@ export const onRenderBody = ({ setHeadComponents }) => {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" key="fonts-gstatic-preconnect" />,
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500&family=JetBrains+Mono:wght@400;500&family=Press+Start+2P&display=swap"
       key="google-fonts"
     />,
     <link
@@ -60,8 +60,8 @@ export const onRenderBody = ({ setHeadComponents }) => {
           url: "https://adityakarnam.com",
           jobTitle: "AI Research Engineer",
           description:
-            "AI research engineer building the infrastructure layer for reliable agents: memory, retrieval, local inference, model routing, evals and agent harnesses.",
-          knowsAbout: ["AI agents", "LLM evaluation", "retrieval", "local inference", "model distillation"],
+            "AI research engineer working across the AI stack: hardware and inference performance, model training and distillation, agent systems, retrieval and memory, evals and software factories.",
+          knowsAbout: ["AI agents", "LLM evaluation", "retrieval", "inference performance", "Apple Silicon", "model distillation", "coding agents", "healthcare machine learning"],
           sameAs: [
             "https://twitter.com/aditya_karnam",
             "https://www.linkedin.com/in/adityakarnamgrao/",
@@ -83,7 +83,7 @@ export const onRenderBody = ({ setHeadComponents }) => {
           name: "Aditya Karnam",
           url: "https://adityakarnam.com",
           description:
-            "Research and writing by Aditya Karnam, AI research engineer: agent memory, retrieval, local inference, model routing and evaluation.",
+            "Research and writing by Aditya Karnam, AI research engineer: inference on real hardware, distillation, agent systems, retrieval, memory and evals.",
           author: {
             "@type": "Person",
             name: "Aditya Karnam",
