@@ -4,28 +4,37 @@ import PixelSprite from "./PixelSprite"
 
 // A small pixel chef that peeks in from the corner once per page, after the visitor has
 // scrolled a little, and points at one related page. Dismissible; stays dismissed for the session.
-const HINTS: Record<string, { to: string; text: string }> = {
-  "/": { to: "/about/", text: "Psst. My thesis is an animation." },
-  "/ai-research/": { to: "/systems/", text: "Also check out what I built." },
-  "/systems/": { to: "/quecto/", text: "Quecto is the fun one. Try it." },
-  "/quecto/": { to: "/now/", text: "See what I'm cooking up now." },
-  "/about/": { to: "/blog/", text: "Also check out my writing." },
-  "/now/": { to: "/ai-research/", text: "The research behind this is here." },
-  "/blog/": { to: "/ai-research/", text: "Hungry for papers? Try Research." },
+type Hint = { to: string; text: string }
+const H = (to: string, text: string): Hint => ({ to, text })
+const HINTS: Record<string, Hint[]> = {
+  "/": [H("/about/", "Psst. My thesis is an animation."), H("/quecto/", "A whole agent in 1.3 MB. Peek inside."), H("/ai-research/", "Fresh papers, still warm."), H("/blog/", "Fresh from the kitchen: new posts.")],
+  "/ai-research/": [H("/systems/", "Also check out what I built."), H("/blog/", "The long versions live in Writing."), H("/about/", "Want the origin story? Genetics, then AI.")],
+  "/systems/": [H("/quecto/", "Quecto is the fun one. Try it."), H("/ai-research/", "The experiments behind these are here."), H("/now/", "Currently simmering: see Now.")],
+  "/quecto/": [H("/now/", "See what I'm cooking up now."), H("/systems/", "More tools like this one in Systems."), H("/blog/", "I wrote up how it was built.")],
+  "/about/": [H("/blog/", "Also check out my writing."), H("/ai-research/", "Curious what came after the thesis?"), H("/systems/", "Wanna see the things I shipped?")],
+  "/now/": [H("/ai-research/", "The research behind this is here."), H("/about/", "Meet the person behind the pixels."), H("/quecto/", "Insert coin: try Quecto.")],
+  "/blog/": [H("/ai-research/", "Hungry for papers? Try Research."), H("/systems/", "Prefer code? Systems has it."), H("/about/", "Psst. The About page animates.")],
 }
-const FALLBACK = { to: "/ai-research/", text: "Also check out my research." }
+const FALLBACKS = [H("/ai-research/", "Also check out my research."), H("/systems/", "Psst. Systems is worth a look."), H("/about/", "Say hi on the About page.")]
+const pick = (a: Hint[], path: string) => {
+  const ok = a.filter((h) => h.to !== path)
+  const pool = ok.length ? ok : FALLBACKS
+  return pool[Math.floor(Math.random() * pool.length)]
+}
 const SKIP = ["/404", "/box-breathing", "/status", "/mcp-install"]
 
 const PeekGuide = ({ pathname }: { pathname: string }) => {
   const [open, setOpen] = React.useState(false)
   const path = pathname.endsWith("/") ? pathname : pathname + "/"
-  const hint = HINTS[path] || FALLBACK
+  const [hint, setHint] = React.useState<Hint>(FALLBACKS[0])
 
   React.useEffect(() => {
     setOpen(false)
+    const h = pick(HINTS[path] || FALLBACKS, path)
+    setHint(h)
     let off = false
     try { off = sessionStorage.getItem("peek-off") === "1" } catch (e) { /* ignore */ }
-    if (off || SKIP.some((s) => path.startsWith(s)) || hint.to === path) return
+    if (off || SKIP.some((s) => path.startsWith(s)) || h.to === path) return
     const show = () => setOpen(true)
     const onScroll = () => {
       const h = document.documentElement.scrollHeight - window.innerHeight
@@ -34,7 +43,7 @@ const PeekGuide = ({ pathname }: { pathname: string }) => {
     window.addEventListener("scroll", onScroll, { passive: true })
     const timer = window.setTimeout(show, 14000)
     return () => { window.removeEventListener("scroll", onScroll); window.clearTimeout(timer) }
-  }, [path, hint.to])
+  }, [path])
 
   const dismiss = () => {
     setOpen(false)
