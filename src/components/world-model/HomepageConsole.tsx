@@ -48,6 +48,28 @@ const systems: Row[] = [
   { tag: "awesome-agentic-memory", title: "Map of agent memory frameworks", note: "mem0, Letta, Zep, A-MEM and others compared by memory type, backend and MCP support.", href: "/awesome-agentic-memory/", year: "" },
 ]
 
+const stats = [
+  { value: "4.9 GB", label: "Ornith build that beats the 8.9 GB release" },
+  { value: "119%", label: "Decode speedup, speculative decoding on Apple Silicon" },
+  { value: "~80x", label: "GEMM over GEMV throughput on an M5 Pro" },
+  { value: "0.646", label: "LongMemEval at a 2K token budget (BudgetBench)" },
+]
+
+const areas = [
+  { title: "Hardware and inference", body: "What serving stacks do on real silicon: roofline limits, batching, memory walls and numerical reproducibility on Apple Silicon." },
+  { title: "Models and distillation", body: "Small-model fine-tuning and distillation, measured against the larger models they are meant to replace." },
+  { title: "Agents and software factories", body: "Harnesses, runtimes and orchestration for coding agents, built so their behavior can be inspected." },
+  { title: "Retrieval and memory", body: "Vector backends, temporal memory and context budgets: how agents remember within a fixed cost." },
+  { title: "Evaluation", body: "Protocols and harnesses that score behavior under constraints, including the null results." },
+  { title: "Applied ML", body: "Machine learning for healthcare and evolutionary methods for network analysis, from earlier published work." },
+]
+
+const principles = [
+  { title: "Measure first", body: "Write down the number before changing anything, then change one thing." },
+  { title: "Publish the nulls", body: "Negative results and bugs in my own measurements go in the write-up." },
+  { title: "Small and inspectable", body: "Prefer systems whose traces, tool calls and evals someone else can read." },
+]
+
 const A = ({ href, external, children }: { href: string; external?: boolean; children: React.ReactNode }) =>
   external ? (
     <a href={href} target="_blank" rel="noopener noreferrer" sx={linkSx}>{children}</a>
@@ -105,12 +127,32 @@ const HomepageConsole = () => (
     <div><HeroStack /></div>
     </div>
 
+    <div sx={{ mt: [5, 6], display: "grid", gridTemplateColumns: ["1fr 1fr", "repeat(4, 1fr)"], borderTop: `1px solid ${c.ink}`, borderBottom: `1px solid ${c.rule}` }}>
+      {stats.map((s, i) => (
+        <div key={s.label} sx={{ py: 4, pr: 3, pl: [i % 2 ? 3 : 0, i ? 3 : 0], borderLeft: [i % 2 ? `1px solid ${c.rule}` : 0, i ? `1px solid ${c.rule}` : 0] }}>
+          <div sx={{ fontFamily: serif, fontSize: "clamp(2rem, 4vw, 2.8rem)", lineHeight: 1, letterSpacing: "-0.02em" }}>{s.value}</div>
+          <div sx={{ ...labelSx, mt: 2, lineHeight: 1.5 }}>{s.label}</div>
+        </div>
+      ))}
+    </div>
+
     <details sx={{ mt: 4, "& > summary": { ...labelSx, cursor: "pointer", "&:hover": { color: c.accent } } }}>
       <summary>Ask my work</summary>
       <Box sx={{ mt: 3 }}>
         <HeroChat />
       </Box>
     </details>
+
+    <Section title="Research areas">
+      <div sx={{ display: "grid", gridTemplateColumns: ["1fr", "1fr 1fr"], columnGap: 5 }}>
+        {areas.map((a) => (
+          <div key={a.title} sx={{ py: 3, borderTop: `1px solid ${c.rule}` }}>
+            <div sx={{ fontFamily: serif, fontSize: "1.2rem", fontWeight: 500, letterSpacing: "-0.01em" }}>{a.title}</div>
+            <p sx={{ m: 0, mt: 1, color: c.sec, fontSize: "16px", lineHeight: 1.6 }}>{a.body}</p>
+          </div>
+        ))}
+      </div>
+    </Section>
 
     <Section title="Research" more={<A href="/ai-research">All research</A>}>
       <List rows={research} left="tag" />
@@ -122,6 +164,18 @@ const HomepageConsole = () => (
 
     <Section title="Open source and systems">
       <List rows={systems} left="tag" />
+    </Section>
+
+    <Section title="Principles">
+      <div sx={{ display: "grid", gridTemplateColumns: ["1fr", "repeat(3, 1fr)"], gap: 4 }}>
+        {principles.map((p, i) => (
+          <div key={p.title}>
+            <div sx={{ ...labelSx, color: c.blue }}>{String(i + 1).padStart(2, "0")}</div>
+            <div sx={{ fontFamily: serif, fontSize: "1.2rem", fontWeight: 500, mt: 1 }}>{p.title}</div>
+            <p sx={{ m: 0, mt: 1, color: c.sec, fontSize: "16px", lineHeight: 1.6 }}>{p.body}</p>
+          </div>
+        ))}
+      </div>
     </Section>
 
     <Section title="Off the clock">
