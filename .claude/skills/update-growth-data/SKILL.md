@@ -19,11 +19,15 @@ Refreshes the data behind `src/components/world-model/GrowthLadder.tsx` and ship
    - Monthly counts for past months should not drop (GitHub can add late contributions, rarely remove). A drop of more than 10% for a closed month, or a post/essay count that shrinks, means something broke: stop and report instead of shipping.
    - A new post that is personal (birthday, travel, spiritual, coffee) should be added to `PERSONAL` in the script and the script rerun.
 5. Build: `npx gatsby build` must end with `success onPostBuild`.
-6. Commit `Weekly growth data update: YYYY-MM-DD`, push, `gh pr create --base main`, wait for `gh pr checks <n> --watch` (Cloudflare Pages) to pass, then `gh pr merge <n> --squash --delete-branch`.
+6. Commit `Weekly growth data update: YYYY-MM-DD`, push, `gh pr create --base main`. Wait about 30s for the Cloudflare Pages check to appear, then `gh pr checks <n> --watch`. Merge only if it passed: `gh pr checks <n> | grep -q pass && gh pr merge <n> --squash --delete-branch`.
 7. Verify live: within ~5 minutes `curl -s https://adityakarnam.com/ | grep -c "Pace and depth"` returns 1. Report the new totals the script printed.
 
 ## Not covered by the script (edit `GrowthLadder.tsx` by hand)
 
+See the `portfolio-site-update` skill for where each item goes and the content rules (plain-words lines, private repos shown as ideas, co-authored work, dates).
+
+
 - `DEPTH` layers and `PINS`: new AI-stack layers with a published result.
+- `experiments.ts`: after-hours experiments from private `adityak74/*` repos (ideas only, no names).
 - `PAPERS`: Google Scholar papers and work co-authored with Arjun Jaggi (arjunjaggi.com/papers, /books, /whitepapers). Items with only a year go at the latest possible month.
 - Never put billing amounts or exact private dates on the site.
