@@ -156,7 +156,7 @@ const HomepageConsole = () => (
       I am an AI research engineer. I work on the full path from hardware to product: inference performance on Apple Silicon, small-model training and distillation, agent systems and harnesses, retrieval and memory, evals, and the software factories that put them to work.
     </p>
     <p sx={{ m: 0, maxWidth: "68ch", color: c.sec }}>
-      Most of it is measured on a laptop: fixed budgets, small models, and numbers I can reproduce. I publish the harnesses and the null results alongside the wins, and fix upstream when I find a bug.
+      The work runs the whole stack: roofline and decode studies on Apple Silicon, a 6,000-row LongMemEval benchmark, a Rust coding agent, and a retrieval library over 15+ backends. Every result ships with its harness and its limits, and bugs I find get fixed upstream.
     </p>
     <p sx={{ mt: 3, fontSize: "16px" }}>
       <A href="/ai-research">Research</A> · <A href="/blog">Writing</A> · <A href="/live">Live</A> · <A href="/about">About</A> · <a href="#contact" sx={linkSx}>Contact</a>
