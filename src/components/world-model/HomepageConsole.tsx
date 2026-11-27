@@ -61,6 +61,13 @@ const stats = [
   { value: "7.8K", label: "Stars on mlx-lm (1.2K forks), where my merged PR fixed LoRA on 3 MoE models", href: "https://github.com/ml-explore/mlx-lm/pull/1795" },
 ]
 
+const reach = [
+  { value: "185", label: "GitHub stars on mcp-scholarly, a paper-search MCP server (27 forks)", href: "https://github.com/adityak74/mcp-scholarly" },
+  { value: "2", label: "arXiv preprints: BudgetBench and CAG", href: "/ai-research" },
+  { value: "10", label: "Papers, theses and journal articles on my Scholar profile", href: "/ai-research" },
+  { value: "7", label: "Chapters in the free course built from this work", href: "/course/" },
+]
+
 const areas = [
   { title: "Hardware and inference", body: "What serving stacks do on real silicon: roofline limits, batching, memory walls and numerical reproducibility on Apple Silicon." },
   { title: "Models and distillation", body: "Small-model fine-tuning and distillation, measured against the larger models they are meant to replace." },
@@ -113,6 +120,22 @@ const List = ({ rows, left }: { rows: Row[]; left: "tag" | "year" }) => (
   </ul>
 )
 
+const tiles = (items: { value: string; label: string; href: string }[]) => (
+      <div sx={{ display: "grid", gridTemplateColumns: ["1fr 1fr", "repeat(4, 1fr)"], borderTop: `2px solid ${c.blue}` }}>
+        {items.map((st, i) => (
+          <Box
+            as={st.href.startsWith("http") ? "a" : (Link as any)}
+            key={st.label}
+            {...(st.href.startsWith("http") ? { href: st.href, target: "_blank", rel: "noopener noreferrer" } : { to: st.href })}
+            sx={{ display: "block", py: 4, pr: 3, pl: [i % 2 ? 3 : 0, i % 4 ? 3 : 0], borderLeft: [i % 2 ? `1px solid ${c.rule}` : 0, i % 4 ? `1px solid ${c.rule}` : 0], borderBottom: `1px solid ${c.rule}`, textDecoration: "none", color: "inherit", "&:hover .v": { color: c.accent } }}
+          >
+            <div className="v" sx={{ fontFamily: serif, fontSize: "clamp(2rem, 4vw, 2.8rem)", lineHeight: 1, letterSpacing: "-0.02em", color: c.blue, transition: "color .15s" }}>{st.value}</div>
+            <div sx={{ ...labelSx, mt: 2, lineHeight: 1.5 }}>{st.label}</div>
+          </Box>
+        ))}
+      </div>
+)
+
 const HomepageConsole = () => (
   <Box sx={{ color: c.ink, pt: [4, 5], pb: 6, fontSize: "17px", lineHeight: 1.65 }}>
     <div sx={{ display: "grid", gridTemplateColumns: ["1fr", "1fr", "1fr 400px"], gap: 4, alignItems: "center", position: "relative", isolation: "isolate" }}>
@@ -135,19 +158,11 @@ const HomepageConsole = () => (
     </div>
 
     <Section title="Wins">
-      <div sx={{ display: "grid", gridTemplateColumns: ["1fr 1fr", "repeat(4, 1fr)"], borderTop: `2px solid ${c.blue}` }}>
-        {stats.map((st, i) => (
-          <Box
-            as={st.href.startsWith("http") ? "a" : (Link as any)}
-            key={st.label}
-            {...(st.href.startsWith("http") ? { href: st.href, target: "_blank", rel: "noopener noreferrer" } : { to: st.href })}
-            sx={{ display: "block", py: 4, pr: 3, pl: [i % 2 ? 3 : 0, i % 4 ? 3 : 0], borderLeft: [i % 2 ? `1px solid ${c.rule}` : 0, i % 4 ? `1px solid ${c.rule}` : 0], borderBottom: `1px solid ${c.rule}`, textDecoration: "none", color: "inherit", "&:hover .v": { color: c.accent } }}
-          >
-            <div className="v" sx={{ fontFamily: serif, fontSize: "clamp(2rem, 4vw, 2.8rem)", lineHeight: 1, letterSpacing: "-0.02em", color: c.blue, transition: "color .15s" }}>{st.value}</div>
-            <div sx={{ ...labelSx, mt: 2, lineHeight: 1.5 }}>{st.label}</div>
-          </Box>
-        ))}
-      </div>
+      {tiles(stats)}
+    </Section>
+
+    <Section title="Reach">
+      {tiles(reach)}
     </Section>
 
     <ScrollStory />
