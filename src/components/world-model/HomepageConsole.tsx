@@ -1,4 +1,5 @@
 /** @jsx jsx */
+import GrowthLadder from "./GrowthLadder"
 import HeroStack from "./HeroStack"
 import PixelSprite from "../PixelSprite"
 import * as React from "react"
@@ -164,6 +165,10 @@ const HomepageConsole = () => (
     </div>
     <div><HeroStack /></div>
     </div>
+
+    <Section title="Pace and depth">
+      <GrowthLadder />
+    </Section>
 
     <Section title="Wins and reach">
       {tiles([...stats, ...reach])}
