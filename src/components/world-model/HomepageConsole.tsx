@@ -22,14 +22,14 @@ const linkSx = {
 }
 const labelSx = { fontFamily: mono, fontSize: "12px", letterSpacing: ".06em", textTransform: "uppercase" as const, color: c.sec }
 
-type Row = { tag: string; title: string; note: string; href: string; year: string; external?: boolean }
+type Row = { tag: string; title: string; note: string; href: string; year: string; limit?: string; external?: boolean }
 
 const research: Row[] = [
-  { tag: "Paper", title: "BudgetBench: memory strategy evaluation under a fixed token budget", note: "On LongMemEval (500 questions), retrieval at a 2K budget scored 0.646; truncation needed 8K to reach 0.650. arXiv:2609.13149.", href: "/budgetbench-explained", year: "2026" },
-  { tag: "Distillation", title: "Ornith-1.5-9B, two-teacher distillation on MLX", note: "A 4.9 GB build scores +5.5 MMLU and +3.0 HumanEval over the 8.9 GB release it replaces; the gain comes from reasoning termination, not knowledge.", href: "/distilling-ornith-9b-two-teacher-mlx/", year: "2026" },
-  { tag: "Inference", title: "Speculative decoding on Apple Silicon", note: "Qwen3.8-27B with a 0.8B draft model peaks at a 119% decode speedup, after patching mlx_lm to accept its hybrid attention cache.", href: "/mlx-speculative-decoding-qwen3-8-apple-silicon/", year: "2026" },
-  { tag: "Inference", title: "Why batching does not fix decode", note: "On an M5 Pro, GEMM holds a flat ~80x throughput advantage over GEMV, which is why batching helps prefill and barely touches decode.", href: "/mlx-gemv-gemm-roofline-apple-silicon/", year: "2026" },
-  { tag: "Retrieval", title: "Tokens per paper: DocLang vs Docling vs raw PDF", note: "DocLang costs 2.7x markdown tokens on a stock tokenizer and loses on retrieval; 38% of the paper was bibliography and boilerplate.", href: "/tokens-per-paper-doclang-docling-pdf/", year: "2026" },
+  { tag: "Paper", title: "BudgetBench: memory strategy evaluation under a fixed token budget", note: "On LongMemEval (500 questions), retrieval at a 2K budget scored 0.646; truncation needed 8K to reach 0.650. arXiv:2609.13149.", href: "/budgetbench-explained", year: "2026", limit: "Whether a budgeted strategy matches full context is unresolved: no paired interval on either model establishes equivalence." },
+  { tag: "Distillation", title: "Ornith-1.5-9B, two-teacher distillation on MLX", note: "A 4.9 GB build scores +5.5 MMLU and +3.0 HumanEval over the 8.9 GB release it replaces; the gain comes from reasoning termination, not knowledge.", href: "/distilling-ornith-9b-two-teacher-mlx/", year: "2026", limit: "One model, one machine. None of the original MMLU, TruthfulQA or HumanEval targets were reached." },
+  { tag: "Inference", title: "Speculative decoding on Apple Silicon", note: "Qwen3.8-27B with a 0.8B draft model peaks at a 119% decode speedup, after patching mlx_lm to accept its hybrid attention cache.", href: "/mlx-speculative-decoding-qwen3-8-apple-silicon/", year: "2026", limit: "Depends on unmerged upstream PR #1486. One draft-to-target ratio (0.8B:27B) tested." },
+  { tag: "Inference", title: "Why batching does not fix decode", note: "On an M5 Pro, GEMM holds a flat ~80x throughput advantage over GEMV, which is why batching helps prefill and barely touches decode.", href: "/mlx-gemv-gemm-roofline-apple-silicon/", year: "2026", limit: "One chip, one framework (mlx 0.32.0, float16). Per-size ratios ran about 64x to 108x; nothing measured below 1,024." },
+  { tag: "Retrieval", title: "Tokens per paper: DocLang vs Docling vs raw PDF", note: "DocLang costs 2.7x markdown tokens on a stock tokenizer and loses on retrieval; 38% of the paper was bibliography and boilerplate.", href: "/tokens-per-paper-doclang-docling-pdf/", year: "2026", limit: "Two papers and one small embedder. The recall difference is within noise at this sample size." },
   { tag: "Numerics", title: "MLX non-determinism on Apple Silicon", note: "Batch-invariance tests from 512 to 4096 matrices, with bfloat16, float16 and float32 error behavior.", href: "/mlx-non-determinism-apple-silicon", year: "2025" },
 ]
 
@@ -114,6 +114,7 @@ const List = ({ rows, left }: { rows: Row[]; left: "tag" | "year" }) => (
             {left === "tag" && r.year ? <span sx={{ ...labelSx, ml: 2 }}>{r.year}</span> : null}
           </div>
           {r.note ? <p sx={{ m: 0, mt: 1, color: c.sec, fontSize: "16px", lineHeight: 1.6, maxWidth: "68ch" }}>{r.note}</p> : null}
+          {r.limit ? <p sx={{ m: 0, mt: 1, color: c.sec, fontSize: "14px", lineHeight: 1.5, maxWidth: "68ch" }}><span sx={{ ...labelSx, mr: 2, color: c.accent }}>Limit</span>{r.limit}</p> : null}
         </div>
       </li>
     ))}
