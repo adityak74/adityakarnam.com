@@ -168,6 +168,11 @@ const HomepageConsole = () => (
 
     <Section title="Pace and depth">
       <GrowthLadder />
+      <Link to="/frameworks/" sx={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", columnGap: 3, rowGap: 1, mt: 3, px: [3, 4], py: 3, border: "1px solid", borderColor: "divide", borderLeft: "3px solid #E07A55", textDecoration: "none", color: "text", "&:hover span:last-of-type": { color: "#E07A55" } }}>
+        <span sx={{ fontFamily: "'JetBrains Mono', ui-monospace, monospace", fontSize: "12px", letterSpacing: "0.06em", textTransform: "uppercase", color: "#E07A55" }}>Thought leadership</span>
+        <span sx={{ fontSize: "16px" }}>14 frameworks, 8 books and 2 white papers on governing AI agents, co-authored with Arjun Jaggi</span>
+        <span sx={{ fontSize: "16px" }}>Read the frameworks →</span>
+      </Link>
     </Section>
 
     <Section title="Wins and reach">
