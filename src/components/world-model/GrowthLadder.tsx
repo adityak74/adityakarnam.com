@@ -4,14 +4,17 @@ import { jsx } from "theme-ui"
 import { Link } from "gatsby"
 import { ESSAYS } from "./essays"
 import { POSTS } from "./posts"
+import { GH } from "./growth-data"
 
 // Dark panel palette (clay = pace, blue = depth).
 const D = { bg: "#141413", ink: "#FAF9F6", sec: "#A3A19B", rule: "#34332F", clay: "#E07A55", blue: "#86AEDB" }
 const MONO = "'JetBrains Mono', ui-monospace, monospace"
 const SERIF = "'Fraunces', Georgia, serif"
 
-// GitHub contributions per month for adityak74 (commits, PRs, issues, reviews), Nov 2024 to Nov 2026 (both ends partial).
-const GH: [string, number][] = [["2024-11", 27], ["2024-12", 37], ["2025-01", 21], ["2025-02", 1], ["2025-03", 8], ["2025-04", 28], ["2025-05", 22], ["2025-06", 17], ["2025-07", 40], ["2025-08", 70], ["2025-09", 64], ["2025-10", 47], ["2025-11", 34], ["2025-12", 12], ["2026-01", 6], ["2026-02", 190], ["2026-03", 164], ["2026-04", 263], ["2026-05", 145], ["2026-06", 78], ["2026-07", 578], ["2026-08", 497], ["2026-09", 324], ["2026-10", 88], ["2026-11", 84]]
+// GH (monthly GitHub contributions), POSTS and ESSAYS are regenerated weekly by scripts/update-growth-data.mjs.
+const sumYear = (y: string) => GH.filter(([mo]) => mo.startsWith(y)).reduce((t, [, n]) => t + n, 0)
+const RATIO = (sumYear("2026") / sumYear("2025")).toFixed(1)
+const monthLabel = (mo: string) => new Date(`${mo}-01T00:00:00Z`).toLocaleString("en-US", { month: "short", year: "numeric", timeZone: "UTC" }).toUpperCase()
 
 // One published result per layer, surface to bedrock.
 const DEPTH = [
@@ -100,7 +103,7 @@ const GrowthLadder = () => {
   <div sx={{ bg: D.bg, color: D.ink, px: [3, 5], py: [4, 5], borderRadius: "6px" }}>
     <div sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: [2, 5] }}>
       <div>
-        <div sx={{ ...kpi, color: D.clay }}>6.6x</div>
+        <div sx={{ ...kpi, color: D.clay }}>{RATIO}x</div>
         <div sx={{ mt: 2, color: D.sec, fontSize: ["13px", "15px"], maxWidth: "24ch" }}>more shipped in 2026 than in 2025</div>
       </div>
       <div>
@@ -143,7 +146,7 @@ const GrowthLadder = () => {
       <text x={X0 + 290} y="10" fontFamily={MONO} fontSize="10.5" letterSpacing=".04em" fill={D.clay}>● ESSAYS</text>
       {GH.map(([mo, n], i) => <rect key={mo} x={x(i) - CELL / 2} y="157" width={CELL} height="9" rx="1.5" fill={D.clay} opacity={0.2 + 0.8 * Math.sqrt(n / MAX)}><title>{`${mo}: ${n} contributions`}</title></rect>)}
       <text x={X0} y="184" fontFamily={MONO} fontSize="10" fill={D.sec}>NOV 2024</text>
-      <text x={X1} y="184" textAnchor="end" fontFamily={MONO} fontSize="10" fill={D.sec}>NOV 2026</text>
+      <text x={X1} y="184" textAnchor="end" fontFamily={MONO} fontSize="10" fill={D.sec}>{monthLabel(GH[GH.length - 1][0])}</text>
     </svg>
     {ring && (
       <div role="dialog" sx={{ position: ["relative", "absolute"], left: ["auto", `${(ring.x / 400) * 100}%`], top: ["auto", `${(ring.y / 190) * 100}%`], transform: ["none", ring.x > 200 ? "translate(calc(-100% - 14px), -50%)" : "translate(14px, -50%)"], width: ["auto", "280px"], mt: [2, 0], bg: "#1F1F1D", border: `1px solid ${D.rule}`, borderLeft: `3px solid ${D.blue}`, p: 3, zIndex: 2, boxShadow: "0 10px 30px rgba(0,0,0,.45)" }}>
