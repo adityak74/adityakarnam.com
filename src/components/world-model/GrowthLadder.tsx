@@ -5,9 +5,10 @@ import { Link } from "gatsby"
 import { ESSAYS } from "./essays"
 import { POSTS } from "./posts"
 import { GH } from "./growth-data"
+import { EXPERIMENTS } from "./experiments"
 
 // Dark panel palette (clay = pace, blue = depth).
-const D = { bg: "#141413", ink: "#FAF9F6", sec: "#A3A19B", rule: "#34332F", clay: "#E07A55", blue: "#86AEDB" }
+const D = { bg: "#141413", ink: "#FAF9F6", sec: "#A3A19B", rule: "#34332F", clay: "#E07A55", blue: "#86AEDB", sage: "#9CC59A" }
 const MONO = "'JetBrains Mono', ui-monospace, monospace"
 const SERIF = "'Fraunces', Georgia, serif"
 
@@ -80,6 +81,15 @@ const PUB_CUM = GH.map(([mo]) => (pubRun += POSTS.filter((p) => p.date.startsWit
 const DEPTH_PTS = PUB_CUM.map((c, i) => [x(i), BASE - (c / pubRun) * 96] as const)
 const STEP = DEPTH_PTS.map(([px, py], i) => `${i ? "L" : "M"}${px.toFixed(1)} ${py.toFixed(1)}`).join(" ")
 const RINGS = GH.flatMap(([mo], i) => (PINS[mo] || PAPERS.some((pp) => pp.mo === mo) || POSTS.some((p) => p.date.startsWith(mo)) ? [{ key: mo, x: DEPTH_PTS[i][0], y: DEPTH_PTS[i][1], ns: PINS[mo] || [], papers: PAPERS.filter((pp) => pp.mo === mo), posts: POSTS.filter((p) => p.date.startsWith(mo)), major: !!PINS[mo] || PAPERS.some((pp) => pp.mo === mo), month: new Date(`${mo}-15`).toLocaleString("en-US", { month: "short", year: "numeric" }) }] : []))
+// After hours: private experiments, cumulative, drawn as a dashed sage line.
+let expRun = 0
+const EXP_CUM = GH.map(([mo]) => (expRun += EXPERIMENTS.filter((e) => e.mo === mo).length))
+const EXP_PTS = EXP_CUM.map((c, i) => [x(i), BASE - (c / expRun) * 66] as const)
+const EXP_LINE = EXP_PTS.map(([px, py], i) => `${i ? "L" : "M"}${px.toFixed(1)} ${py.toFixed(1)}`).join(" ")
+const EXP_DOTS = GH.flatMap(([mo], i) => {
+  const xs = EXPERIMENTS.filter((e) => e.mo === mo)
+  return xs.length ? [{ key: `x${mo}`, x: EXP_PTS[i][0], y: EXP_PTS[i][1], xs, month: new Date(`${mo}-15`).toLocaleString("en-US", { month: "short", year: "numeric" }) }] : []
+})
 const line = PACE.map(([px, py], i) => `${i ? "L" : "M"}${px.toFixed(1)} ${py.toFixed(1)}`).join(" ")
 
 // Essays grouped by month, drawn as clay dots on the pace line.
@@ -99,6 +109,7 @@ const GrowthLadder = () => {
   const [open, setOpen] = React.useState<string | null>(null)
   const ring = RINGS.find((r) => r.key === open)
   const dot = ESSAY_DOTS.find((d) => d.key === open)
+  const exp = EXP_DOTS.find((d) => d.key === open)
   return (
   <div sx={{ bg: D.bg, color: D.ink, px: [3, 5], py: [4, 5], borderRadius: "6px" }}>
     <div sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: [2, 5] }}>
@@ -117,10 +128,11 @@ const GrowthLadder = () => {
     </div>
 
     <div sx={{ position: "relative", mt: [4, 5] }} onMouseLeave={() => setOpen(null)}>
-    <svg onClick={() => setOpen(null)} viewBox="0 0 400 190" role="img" aria-label="Cumulative GitHub contributions and layers of the AI stack reached, November 2024 to November 2026" sx={{ display: "block", width: "100%", height: "auto", overflow: "visible", "@keyframes ringPulse": { "0%": { r: 4, opacity: 0.7 }, "100%": { r: 13, opacity: 0 } }, ".pulse": { animation: "ringPulse 2.4s ease-out infinite" }, "@media (prefers-reduced-motion: reduce)": { ".pulse": { animation: "none", opacity: 0 } } }}>
+    <svg onClick={() => setOpen(null)} viewBox="0 0 400 190" role="img" aria-label="Cumulative GitHub contributions, published work, and after-hours experiments, November 2024 to November 2026" sx={{ display: "block", width: "100%", height: "auto", overflow: "visible", "@keyframes ringPulse": { "0%": { r: 4, opacity: 0.7 }, "100%": { r: 13, opacity: 0 } }, ".pulse": { animation: "ringPulse 2.4s ease-out infinite" }, "@media (prefers-reduced-motion: reduce)": { ".pulse": { animation: "none", opacity: 0 } } }}>
       <line x1={X0} y1={BASE} x2={X1} y2={BASE} stroke={D.rule} />
       <path d={`${line} L${X1} ${BASE} L${X0} ${BASE} Z`} fill={D.clay} opacity={0.16} />
       <path d={line} fill="none" stroke={D.clay} strokeWidth={2.5} strokeLinejoin="round" />
+      <path d={EXP_LINE} fill="none" stroke={D.sage} strokeWidth={2} strokeDasharray="5 4" strokeLinejoin="round" />
       <path d={STEP} fill="none" stroke={D.blue} strokeWidth={2.5} strokeLinejoin="round" />
       {RINGS.map((r) => (
         <g key={r.key} role="button" tabIndex={0} aria-label={`${r.month}: ${[...r.ns.map((n) => `first ${DEPTH[n - 1].layer} result`), ...r.papers.map((pp) => pp.title), ...(r.posts.length ? [`${r.posts.length} posts`] : [])].join("; ")}`} aria-expanded={open === r.key}
@@ -139,7 +151,16 @@ const GrowthLadder = () => {
           <circle cx={d.x} cy={d.y} r={2.5 + Math.sqrt(d.es.length) * 1.1} fill={D.clay} stroke={open === d.key ? D.ink : D.bg} strokeWidth={1.5} />
         </g>
       ))}
+      {EXP_DOTS.map((d) => (
+        <g key={d.key} role="button" tabIndex={0} aria-label={`${d.month}: after-hours experiments: ${d.xs.map((e) => e.title).join("; ")}`} aria-expanded={open === d.key}
+          onMouseEnter={() => setOpen(d.key)} onFocus={() => setOpen(d.key)} onClick={(e) => { e.stopPropagation(); setOpen(d.key) }}
+          onKeyDown={(e) => e.key === "Escape" && setOpen(null)} sx={{ cursor: "pointer", outline: "none" }}>
+          <circle cx={d.x} cy={d.y} r="11" fill="transparent" />
+          <rect x={d.x - (2.5 + d.xs.length)} y={d.y - (2.5 + d.xs.length)} width={2 * (2.5 + d.xs.length)} height={2 * (2.5 + d.xs.length)} transform={`rotate(45 ${d.x} ${d.y})`} fill={D.sage} stroke={open === d.key ? D.ink : D.bg} strokeWidth={1.5} />
+        </g>
+      ))}
       <text x={X0} y="10" fontFamily={MONO} fontSize="10.5" letterSpacing=".08em" fill={D.clay}>— PACE</text>
+      <text x={X0} y="24" fontFamily={MONO} fontSize="10.5" letterSpacing=".08em" fill={D.sage}>- - AFTER HOURS ◆ EXPERIMENTS</text>
       <text x={X0 + 62} y="10" fontFamily={MONO} fontSize="10.5" letterSpacing=".08em" fill={D.blue}>— DEPTH</text>
       <text x={X0 + 132} y="10" fontFamily={MONO} fontSize="10.5" letterSpacing=".04em" fill={D.sec}>○ LAYER/PAPER</text>
       <text x={X0 + 228} y="10" fontFamily={MONO} fontSize="10.5" letterSpacing=".04em" fill={D.blue}>● POSTS</text>
@@ -181,6 +202,17 @@ const GrowthLadder = () => {
           <a key={e.slug} href={`https://calltothink.com/blog/${e.slug}/`} target="_blank" rel="noopener noreferrer" sx={{ display: "block", mt: 2, fontSize: "13px", lineHeight: 1.45, color: D.ink, textDecoration: "none", "&:hover": { color: D.clay } }}>{e.title} →</a>
         ))}
         {dot.es.length > 4 && <a href="https://calltothink.com/" target="_blank" rel="noopener noreferrer" sx={{ display: "block", mt: 2, ...small, color: D.clay, textDecoration: "none" }}>+ {dot.es.length - 4} more on calltothink.com →</a>}
+      </div>
+    )}
+    {exp && (
+      <div role="dialog" sx={{ position: ["relative", "absolute"], left: ["auto", `${(exp.x / 400) * 100}%`], top: ["auto", `${(exp.y / 190) * 100}%`], transform: ["none", exp.x > 200 ? "translate(calc(-100% - 14px), -50%)" : "translate(14px, -50%)"], width: ["auto", "300px"], mt: [2, 0], bg: "#1F1F1D", border: `1px solid ${D.rule}`, borderLeft: `3px solid ${D.sage}`, p: 3, zIndex: 2, boxShadow: "0 10px 30px rgba(0,0,0,.45)" }}>
+        <div sx={{ ...small, color: D.sec }}>{exp.month} · <span sx={{ color: D.sage }}>after hours</span></div>
+        {exp.xs.map((e) => (
+          <Link key={e.key} to="/ai-research/#after-hours" sx={{ display: "block", mt: 2, textDecoration: "none", color: D.ink, "&:hover .go": { color: D.sage } }}>
+            <div sx={{ ...small, color: D.sage }}>{e.tag}</div>
+            <div sx={{ fontSize: "13px", lineHeight: 1.45, mt: 1 }}>{e.title} <span className="go" sx={{ color: D.sec }}>→</span></div>
+          </Link>
+        ))}
       </div>
     )}
     </div>
