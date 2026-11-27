@@ -19,12 +19,12 @@ const monthLabel = (mo: string) => new Date(`${mo}-01T00:00:00Z`).toLocaleString
 
 // One published result per layer, surface to bedrock.
 const DEPTH = [
-  { layer: "Agents", proof: "1.3 MB", line: "Quecto, a Rust coding agent with a 1.3 MB core", to: "/quecto/" },
-  { layer: "Retrieval", proof: "15+", line: "CAG on arXiv, then embenx over 15+ vector stores", to: "/embenx-python-embedding-toolkit/" },
-  { layer: "Evals", proof: "arXiv", line: "BudgetBench, agent memory under a token budget", to: "/budgetbench-explained" },
-  { layer: "Models", proof: "+5.5", line: "A 4.9 GB distill that beats the 8.9 GB release on MMLU", to: "/distilling-ornith-9b-two-teacher-mlx/" },
-  { layer: "Inference", proof: "+119%", line: "Decode speedup from speculative decoding", to: "/mlx-speculative-decoding-qwen3-8-apple-silicon/" },
-  { layer: "Silicon", proof: "~80x", line: "GEMM over GEMV throughput on an M5 Pro", to: "/mlx-gemv-gemm-roofline-apple-silicon/" },
+  { layer: "Agents", plain: "An AI coder you can read end to end.", proof: "1.3 MB", line: "Quecto, a Rust coding agent with a 1.3 MB core", to: "/quecto/" },
+  { layer: "Retrieval", plain: "Finding the right page before the AI answers.", proof: "15+", line: "CAG on arXiv, then embenx over 15+ vector stores", to: "/embenx-python-embedding-toolkit/" },
+  { layer: "Evals", plain: "Testing what an agent remembers when memory is tight.", proof: "arXiv", line: "BudgetBench, agent memory under a token budget", to: "/budgetbench-explained" },
+  { layer: "Models", plain: "Smaller model, better scores.", proof: "+5.5", line: "A 4.9 GB distill that beats the 8.9 GB release on MMLU", to: "/distilling-ornith-9b-two-teacher-mlx/" },
+  { layer: "Inference", plain: "Same answers, up to twice as fast.", proof: "+119%", line: "Decode speedup from speculative decoding", to: "/mlx-speculative-decoding-qwen3-8-apple-silicon/" },
+  { layer: "Silicon", plain: "Why your Mac writes text slower than it reads it.", proof: "~80x", line: "GEMM over GEMV throughput on an M5 Pro", to: "/mlx-gemv-gemm-roofline-apple-silicon/" },
 ]
 // Month each layer's first result was published (1-based DEPTH index).
 const PINS: Record<string, number[]> = { "2024-12": [2], "2026-07": [1], "2026-08": [5, 6], "2026-09": [4, 3] }
@@ -112,22 +112,7 @@ const GrowthLadder = () => {
   const exp = EXP_DOTS.find((d) => d.key === open)
   return (
   <div sx={{ bg: D.bg, color: D.ink, px: [3, 5], py: [4, 5], borderRadius: "6px" }}>
-    <div sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: [2, 5] }}>
-      <div>
-        <div sx={{ ...kpi, color: D.clay }}>{RATIO}x</div>
-        <div sx={{ mt: 2, color: D.sec, fontSize: ["13px", "15px"], maxWidth: "24ch" }}>more shipped in 2026 than in 2025</div>
-      </div>
-      <div>
-        <div sx={{ ...kpi, color: D.blue }}>6/6</div>
-        <div sx={{ mt: 2, color: D.sec, fontSize: ["13px", "15px"], maxWidth: "24ch" }}>layers of the AI stack, from agents down to silicon</div>
-      </div>
-      <div>
-        <div sx={{ ...kpi, color: D.ink }}>{ACTIVE}/{GH.length}</div>
-        <div sx={{ mt: 2, color: D.sec, fontSize: ["13px", "15px"], maxWidth: "24ch" }}>months active on GitHub, without a break</div>
-      </div>
-    </div>
-
-    <div sx={{ position: "relative", mt: [4, 5] }} onMouseLeave={() => setOpen(null)}>
+    <div sx={{ position: "relative" }} onMouseLeave={() => setOpen(null)}>
     <svg onClick={() => setOpen(null)} viewBox="0 0 400 190" role="img" aria-label="Cumulative GitHub contributions, published work, and after-hours experiments, November 2024 to November 2026" sx={{ display: "block", width: "100%", height: "auto", overflow: "visible", "@keyframes ringPulse": { "0%": { r: 4, opacity: 0.7 }, "100%": { r: 13, opacity: 0 } }, ".pulse": { animation: "ringPulse 2.4s ease-out infinite" }, "@media (prefers-reduced-motion: reduce)": { ".pulse": { animation: "none", opacity: 0 } } }}>
       <line x1={X0} y1={BASE} x2={X1} y2={BASE} stroke={D.rule} />
       <path d={`${line} L${X1} ${BASE} L${X0} ${BASE} Z`} fill={D.clay} opacity={0.16} />
@@ -159,12 +144,6 @@ const GrowthLadder = () => {
           <rect x={d.x - (2.5 + d.xs.length)} y={d.y - (2.5 + d.xs.length)} width={2 * (2.5 + d.xs.length)} height={2 * (2.5 + d.xs.length)} transform={`rotate(45 ${d.x} ${d.y})`} fill={D.sage} stroke={open === d.key ? D.ink : D.bg} strokeWidth={1.5} />
         </g>
       ))}
-      <text x={X0} y="10" fontFamily={MONO} fontSize="10.5" letterSpacing=".08em" fill={D.clay}>— PACE</text>
-      <text x={X0} y="24" fontFamily={MONO} fontSize="10.5" letterSpacing=".08em" fill={D.sage}>- - AFTER HOURS ◆ EXPERIMENTS</text>
-      <text x={X0 + 62} y="10" fontFamily={MONO} fontSize="10.5" letterSpacing=".08em" fill={D.blue}>— DEPTH</text>
-      <text x={X0 + 132} y="10" fontFamily={MONO} fontSize="10.5" letterSpacing=".04em" fill={D.sec}>○ LAYER/PAPER</text>
-      <text x={X0 + 228} y="10" fontFamily={MONO} fontSize="10.5" letterSpacing=".04em" fill={D.blue}>● POSTS</text>
-      <text x={X0 + 290} y="10" fontFamily={MONO} fontSize="10.5" letterSpacing=".04em" fill={D.clay}>● ESSAYS</text>
       {GH.map(([mo, n], i) => <rect key={mo} x={x(i) - CELL / 2} y="157" width={CELL} height="9" rx="1.5" fill={D.clay} opacity={0.2 + 0.8 * Math.sqrt(n / MAX)}><title>{`${mo}: ${n} contributions`}</title></rect>)}
       <text x={X0} y="184" fontFamily={MONO} fontSize="10" fill={D.sec}>NOV 2024</text>
       <text x={X1} y="184" textAnchor="end" fontFamily={MONO} fontSize="10" fill={D.sec}>{monthLabel(GH[GH.length - 1][0])}</text>
@@ -217,12 +196,38 @@ const GrowthLadder = () => {
     )}
     </div>
 
+    <div aria-hidden="true" sx={{ display: "flex", flexWrap: "wrap", columnGap: 3, rowGap: 1, mt: 2, fontFamily: MONO, fontSize: "11px", letterSpacing: ".04em", color: D.sec }}>
+      <span><span sx={{ color: D.clay }}>━</span> GitHub pace</span>
+      <span><span sx={{ color: D.blue }}>━</span> Depth (posts + papers)</span>
+      <span><span sx={{ color: D.sage }}>╍</span> After hours</span>
+      <span><span sx={{ color: D.blue }}>◎</span> Layer or paper</span>
+      <span><span sx={{ color: D.blue }}>●</span> Posts</span>
+      <span><span sx={{ color: D.clay }}>●</span> Essays</span>
+      <span><span sx={{ color: D.sage }}>◆</span> Experiments</span>
+    </div>
+
+    <div sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: [2, 5], mt: [4, 5] }}>
+      <div>
+        <div sx={{ ...kpi, color: D.clay }}>{RATIO}x</div>
+        <div sx={{ mt: 2, color: D.sec, fontSize: ["13px", "15px"], maxWidth: "24ch" }}>more shipped in 2026 than in 2025</div>
+      </div>
+      <div>
+        <div sx={{ ...kpi, color: D.blue }}>6/6</div>
+        <div sx={{ mt: 2, color: D.sec, fontSize: ["13px", "15px"], maxWidth: "24ch" }}>layers of the AI stack, from agents down to silicon</div>
+      </div>
+      <div>
+        <div sx={{ ...kpi, color: D.ink }}>{ACTIVE}/{GH.length}</div>
+        <div sx={{ mt: 2, color: D.sec, fontSize: ["13px", "15px"], maxWidth: "24ch" }}>months active on GitHub, without a break</div>
+      </div>
+    </div>
+
     <div sx={{ display: "grid", gridTemplateColumns: ["1fr 1fr", "1fr 1fr 1fr"], gap: "1px", bg: D.rule, border: `1px solid ${D.rule}`, mt: [4, 5] }}>
       {DEPTH.map((d, i) => (
         <Link key={d.layer} to={d.to} sx={{ display: "block", bg: D.bg, p: [2, 3], textDecoration: "none", color: D.ink, transition: "background .15s", "&:hover": { bg: "#1F1F1D" } }}>
           <div sx={{ ...small, color: D.blue }}>{String(i + 1).padStart(2, "0")} {d.layer}</div>
           <div sx={{ fontFamily: SERIF, fontSize: ["1.6rem", "2rem"], lineHeight: 1.1, mt: 2 }}>{d.proof}</div>
           <div sx={{ color: D.sec, fontSize: "13px", lineHeight: 1.45, mt: 1 }}>{d.line}</div>
+          <div sx={{ color: D.ink, fontSize: "13px", lineHeight: 1.45, mt: 2, pt: 2, borderTop: `1px dashed ${D.rule}` }}>{d.plain}</div>
         </Link>
       ))}
     </div>
