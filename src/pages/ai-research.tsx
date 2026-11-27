@@ -139,10 +139,15 @@ const publications: Row[] = [
   },
 ]
 
+// Submitted to arXiv, on hold in moderation as of Nov 2026. Add the link when it is announced.
+const upcoming: Row[] = [
+  { key: "halt", meta: "2026", tag: "Preprint · arXiv, submitted", title: "HALT: quantized reasoning models don't stop, and a harness-applied limit on thinking repairs them", body: "Link coming once the preprint is public." },
+]
+
 // Source: Google Scholar profile (WujCeDkAAAAJ). Order: newest first.
 const papers: Row[] = [
   { key: "p-budgetbench", meta: "2026", tag: "arXiv", title: "BudgetBench: a budget-tiered protocol and pilot harness for memory strategy evaluation in local LLM agents", body: "With A. Jaggi.", links: [{ label: "arXiv:2609.13149", href: "https://arxiv.org/abs/2609.13149" }] },
-  { key: "p-control-plane", meta: "2026", tag: "Concept paper", title: "The Enterprise AI Control Plane: a governance and orchestration framework for LLM deployments at scale", body: "With A. Jaggi. Part of a series of concept papers on enterprise agent governance, trust, identity and security." },
+  { key: "p-control-plane", meta: "2026", tag: "Concept paper", title: "The Enterprise AI Control Plane: a governance and orchestration framework for LLM deployments at scale", body: "With A. Jaggi. First of 14 concept papers on enterprise agent governance, trust, identity and security.", links: [{ label: "All 14 frameworks", to: "/frameworks/" }] },
   { key: "p-medfit", meta: "2025", tag: "Conference", title: "MEDFIT-LLM: medical enhancements through domain-focused fine-tuning of small language models", body: "With A. Jaggi and S. Naidu.", links: [{ label: "Paper", href: "https://ieeexplore.ieee.org/abstract/document/11042816" }] },
   { key: "p-glucose", meta: "2025", tag: "Journal", title: "Automated analysis of glucose response patterns in type 1 diabetes using machine learning and computer vision", body: "International Journal of Advanced Computer Science and Applications 16(5)." },
   { key: "p-breathwork", meta: "2025", tag: "Journal", title: "Neural network-enabled diagnostic framework for correlating Ayurvedic breathwork protocols with adaptive skin microbiome dynamics", body: "Mathematical Modelling of Engineering Problems 12(6)." },
@@ -187,6 +192,11 @@ const AiResearchPage = () => (
         </Prose>
       </Section>
 
+      <Section label="Upcoming" title="In submission">
+        {/* Link to the preprint goes here once it is public. */}
+        <RuledList rows={upcoming} />
+      </Section>
+
       <Section label="Papers" title="Publications">
         <RuledList rows={papers} />
       </Section>
@@ -200,7 +210,7 @@ const AiResearchPage = () => (
           {` `}and <TextLink to="/ai-systems-design-field-guide/">the AI Systems Design Field Guide</TextLink>.
         </p>
       </Section>
-      <Explore keys={["writing", "systems", "about"]} />
+      <Explore keys={["frameworks", "writing", "systems"]} />
     </Page>
   </Layout>
 )

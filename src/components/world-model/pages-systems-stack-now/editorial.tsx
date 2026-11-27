@@ -209,6 +209,7 @@ export const Pre = ({ children }: Kids) => (
 
 export const SITE_MAP: Record<string, { to: string; title: string; text: string }> = {
   research: { to: "/ai-research/", title: "Research", text: "Papers, experiments and the questions behind them." },
+  frameworks: { to: "/frameworks/", title: "Frameworks", text: "Concept papers and books on governing AI agents, with Arjun Jaggi." },
   writing: { to: "/blog/", title: "Writing", text: "Long-form notes on agents, memory and local inference." },
   systems: { to: "/systems/", title: "Systems", text: "Open-source runtimes, retrieval and tooling I built." },
   quecto: { to: "/quecto/", title: "Quecto", text: "A 1.3 MB agent harness in Rust, built to be evaluated." },
