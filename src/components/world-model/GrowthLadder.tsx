@@ -6,6 +6,7 @@ import { ESSAYS } from "./essays"
 import { POSTS } from "./posts"
 import { GH } from "./growth-data"
 import { EXPERIMENTS } from "./experiments"
+import PixelSprite from "../PixelSprite"
 
 // Dark panel palette (clay = pace, blue = depth).
 const D = { bg: "#141413", ink: "#FAF9F6", sec: "#A3A19B", rule: "#34332F", clay: "#E07A55", blue: "#86AEDB", sage: "#9CC59A" }
@@ -99,6 +100,21 @@ const ESSAY_DOTS = GH.flatMap(([mo], i) => {
 })
 
 const ACTIVE = GH.filter(([, n]) => n > 0).length
+const SWEEP = 6 // seconds for the draw-in sweep (linear, so marker delays match the chef)
+// Story the chef tells while riding the pace line. Each chapter starts at a month; the last one stays briefly after the sweep.
+const STORY: [string, string][] = [
+  ["2024-11", "Dec 2024: first paper on arXiv."],
+  ["2025-02", "2025: papers by day, experiments by night."],
+  ["2026-01", "2026: going down the stack, agents to silicon."],
+  ["2026-07", "July 2026: then it all ships."],
+]
+const STORY_END = "Still cooking. Next stop: more."
+const storyAt = (i: number) => [...STORY].reverse().find(([mo]) => GH.findIndex(([m]) => m === mo) <= i)?.[1] || STORY[0][1]
+// Point on the pace line at fractional month index fi.
+const paceAt = (fi: number) => {
+  const a = Math.floor(fi), b = Math.min(a + 1, PACE.length - 1), t = fi - a
+  return [PACE[a][0] + (PACE[b][0] - PACE[a][0]) * t, PACE[a][1] + (PACE[b][1] - PACE[a][1]) * t] as const
+}
 const MAX = Math.max(...GH.map(([, n]) => n))
 const CELL = (X1 - X0) / (GH.length - 1) - 2
 
@@ -110,17 +126,66 @@ const GrowthLadder = () => {
   const ring = RINGS.find((r) => r.key === open)
   const dot = ESSAY_DOTS.find((d) => d.key === open)
   const exp = EXP_DOTS.find((d) => d.key === open)
+  // Draw-in: lines sweep left to right and markers pop in as the sweep reaches them, once, when the chart scrolls into view.
+  // Server render and reduced motion stay "static" (fully drawn).
+  const svgRef = React.useRef<SVGSVGElement>(null)
+  const [phase, setPhase] = React.useState<"static" | "hidden" | "play">("static")
+  React.useEffect(() => {
+    if (!svgRef.current || !("IntersectionObserver" in window) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    setPhase("hidden")
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setPhase("play"); io.disconnect() } }, { threshold: 0.3 })
+    io.observe(svgRef.current)
+    return () => io.disconnect()
+  }, [])
+  const clipRef = React.useRef<SVGRectElement>(null)
+  const chefRef = React.useRef<HTMLDivElement>(null)
+  const [caption, setCaption] = React.useState<string | null>(null)
+  // Ending: ride -> dome (glass closes) -> rocket (becomes a spaceship) -> away (flies off).
+  const [stage, setStage] = React.useState<"ride" | "dome" | "rocket" | "away">("ride")
+  const away = stage === "away"
+  React.useEffect(() => {
+    if (phase !== "play") return
+    let raf = 0, last = ""
+    const timers: number[] = []
+    const t0 = performance.now()
+    const place = (p: number) => {
+      const fi = p * (GH.length - 1)
+      const [cx, cy] = paceAt(fi)
+      if (clipRef.current) clipRef.current.style.transform = `scaleX(${p})`
+      if (chefRef.current) { chefRef.current.style.left = `${(cx / 400) * 100}%`; chefRef.current.style.top = `${(cy / 190) * 100}%`; chefRef.current.style.setProperty("--p", String(p)) }
+      const c = p >= 1 ? STORY_END : storyAt(Math.floor(fi))
+      if (c !== last) { last = c; setCaption(c) }
+    }
+    const tick = (now: number) => {
+      const p = Math.max(0, Math.min(1, (now - t0) / (SWEEP * 1000))) // rAF time can precede t0
+      place(p)
+      if (p < 1) raf = requestAnimationFrame(tick)
+      else {
+        const at = (ms: number, f: () => void) => timers.push(window.setTimeout(f, ms))
+        at(1800, () => { setCaption(null); setStage("dome") })
+        at(2900, () => setStage("rocket"))
+        at(3700, () => setStage("away"))
+      }
+    }
+    raf = requestAnimationFrame(tick)
+    return () => { cancelAnimationFrame(raf); timers.forEach(clearTimeout) }
+  }, [phase])
+  const [endX, endY] = PACE[PACE.length - 1]
+  const at = (px: number) => ({ "--d": `${(((px - X0) / (X1 - X0)) * SWEEP).toFixed(2)}s` }) as React.CSSProperties
   return (
-  <div sx={{ bg: D.bg, color: D.ink, px: [3, 5], py: [4, 5], borderRadius: "6px" }}>
+  <div sx={{ bg: D.bg, color: D.ink, px: [3, 5], py: [4, 5], borderRadius: "6px", overflowX: "clip" }}>
     <div sx={{ position: "relative" }} onMouseLeave={() => setOpen(null)}>
-    <svg onClick={() => setOpen(null)} viewBox="0 0 400 190" role="img" aria-label="Cumulative GitHub contributions, published work, and after-hours experiments, November 2024 to November 2026" sx={{ display: "block", width: "100%", height: "auto", overflow: "visible", "@keyframes ringPulse": { "0%": { r: 4, opacity: 0.7 }, "100%": { r: 13, opacity: 0 } }, ".pulse": { animation: "ringPulse 2.4s ease-out infinite" }, "@media (prefers-reduced-motion: reduce)": { ".pulse": { animation: "none", opacity: 0 } } }}>
+    <svg ref={svgRef} className={phase} onClick={() => setOpen(null)} viewBox="0 0 400 190" role="img" aria-label="Cumulative GitHub contributions, published work, and after-hours experiments, November 2024 to November 2026" sx={{ display: "block", width: "100%", height: "auto", overflow: "visible", "@keyframes ringPulse": { "0%": { r: 4, opacity: 0.7 }, "100%": { r: 13, opacity: 0 } }, ".pulse": { animation: "ringPulse 2.4s ease-out infinite" }, "@keyframes sweep": { from: { transform: "scaleX(0)" }, to: { transform: "scaleX(1)" } }, "@keyframes popIn": { from: { opacity: 0, transform: "scale(0.2)" }, to: { opacity: 1, transform: "scale(1)" } }, "@keyframes grow": { from: { transform: "scaleY(0)" }, to: { transform: "scaleY(1)" } }, ".sweep, .m, .cell": { transformBox: "fill-box" }, ".cell": { transformOrigin: "center bottom" }, "&.hidden .cell": { transform: "scaleY(0)" }, "&.play .cell": { animation: "grow .4s ease-out both", animationDelay: "var(--d)" }, ".sweep": { transformOrigin: "left center" }, ".m": { transformOrigin: "center" }, "&.hidden .sweep": { transform: "scaleX(0)" }, "&.hidden .m": { opacity: 0 }, "&.play .m": { animation: "popIn .45s cubic-bezier(.3,1.6,.5,1) both", animationDelay: "var(--d)" }, "&.play .sweep": { transform: "scaleX(0)" }, "&.hidden .pulse, &.play .pulse": { animationDelay: `${SWEEP}s` }, "@media (prefers-reduced-motion: reduce)": { ".pulse": { animation: "none", opacity: 0 } } }}>
+      <defs><clipPath id="gl-sweep"><rect ref={clipRef} className="sweep" x={X0 - 8} y="0" width={X1 - X0 + 16} height={BASE + 4} /></clipPath></defs>
       <line x1={X0} y1={BASE} x2={X1} y2={BASE} stroke={D.rule} />
+      <g clipPath="url(#gl-sweep)">
       <path d={`${line} L${X1} ${BASE} L${X0} ${BASE} Z`} fill={D.clay} opacity={0.16} />
       <path d={line} fill="none" stroke={D.clay} strokeWidth={2.5} strokeLinejoin="round" />
       <path d={EXP_LINE} fill="none" stroke={D.sage} strokeWidth={2} strokeDasharray="5 4" strokeLinejoin="round" />
       <path d={STEP} fill="none" stroke={D.blue} strokeWidth={2.5} strokeLinejoin="round" />
+      </g>
       {RINGS.map((r) => (
-        <g key={r.key} role="button" tabIndex={0} aria-label={`${r.month}: ${[...r.ns.map((n) => `first ${DEPTH[n - 1].layer} result`), ...r.papers.map((pp) => pp.title), ...(r.posts.length ? [`${r.posts.length} posts`] : [])].join("; ")}`} aria-expanded={open === r.key}
+        <g key={r.key} className="m" style={at(r.x)} role="button" tabIndex={0} aria-label={`${r.month}: ${[...r.ns.map((n) => `first ${DEPTH[n - 1].layer} result`), ...r.papers.map((pp) => pp.title), ...(r.posts.length ? [`${r.posts.length} posts`] : [])].join("; ")}`} aria-expanded={open === r.key}
           onMouseEnter={() => setOpen(r.key)} onFocus={() => setOpen(r.key)} onClick={(e) => { e.stopPropagation(); setOpen(r.key) }}
           onKeyDown={(e) => e.key === "Escape" && setOpen(null)} sx={{ cursor: "pointer", outline: "none", "&:focus-visible circle.dot": { stroke: D.ink } }}>
           {r.major && <circle className="pulse" cx={r.x} cy={r.y} r="4" fill="none" stroke={D.blue} strokeWidth={1.5} />}
@@ -129,7 +194,7 @@ const GrowthLadder = () => {
         </g>
       ))}
       {ESSAY_DOTS.map((d) => (
-        <g key={d.key} role="button" tabIndex={0} aria-label={`${d.month}: ${d.es.length} Call to Think essays`} aria-expanded={open === d.key}
+        <g key={d.key} className="m" style={at(d.x)} role="button" tabIndex={0} aria-label={`${d.month}: ${d.es.length} Call to Think essays`} aria-expanded={open === d.key}
           onMouseEnter={() => setOpen(d.key)} onFocus={() => setOpen(d.key)} onClick={(e) => { e.stopPropagation(); setOpen(d.key) }}
           onKeyDown={(e) => e.key === "Escape" && setOpen(null)} sx={{ cursor: "pointer", outline: "none" }}>
           <circle cx={d.x} cy={d.y} r="13" fill="transparent" />
@@ -137,17 +202,25 @@ const GrowthLadder = () => {
         </g>
       ))}
       {EXP_DOTS.map((d) => (
-        <g key={d.key} role="button" tabIndex={0} aria-label={`${d.month}: after-hours experiments: ${d.xs.map((e) => e.title).join("; ")}`} aria-expanded={open === d.key}
+        <g key={d.key} className="m" style={at(d.x)} role="button" tabIndex={0} aria-label={`${d.month}: after-hours experiments: ${d.xs.map((e) => e.title).join("; ")}`} aria-expanded={open === d.key}
           onMouseEnter={() => setOpen(d.key)} onFocus={() => setOpen(d.key)} onClick={(e) => { e.stopPropagation(); setOpen(d.key) }}
           onKeyDown={(e) => e.key === "Escape" && setOpen(null)} sx={{ cursor: "pointer", outline: "none" }}>
           <circle cx={d.x} cy={d.y} r="11" fill="transparent" />
           <rect x={d.x - (2.5 + d.xs.length)} y={d.y - (2.5 + d.xs.length)} width={2 * (2.5 + d.xs.length)} height={2 * (2.5 + d.xs.length)} transform={`rotate(45 ${d.x} ${d.y})`} fill={D.sage} stroke={open === d.key ? D.ink : D.bg} strokeWidth={1.5} />
         </g>
       ))}
-      {GH.map(([mo, n], i) => <rect key={mo} x={x(i) - CELL / 2} y="157" width={CELL} height="9" rx="1.5" fill={D.clay} opacity={0.2 + 0.8 * Math.sqrt(n / MAX)}><title>{`${mo}: ${n} contributions`}</title></rect>)}
+      {GH.map(([mo, n], i) => <rect key={mo} className="cell" style={at(x(i))} x={x(i) - CELL / 2} y="157" width={CELL} height="9" rx="1.5" fill={D.clay} opacity={0.2 + 0.8 * Math.sqrt(n / MAX)}><title>{`${mo}: ${n} contributions`}</title></rect>)}
       <text x={X0} y="184" fontFamily={MONO} fontSize="10" fill={D.sec}>NOV 2024</text>
       <text x={X1} y="184" textAnchor="end" fontFamily={MONO} fontSize="10" fill={D.sec}>{monthLabel(GH[GH.length - 1][0])}</text>
     </svg>
+    <div ref={chefRef} aria-hidden="true" sx={{ position: "absolute", left: `${(endX / 400) * 100}%`, top: `${(endY / 190) * 100}%`, transform: stage === "rocket" ? "translate(-50%, -100%) rotate(35deg) scale(1.35)" : away ? "translate(-50%, -100%) translate(320px, 420px) rotate(35deg) scale(.9)" : "translate(-50%, -100%)", transition: away ? "transform 1.4s cubic-bezier(.6,0,.9,.3), opacity 1.4s ease-in" : stage === "rocket" ? "transform .5s ease-out" : "none", pointerEvents: "none", zIndex: 1, opacity: phase === "hidden" || away ? 0 : 1 }}>
+      <div sx={{ width: ["24px", "36px"], mb: "2px", svg: { width: "100% !important", height: "auto !important" }, animation: phase === "play" ? `chefBob ${stage === "rocket" || away ? ".08s" : ".3s"} steps(2) infinite` : "none", "@keyframes chefBob": { "0%": { transform: "translateY(0)" }, "100%": { transform: "translateY(-2px)" } } }}>
+        <PixelSprite name={stage === "dome" ? "chefShipDome" : stage === "rocket" || away ? "rocket" : "chefShip"} size={34} />
+      </div>
+      {caption && (
+        <div sx={{ position: "absolute", bottom: "100%", left: "50%", transform: "translateX(calc(var(--p, 1) * -100%))", mb: 1, whiteSpace: "nowrap", bg: D.ink, color: D.bg, fontFamily: MONO, fontSize: ["10px", "12px"], px: 2, py: 1, borderRadius: "3px", boxShadow: "0 4px 14px rgba(0,0,0,.4)" }}>{caption}</div>
+      )}
+    </div>
     {ring && (
       <div role="dialog" sx={{ position: ["relative", "absolute"], left: ["auto", `${(ring.x / 400) * 100}%`], top: ["auto", `${(ring.y / 190) * 100}%`], transform: ["none", ring.x > 200 ? "translate(calc(-100% - 14px), -50%)" : "translate(14px, -50%)"], width: ["auto", "280px"], mt: [2, 0], bg: "#1F1F1D", border: `1px solid ${D.rule}`, borderLeft: `3px solid ${D.blue}`, p: 3, zIndex: 2, boxShadow: "0 10px 30px rgba(0,0,0,.45)" }}>
         <div sx={{ ...small, color: D.sec }}>{ring.month}</div>
