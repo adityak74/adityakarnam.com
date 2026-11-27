@@ -5,7 +5,6 @@ import * as React from "react"
 import { Box, jsx } from "theme-ui"
 import { Link } from "gatsby"
 import HeroChat from "./HeroChat"
-import ScrollStory from "./ScrollStory"
 import { NebulaBackdrop } from "./Nebula"
 
 const c = { blue: "#2F5D8C", ink: "#141413", sec: "#5E5D59", rule: "#E3E0D8", panel: "#F3F1EB", accent: "#C2522D" }
@@ -22,15 +21,15 @@ const linkSx = {
 }
 const labelSx = { fontFamily: mono, fontSize: "12px", letterSpacing: ".06em", textTransform: "uppercase" as const, color: c.sec }
 
-type Row = { tag: string; title: string; note: string; href: string; year: string; limit?: string; external?: boolean }
+type Row = { tag: string; title: string; note: string; href: string; year: string; limit?: string; big?: string; external?: boolean }
 
 const research: Row[] = [
-  { tag: "Paper", title: "BudgetBench: memory strategy evaluation under a fixed token budget", note: "On LongMemEval (500 questions), retrieval at a 2K budget scored 0.646; truncation needed 8K to reach 0.650. arXiv:2609.13149.", href: "/budgetbench-explained", year: "2026", limit: "Whether a budgeted strategy matches full context is unresolved: no paired interval on either model establishes equivalence." },
-  { tag: "Distillation", title: "Ornith-1.5-9B, two-teacher distillation on MLX", note: "A 4.9 GB build scores +5.5 MMLU and +3.0 HumanEval over the 8.9 GB release it replaces; the gain comes from reasoning termination, not knowledge.", href: "/distilling-ornith-9b-two-teacher-mlx/", year: "2026", limit: "One model, one machine. None of the original MMLU, TruthfulQA or HumanEval targets were reached." },
-  { tag: "Inference", title: "Speculative decoding on Apple Silicon", note: "Qwen3.8-27B with a 0.8B draft model peaks at a 119% decode speedup, after patching mlx_lm to accept its hybrid attention cache.", href: "/mlx-speculative-decoding-qwen3-8-apple-silicon/", year: "2026", limit: "Depends on unmerged upstream PR #1486. One draft-to-target ratio (0.8B:27B) tested." },
-  { tag: "Inference", title: "Why batching does not fix decode", note: "On an M5 Pro, GEMM holds a flat ~80x throughput advantage over GEMV, which is why batching helps prefill and barely touches decode.", href: "/mlx-gemv-gemm-roofline-apple-silicon/", year: "2026", limit: "One chip, one framework (mlx 0.32.0, float16). Per-size ratios ran about 64x to 108x; nothing measured below 1,024." },
-  { tag: "Retrieval", title: "Tokens per paper: DocLang vs Docling vs raw PDF", note: "DocLang costs 2.7x markdown tokens on a stock tokenizer and loses on retrieval; 38% of the paper was bibliography and boilerplate.", href: "/tokens-per-paper-doclang-docling-pdf/", year: "2026", limit: "Two papers and one small embedder. The recall difference is within noise at this sample size." },
-  { tag: "Numerics", title: "MLX non-determinism on Apple Silicon", note: "Batch-invariance tests from 512 to 4096 matrices, with bfloat16, float16 and float32 error behavior.", href: "/mlx-non-determinism-apple-silicon", year: "2025" },
+  { tag: "Paper", title: "BudgetBench: memory strategy evaluation under a fixed token budget", note: "On LongMemEval (500 questions), retrieval at a 2K budget scored 0.646; truncation needed 8K to reach 0.650. arXiv:2609.13149.", href: "/budgetbench-explained", big: "0.646", year: "2026", limit: "Whether a budgeted strategy matches full context is unresolved: no paired interval on either model establishes equivalence." },
+  { tag: "Distillation", title: "Ornith-1.5-9B, two-teacher distillation on MLX", note: "A 4.9 GB build scores +5.5 MMLU and +3.0 HumanEval over the 8.9 GB release it replaces; the gain comes from reasoning termination, not knowledge.", href: "/distilling-ornith-9b-two-teacher-mlx/", big: "+5.5 MMLU", year: "2026", limit: "One model, one machine. None of the original MMLU, TruthfulQA or HumanEval targets were reached." },
+  { tag: "Inference", title: "Speculative decoding on Apple Silicon", note: "Qwen3.8-27B with a 0.8B draft model peaks at a 119% decode speedup, after patching mlx_lm to accept its hybrid attention cache.", href: "/mlx-speculative-decoding-qwen3-8-apple-silicon/", big: "+119%", year: "2026", limit: "Depends on unmerged upstream PR #1486. One draft-to-target ratio (0.8B:27B) tested." },
+  { tag: "Inference", title: "Why batching does not fix decode", note: "On an M5 Pro, GEMM holds a flat ~80x throughput advantage over GEMV, which is why batching helps prefill and barely touches decode.", href: "/mlx-gemv-gemm-roofline-apple-silicon/", big: "~80x", year: "2026", limit: "One chip, one framework (mlx 0.32.0, float16). Per-size ratios ran about 64x to 108x; nothing measured below 1,024." },
+  { tag: "Retrieval", title: "Tokens per paper: DocLang vs Docling vs raw PDF", note: "DocLang costs 2.7x markdown tokens on a stock tokenizer and loses on retrieval; 38% of the paper was bibliography and boilerplate.", href: "/tokens-per-paper-doclang-docling-pdf/", big: "2.7x", year: "2026", limit: "Two papers and one small embedder. The recall difference is within noise at this sample size." },
+  { tag: "Numerics", title: "MLX non-determinism on Apple Silicon", note: "The same matrix multiply, computed two ways on an M2, differs by a relative error of 1.6e-5 at 512x512 and 8.9e-4 at 4096x4096.", href: "/mlx-non-determinism-apple-silicon", big: "8.9e-4", year: "2025", limit: "One chip, an M2 MacBook Pro. Values are approximate and the post reports no run-to-run variance." },
 ]
 
 const writing: Row[] = [
@@ -51,11 +50,6 @@ const systems: Row[] = [
 ]
 
 const stats = [
-  { value: "4.9 GB", label: "Ornith build that beats the 8.9 GB release", href: "/distilling-ornith-9b-two-teacher-mlx/" },
-  { value: "+5.5", label: "MMLU points over that 8.9 GB release", href: "/distilling-ornith-9b-two-teacher-mlx/" },
-  { value: "119%", label: "Decode speedup, speculative decoding on Apple Silicon", href: "/mlx-speculative-decoding-qwen3-8-apple-silicon/" },
-  { value: "~80x", label: "GEMM over GEMV throughput on an M5 Pro", href: "/mlx-gemv-gemm-roofline-apple-silicon/" },
-  { value: "0.646", label: "LongMemEval at a 2K token budget (BudgetBench)", href: "/budgetbench-explained" },
   { value: "15+", label: "Vector backends behind one embenx API", href: "/embenx-python-embedding-toolkit/" },
   { value: "~1.3 MB", label: "Quecto agent core, two direct dependencies", href: "/quecto/" },
   { value: "7.8K", label: "Stars on mlx-lm (1.2K forks), where my merged PR fixed LoRA on 3 MoE models", href: "https://github.com/ml-explore/mlx-lm/pull/1795" },
@@ -65,7 +59,6 @@ const reach = [
   { value: "185", label: "GitHub stars on mcp-scholarly, a paper-search MCP server (27 forks)", href: "https://github.com/adityak74/mcp-scholarly" },
   { value: "2", label: "arXiv preprints: BudgetBench and CAG", href: "/ai-research" },
   { value: "10", label: "Papers, theses and journal articles on my Scholar profile", href: "/ai-research" },
-  { value: "7", label: "Chapters in the free course built from this work", href: "/course/" },
 ]
 
 const areas = [
@@ -121,14 +114,28 @@ const List = ({ rows, left }: { rows: Row[]; left: "tag" | "year" }) => (
   </ul>
 )
 
+const Cards = ({ rows }: { rows: Row[] }) => (
+  <div sx={{ display: "grid", gridTemplateColumns: ["1fr", "1fr 1fr"], gap: 3 }}>
+    {rows.map((r) => (
+      <Link key={r.href} to={r.href} sx={{ display: "flex", flexDirection: "column", p: 3, border: `1px solid ${c.rule}`, bg: c.panel, textDecoration: "none", color: "inherit", "&:hover .t": { color: c.accent } }}>
+        <span sx={{ ...labelSx, color: c.blue }}>{r.tag} · {r.year}</span>
+        {r.big ? <span sx={{ fontFamily: serif, fontSize: "clamp(2.2rem, 5vw, 3rem)", lineHeight: 1, letterSpacing: "-0.03em", color: c.blue, mt: 2 }}>{r.big}</span> : null}
+        <span className="t" sx={{ fontFamily: serif, fontSize: "1.15rem", lineHeight: 1.3, fontWeight: 500, mt: 2, transition: "color .15s" }}>{r.title}</span>
+        <span sx={{ color: c.sec, fontSize: "15px", lineHeight: 1.55, mt: 1, mb: 3 }}>{r.note}</span>
+        {r.limit ? <span sx={{ color: c.sec, fontSize: "13px", lineHeight: 1.5, mt: "auto", pt: 2, borderTop: `1px solid ${c.rule}`, display: "block" }}><span sx={{ ...labelSx, mr: 2, color: c.accent }}>Limit</span>{r.limit}</span> : null}
+      </Link>
+    ))}
+  </div>
+)
+
 const tiles = (items: { value: string; label: string; href: string }[]) => (
-      <div sx={{ display: "grid", gridTemplateColumns: ["1fr 1fr", "repeat(4, 1fr)"], borderTop: `2px solid ${c.blue}` }}>
+      <div sx={{ display: "grid", gridTemplateColumns: ["1fr 1fr", "repeat(3, 1fr)"], borderTop: `2px solid ${c.blue}` }}>
         {items.map((st, i) => (
           <Box
             as={st.href.startsWith("http") ? "a" : (Link as any)}
             key={st.label}
             {...(st.href.startsWith("http") ? { href: st.href, target: "_blank", rel: "noopener noreferrer" } : { to: st.href })}
-            sx={{ display: "block", py: 4, pr: 3, pl: [i % 2 ? 3 : 0, i % 4 ? 3 : 0], borderLeft: [i % 2 ? `1px solid ${c.rule}` : 0, i % 4 ? `1px solid ${c.rule}` : 0], borderBottom: `1px solid ${c.rule}`, textDecoration: "none", color: "inherit", "&:hover .v": { color: c.accent } }}
+            sx={{ display: "block", py: 4, pr: 3, pl: [i % 2 ? 3 : 0, i % 3 ? 3 : 0], borderLeft: [i % 2 ? `1px solid ${c.rule}` : 0, i % 3 ? `1px solid ${c.rule}` : 0], borderBottom: `1px solid ${c.rule}`, textDecoration: "none", color: "inherit", "&:hover .v": { color: c.accent } }}
           >
             <div className="v" sx={{ fontFamily: serif, fontSize: "clamp(2rem, 4vw, 2.8rem)", lineHeight: 1, letterSpacing: "-0.02em", color: c.blue, transition: "color .15s" }}>{st.value}</div>
             <div sx={{ ...labelSx, mt: 2, lineHeight: 1.5 }}>{st.label}</div>
@@ -158,15 +165,13 @@ const HomepageConsole = () => (
     <div><HeroStack /></div>
     </div>
 
-    <Section title="Wins">
-      {tiles(stats)}
+    <Section title="Wins and reach">
+      {tiles([...stats, ...reach])}
     </Section>
 
-    <Section title="Reach">
-      {tiles(reach)}
+    <Section title="Research" more={<A href="/ai-research">All research</A>}>
+      <Cards rows={research} />
     </Section>
-
-    <ScrollStory />
 
     <details sx={{ mt: 4, "& > summary": { ...labelSx, cursor: "pointer", "&:hover": { color: c.accent } } }}>
       <summary>Ask my work</summary>
@@ -184,10 +189,6 @@ const HomepageConsole = () => (
           </div>
         ))}
       </div>
-    </Section>
-
-    <Section title="Research" more={<A href="/ai-research">All research</A>}>
-      <List rows={research} left="tag" />
     </Section>
 
     <Section title="Selected writing" more={<A href="/blog">All posts</A>}>
