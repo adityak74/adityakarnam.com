@@ -2,7 +2,7 @@ import * as React from "react"
 
 // Original 12-wide pixel sprites (no third-party characters). One char = one pixel.
 const PAL: Record<string, string> = {
-  K: "#141413", G: "#5E5D59", L: "#E3E0D8", R: "#C2522D", W: "#FFFFFF", S: "#B9B5AA", Y: "#D9A441",
+  K: "#141413", G: "#5E5D59", L: "#E3E0D8", R: "#C2522D", W: "#FFFFFF", S: "#B9B5AA", Y: "#D9A441", B: "#9CC7E8",
 }
 
 const SPRITES = {
@@ -46,6 +46,48 @@ const SPRITES = {
     "...KKKKKKKK.",
     "............",
     "............",
+    "............",
+  ],
+  chefShip: [
+    "....KKKK.KK.",
+    "...KWWWWKWWK",
+    "...KWWWWWWWK",
+    "....KKKKKKK.",
+    "....KLKLKLK.",
+    "....KLLRRLK.",
+    ".KKKKKKKKKKK",
+    "KSSSYSSYSSYK",
+    ".KGGGGGGGGK.",
+    "..KKKKKKKK..",
+    "...R..Y..R..",
+    "...Y.....Y..",
+  ],
+  chefShipDome: [
+    "...KKKKKK...",
+    "..KBWWWWBBK.",
+    ".KBWWWWWWBBK",
+    ".KBBKKKKKBBK",
+    ".KBBKLKLKBBK",
+    ".KBBKLRRKBBK",
+    ".KKKKKKKKKKK",
+    "KSSSYSSYSSYK",
+    ".KGGGGGGGGK.",
+    "..KKKKKKKK..",
+    "...R..Y..R..",
+    "...Y.....Y..",
+  ],
+  rocket: [
+    "............",
+    "....KKK.....",
+    "...KSSSK....",
+    "RY.KSSSSKK..",
+    "YRKSSBBSSSK.",
+    "RYKSBWWBSSSK",
+    "YRKSBLLBSSSK",
+    "RYKSSBBSSSK.",
+    "..KSSSSKK...",
+    "...KSSSK....",
+    "....KKK.....",
     "............",
   ],
   pot: [
