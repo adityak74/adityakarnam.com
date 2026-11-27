@@ -19,7 +19,7 @@ import { EXPERIMENTS } from "../components/world-model/experiments"
 
 const publications: Row[] = [
   {
-    key: "budgetbench",
+    key: "budgetbench", plain: "Give an agent a tight memory budget and smart retrieval wins: at 2K tokens it matched what plain truncation needed 8K to reach.",
     meta: "2026",
     tag: "Preprint · arXiv:2609.13149",
     title: "BudgetBench: a budget-tiered protocol for memory strategy evaluation in local LLM agents",
@@ -30,7 +30,7 @@ const publications: Row[] = [
     ],
   },
   {
-    key: "ornith",
+    key: "ornith", plain: "A model half the size scored higher, because it learned when to stop thinking, not more facts.",
     meta: "2026",
     tag: "Distillation · MLX",
     title: "Distilling Ornith-1.5-9B with two teachers",
@@ -41,7 +41,7 @@ const publications: Row[] = [
     ],
   },
   {
-    key: "pr1795",
+    key: "pr1795", plain: "Fine-tuning a whole family of models crashed because of one missing line. I found it, and it is fixed for everyone now.",
     meta: "2026",
     tag: "Upstream · mlx-lm",
     title: "mlx-lm PR #1795: LoRA training on MoE models",
@@ -52,7 +52,7 @@ const publications: Row[] = [
     ],
   },
   {
-    key: "speculative",
+    key: "speculative", plain: "A tiny model guesses ahead and the big one checks its work, so answers come out up to twice as fast on a Mac.",
     meta: "2026",
     tag: "Inference · Apple Silicon",
     title: "Speculative decoding on Apple Silicon",
@@ -60,7 +60,7 @@ const publications: Row[] = [
     links: [{ label: "Write-up", to: "/mlx-speculative-decoding-qwen3-8-apple-silicon/" }],
   },
   {
-    key: "kv",
+    key: "kv", plain: "Long conversations slow a local model down. Compressing its memory halves the slowdown, but makes reading your prompt slower.",
     meta: "2026",
     tag: "Inference · Apple Silicon",
     title: "Why MLX decode slows at long context",
@@ -68,7 +68,7 @@ const publications: Row[] = [
     links: [{ label: "Write-up", to: "/mlx-long-context-kv-cache-apple-silicon/" }],
   },
   {
-    key: "roofline",
+    key: "roofline", plain: "A Mac chip does batch work about 80x faster than one-token-at-a-time work. That is why writing the answer is the slow part.",
     meta: "2026",
     tag: "Inference · Roofline",
     title: "Why batching does not fix decode: GEMV versus GEMM",
@@ -76,7 +76,7 @@ const publications: Row[] = [
     links: [{ label: "Write-up", to: "/mlx-gemv-gemm-roofline-apple-silicon/" }],
   },
   {
-    key: "nondeterminism",
+    key: "nondeterminism", plain: "Same question, same model, same Mac, different answers. This finds where that comes from.",
     meta: "2025",
     tag: "Reproducibility",
     title: "MLX non-determinism on Apple Silicon",
@@ -84,7 +84,7 @@ const publications: Row[] = [
     links: [{ label: "Write-up", to: "/mlx-non-determinism-apple-silicon" }],
   },
   {
-    key: "embenx",
+    key: "embenx", plain: "One way to talk to 15+ vector databases, so switching databases does not mean rewriting your app.",
     meta: "2026",
     tag: "Software · Retrieval",
     title: "embenx",
@@ -95,7 +95,7 @@ const publications: Row[] = [
     ],
   },
   {
-    key: "fleet",
+    key: "fleet", plain: "Run a team of AI coding helpers on your own machines instead of paying per call, and measure how close they get.",
     meta: "2026",
     tag: "Software · Runtime",
     title: "subagent-fleet",
@@ -106,7 +106,7 @@ const publications: Row[] = [
     ],
   },
   {
-    key: "quecto",
+    key: "quecto", plain: "A coding agent small enough to read in an afternoon, built so you can check what it did.",
     meta: "2026",
     tag: "Software · Harness",
     title: "Quecto",
@@ -117,7 +117,7 @@ const publications: Row[] = [
     ],
   },
   {
-    key: "medfit",
+    key: "medfit", plain: "Small models trained on medicine can beat bigger general models on medical questions.",
     meta: "2025",
     tag: "Paper · IEEE",
     title: "MEDFIT-LLM: domain-focused fine-tuning of small language models for medicine",
@@ -128,7 +128,7 @@ const publications: Row[] = [
     ],
   },
   {
-    key: "erbga",
+    key: "erbga", plain: "Find the communities in a network without telling the algorithm how many to look for.",
     meta: "2018",
     tag: "Thesis · UMSL",
     title: "Efficient Reduced-BIAS Genetic Algorithm (ERBGA) for generic community detection",
@@ -142,7 +142,7 @@ const publications: Row[] = [
 
 // Submitted to arXiv, on hold in moderation as of Nov 2026. Add the link when it is announced.
 const upcoming: Row[] = [
-  { key: "halt", meta: "2026", tag: "Preprint · arXiv, submitted", title: "HALT: quantized reasoning models don't stop, and a harness-applied limit on thinking repairs them", body: "Link coming once the preprint is public." },
+  { key: "halt", plain: "Shrunk-down reasoning models can keep thinking and never answer. A simple limit set outside the model makes them stop and reply.", meta: "2026", tag: "Preprint · arXiv, submitted", title: "HALT: quantized reasoning models don't stop, and a harness-applied limit on thinking repairs them", body: "Link coming once the preprint is public." },
 ]
 
 // Source: Google Scholar profile (WujCeDkAAAAJ). Order: newest first.
@@ -153,7 +153,7 @@ const papers: Row[] = [
   { key: "p-glucose", meta: "2025", tag: "Journal", title: "Automated analysis of glucose response patterns in type 1 diabetes using machine learning and computer vision", body: "International Journal of Advanced Computer Science and Applications 16(5)." },
   { key: "p-breathwork", meta: "2025", tag: "Journal", title: "Neural network-enabled diagnostic framework for correlating Ayurvedic breathwork protocols with adaptive skin microbiome dynamics", body: "Mathematical Modelling of Engineering Problems 12(6)." },
   { key: "p-governance", meta: "2025", tag: "Study", title: "Quantifying adaptive governance success: a mixed-methods analysis of 500 organizations", body: "With A. Jaggi." },
-  { key: "p-cag", meta: "2024", tag: "arXiv", title: "CAG: chunked augmented generation for Google Chrome's built-in Gemini Nano", body: "With V. Vellaiyappan Surulimuthu.", links: [{ label: "arXiv:2412.18708", href: "https://arxiv.org/abs/2412.18708" }] },
+  { key: "p-cag", plain: "Lets the small AI built into Chrome read documents longer than it can hold at once, by feeding them in pieces.", meta: "2024", tag: "arXiv", title: "CAG: chunked augmented generation for Google Chrome's built-in Gemini Nano", body: "With V. Vellaiyappan Surulimuthu.", links: [{ label: "arXiv:2412.18708", href: "https://arxiv.org/abs/2412.18708" }] },
   { key: "p-cardiac", meta: "2024", tag: "Journal", title: "AI-enhanced neural network framework for cardiac arrest prognostics", body: "Frontiers in Health Informatics 13(3)." },
   { key: "p-erbga-paper", meta: "2018", tag: "Thesis", title: "Efficient reduced-bias genetic algorithm (ERBGA) for generic community detection objectives", body: "With C. Janikow, S. Bhatia and S. Climer. University of Missouri-St. Louis." },
   { key: "p-benes", meta: "2016", tag: "Journal", title: "Transmission in Benes network", body: "International Journal of Pure and Applied Mathematics 109(8)." },

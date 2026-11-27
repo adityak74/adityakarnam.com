@@ -134,6 +134,7 @@ export type Row = {
   tag?: string // mono tag
   title: string
   body?: React.ReactNode
+  plain?: string // one-line takeaway in everyday words
   links?: RowLink[]
 }
 
@@ -164,6 +165,12 @@ export const RuledList = ({ rows }: { rows: Row[] }) => (
           <h3 sx={{ fontFamily: ed.serif, fontWeight: 500, fontSize: `1.25rem`, lineHeight: 1.3, letterSpacing: `-0.01em`, m: 0, mb: 2, color: ed.ink }}>
             {r.title}
           </h3>
+          {r.plain ? (
+            <p sx={{ m: 0, mb: 2, maxWidth: `68ch`, pl: 3, borderLeft: `2px solid ${ed.blue}`, fontSize: `17px`, lineHeight: 1.55, color: ed.ink }}>
+              <span sx={{ display: `block`, fontFamily: ed.mono, fontSize: `11px`, letterSpacing: `0.06em`, textTransform: `uppercase`, color: ed.secondary, mb: `2px` }}>In plain words</span>
+              {r.plain}
+            </p>
+          ) : null}
           {r.body ? (
             <p sx={{ m: 0, maxWidth: `68ch`, fontSize: `17px`, lineHeight: 1.65, color: ed.secondary }}>{r.body}</p>
           ) : null}
