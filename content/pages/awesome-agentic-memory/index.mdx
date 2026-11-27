@@ -538,7 +538,7 @@ hideTitle: true
               ["Redis Agent Memory", "Redis", "6", "Any MCP client", "https://github.com/redis/agent-memory-server"],
               ["mcp-memory-service", "KG + vector", "12", "Claude, LangGraph", "https://github.com/doobidoo/mcp-memory-service"],
               ["memory-bank-mcp", "file system", "8", "Cline, Cursor, Claude", "https://github.com/alioshr/memory-bank-mcp"],
-              ["neo4j agent memory", "Neo4j", "6", "Any MCP client", "https://github.com/knowall-ai/mcp-neo4j-agent-memory"],
+              ["neo4j agent memory", "Neo4j", "6", "Any MCP client", "https://github.com/knowall-ai/mcp-reverie"],
               ["kuzu-memory-graph-mcp", "Kuzu", "5", "Any MCP client", "https://github.com/jkear/kuzu-memory-graph-mcp"],
             ].map(([name, backend, tools, works, url], i) => (
               <tr key={name} style={{ borderBottom: "1px solid #E3E0D8", background: i % 2 === 0 ? "#F3F1EB" : "#FAF9F6" }}>
@@ -572,7 +572,7 @@ hideTitle: true
           { name: "Microsoft AutoGen", url: "https://github.com/microsoft/autogen", stars: "Growing", desc: "Microsoft's framework for agentic AI. Pluggable memory components. Merging with Semantic Kernel into Microsoft Agent Framework.", color: "#E3E0D8" },
           { name: "Agno (Phidata)", url: "https://github.com/agno-agi/agno", stars: "~38k", desc: "5000x faster instantiation than LangGraph. Built-in session management, long-term user learning, 100+ integrations.", color: "#2F6F3E" },
           { name: "Mastra", url: "https://github.com/mastra-ai/mastra", stars: "YC W25", desc: "TypeScript AI agent framework from the Gatsby team. $13M funding. Memory with libSQL and Postgres. 300k+ weekly npm downloads.", color: "#5E5D59" },
-          { name: "MetaGPT", url: "https://github.com/geekan/MetaGPT", stars: "~50k", desc: "Simulates software development roles. Shared memory across PM, architect, engineer, and QA agents.", color: "#C2522D" },
+          { name: "MetaGPT", url: "https://github.com/FoundationAgents/MetaGPT", stars: "~50k", desc: "Simulates software development roles. Shared memory across PM, architect, engineer, and QA agents.", color: "#C2522D" },
           { name: "Haystack (deepset)", url: "https://github.com/deepset-ai/haystack", stars: "Active", desc: "Open-source AI orchestration with explicit memory control. InMemoryChatMessageStore + Mem0MemoryStore integration.", color: "#5E5D59" },
           { name: "Flowise", url: "https://github.com/FlowiseAI/Flowise", stars: "Active", desc: "Visual AI agent builder with 100+ integrations. Drag-and-drop conversational agents with built-in memory.", color: "#5E5D59" },
           { name: "Swarms", url: "https://github.com/kyegomez/swarms", stars: "Active", desc: "Enterprise-grade multi-agent orchestration. Agent = LLM + Tools + Memory. Production-ready.", color: "#2F6F3E" },
@@ -769,7 +769,7 @@ hideTitle: true
             ))}
           </div>
           <div style={{ display: "flex", gap: "0.75rem" }}>
-            <a href="https://github.com/safishamsi/graphify" target="_blank" rel="noopener noreferrer" style={{ flex: 1, background: "#5E5D59", color: "#FAF9F6", padding: "0.6rem 1rem", borderRadius: "4px", textDecoration: "none", fontSize: "0.9rem", fontWeight: "700", textAlign: "center" }}>
+            <a href="https://github.com/Graphify-Labs/graphify" target="_blank" rel="noopener noreferrer" style={{ flex: 1, background: "#5E5D59", color: "#FAF9F6", padding: "0.6rem 1rem", borderRadius: "4px", textDecoration: "none", fontSize: "0.9rem", fontWeight: "700", textAlign: "center" }}>
               GitHub →
             </a>
           </div>
