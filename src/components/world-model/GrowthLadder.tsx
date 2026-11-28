@@ -165,6 +165,7 @@ const GrowthLadder = () => {
         at(1800, () => { setCaption(null); setStage("dome") })
         at(2900, () => setStage("rocket"))
         at(3700, () => setStage("away"))
+        at(5000, () => window.dispatchEvent(new Event("chef-landed"))) // PeekGuide pops in after the flight
       }
     }
     raf = requestAnimationFrame(tick)

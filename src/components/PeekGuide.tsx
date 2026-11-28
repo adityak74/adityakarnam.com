@@ -71,6 +71,11 @@ const PeekGuide = ({ pathname }: { pathname: string }) => {
     try { off = sessionStorage.getItem("peek-off") === "1" } catch (e) { /* ignore */ }
     if (off || SKIP.some((s) => path.startsWith(s)) || norm(h.to) === path) return
     const show = () => setOpen(true)
+    // Homepage: the chart's rocket flies off bottom right, then the chef lands here (GrowthLadder dispatches "chef-landed").
+    if (path === "/" && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      window.addEventListener("chef-landed", show)
+      return () => window.removeEventListener("chef-landed", show)
+    }
     const onScroll = () => {
       const h = document.documentElement.scrollHeight - window.innerHeight
       if (h > 0 && window.scrollY / h > 0.35) { show(); window.removeEventListener("scroll", onScroll) }
